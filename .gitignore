@@ -1,0 +1,6 @@
+# 忽略所有文件
+*
+
+# 只跟踪项目文件
+!.gitignore
+!optec-profile.html
