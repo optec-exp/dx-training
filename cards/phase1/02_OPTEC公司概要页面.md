@@ -20,14 +20,14 @@
 ## 完成标准
 
 - [ ] 包含公司名称、业务说明、联系方式三个区块
-- [ ] Vercel 部署成功
+- [ ] 在浏览器中打开 `index.html` 确认显示正常
 
 ## 提交方式
 
 ```
 git add .
-git commit -m "作品02: OPTEC 公司概要页面"
+git commit -m "作品02: OPTEC公司概要页面"
 git push
 ```
 
-Vercel 自动部署后，将公开 URL 发送到 **#optec-ai-academy**。
+截图发送到 **#optec-ai-academy**。
