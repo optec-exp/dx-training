@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OPTEC Express — Company Overview</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:   #04091a;
+      --bg2:  #080f24;
+      --gold: #c8a155;
+      --golt: #e8c472;
+      --w:    #eef2ff;
+      --m:    #6b7fa0;
+      --ln:   rgba(255,255,255,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Helvetica Neue", "Hiragino Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--w);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(4,9,26,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--ln);
+    }
+
+    .logo { font-size: 0.95rem; font-weight: 800; letter-spacing: 0.2em; }
+    .logo em { font-style: normal; color: var(--gold); }
+
+    .lang-row { display: flex; gap: 6px; }
+    .lang-btn {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border: 1px solid var(--ln);
+      color: var(--m);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .lang-btn.active { border-color: var(--gold); color: var(--gold); }
+
+    nav ul { list-style: none; display: flex; gap: 36px; }
+    nav a {
+      text-decoration: none;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--m);
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--w); }
+
+    /* ─── HERO ─── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 60px 60px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .eyebrow {
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 26px;
+    }
+
+    .hero-left h1 {
+      font-size: clamp(2.6rem, 4vw, 4.4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      margin-bottom: 22px;
+    }
+
+    .hero-left h1 em { font-style: normal; color: var(--gold); }
+
+    .hero-left p {
+      font-size: 0.9rem;
+      line-height: 1.95;
+      color: var(--m);
+      max-width: 380px;
+      margin-bottom: 44px;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 32px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-decoration: none;
+      width: fit-content;
+      transition: background 0.22s, color 0.22s;
+    }
+    .cta:hover { background: var(--gold); color: var(--bg); }
+
+    /* ─── MAP PANEL ─── */
+    .hero-right {
+      position: relative;
+      background: #030712;
+      overflow: hidden;
+      border-left: 1px solid var(--ln);
+    }
+
+    .hero-right svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* SVG elements */
+    .ocean { fill: #030712; }
+
+    .land {
+      fill: #c8a155;
+      fill-opacity: 0.14;
+      stroke: #c8a155;
+      stroke-width: 0.7;
+      stroke-opacity: 0.55;
+    }
+
+    /* grid lines */
+    .gline { stroke: #c8a155; stroke-opacity: 0.07; stroke-width: 0.5; fill: none; }
+
+    /* animated route */
+    @keyframes drawRoute {
+      from { stroke-dashoffset: 800; }
+      to   { stroke-dashoffset: 0; }
+    }
+
+    .route {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 1;
+      stroke-dasharray: 6 4;
+      stroke-opacity: 0.5;
+      animation: drawRoute 3s ease-out forwards;
+    }
+
+    /* city rings */
+    @keyframes ripple {
+      0%   { r: 5;  opacity: 0.8; }
+      100% { r: 18; opacity: 0; }
+    }
+
+    .ring {
+      fill: var(--gold);
+      animation: ripple 2.4s ease-out infinite;
+    }
+
+    .dot-core { fill: #ffe08a; }
+    .dot-mid  { fill: var(--gold); fill-opacity: 0.35; }
+
+    /* HQ marker (larger) */
+    @keyframes rippleHQ {
+      0%   { r: 7;  opacity: 0.9; }
+      100% { r: 26; opacity: 0; }
+    }
+    .ring-hq { fill: var(--gold); animation: rippleHQ 2s ease-out infinite; }
+
+    /* label */
+    .clabel {
+      fill: #e8c472;
+      fill-opacity: 0.85;
+      font-size: 8.5px;
+      font-family: "Helvetica Neue", sans-serif;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+    .clabel-hq {
+      fill: #ffe08a;
+      fill-opacity: 1;
+      font-size: 9.5px;
+      font-family: "Helvetica Neue", sans-serif;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    /* glow filter */
+    .glow-layer {
+      filter: url(#glow);
+    }
+
+    /* ─── STATS ─── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--ln);
+      border-bottom: 1px solid var(--ln);
+    }
+
+    .stat {
+      padding: 50px 36px;
+      text-align: center;
+      border-right: 1px solid var(--ln);
+    }
+    .stat:last-child { border-right: none; }
+
+    .stat-n {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat-l {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--m);
+    }
+
+    /* ─── ABOUT ─── */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .about-l {
+      padding: 88px 66px;
+      border-right: 1px solid var(--ln);
+    }
+
+    .about-r {
+      padding: 88px 66px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .sec-lbl {
+      font-size: 0.66rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 30px;
+    }
+
+    .about-l h2 {
+      font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.22;
+      letter-spacing: -0.01em;
+      margin-bottom: 22px;
+    }
+
+    .about-l p {
+      font-size: 0.87rem;
+      line-height: 2;
+      color: var(--m);
+    }
+
+    .point {
+      padding-left: 16px;
+      border-left: 2px solid var(--gold);
+    }
+
+    .point h3 { font-size: 0.87rem; font-weight: 700; margin-bottom: 5px; }
+    .point p  { font-size: 0.78rem; color: var(--m); line-height: 1.75; }
+
+    /* ─── SERVICES ─── */
+    .services {
+      padding: 88px 60px;
+      border-top: 1px solid var(--ln);
+    }
+
+    .services .sec-lbl { margin-bottom: 50px; }
+
+    .svc-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--ln);
+      border: 1px solid var(--ln);
+    }
+
+    .svc {
+      background: var(--bg);
+      padding: 40px 28px;
+      transition: background 0.28s;
+    }
+    .svc:hover { background: var(--bg2); }
+
+    .svc-no {
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .svc-icon { font-size: 1.8rem; margin-bottom: 14px; display: block; }
+
+    .svc h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 10px; }
+    .svc p  { font-size: 0.78rem; line-height: 1.8; color: var(--m); }
+
+    /* ─── LANG STRIP ─── */
+    .lang-strip {
+      display: flex;
+      border-top: 1px solid var(--ln);
+      border-bottom: 1px solid var(--ln);
+    }
+
+    .lang-cell {
+      flex: 1;
+      padding: 36px 40px;
+      border-right: 1px solid var(--ln);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .lang-cell:last-child { border-right: none; }
+
+    .lang-flag { font-size: 1.6rem; }
+
+    .lang-cell h3 { font-size: 0.9rem; font-weight: 700; }
+    .lang-cell p  { font-size: 0.75rem; color: var(--m); margin-top: 2px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 44px 60px;
+      border-top: 1px solid var(--ln);
+    }
+
+    .footer-logo { font-size: 0.9rem; font-weight: 800; letter-spacing: 0.18em; }
+    .footer-logo em { font-style: normal; color: var(--gold); }
+
+    footer small { font-size: 0.66rem; color: var(--m); letter-spacing: 0.07em; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      nav { padding: 16px 20px; }
+      nav ul, .lang-row { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 100px 24px 48px; }
+      .hero-right { height: 55vw; border-left: none; border-top: 1px solid var(--ln); }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stat { padding: 32px 18px; }
+      .about { grid-template-columns: 1fr; }
+      .about-l { padding: 56px 24px; border-right: none; border-bottom: 1px solid var(--ln); }
+      .about-r { padding: 44px 24px; }
+      .services { padding: 56px 24px; }
+      .svc-grid { grid-template-columns: repeat(2, 1fr); }
+      .lang-strip { flex-direction: column; }
+      .lang-cell { border-right: none; border-bottom: 1px solid var(--ln); }
+      footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">OPTEC <em>EXPRESS</em></div>
+  <div class="lang-row">
+    <div class="lang-btn active" data-lang="ja">日本語</div>
+    <div class="lang-btn" data-lang="zh">中文</div>
+    <div class="lang-btn" data-lang="en">English</div>
+  </div>
+  <ul>
+    <li><a href="#about" data-i18n="nav_about">会社概要</a></li>
+    <li><a href="#services" data-i18n="nav_services">サービス</a></li>
+    <li><a href="#network" data-i18n="nav_network">ネットワーク</a></li>
+    <li><a href="mailto:zhangsiyuan@optec-exp.com" data-i18n="nav_contact">お問合せ</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+
+  <!-- Left: Text -->
+  <div class="hero-left">
+    <p class="eyebrow" data-i18n="eyebrow">Tokyo HQ · グローバル物流</p>
+    <h1 data-i18n="hero_h1">アジアと世界を<br/><em>つなぐ</em></h1>
+    <p data-i18n="hero_desc">東京を中心拠点として、欧州・米州・アジアに拠点を展開。<br/>航空貨物から医薬品・展示会まで、お客様のビジネスをグローバルにつなぎます。</p>
+    <a href="#about" class="cta" data-i18n="hero_cta">詳しく見る →</a>
+  </div>
+
+  <!-- Right: World Map SVG -->
+  <div class="hero-right">
+    <svg viewBox="0 0 700 560" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="ocean-grad" cx="60%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#0a1428"/>
+          <stop offset="100%" stop-color="#030712"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Ocean -->
+      <rect width="700" height="560" fill="url(#ocean-grad)"/>
+
+      <!-- Lat/lon grid -->
+      <g class="gline">
+        <line x1="0" y1="140" x2="700" y2="140"/>
+        <line x1="0" y1="280" x2="700" y2="280"/>
+        <line x1="0" y1="420" x2="700" y2="420"/>
+        <line x1="116" y1="0" x2="116" y2="560"/>
+        <line x1="233" y1="0" x2="233" y2="560"/>
+        <line x1="350" y1="0" x2="350" y2="560"/>
+        <line x1="466" y1="0" x2="466" y2="560"/>
+        <line x1="583" y1="0" x2="583" y2="560"/>
+      </g>
+
+      <!-- ══════════════════════════
+           CONTINENTS (glow layer)
+           viewBox 700x560
+           x = (lon+180) * (700/360) ≈ lon*1.944 + 350
+           y = (90-lat) * (560/180) ≈ 280 - lat*3.111
+
+           Key anchors:
+           Tokyo   (140E,36N): x=622, y=168
+           Seoul   (127E,37N): x=597, y=165
+           Beijing (116E,40N): x=575, y=156
+           Shanghai(121E,31N): x=585, y=183
+           HK      (114E,22N): x=572, y=211
+           Singapore(104E,1N): x=552, y=277
+           Mumbai  (73E,19N):  x=492, y=221
+           Dubai   (55E,25N):  x=457, y=202
+           Istanbul(29E,41N):  x=406, y=152
+           Warsaw  (21E,52N):  x=391, y=118
+           Frankfurt(9E,50N):  x=368, y=124
+           London  (0,51N):    x=350, y=121
+           Madrid  (-4E,40N):  x=342, y=156
+           NY      (74W,41N):  x=206, y=152
+           LA      (118W,34N): x=121, y=174
+           Chicago (88W,42N):  x=179, y=149
+           Miami   (80W,26N):  x=194, y=199
+           Lima    (77W,12S):  x=200, y=317
+           Sydney  (151E,34S): x=643, y=386
+      ══════════════════════════ -->
+
+      <g class="glow-layer">
+
+        <!-- Greenland -->
+        <path class="land" d="
+          M 248,26 L 236,36 L 230,50 L 234,65
+          L 248,72 L 265,66 L 272,51 L 266,35 Z
+        "/>
+
+        <!-- North America -->
+        <path class="land" d="
+          M 38,85  L 26,98  L 22,115 L 30,132
+          L 42,146 L 50,162 L 58,178 L 68,193
+          L 80,203 L 96,210 L 110,217
+          L 116,213 L 120,221 L 108,226
+          L 194,199 L 200,185 L 206,168
+          L 210,152 L 214,136 L 208,118
+          L 196,101 L 180,88  L 164,78
+          L 146,72  L 128,70  L 112,74
+          L 94,71   L 78,72   L 62,78  Z
+        "/>
+
+        <!-- Central America (simplified) -->
+        <path class="land" d="
+          M 108,226 L 116,236 L 124,242 L 128,237 L 122,228 Z
+        "/>
+
+        <!-- Caribbean (Cuba simplified) -->
+        <path class="land" d="
+          M 198,200 L 202,206 L 212,208 L 216,202 L 207,197 Z
+        "/>
+
+        <!-- South America -->
+        <path class="land" d="
+          M 122,242 L 110,258 L 104,278 L 102,306
+          L 106,338 L 112,368 L 120,398 L 130,428
+          L 140,456 L 152,474 L 164,482 L 175,478
+          L 186,460 L 194,436 L 198,408 L 195,374
+          L 188,340 L 178,308 L 165,278 L 152,258
+          L 138,244 Z
+        "/>
+
+        <!-- Europe (more detailed) -->
+        <path class="land" d="
+          M 304,150 L 300,138 L 308,122 L 322,112
+          L 336,104 L 350,100 L 364,98  L 378,100
+          L 394,104 L 406,110 L 416,118 L 420,130
+          L 412,142 L 400,152 L 386,158 L 370,160
+          L 356,155 L 344,148 L 332,150
+          L 318,152 L 306,152 Z
+        "/>
+
+        <!-- Scandinavia -->
+        <path class="land" d="
+          M 360,96 L 354,80 L 358,64 L 368,56
+          L 380,52 L 388,60 L 386,76 L 378,90
+          L 368,98 Z
+        "/>
+
+        <!-- UK & Ireland -->
+        <path class="land" d="
+          M 332,102 L 326,112 L 328,124 L 336,128
+          L 344,122 L 344,110 L 338,102 Z
+        "/>
+
+        <!-- Africa -->
+        <path class="land" d="
+          M 330,170 L 312,186 L 302,210 L 300,240
+          L 304,272 L 314,308 L 328,344 L 346,376
+          L 364,400 L 382,414 L 400,420 L 416,412
+          L 430,392 L 438,364 L 440,330 L 434,294
+          L 422,260 L 408,230 L 395,204 L 380,184
+          L 364,172 L 347,166 Z
+        "/>
+
+        <!-- Madagascar -->
+        <path class="land" d="
+          M 458,318 L 451,336 L 454,356 L 464,366
+          L 474,358 L 475,338 L 468,320 Z
+        "/>
+
+        <!-- Asia (main body) - more detailed -->
+        <path class="land" d="
+          M 430,72  L 468,60  L 510,52  L 554,48
+          L 598,50  L 634,56  L 662,64  L 682,76
+          L 694,90  L 698,108 L 694,126 L 682,144
+          L 666,158 L 648,166 L 628,170 L 610,164
+          L 592,170 L 574,162 L 556,156 L 540,150
+          L 522,144 L 506,136 L 490,130 L 472,126
+          L 456,130 L 443,142 L 432,154 L 424,144
+          L 418,130 L 420,112 L 424,94  L 428,78 Z
+        "/>
+
+        <!-- Arabian Peninsula -->
+        <path class="land" d="
+          M 457,170 L 445,185 L 442,205 L 448,224
+          L 462,236 L 476,232 L 485,216 L 482,196
+          L 472,180 Z
+        "/>
+
+        <!-- Indian Subcontinent -->
+        <path class="land" d="
+          M 500,152 L 490,170 L 488,192 L 494,216
+          L 506,234 L 520,242 L 532,234 L 538,214
+          L 534,192 L 524,172 L 512,156 Z
+        "/>
+
+        <!-- Southeast Asia (Indochina + peninsula) -->
+        <path class="land" d="
+          M 572,164 L 560,178 L 554,196 L 556,216
+          L 566,230 L 580,238 L 592,230 L 598,212
+          L 595,192 L 584,176 Z
+        "/>
+
+        <!-- Japan (Honshu) -->
+        <path class="land" d="
+          M 618,138 L 610,152 L 614,168 L 626,172
+          L 636,162 L 634,146 L 626,136 Z
+        "/>
+
+        <!-- Korea (simplified) -->
+        <path class="land" d="
+          M 598,148 L 592,158 L 595,170 L 604,174
+          L 612,167 L 610,154 Z
+        "/>
+
+        <!-- Australia -->
+        <path class="land" d="
+          M 566,354 L 548,378 L 546,408 L 556,440
+          L 576,464 L 604,478 L 634,480 L 660,468
+          L 680,448 L 688,420 L 684,390 L 668,366
+          L 644,350 L 618,342 L 590,340 L 568,348 Z
+        "/>
+
+        <!-- New Zealand -->
+        <path class="land" d="
+          M 698,430 L 691,446 L 694,462 L 705,466
+          L 712,452 L 710,436 Z
+        "/>
+
+      </g>
+
+      <!-- ══ Flight Routes ══ -->
+      <!-- Tokyo → Dubai -->
+      <path class="route" d="M 622,168 Q 540,120 457,202" style="animation-delay:0.2s"/>
+      <!-- Tokyo → Singapore -->
+      <path class="route" d="M 622,168 Q 590,210 552,277" style="animation-delay:0.5s"/>
+      <!-- Tokyo → Frankfurt -->
+      <path class="route" d="M 622,168 Q 500,80 368,124" style="animation-delay:0.8s"/>
+      <!-- Tokyo → Sydney -->
+      <path class="route" d="M 622,168 Q 640,260 643,386" style="animation-delay:1.0s"/>
+      <!-- Tokyo → New York -->
+      <path class="route" d="M 622,168 Q 420,80 206,152" style="animation-delay:1.2s"/>
+      <!-- Dubai → Frankfurt -->
+      <path class="route" d="M 457,202 Q 412,155 368,124" style="animation-delay:1.5s"/>
+      <!-- Frankfurt → New York -->
+      <path class="route" d="M 368,124 Q 295,90 206,152" style="animation-delay:1.8s"/>
+
+      <!-- ══ City Markers ══ -->
+
+      <!-- Tokyo HQ — special -->
+      <circle class="ring-hq" cx="622" cy="168" r="7" style="animation-delay:0s"/>
+      <circle cx="622" cy="168" r="12" fill="var(--gold)" fill-opacity="0.15"/>
+      <circle cx="622" cy="168" r="5"  fill="var(--gold)" fill-opacity="0.4"/>
+      <circle cx="622" cy="168" r="3"  fill="#ffe08a"/>
+      <text class="clabel-hq" x="632" y="162">TOKYO ★ HQ</text>
+
+      <!-- Singapore -->
+      <circle class="ring" cx="552" cy="277" r="4" style="animation-delay:0.6s"/>
+      <circle cx="552" cy="277" r="7" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="552" cy="277" r="2.5" fill="#ffe08a"/>
+      <text class="clabel" x="560" y="273">SINGAPORE</text>
+
+      <!-- Dubai -->
+      <circle class="ring" cx="457" cy="202" r="4" style="animation-delay:0.3s"/>
+      <circle cx="457" cy="202" r="7" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="457" cy="202" r="2.5" fill="#ffe08a"/>
+      <text class="clabel" x="464" y="198">DUBAI</text>
+
+      <!-- Frankfurt -->
+      <circle class="ring" cx="368" cy="124" r="4" style="animation-delay:0.9s"/>
+      <circle cx="368" cy="124" r="7" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="368" cy="124" r="2.5" fill="#ffe08a"/>
+      <text class="clabel" x="376" y="120">FRANKFURT</text>
+
+      <!-- New York -->
+      <circle class="ring" cx="206" cy="152" r="4" style="animation-delay:1.3s"/>
+      <circle cx="206" cy="152" r="7" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="206" cy="152" r="2.5" fill="#ffe08a"/>
+      <text class="clabel" x="214" y="148">NEW YORK</text>
+
+      <!-- LA -->
+      <circle class="ring" cx="121" cy="174" r="4" style="animation-delay:1.6s"/>
+      <circle cx="121" cy="174" r="7" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="121" cy="174" r="2.5" fill="#ffe08a"/>
+      <text class="clabel" x="128" y="170">LOS ANGELES</text>
+
+      <!-- Sydney -->
+      <circle class="ring" cx="643" cy="386" r="4" style="animation-delay:1.1s"/>
+      <circle cx="643" cy="386" r="7" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="643" cy="386" r="2.5" fill="#ffe08a"/>
+      <text class="clabel" x="651" y="382">SYDNEY</text>
+
+      <!-- Shanghai (secondary) -->
+      <circle cx="585" cy="183" r="6" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="585" cy="183" r="2" fill="var(--golt)"/>
+      <text class="clabel" x="592" y="179" style="font-size:7.5px;opacity:0.65">SHANGHAI</text>
+
+      <!-- London -->
+      <circle cx="350" cy="121" r="6" fill="var(--gold)" fill-opacity="0.12"/>
+      <circle cx="350" cy="121" r="2" fill="var(--golt)"/>
+      <text class="clabel" x="357" y="117" style="font-size:7.5px;opacity:0.65">LONDON</text>
+
+    </svg>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats" id="network">
+  <div class="stat">
+    <div class="stat-n">96</div>
+    <div class="stat-l" data-i18n="stat1">国・地域</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">10<span style="font-size:1.5rem">+</span></div>
+    <div class="stat-l" data-i18n="stat2">年の実績</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">3</div>
+    <div class="stat-l" data-i18n="stat3">拠点（欧・米・亜）</div>
+  </div>
+  <div class="stat">
+    <div class="stat-n">24/7</div>
+    <div class="stat-l" data-i18n="stat4">グローバルサポート</div>
+  </div>
+</section>
+
+<!-- LANGUAGE STRIP -->
+<section class="lang-strip">
+  <div class="lang-cell">
+    <div class="lang-flag">🇯🇵</div>
+    <div>
+      <h3 data-i18n="lang1_h">日本語対応</h3>
+      <p data-i18n="lang1_p">日本語でのビジネスをサポート</p>
+    </div>
+  </div>
+  <div class="lang-cell">
+    <div class="lang-flag">🇨🇳</div>
+    <div>
+      <h3 data-i18n="lang2_h">中文服务</h3>
+      <p data-i18n="lang2_p">中文全程对应，沟通无障碍</p>
+    </div>
+  </div>
+  <div class="lang-cell">
+    <div class="lang-flag">🌐</div>
+    <div>
+      <h3 data-i18n="lang3_h">English Support</h3>
+      <p data-i18n="lang3_p">Full English communication worldwide</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-l">
+    <p class="sec-lbl" data-i18n="about_label">会社について</p>
+    <h2 data-i18n="about_h2">東京を拠点に<br/>世界を動かす</h2>
+    <p data-i18n="about_p">OPTEC Express は、東京に本社を置く国際総合物流企業です。欧州・米州・アジアの主要都市に拠点を構え、航空貨物を中心に海運・医薬品物流・展示会輸送まで幅広いサービスを展開しています。</p>
+  </div>
+  <div class="about-r">
+    <div class="point">
+      <h3 data-i18n="point1_h">東京本社 · 多拠点展開</h3>
+      <p data-i18n="point1_p">欧州・米州・アジアの主要都市に拠点を展開し、グローバルな対応力を実現</p>
+    </div>
+    <div class="point">
+      <h3 data-i18n="point2_h">3言語完全対応</h3>
+      <p data-i18n="point2_p">日本語・中文・英語によるワンストップサービスで、ビジネスの壁をゼロに</p>
+    </div>
+    <div class="point">
+      <h3 data-i18n="point3_h">DX推進・デジタル化</h3>
+      <p data-i18n="point3_p">最新のデジタルツールを活用し、可視性の高い物流管理を実現</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <p class="sec-lbl" data-i18n="svc_label">サービス一覧</p>
+  <div class="svc-grid">
+    <div class="svc">
+      <div class="svc-no">01</div>
+      <span class="svc-icon">✈</span>
+      <h3 data-i18n="svc1_h">航空貨物</h3>
+      <p data-i18n="svc1_p">全世界の主要航空ハブを網羅。普通貨物から緊急便（AOG・NFO・OBC）まで対応。</p>
+    </div>
+    <div class="svc">
+      <div class="svc-no">02</div>
+      <span class="svc-icon">🚢</span>
+      <h3 data-i18n="svc2_h">海上輸送</h3>
+      <p data-i18n="svc2_p">FCL・LCL 両対応。アジア欧州・アジア米州の主要航路でコストと効率を両立。</p>
+    </div>
+    <div class="svc">
+      <div class="svc-no">03</div>
+      <span class="svc-icon">💊</span>
+      <h3 data-i18n="svc3_h">医薬品物流</h3>
+      <p data-i18n="svc3_p">GDP 基準に準拠した温度管理輸送。医薬品・ワクチン・医療機器の国際輸送に対応。</p>
+    </div>
+    <div class="svc">
+      <div class="svc-no">04</div>
+      <span class="svc-icon">🏛</span>
+      <h3 data-i18n="svc4_h">展示会輸送</h3>
+      <p data-i18n="svc4_p">国際見本市・展示会向けの一貫輸送。仮通関・返送まで展示物流を完全サポート。</p>
+    </div>
+    <div class="svc">
+      <div class="svc-no">05</div>
+      <span class="svc-icon">🔗</span>
+      <h3 data-i18n="svc5_h">総合ソリューション</h3>
+      <p data-i18n="svc5_p">倉庫・通関・ラストマイルまで。エンドツーエンドのサプライチェーン最適化を実現。</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">OPTEC <em>EXPRESS</em></div>
+  <small data-i18n="footer_copy">© 2026 OPTEC Express. Tokyo HQ · Global Logistics</small>
+  <small>OPTEC AI Academy — 作品 #02</small>
+</footer>
+
+<script>
+const i18n = {
+  ja: {
+    eyebrow:    "Tokyo HQ · グローバル物流",
+    hero_h1:    "アジアと世界を<br/><em>つなぐ</em>",
+    hero_desc:  "東京を中心拠点として、欧州・米州・アジアに拠点を展開。<br/>航空貨物から医薬品・展示会まで、お客様のビジネスをグローバルにつなぎます。",
+    hero_cta:   "詳しく見る →",
+    stat1: "国・地域", stat2: "年の実績", stat3: "拠点（欧・米・亜）", stat4: "グローバルサポート",
+    nav_about: "会社概要", nav_services: "サービス", nav_network: "ネットワーク", nav_contact: "お問合せ",
+    about_label: "会社について",
+    about_h2:  "東京を拠点に<br/>世界を動かす",
+    about_p:   "OPTEC Express は、東京に本社を置く国際総合物流企業です。欧州・米州・アジアの主要都市に拠点を構え、航空貨物を中心に海運・医薬品物流・展示会輸送まで幅広いサービスを展開しています。",
+    point1_h: "東京本社 · 多拠点展開", point1_p: "欧州・米州・アジアの主要都市に拠点を展開し、グローバルな対応力を実現",
+    point2_h: "3言語完全対応",         point2_p: "日本語・中文・英語によるワンストップサービスで、ビジネスの壁をゼロに",
+    point3_h: "DX推進・デジタル化",    point3_p: "最新のデジタルツールを活用し、可視性の高い物流管理を実現",
+    svc_label: "サービス一覧",
+    svc1_h: "航空貨物",       svc1_p: "全世界の主要航空ハブを網羅。普通貨物から緊急便（AOG・NFO・OBC）まで対応。",
+    svc2_h: "海上輸送",       svc2_p: "FCL・LCL 両対応。アジア欧州・アジア米州の主要航路でコストと効率を両立。",
+    svc3_h: "医薬品物流",     svc3_p: "GDP基準に準拠した温度管理輸送。医薬品・ワクチン・医療機器の国際輸送に対応。",
+    svc4_h: "展示会輸送",     svc4_p: "国際見本市・展示会向けの一貫輸送。仮通関・返送まで展示物流を完全サポート。",
+    svc5_h: "総合ソリューション", svc5_p: "倉庫・通関・ラストマイルまで。エンドツーエンドのサプライチェーン最適化を実現。",
+    lang1_h: "日本語対応", lang1_p: "日本語でのビジネスをサポート",
+    lang2_h: "中文服务",   lang2_p: "中文全程对应，沟通无障碍",
+    lang3_h: "English Support", lang3_p: "Full English communication worldwide",
+    footer_copy: "© 2026 OPTEC Express. Tokyo HQ · Global Logistics",
+  },
+  zh: {
+    eyebrow:    "东京总部 · 全球物流",
+    hero_h1:    "连接<em>亚洲</em><br/>与世界",
+    hero_desc:  "以东京为核心枢纽，在欧洲、美洲、亚洲设有分公司，覆盖全球96个国家与地区。<br/>提供航空货运、海运、医药品及展会物流等一体化解决方案。",
+    hero_cta:   "了解更多 →",
+    stat1: "国家与地区", stat2: "年行业经验", stat3: "大洲分公司", stat4: "全天候服务",
+    nav_about: "公司介绍", nav_services: "服务项目", nav_network: "全球网络", nav_contact: "联系我们",
+    about_label: "关于 OPTEC",
+    about_h2:  "以东京为起点<br/>连接全球每一处",
+    about_p:   "OPTEC Express 是一家总部位于东京的国际综合物流企业，在欧洲、美洲、亚洲主要城市设有分公司，覆盖全球96个国家与地区，提供航空货运、海运、医药品物流及展会运输等全方位服务。",
+    point1_h: "东京总部 · 多地区布局", point1_p: "在欧洲、美洲、亚洲主要城市设有分公司，实现全球快速响应",
+    point2_h: "三语言全程对应",         point2_p: "日语・中文・英语无缝切换，消除沟通壁垒，助力跨境业务",
+    point3_h: "数字化转型（DX）",       point3_p: "借助最新数字化工具，实现高可视化的物流管理与运营效率提升",
+    svc_label: "服务项目",
+    svc1_h: "航空货运",     svc1_p: "覆盖全球主要航空枢纽，普通货物到紧急件（AOG・NFO・OBC）全面对应。",
+    svc2_h: "海运物流",     svc2_p: "整柜（FCL）与拼箱（LCL）灵活可选，亚欧、亚美主要航线，兼顾成本与效率。",
+    svc3_h: "医药品物流",   svc3_p: "符合GDP标准的温控运输，专业对应医药品、疫苗及医疗器械的国际运输需求。",
+    svc4_h: "展会运输",     svc4_p: "国际展会・博览会一站式运输，涵盖暂时进口通关及返运全流程支持。",
+    svc5_h: "综合解决方案", svc5_p: "仓储・清关・最后一公里全覆盖，端到端供应链优化，助力全球业务布局。",
+    lang1_h: "日本語対応", lang1_p: "日语全程专业对应",
+    lang2_h: "中文服务",   lang2_p: "中文全程对应，沟通无障碍",
+    lang3_h: "English Support", lang3_p: "全球英语服务支持",
+    footer_copy: "© 2026 OPTEC Express. 东京总部 · 全球物流",
+  },
+  en: {
+    eyebrow:    "Tokyo HQ · Global Logistics",
+    hero_h1:    "Connecting<br/><em>Asia</em><br/>to the World",
+    hero_desc:  "Headquartered in Tokyo, with offices across Europe, the Americas, and Asia — covering 96 countries and regions.<br/>From air freight to pharmaceuticals and trade shows, we move your business forward.",
+    hero_cta:   "Learn More →",
+    stat1: "Countries & Regions", stat2: "Years Experience", stat3: "Continental Offices", stat4: "Global Support",
+    nav_about: "About", nav_services: "Services", nav_network: "Network", nav_contact: "Contact",
+    about_label: "About OPTEC",
+    about_h2:  "Moving the World<br/>from Tokyo",
+    about_p:   "OPTEC Express is an international logistics company headquartered in Tokyo, with offices across Europe, the Americas, and Asia. Covering 96 countries and regions, we provide air freight, ocean shipping, pharmaceutical logistics, and trade show transportation.",
+    point1_h: "Tokyo HQ · Global Network",  point1_p: "Offices across Europe, the Americas, and Asia for rapid global response",
+    point2_h: "Trilingual Service",          point2_p: "Seamless Japanese, Chinese, and English support — zero communication barriers",
+    point3_h: "Digital Transformation (DX)", point3_p: "Leveraging the latest digital tools for high-visibility logistics management",
+    svc_label: "Our Services",
+    svc1_h: "Air Freight",           svc1_p: "Global coverage across major air hubs. Standard cargo to urgent shipments (AOG, NFO, OBC).",
+    svc2_h: "Ocean Freight",         svc2_p: "FCL and LCL options for Asia-Europe and Asia-Americas routes, balancing cost and efficiency.",
+    svc3_h: "Pharmaceutical Logistics", svc3_p: "GDP-compliant temperature-controlled transport for pharmaceuticals, vaccines, and medical devices.",
+    svc4_h: "Exhibition Logistics",  svc4_p: "End-to-end transport for international trade shows, including ATA carnet and return shipments.",
+    svc5_h: "Integrated Solutions",  svc5_p: "Warehousing, customs, and last-mile delivery — complete end-to-end supply chain optimization.",
+    lang1_h: "日本語対応", lang1_p: "Full Japanese language support",
+    lang2_h: "中文服务",   lang2_p: "Complete Chinese language service",
+    lang3_h: "English Support", lang3_p: "Full English communication worldwide",
+    footer_copy: "© 2026 OPTEC Express. Tokyo HQ · Global Logistics",
+  }
+};
+
+function switchLang(lang) {
+  // update button styles
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  // update all translatable elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (i18n[lang]?.[key] !== undefined) {
+      el.innerHTML = i18n[lang][key];
+    }
+  });
+  document.documentElement.lang = lang === 'ja' ? 'ja' : lang === 'zh' ? 'zh-CN' : 'en';
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchLang(btn.dataset.lang));
+});
+</script>
+
+</body>
+</html>
