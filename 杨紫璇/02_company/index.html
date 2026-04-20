@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>OPTEC Express — 公司概要</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5b0;
+      --dark: #08080f;
+      --dark-2: #0e0e1a;
+      --dark-3: #141424;
+      --text: #e8e8f0;
+      --muted: rgba(232,232,240,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', "Microsoft YaHei", sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ━━━ 页头 ━━━ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 80px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      background: rgba(8,8,15,0.85);
+      backdrop-filter: blur(20px);
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .logo-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .logo-sub {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    nav a {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    nav a:hover { color: var(--gold); }
+
+    .nav-cta {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--dark) !important;
+      background: var(--gold);
+      padding: 9px 24px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      transition: opacity 0.2s !important;
+    }
+
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ━━━ 英雄区 ━━━ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 140px 80px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(201,169,110,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 10% 80%, rgba(100,60,180,0.08) 0%, transparent 50%);
+    }
+
+    .hero-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(201,169,110,0.15) 30%, rgba(201,169,110,0.15) 70%, transparent);
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .hero-eyebrow span {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .eyebrow-line {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(56px, 8vw, 100px);
+      font-weight: 600;
+      line-height: 1.05;
+      color: #fff;
+      max-width: 760px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .hero h1 .accent {
+      display: block;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 2;
+      max-width: 420px;
+      margin-bottom: 64px;
+      position: relative;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 0;
+      position: relative;
+      max-width: 560px;
+    }
+
+    .stat {
+      flex: 1;
+      padding: 24px 32px;
+      border: 1px solid rgba(201,169,110,0.12);
+      border-right: none;
+      position: relative;
+    }
+
+    .stat:last-child { border-right: 1px solid rgba(201,169,110,0.12); }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-unit {
+      font-size: 13px;
+      color: var(--gold);
+      margin-left: 4px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    /* ━━━ 分隔线 ━━━ */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(201,169,110,0.2) 30%, rgba(201,169,110,0.2) 70%, transparent);
+    }
+
+    /* ━━━ 业务区 ━━━ */
+    .services {
+      padding: 120px 80px;
+    }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: end;
+      margin-bottom: 72px;
+    }
+
+    .section-eyebrow {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .section-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 2;
+      align-self: end;
+    }
+
+    .services-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(201,169,110,0.1);
+      border: 1px solid rgba(201,169,110,0.1);
+    }
+
+    .service-item {
+      background: var(--dark);
+      padding: 48px 40px;
+      position: relative;
+      transition: background 0.3s;
+      cursor: default;
+    }
+
+    .service-item:hover {
+      background: var(--dark-3);
+    }
+
+    .service-item:hover .service-num {
+      color: var(--gold);
+    }
+
+    .service-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: rgba(201,169,110,0.3);
+      margin-bottom: 28px;
+      transition: color 0.3s;
+    }
+
+    .service-icon-wrap {
+      font-size: 28px;
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+
+    .service-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .service-desc {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .service-arrow {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--gold);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .service-item:hover .service-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ━━━ 品质承诺 ━━━ */
+    .promise {
+      padding: 120px 80px;
+      background: var(--dark-2);
+      text-align: center;
+    }
+
+    .promise-eyebrow {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .promise-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 400;
+      color: #fff;
+      line-height: 1.5;
+      max-width: 800px;
+      margin: 0 auto 24px;
+    }
+
+    .promise-quote em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .promise-sub {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    /* ━━━ 联系区 ━━━ */
+    .contact {
+      padding: 120px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+    }
+
+    .contact-left .section-eyebrow { margin-bottom: 20px; }
+    .contact-left .section-title { margin-bottom: 48px; }
+
+    .contact-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(201,169,110,0.08);
+    }
+
+    .contact-row:first-child { border-top: 1px solid rgba(201,169,110,0.08); }
+
+    .contact-row-icon {
+      font-size: 18px;
+      width: 20px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .contact-row-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .contact-row-value {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    .contact-right {
+      position: relative;
+    }
+
+    .contact-card {
+      background: var(--dark-3);
+      border: 1px solid rgba(201,169,110,0.12);
+      border-radius: 4px;
+      padding: 56px 48px;
+      text-align: center;
+    }
+
+    .contact-card-badge {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      border: 1px solid rgba(201,169,110,0.3);
+      padding: 6px 16px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .contact-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .contact-card-sub {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 40px;
+    }
+
+    .contact-card-phone {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .contact-card-note {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .contact-card-divider {
+      height: 1px;
+      background: rgba(201,169,110,0.1);
+      margin: 36px 0;
+    }
+
+    .contact-channels {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .channel {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 8px 20px;
+      border-radius: 2px;
+    }
+
+    /* ━━━ 页脚 ━━━ */
+    footer {
+      background: #030306;
+      padding: 32px 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(201,169,110,0.08);
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      letter-spacing: 5px;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 1px;
+    }
+
+    .footer-ja {
+      font-size: 11px;
+      color: rgba(201,169,110,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* ━━━ 入场动画 ━━━ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-eyebrow { animation: fadeUp 0.8s 0.1s both; }
+    .hero h1      { animation: fadeUp 0.8s 0.25s both; }
+    .hero-desc    { animation: fadeUp 0.8s 0.4s both; }
+    .hero-stats   { animation: fadeUp 0.8s 0.55s both; }
+  </style>
+</head>
+<body>
+
+  <!-- 页头 -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-main">Optec Express</div>
+      <div class="logo-sub">Emergency Logistics</div>
+    </div>
+    <nav>
+      <a href="#services">业务范围</a>
+      <a href="#contact">联系我们</a>
+      <a href="#contact" class="nav-cta">立即询价</a>
+    </nav>
+  </header>
+
+  <!-- 英雄区 -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-line"></div>
+
+    <div class="hero-eyebrow">
+      <div class="eyebrow-line"></div>
+      <span>IATA Certified · Since 2015</span>
+    </div>
+
+    <h1>
+      守护交期的
+      <span class="accent">最后防线</span>
+    </h1>
+
+    <p class="hero-desc">
+      作为 IATA 认证国际货运代理，OPTEC Express 专注于紧急空运与特殊物流，
+      以最快速度将货物送达全球186座城市。
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div><span class="stat-num">186</span><span class="stat-unit">城市</span></div>
+        <div class="stat-label">全球覆盖</div>
+      </div>
+      <div class="stat">
+        <div><span class="stat-num">24</span><span class="stat-unit">H</span></div>
+        <div class="stat-label">全年无休响应</div>
+      </div>
+      <div class="stat">
+        <div><span class="stat-num">2,428</span></div>
+        <div class="stat-label">2023 年运输实绩</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 业务范围 -->
+  <section class="services" id="services">
+    <div class="section-header">
+      <div>
+        <div class="section-eyebrow">Our Services</div>
+        <h2 class="section-title">专业物流<br>六大领域</h2>
+      </div>
+      <p class="section-desc">
+        从单件紧急空运到医药品全程温控，从随身携带到航空机部件 AOG，
+        OPTEC Express 为每一种紧急需求提供专属解决方案。
+      </p>
+    </div>
+
+    <div class="services-list">
+      <div class="service-item">
+        <div class="service-num">01</div>
+        <div class="service-icon-wrap">✈️</div>
+        <div class="service-name">紧急航空运输</div>
+        <p class="service-desc">IATA 认证代理，从单箱到大型货物，30分钟内提供报价，全程跟踪管理。</p>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="service-num">02</div>
+        <div class="service-icon-wrap">🧳</div>
+        <div class="service-name">随身携带运输</div>
+        <p class="service-desc">专属负责人亲自随身携带货物乘机，实现全球最快的点对点物流。</p>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="service-num">03</div>
+        <div class="service-icon-wrap">💉</div>
+        <div class="service-name">医药品运输</div>
+        <p class="service-desc">专为再生医疗、细胞治疗及医药品提供高品质全程温控合规物流。</p>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="service-num">04</div>
+        <div class="service-icon-wrap">🔧</div>
+        <div class="service-name">航空机部件运输</div>
+        <p class="service-desc">AOG 紧急响应，最大限度压缩航空器停运时间，保障航班正常运营。</p>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="service-num">05</div>
+        <div class="service-icon-wrap">🏛️</div>
+        <div class="service-name">展会物流</div>
+        <p class="service-desc">国际展览会一站式物流服务，确保展品安全准时送达，全程无忧。</p>
+        <div class="service-arrow">→</div>
+      </div>
+      <div class="service-item">
+        <div class="service-num">06</div>
+        <div class="service-icon-wrap">🛡️</div>
+        <div class="service-name">防卫物流</div>
+        <p class="service-desc">为防卫相关领域提供专业、高度保密的特殊货物运输解决方案。</p>
+        <div class="service-arrow">→</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 品质承诺 -->
+  <section class="promise">
+    <div class="promise-eyebrow">Our Promise</div>
+    <p class="promise-quote">
+      「为企业信誉与感动而生，<br>
+      <em>超越期待的紧急运输</em>」
+    </p>
+    <p class="promise-sub">オプテックエクスプレス株式会社 · 东京·港区</p>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 联系方式 -->
+  <section class="contact" id="contact">
+    <div class="contact-left">
+      <div class="section-eyebrow">Contact Us</div>
+      <h2 class="section-title">联系<br>我们</h2>
+      <div class="contact-rows">
+        <div class="contact-row">
+          <div class="contact-row-icon">📍</div>
+          <div class="contact-row-body">
+            <div class="contact-row-label">公司地址</div>
+            <div class="contact-row-value">〒105-0004<br>东京都港区新桥 2-10-5<br>新桥原大楼 3F</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-row-icon">💬</div>
+          <div class="contact-row-body">
+            <div class="contact-row-label">在线咨询</div>
+            <div class="contact-row-value">LINE · WeChat 均可联系</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-row-icon">⚡</div>
+          <div class="contact-row-body">
+            <div class="contact-row-label">报价响应</div>
+            <div class="contact-row-value">30 分钟以内回复</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-right">
+      <div class="contact-card">
+        <div class="contact-card-badge">24H · 365Days</div>
+        <div class="contact-card-title">紧急热线</div>
+        <div class="contact-card-sub">全年无休 · 随时响应</div>
+        <div class="contact-card-phone">03-4500-1918</div>
+        <div class="contact-card-note">Japan Standard Time · 24 Hours</div>
+        <div class="contact-card-divider"></div>
+        <div class="contact-channels">
+          <div class="channel">📱 LINE</div>
+          <div class="channel">💬 WeChat</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-logo">Optec Express</div>
+    <div class="footer-copy">© 2026 OPTEC Express Co., Ltd. All rights reserved.</div>
+    <div class="footer-ja">オプテックエクスプレス株式会社</div>
+  </footer>
+
+</body>
+</html>
