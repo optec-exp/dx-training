@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>张思源 Asta</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink:     #111111;
+      --muted:   #888888;
+      --line:    #e8e8e8;
+      --bg:      #fafafa;
+      --card:    #ffffff;
+      --accent:  #c8a96e;   /* 奶茶金，取自猫咪毛色 */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 100px 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-text .label {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .hero-text h1 .en {
+      display: block;
+      font-size: 0.45em;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .hero-text .desc {
+      margin-top: 28px;
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 380px;
+      line-height: 1.9;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    .meta-item .key {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .meta-item .val {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 3px;
+    }
+
+    /* ─── 猫咪照片 ─── */
+    .cat-frame {
+      position: relative;
+    }
+
+    .cat-frame img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .cat-caption {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+
+    /* ─── DIVIDER ─── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--line);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ─── SECTION ─── */
+    section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 72px 40px;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 40px;
+    }
+
+    /* ─── 技能 ─── */
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .skill-cell {
+      background: var(--card);
+      padding: 28px 24px;
+    }
+
+    .skill-cell .s-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .skill-cell .s-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .skill-cell .s-dot {
+      width: 28px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-bottom: 14px;
+    }
+
+    /* ─── 时间线 ─── */
+    .timeline {
+      display: grid;
+      gap: 0;
+    }
+
+    .tl-row {
+      display: grid;
+      grid-template-columns: 140px 1px 1fr;
+      gap: 0 32px;
+      padding-bottom: 44px;
+    }
+
+    .tl-row:last-child { padding-bottom: 0; }
+
+    .tl-date {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      padding-top: 2px;
+      text-align: right;
+    }
+
+    .tl-line-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tl-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .tl-line {
+      flex: 1;
+      width: 1px;
+      background: var(--line);
+      margin-top: 6px;
+    }
+
+    .tl-row:last-child .tl-line { display: none; }
+
+    .tl-body .t-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .tl-body .t-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ─── 目标 ─── */
+    .goals {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .goal-cell {
+      background: var(--card);
+      padding: 32px 28px;
+    }
+
+    .goal-cell .g-num {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .goal-cell .g-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .goal-cell .g-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 40px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer a {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover { color: var(--accent); }
+
+    /* ─── 响应式 ─── */
+    @media (max-width: 680px) {
+      .hero { grid-template-columns: 1fr; padding: 60px 24px 48px; gap: 40px; }
+      .cat-frame { max-width: 280px; margin: 0 auto; }
+      .goals { grid-template-columns: 1fr; }
+      section { padding: 52px 24px; }
+      footer { padding: 32px 24px 48px; flex-direction: column; align-items: flex-start; }
+      .tl-row { grid-template-columns: 90px 1px 1fr; gap: 0 20px; }
+      .tl-date { font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-text">
+      <p class="label">OPTEC AI Academy · 第1期</p>
+      <h1>
+        张思源
+        <span class="en">ZHANG SIYUAN · Asta</span>
+      </h1>
+      <p class="desc">
+        2024年入职 OPTEC Express，扎根 DX室。
+        从 Kintone 到 RPA、从 GAS 到 Looker Studio，
+        持续以技术回应业务需求。
+        现参加60天训练营，迈向全栈开发与 AI 应用。
+      </p>
+      <div class="meta-row">
+        <div class="meta-item">
+          <div class="key">所属</div>
+          <div class="val">DX室</div>
+        </div>
+        <div class="meta-item">
+          <div class="key">入职</div>
+          <div class="val">2024.10.17</div>
+        </div>
+        <div class="meta-item">
+          <div class="key">联系</div>
+          <div class="val"><a href="mailto:zhangsiyuan@optec-exp.com" style="color:inherit;text-decoration:none;">Mail</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cat-frame">
+      <img src="8b9ee543-43c7-4dff-8a0c-edc6cc48d6ad.jpg" alt="我的两只猫咪" />
+      <p class="cat-caption">My cats · 3 yrs old · daily sparring session</p>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 技能 -->
+  <section>
+    <p class="section-label">Skills</p>
+    <div class="skills">
+      <div class="skill-cell">
+        <div class="s-dot"></div>
+        <div class="s-name">Kintone</div>
+        <div class="s-sub">插件配置 · Customine 定制化开发</div>
+      </div>
+      <div class="skill-cell">
+        <div class="s-dot"></div>
+        <div class="s-name">RPA</div>
+        <div class="s-sub">多种工具落地，重复业务自动化</div>
+      </div>
+      <div class="skill-cell">
+        <div class="s-dot"></div>
+        <div class="s-name">Google Apps Script</div>
+        <div class="s-sub">按需开发辅助功能，覆盖多部门需求</div>
+      </div>
+      <div class="skill-cell">
+        <div class="s-dot"></div>
+        <div class="s-name">Looker Studio</div>
+        <div class="s-sub">数据可视化图表与仪表盘制作</div>
+      </div>
+      <div class="skill-cell">
+        <div class="s-dot"></div>
+        <div class="s-name">Web 开发</div>
+        <div class="s-sub">HTML · CSS · JavaScript（训练营学习中）</div>
+      </div>
+      <div class="skill-cell">
+        <div class="s-dot"></div>
+        <div class="s-name">Claude Code</div>
+        <div class="s-sub">AI 驱动开发，60天训练营实践中</div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 成长历程 -->
+  <section>
+    <p class="section-label">Timeline</p>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-date">2026 · 现在</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="t-title">OPTEC AI Academy 第1期入学</div>
+          <div class="t-desc">60天训练营，用 Claude Code 从零开发业务应用</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-date">2025–2026</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="t-title">Looker Studio · 数据可视化</div>
+          <div class="t-desc">根据公司需求持续制作可视化图表与仪表盘</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-date">2025</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="t-title">Google Apps Script · 辅助工具开发</div>
+          <div class="t-desc">持续响应各部门需求，制作各类自动化辅助功能</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-date">2025</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="t-title">RPA 工具 · 业务自动化</div>
+          <div class="t-desc">学习并落地多种 RPA 工具，消除重复性手工作业</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-date">2024.10.17</div>
+        <div class="tl-line-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+        <div class="tl-body">
+          <div class="t-title">入职 OPTEC Express · DX室</div>
+          <div class="t-desc">系统学习 Kintone 操作、插件配置及 Customine 定制开发</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 目标 -->
+  <section>
+    <p class="section-label">60-Day Goals</p>
+    <div class="goals">
+      <div class="goal-cell">
+        <div class="g-num">55+</div>
+        <div class="g-title">作品产出</div>
+        <div class="g-desc">每天持续开发，量变引发质变</div>
+      </div>
+      <div class="goal-cell">
+        <div class="g-num">AI</div>
+        <div class="g-title">Claude API 集成</div>
+        <div class="g-desc">将 AI 能力融入已有的业务工具链</div>
+      </div>
+      <div class="goal-cell">
+        <div class="g-num">∞</div>
+        <div class="g-title">全栈链路打通</div>
+        <div class="g-desc">Kintone × GAS × Supabase × AI 整合</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>OPTEC AI Academy 2026 · 作品 #01</span>
+    <span><a href="mailto:zhangsiyuan@optec-exp.com">zhangsiyuan@optec-exp.com</a></span>
+  </footer>
+
+</body>
+</html>
