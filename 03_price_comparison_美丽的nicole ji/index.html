@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>服务价格对比 — OPTEC EXPRESS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f0f4f8;
+      color: #1a1a2e;
+      line-height: 1.7;
+    }
+
+    /* HEADER */
+    header {
+      background: #0a1628;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,.5);
+      border-bottom: 2px solid #00b4d8;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; color: #fff; font-size: 18px;
+    }
+    .logo-text { font-size: 15px; font-weight: 700; color: #e0f4ff; letter-spacing: 1px; }
+    .nav { margin-left: auto; display: flex; gap: 24px; }
+    .nav a { color: #b0c8e0; font-size: 0.9rem; text-decoration: none; transition: color .2s; }
+    .nav a:hover { color: #00b4d8; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0a1628 0%, #0d2149 55%, #0077b6 100%);
+      padding: 56px 32px 64px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 12px; }
+    .hero p { color: #b0c8e0; font-size: 1rem; max-width: 560px; margin: 0 auto; }
+    .badge-row { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+    .badge {
+      background: rgba(0,180,216,.15);
+      border: 1px solid rgba(0,180,216,.4);
+      color: #00b4d8;
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1100px;
+      margin: 48px auto 64px;
+      padding: 0 32px;
+    }
+
+    /* Section title */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #0a1628;
+      margin-bottom: 20px;
+      padding-left: 12px;
+      border-left: 4px solid #00b4d8;
+    }
+
+    /* Price Cards */
+    .price-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+    .price-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .price-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,.12); }
+    .price-card.featured {
+      border: 2px solid #00b4d8;
+      transform: scale(1.03);
+    }
+    .price-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+    .card-header {
+      background: #0a1628;
+      padding: 24px;
+      text-align: center;
+    }
+    .price-card.featured .card-header { background: linear-gradient(135deg, #0077b6, #00b4d8); }
+    .card-icon { font-size: 2.2rem; margin-bottom: 8px; }
+    .card-name { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .card-sub { font-size: 0.82rem; color: #b0c8e0; }
+    .card-price {
+      padding: 20px 24px;
+      text-align: center;
+      border-bottom: 1px solid #f0f4f8;
+    }
+    .price-label { font-size: 0.8rem; color: #888; margin-bottom: 4px; }
+    .price-amount { font-size: 1.8rem; font-weight: 900; color: #0077b6; }
+    .price-unit { font-size: 0.85rem; color: #888; margin-left: 4px; }
+    .card-features { padding: 20px 24px; }
+    .feature-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f4f8;
+      font-size: 0.9rem;
+      color: #444;
+    }
+    .feature-item:last-child { border-bottom: none; }
+    .feature-item .check { color: #00b4d8; font-weight: 900; flex-shrink: 0; }
+    .feature-item .cross { color: #ccc; flex-shrink: 0; }
+    .rec-badge {
+      display: block;
+      text-align: center;
+      background: #00b4d8;
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* Comparison Table */
+    .table-wrap {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      margin-bottom: 56px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #0a1628; }
+    thead th {
+      padding: 16px 20px;
+      color: #e0f4ff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: left;
+    }
+    thead th:first-child { width: 220px; }
+    thead th.highlight { background: #0077b6; color: #fff; }
+    tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .15s; }
+    tbody tr:hover { background: #f8fbff; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td {
+      padding: 14px 20px;
+      font-size: 0.9rem;
+      color: #444;
+    }
+    tbody td.highlight { background: #f0f9ff; font-weight: 600; color: #0077b6; }
+    tbody td:first-child { font-weight: 600; color: #1a1a2e; }
+    .tag-fast { background: #fff0e0; color: #e07000; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; }
+    .tag-cheap { background: #e0fff0; color: #007a40; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; }
+    .tag-rec { background: #e0f4ff; color: #0077b6; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; font-weight: 700; }
+
+    /* Notes list */
+    .notes-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      margin-bottom: 56px;
+    }
+    .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+    .note-item {
+      display: flex; gap: 14px; align-items: flex-start;
+      padding: 12px;
+      background: #f8fbff;
+      border-radius: 10px;
+    }
+    .note-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .note-title { font-weight: 700; font-size: 0.9rem; color: #0a1628; margin-bottom: 2px; }
+    .note-desc { font-size: 0.83rem; color: #666; }
+
+    /* FOOTER */
+    footer {
+      background: #0a1628;
+      color: #6a8aaa;
+      text-align: center;
+      padding: 28px;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      .price-cards { grid-template-columns: 1fr; }
+      .price-card.featured { transform: none; }
+      .notes-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-icon">O</div>
+    <span class="logo-text">OPTEC EXPRESS — 服务价格对比</span>
+    <nav class="nav">
+      <a href="#">首页</a>
+      <a href="#">服务</a>
+      <a href="#">联系我们</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>服务价格对比</h1>
+  <p>根据货物类型、紧急程度、目的地，选择最适合您的运输方案</p>
+  <div class="badge-row">
+    <span class="badge">✈ 航空运输</span>
+    <span class="badge">🚢 海运</span>
+    <span class="badge">📦 快递</span>
+    <span class="badge">🌡 温控运输</span>
+  </div>
+</section>
+
+<main>
+
+  <!-- Price Cards -->
+  <h2 class="section-title">主要服务套餐</h2>
+  <div class="price-cards">
+
+    <div class="price-card">
+      <div class="card-header">
+        <div class="card-icon">🚢</div>
+        <div class="card-name">海运 LCL</div>
+        <div class="card-sub">拼箱 · 经济首选</div>
+      </div>
+      <div class="card-price">
+        <div class="price-label">起价（最低费用）</div>
+        <div><span class="price-amount">¥3,500</span><span class="price-unit">/ 起</span></div>
+      </div>
+      <div class="card-features">
+        <div class="feature-item"><span class="check">✔</span> 适合小批量货物</div>
+        <div class="feature-item"><span class="check">✔</span> 中日航线稳定运营</div>
+        <div class="feature-item"><span class="check">✔</span> 支持危险品申报</div>
+        <div class="feature-item"><span class="cross">✘</span> 运输周期较长（14〜21天）</div>
+        <div class="feature-item"><span class="cross">✘</span> 不适合紧急货物</div>
+      </div>
+    </div>
+
+    <div class="price-card featured">
+      <span class="rec-badge">★ 推荐方案</span>
+      <div class="card-header">
+        <div class="card-icon">✈</div>
+        <div class="card-name">航空运输</div>
+        <div class="card-sub">普通货 · 快速可靠</div>
+      </div>
+      <div class="card-price">
+        <div class="price-label">参考运价</div>
+        <div><span class="price-amount">¥45</span><span class="price-unit">/ kg起</span></div>
+      </div>
+      <div class="card-features">
+        <div class="feature-item"><span class="check">✔</span> 2〜5天送达</div>
+        <div class="feature-item"><span class="check">✔</span> 全球96个国家覆盖</div>
+        <div class="feature-item"><span class="check">✔</span> 实时追踪</div>
+        <div class="feature-item"><span class="check">✔</span> 温控选项可选</div>
+        <div class="feature-item"><span class="check">✔</span> AWB即时发行</div>
+      </div>
+    </div>
+
+    <div class="price-card">
+      <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <div class="card-name">OBC（次日到达）</div>
+        <div class="card-sub">超紧急 · AOG对应</div>
+      </div>
+      <div class="card-price">
+        <div class="price-label">参考费用</div>
+        <div><span class="price-amount">¥8,000</span><span class="price-unit">/ 次起</span></div>
+      </div>
+      <div class="card-features">
+        <div class="feature-item"><span class="check">✔</span> 24小时内到达</div>
+        <div class="feature-item"><span class="check">✔</span> 专人押运</div>
+        <div class="feature-item"><span class="check">✔</span> AOG / NFO 对应</div>
+        <div class="feature-item"><span class="check">✔</span> 全程实时汇报</div>
+        <div class="feature-item"><span class="cross">✘</span> 费用较高</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Comparison Table -->
+  <h2 class="section-title">详细对比表</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>比较项目</th>
+          <th>海运 LCL</th>
+          <th>海运 FCL</th>
+          <th class="highlight">航空运输 ★</th>
+          <th>OBC 押运</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>运输周期</td>
+          <td>14〜21天</td>
+          <td>10〜18天</td>
+          <td class="highlight">2〜5天 <span class="tag-fast">速</span></td>
+          <td>当日〜翌日 <span class="tag-fast">极速</span></td>
+        </tr>
+        <tr>
+          <td>费用水平</td>
+          <td>★★★★★ <span class="tag-cheap">最低</span></td>
+          <td>★★★★☆</td>
+          <td class="highlight">★★★☆☆ <span class="tag-rec">性价比</span></td>
+          <td>★☆☆☆☆</td>
+        </tr>
+        <tr>
+          <td>适合货量</td>
+          <td>1〜10CBM</td>
+          <td>10CBM以上</td>
+          <td class="highlight">不限</td>
+          <td>小批量</td>
+        </tr>
+        <tr>
+          <td>温控对应</td>
+          <td>有（冷藏箱）</td>
+          <td>有（冷藏箱）</td>
+          <td class="highlight">有（冷库仓位）</td>
+          <td>有</td>
+        </tr>
+        <tr>
+          <td>实时追踪</td>
+          <td>有限</td>
+          <td>有限</td>
+          <td class="highlight">✔ 全程</td>
+          <td>✔ 全程</td>
+        </tr>
+        <tr>
+          <td>主要航线</td>
+          <td>中日・中欧</td>
+          <td>中日・中美</td>
+          <td class="highlight">全球96国</td>
+          <td>全球主要都市</td>
+        </tr>
+        <tr>
+          <td>AOG / 紧急对応</td>
+          <td>✘</td>
+          <td>✘</td>
+          <td class="highlight">△ 条件付き</td>
+          <td>✔ 専任対応</td>
+        </tr>
+        <tr>
+          <td>推荐场景</td>
+          <td>常规补货・样品</td>
+          <td>大量货物</td>
+          <td class="highlight">常规国际货・急货</td>
+          <td>机件AOG・展品</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notes -->
+  <h2 class="section-title">费用说明 & 注意事项</h2>
+  <div class="notes-card">
+    <div class="notes-grid">
+      <div class="note-item">
+        <div class="note-icon">⚖️</div>
+        <div>
+          <div class="note-title">计费重量规则</div>
+          <div class="note-desc">航空运输取实际重量与体积重量（长×宽×高÷6000）的较大值计费。</div>
+        </div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">📋</div>
+        <div>
+          <div class="note-title">报价有效期</div>
+          <div class="note-desc">以上价格为参考值，实际报价因航线、旺季附加费等有所浮动，请联系营业部确认。</div>
+        </div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">🌡️</div>
+        <div>
+          <div class="note-title">温控运输</div>
+          <div class="note-desc">2°C〜8°C 冷藏及 -20°C 冷冻仓位可预约，需提前3个工作日申请。</div>
+        </div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">🚨</div>
+        <div>
+          <div class="note-title">危险品・特殊货物</div>
+          <div class="note-desc">IATA DGR规定适用。需提前提供SDS文件，部分货物仅限货机运输。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>OPTEC AI Academy 第1期 &nbsp;|&nbsp; 作品03 — 服务价格对比页面 &nbsp;|&nbsp; 美丽的NICOLE JI &nbsp;|&nbsp; 2026</p>
+</footer>
+
+</body>
+</html>
