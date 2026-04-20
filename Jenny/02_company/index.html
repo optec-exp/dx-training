@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPTEC EXPRESS — Corporate Profile</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black:   #080808;
+      --dark:    #111111;
+      --card:    #161616;
+      --border:  rgba(201,168,76,0.18);
+      --gold:    #c9a84c;
+      --gold-lt: #e8c97a;
+      --gold-dim:rgba(201,168,76,0.08);
+      --white:   #f5f0e8;
+      --gray:    #888;
+      --gray2:   #555;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', "Hiragino Sans", "Microsoft YaHei", sans-serif;
+      background: var(--black);
+      color: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 64px; height: 68px;
+      background: rgba(8,8,8,0.9); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 600; letter-spacing: 4px;
+      color: var(--white);
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 40px; }
+    .nav-links a {
+      color: var(--gray); text-decoration: none;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh; position: relative;
+      display: flex; align-items: flex-end;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(8,8,8,0.3) 0%, rgba(8,8,8,0.2) 40%, rgba(8,8,8,0.92) 100%),
+        url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920&q=90') center/cover no-repeat;
+    }
+    /* gold grid overlay */
+    .hero-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      width: 100%; padding: 0 64px 88px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: flex-end;
+    }
+    .gold-rule { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+    .gold-rule::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+    .gold-rule span { font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(60px, 8vw, 96px); font-weight: 300;
+      color: var(--white); line-height: 1; letter-spacing: -1px;
+    }
+    .hero-title strong { font-weight: 600; color: var(--gold-lt); }
+    .hero-desc {
+      font-size: 14px; color: rgba(245,240,232,0.55); line-height: 2;
+      border-left: 1px solid var(--gold); padding-left: 20px; margin-bottom: 48px;
+    }
+    .hero-kpis { display: flex; gap: 48px; }
+    .kpi-n {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-weight: 300; color: var(--white); line-height: 1;
+    }
+    .kpi-n b { font-size: 18px; color: var(--gold); font-weight: 600; }
+    .kpi-l { font-size: 10px; letter-spacing: 2px; color: var(--gray2); margin-top: 4px; text-transform: uppercase; }
+
+    /* ── SECTION BASE ── */
+    section { padding: 120px 64px; }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .eyebrow { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+    .eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+    .eyebrow span { font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; }
+    .sec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 4vw, 54px); font-weight: 300;
+      color: var(--white); line-height: 1.1; margin-bottom: 60px;
+    }
+    .sec-title em { font-style: italic; color: var(--gold-lt); }
+
+    /* ── OVERVIEW ── */
+    .overview { background: var(--dark); border-top: 1px solid var(--border); }
+    .ov-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    .ov-table { width: 100%; border-collapse: collapse; }
+    .ov-tr { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .ov-tr:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+    .ov-tr td { padding: 18px 0; vertical-align: top; font-size: 13px; }
+    .ov-tr td:first-child { width: 90px; font-size: 10px; letter-spacing: 1px; color: var(--gold); font-weight: 500; text-transform: uppercase; padding-right: 20px; }
+    .ov-tr td:last-child { color: rgba(245,240,232,0.75); line-height: 1.7; }
+    .ov-photo { position: relative; }
+    .ov-photo img { width: 100%; height: 440px; object-fit: cover; display: block; filter: brightness(0.8) saturate(0.7); }
+    .ov-photo::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .ov-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(8,8,8,0.8), transparent);
+      padding: 32px 20px 16px; font-size: 11px; color: var(--gold); letter-spacing: 2px;
+    }
+
+    /* ── SERVICES ── */
+    .services { background: var(--black); border-top: 1px solid var(--border); }
+    .svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
+    .svc { background: var(--dark); overflow: hidden; }
+    .svc-img { height: 240px; overflow: hidden; position: relative; }
+    .svc-img img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: brightness(0.55) saturate(0.5) sepia(0.2);
+      transition: transform .7s ease, filter .4s;
+    }
+    .svc:hover .svc-img img { transform: scale(1.05); filter: brightness(0.65) saturate(0.6) sepia(0.1); }
+    .svc-img::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(8,8,8,0.9));
+    }
+    .svc-body { padding: 32px; border-top: 1px solid var(--border); }
+    .svc-code { font-size: 9px; letter-spacing: 4px; color: var(--gold); margin-bottom: 10px; text-transform: uppercase; }
+    .svc-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--white); margin-bottom: 12px; }
+    .svc-desc { font-size: 13px; color: var(--gray); line-height: 1.9; }
+    .svc-chips { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { font-size: 9px; letter-spacing: 2px; padding: 5px 14px; border: 1px solid var(--border); color: var(--gold); text-transform: uppercase; }
+
+    /* ── ADVANTAGES ── */
+    .advantages { background: var(--dark); border-top: 1px solid var(--border); }
+    .adv-layout { display: grid; grid-template-columns: 3fr 2fr; gap: 80px; align-items: center; }
+    .adv-list { display: flex; flex-direction: column; }
+    .adv-item { display: grid; grid-template-columns: 52px 1fr; gap: 28px; padding: 36px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .adv-item:first-child { border-top: 1px solid rgba(255,255,255,0.05); }
+    .adv-n { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: var(--border); line-height: 1; }
+    .adv-item h3 { font-size: 14px; font-weight: 600; color: var(--gold-lt); margin-bottom: 8px; letter-spacing: 0.5px; }
+    .adv-item p { font-size: 13px; color: var(--gray); line-height: 1.9; }
+    .adv-img { position: relative; }
+    .adv-img img { width: 100%; height: 520px; object-fit: cover; filter: brightness(0.65) saturate(0.5) sepia(0.3); }
+    .adv-badge {
+      position: absolute; bottom: -1px; left: -1px;
+      background: var(--gold); padding: 24px 28px;
+    }
+    .adv-badge-n { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 600; color: var(--black); line-height: 1; }
+    .adv-badge-l { font-size: 9px; letter-spacing: 3px; color: rgba(8,8,8,0.6); margin-top: 4px; text-transform: uppercase; }
+
+    /* ── HISTORY ── */
+    .history {
+      background:
+        linear-gradient(rgba(8,8,8,0.88), rgba(8,8,8,0.88)),
+        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80') center/cover fixed;
+      border-top: 1px solid var(--border);
+    }
+    .hist-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 80px; }
+    .hist-lead { font-size: 14px; color: var(--gray); line-height: 2; }
+    .hist-list {}
+    .hist-item { display: grid; grid-template-columns: 68px 1fr; gap: 32px; padding: 20px 0; border-bottom: 1px solid rgba(201,168,76,0.1); align-items: baseline; }
+    .hist-item:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+    .hist-year { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--gold); }
+    .hist-text { font-size: 13px; color: rgba(245,240,232,0.6); line-height: 1.8; }
+
+    /* ── CONTACT ── */
+    .contact-hero {
+      height: 440px; position: relative;
+      background:
+        linear-gradient(to bottom, rgba(8,8,8,0.5), rgba(8,8,8,0.75)),
+        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=85') center/cover no-repeat;
+      display: flex; align-items: center; padding: 0 64px;
+    }
+    .contact-hero-inner {}
+    .c-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+    .c-card { background: var(--dark); padding: 48px 40px; border-top: 2px solid var(--gold); }
+    .c-tag { font-size: 9px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; }
+    .c-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--white); margin-bottom: 24px; }
+    .c-info { font-size: 13px; color: var(--gray); line-height: 2.4; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #030303; padding: 24px 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--gray2); letter-spacing: 1px;
+    }
+    footer span:first-child { color: var(--gold); }
+
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      section { padding: 80px 24px; }
+      .hero-content { grid-template-columns: 1fr; padding: 0 24px 60px; }
+      .ov-layout, .adv-layout, .hist-layout, .c-grid { grid-template-columns: 1fr; }
+      .svc-grid { grid-template-columns: 1fr; }
+      .contact-hero { padding: 0 24px; }
+      footer { padding: 24px; flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">OPTEC <span>EXPRESS</span></div>
+    <div class="nav-links">
+      <a href="#overview">概况</a>
+      <a href="#services">服务</a>
+      <a href="#advantages">优势</a>
+      <a href="#history">历程</a>
+      <a href="#contact">联系</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div>
+        <div class="gold-rule"><span>Corporate Profile 2026</span></div>
+        <h1 class="hero-title">OPTEC<br><strong>EXPRESS</strong></h1>
+      </div>
+      <div>
+        <p class="hero-desc">
+          开创充满挑战的社会<br>
+          专注国际航空紧急物流与专业货运服务<br>
+          深耕利基市场，伴随客户的挑战并肩前行
+        </p>
+        <div class="hero-kpis">
+          <div><div class="kpi-n">2016<b>年</b></div><div class="kpi-l">Founded</div></div>
+          <div><div class="kpi-n">70<b>+</b></div><div class="kpi-l">Employees</div></div>
+          <div><div class="kpi-n">4<b>大洲</b></div><div class="kpi-l">Global</div></div>
+          <div><div class="kpi-n">24<b>/7</b></div><div class="kpi-l">Support</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="overview" id="overview">
+    <div class="wrap">
+      <div class="eyebrow"><span>Company Overview</span></div>
+      <h2 class="sec-title">山东上星国际<br><em>货运代理有限公司</em></h2>
+      <div class="ov-layout">
+        <table class="ov-table">
+          <tr class="ov-tr"><td>名称</td><td>山东上星国际货运代理有限公司<br>OPTEC EXPRESS CO., LTD</td></tr>
+          <tr class="ov-tr"><td>成立</td><td>2018年9月12日</td></tr>
+          <tr class="ov-tr"><td>资本</td><td>550万人民币</td></tr>
+          <tr class="ov-tr"><td>代表人</td><td>YUKI KIMURA</td></tr>
+          <tr class="ov-tr"><td>总部</td><td>中国山东省烟台市</td></tr>
+          <tr class="ov-tr"><td>员工</td><td>70余人（全球）</td></tr>
+          <tr class="ov-tr"><td>日本法人</td><td>オプテックエクスプレス株式会社（东京）</td></tr>
+          <tr class="ov-tr"><td>网站</td><td>https://optec-exp.com/</td></tr>
+        </table>
+        <div class="ov-photo">
+          <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=900&q=85" alt="freight logistics">
+          <div class="ov-caption">GLOBAL AIR FREIGHT OPERATIONS</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+    <div class="wrap">
+      <div class="eyebrow"><span>Service System</span></div>
+      <h2 class="sec-title">四大<em>核心服务</em></h2>
+      <div class="svc-grid">
+
+        <div class="svc">
+          <div class="svc-img">
+            <img src="https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=800&q=80" alt="NFO cargo runway">
+          </div>
+          <div class="svc-body">
+            <p class="svc-code">NFO — Next Flight Out</p>
+            <h3 class="svc-name">紧急空运</h3>
+            <p class="svc-desc">匹配最快航班，定制最优航线，货物当天起飞。上海→东京最快15小时到达。</p>
+            <div class="svc-chips"><span class="chip">上海→东京 15H</span><span class="chip">东京→上海 12H</span><span class="chip">30min报价</span></div>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-img">
+            <img src="https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=800&q=80" alt="OBC airport courier">
+          </div>
+          <div class="svc-body">
+            <p class="svc-code">OBC — On Board Courier</p>
+            <h3 class="svc-name">手提服务</h3>
+            <p class="svc-desc">专业"飞人"随身携带货物，物流界公认最快方式，确保迅速通关直达目的地。</p>
+            <div class="svc-chips"><span class="chip">随身携带</span><span class="chip">海关认可</span><span class="chip">门到门</span></div>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-img">
+            <img src="https://images.unsplash.com/photo-1540575467537-04bfad2ef4f5?w=800&q=80" alt="exhibition logistics">
+          </div>
+          <div class="svc-body">
+            <p class="svc-code">SCP — Special Cargo Project</p>
+            <h3 class="svc-name">供应链优化</h3>
+            <p class="svc-desc">展会物流、DG危险品、AOG航空部件、PHARMA医药冷链——解决"无法解决"的供应链难题。</p>
+            <div class="svc-chips"><span class="chip">展会物流</span><span class="chip">DG危险品</span><span class="chip">AOG</span><span class="chip">PHARMA</span></div>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-img">
+            <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80" alt="customs clearance">
+          </div>
+          <div class="svc-body">
+            <p class="svc-code">Customs — 通关服务</p>
+            <h3 class="svc-name">专业通关</h3>
+            <p class="svc-desc">日本专业通关实务，覆盖危险品、ATA单证册、航空部件等各类特殊货物，AEO认定推进中。</p>
+            <div class="svc-chips"><span class="chip">危险品通关</span><span class="chip">ATA单证册</span><span class="chip">AEO推进</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ADVANTAGES -->
+  <section class="advantages" id="advantages">
+    <div class="wrap">
+      <div class="eyebrow"><span>Core Advantages</span></div>
+      <h2 class="sec-title">我们的<em>核心竞争力</em></h2>
+      <div class="adv-layout">
+        <div class="adv-list">
+          <div class="adv-item"><div class="adv-n">01</div><div><h3>24/7 全天候响应</h3><p>专业紧急货物团队提供24小时中、日、英多语言服务，成员均持有IATA证书，具备危险品处理经验。</p></div></div>
+          <div class="adv-item"><div class="adv-n">02</div><div><h3>专业资质保障</h3><p>IATA认证、危险品取扱资质、NVOCC等全方位物流资质，安全处理各类特殊货物。</p></div></div>
+          <div class="adv-item"><div class="adv-n">03</div><div><h3>强大全球网络</h3><p>覆盖全球主要航空货物枢纽，与大型卡车公司及全天候紧急服务商紧密合作，遍布4大洲。</p></div></div>
+          <div class="adv-item"><div class="adv-n">04</div><div><h3>极速响应速度</h3><p>30分钟内提供报价，当天货物当天起飞，门到门服务，可指定交货时间，零延误承诺。</p></div></div>
+        </div>
+        <div class="adv-img">
+          <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=85" alt="airport operations">
+          <div class="adv-badge">
+            <div class="adv-badge-n">30<span style="font-size:20px">min</span></div>
+            <div class="adv-badge-l">Quote Time</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="history" id="history">
+    <div class="wrap">
+      <div class="eyebrow"><span>Company History</span></div>
+      <h2 class="sec-title">发展<em>历程</em></h2>
+      <div class="hist-layout">
+        <p class="hist-lead">自2016年东京成立以来，不足十年间于日、中、美、英、墨五国建立完整的国际货运网络，持续深耕航空紧急物流专业领域。</p>
+        <div class="hist-list">
+          <div class="hist-item"><div class="hist-year">2016</div><div class="hist-text">在日本东京成立 OPTEC EXPRESS INC.</div></div>
+          <div class="hist-item"><div class="hist-year">2017</div><div class="hist-text">在中国香港成立 OPTEC EXPRESS (HK) LIMITED</div></div>
+          <div class="hist-item"><div class="hist-year">2018</div><div class="hist-text">在中国山东烟台成立山东上星国际货运代理有限公司</div></div>
+          <div class="hist-item"><div class="hist-year">2021</div><div class="hist-text">在美国成立法人 / 日本公司取得 IATA 资质</div></div>
+          <div class="hist-item"><div class="hist-year">2022</div><div class="hist-text">山东上星取得 IATA 资质 / 英国・墨西哥法人成立</div></div>
+          <div class="hist-item"><div class="hist-year">2024</div><div class="hist-text">在上海成立山东上星国际货运代理有限公司上海分公司</div></div>
+          <div class="hist-item"><div class="hist-year">2025</div><div class="hist-text">上海分公司取得 IATA 资质</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <div id="contact">
+    <div class="contact-hero">
+      <div class="contact-hero-inner">
+        <div class="eyebrow"><span>Contact Us</span></div>
+        <h2 class="sec-title" style="margin-bottom:0">全球据点<br><em>联系我们</em></h2>
+      </div>
+    </div>
+    <div class="c-grid">
+      <div class="c-card">
+        <p class="c-tag">China Headquarters</p>
+        <h3 class="c-name">中国总部</h3>
+        <p class="c-info">
+          山东上星国际货运代理有限公司<br>
+          📍 山东省烟台市<br>
+          📞 +86 18563827160（24/7）<br>
+          ✉️ quote@optec-exp.com
+        </p>
+      </div>
+      <div class="c-card">
+        <p class="c-tag">Japan Headquarters</p>
+        <h3 class="c-name">日本总部</h3>
+        <p class="c-info">
+          オプテックエクスプレス株式会社<br>
+          📍 日本东京<br>
+          🌐 optec-exp.com<br>
+          ✉️ quote@optec-exp.com
+        </p>
+      </div>
+      <div class="c-card">
+        <p class="c-tag">Shanghai Branch</p>
+        <h3 class="c-name">上海分公司</h3>
+        <p class="c-info">
+          山东上星国际货运代理有限公司上海分公司<br>
+          📍 上海市<br>
+          📞 +86 18563827160（24/7）<br>
+          ✉️ quote@optec-exp.com
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>OPTEC EXPRESS CO., LTD © 2026</span>
+    <span style="color:var(--gray2)">OPTEC AI Academy — 作品02</span>
+  </footer>
+
+</body>
+</html>
