@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OPTEC — 服务价格对比</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      background: #f8f6ff;
+      color: #1e1b2e;
+      min-height: 100vh;
+    }
+
+    /* 背景渐变装饰 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px; left: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(96,165,250,0.08) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── 页头 ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(248,246,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(167,139,250,0.12);
+      padding: 0 48px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-tag {
+      font-size: 12px;
+      color: #7c3aed;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.15);
+      padding: 4px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── 主区域 ── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 24px 96px;
+      overflow: visible;
+    }
+
+    /* 标题区 */
+    .heading {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .heading-eyebrow {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      color: #7c3aed;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .heading h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      line-height: 1.25;
+      color: #1e1b2e;
+      margin-bottom: 16px;
+    }
+
+    .heading h1 span {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .heading p {
+      font-size: 15px;
+      color: #6b7280;
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* ── 价格卡片 ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+      padding: 24px 8px;
+      overflow: visible;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 32px;
+      border: 1.5px solid #ede9fe;
+      transition: transform 0.5s cubic-bezier(0.34,1.8,0.64,1), box-shadow 0.4s ease;
+      position: relative;
+      will-change: transform;
+      z-index: 1;
+    }
+
+    .card:hover,
+    .card.reveal.visible:hover {
+      transform: translateY(-12px) scale(1.06) !important;
+      box-shadow: 0 40px 80px rgba(124,58,237,0.2);
+      z-index: 10;
+    }
+
+    /* 推荐卡片 */
+    .card.featured {
+      border-color: #7c3aed;
+      background: linear-gradient(160deg, #faf5ff 0%, #eff6ff 100%);
+      transform: scale(1.04);
+      box-shadow: 0 16px 48px rgba(124,58,237,0.15);
+    }
+
+    .card.featured:hover,
+    .card.featured.reveal.visible:hover {
+      transform: translateY(-14px) scale(1.08) !important;
+      box-shadow: 0 48px 96px rgba(124,58,237,0.28);
+      z-index: 10;
+    }
+
+    .badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 5px 18px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* 卡片顶部图标 */
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .icon-air   { background: rgba(124,58,237,0.08); }
+    .icon-sea   { background: rgba(37,99,235,0.08); }
+    .icon-combo { background: rgba(5,150,105,0.08); }
+
+    /* 套餐名 */
+    .card-name {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .name-air   { color: #7c3aed; }
+    .name-sea   { color: #2563eb; }
+    .name-combo { color: #059669; }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e1b2e;
+      margin-bottom: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 28px;
+      font-weight: 300;
+    }
+
+    /* 价格 */
+    .price-wrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .price-from {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .price {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1;
+      color: #1e1b2e;
+    }
+
+    .card.featured .price {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .price-unit {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .price-note {
+      font-size: 11px;
+      color: #d1d5db;
+      margin-bottom: 28px;
+    }
+
+    /* 分割线 */
+    .divider {
+      height: 1px;
+      background: #f3f4f6;
+      margin-bottom: 24px;
+    }
+
+    /* 特点列表 */
+    .features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .check-air   { background: rgba(124,58,237,0.1); color: #7c3aed; }
+    .check-sea   { background: rgba(37,99,235,0.1);  color: #2563eb; }
+    .check-combo { background: rgba(5,150,105,0.1);  color: #059669; }
+
+    /* 适用场景标签 */
+    .scenarios {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+
+    .scenario-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .tag-air   { background: rgba(124,58,237,0.06); color: #7c3aed; border: 1px solid rgba(124,58,237,0.15); }
+    .tag-sea   { background: rgba(37,99,235,0.06);  color: #2563eb; border: 1px solid rgba(37,99,235,0.15); }
+    .tag-combo { background: rgba(5,150,105,0.06);  color: #059669; border: 1px solid rgba(5,150,105,0.15); }
+
+    /* CTA按钮 */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-air   { background: rgba(124,58,237,0.08); color: #7c3aed; }
+    .btn-sea   { background: rgba(37,99,235,0.08);  color: #2563eb; }
+    .btn-featured {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+    }
+
+    /* ── 对比表格 ── */
+    .table-section {
+      margin-top: 72px;
+    }
+
+    .table-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e1b2e;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+    }
+
+    .compare-table thead tr {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+    }
+
+    .compare-table thead th {
+      padding: 18px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    .compare-table thead th:first-child { text-align: left; }
+
+    .compare-table tbody tr {
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.2s;
+    }
+
+    .compare-table tbody tr:last-child { border-bottom: none; }
+    .compare-table tbody tr:hover { background: #f3eeff; }
+    .compare-table tbody tr:hover td { color: #1e1b2e; }
+
+    .compare-table tbody td {
+      padding: 16px 24px;
+      font-size: 13px;
+      color: #4b5563;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .compare-table tbody td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: #1e1b2e;
+    }
+
+    .yes { color: #059669; font-size: 16px; }
+    .no  { color: #d1d5db; font-size: 16px; }
+    .highlight-col { background: rgba(124,58,237,0.03); }
+
+    /* ── 如何选择 ── */
+    .guide-section {
+      margin-top: 72px;
+      background: #fff;
+      border-radius: 24px;
+      padding: 48px 40px;
+      border: 1.5px solid #ede9fe;
+    }
+
+    .guide-title {
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      color: #1e1b2e;
+    }
+
+    .guide-subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 40px;
+      font-weight: 300;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .guide-card {
+      border-radius: 16px;
+      padding: 24px;
+      border: 1.5px solid;
+    }
+
+    .guide-air   { background: rgba(124,58,237,0.03);  border-color: rgba(124,58,237,0.15); }
+    .guide-sea   { background: rgba(37,99,235,0.03);   border-color: rgba(37,99,235,0.15); }
+    .guide-combo { background: rgba(5,150,105,0.03);   border-color: rgba(5,150,105,0.15); }
+
+    .guide-card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .label-air   { color: #7c3aed; }
+    .label-sea   { color: #2563eb; }
+    .label-combo { color: #059669; }
+
+    .guide-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1e1b2e;
+    }
+
+    .guide-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .guide-card ul li {
+      font-size: 13px;
+      color: #6b7280;
+      padding-left: 14px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .guide-card ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      font-size: 11px;
+      top: 1px;
+    }
+
+    .li-air::before   { color: #7c3aed; }
+    .li-sea::before   { color: #2563eb; }
+    .li-combo::before { color: #059669; }
+
+    /* ── CTA ── */
+    .cta-section {
+      margin-top: 56px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border-radius: 24px;
+      padding: 52px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 240px; height: 240px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -40px;
+      width: 280px; height: 280px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .cta-section h2 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      font-weight: 300;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-btn-primary {
+      background: #fff;
+      color: #7c3aed;
+      border: none;
+      padding: 13px 32px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .cta-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .cta-btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      padding: 13px 32px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .cta-btn-secondary:hover { background: rgba(255,255,255,0.25); }
+
+    /* ── 弹窗提示 ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1e1b2e;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+      opacity: 0;
+      z-index: 999;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ── 页脚 ── */
+    footer {
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 12px;
+      color: #9ca3af;
+      border-top: 1px solid #f3f4f6;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer span {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 500;
+    }
+
+    /* ── 滚动动画 ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">OPTEC</div>
+    <span class="header-tag">服务价格对比</span>
+  </header>
+
+  <main>
+
+    <!-- 标题 -->
+    <div class="heading reveal">
+      <p class="heading-eyebrow">Pricing Plans</p>
+      <h1>选择适合您的<span>物流方案</span></h1>
+      <p>根据货物性质、时效需求与预算灵活选择，我们为每种业务场景提供专业匹配的运输方案。</p>
+    </div>
+
+    <!-- 三张价格卡片 -->
+    <div class="cards">
+
+      <!-- 空运 -->
+      <div class="card card-air reveal reveal-delay-1">
+        <div class="card-icon icon-air">✈️</div>
+        <p class="card-name name-air">Air Freight</p>
+        <h2 class="card-title">空运服务</h2>
+        <p class="card-subtitle">快速 · 安全 · 全球直达</p>
+        <p class="price-from">起价</p>
+        <div class="price-wrap">
+          <span class="price">¥18</span>
+          <span class="price-unit">/ kg</span>
+        </div>
+        <p class="price-note">* 含基础操作费，不含关税</p>
+        <div class="divider"></div>
+        <ul class="features">
+          <li><span class="check check-air">✓</span>全球主要航线覆盖，时效3〜7天</li>
+          <li><span class="check check-air">✓</span>适合小批量、高价值货物</li>
+          <li><span class="check check-air">✓</span>实时航班追踪，状态透明</li>
+          <li><span class="check check-air">✓</span>优先舱位保障，准时率98%</li>
+          <li><span class="check check-air">✓</span>支持危险品及温控货物</li>
+        </ul>
+        <p style="font-size:11px;color:#9ca3af;margin-bottom:10px;letter-spacing:0.08em;">适用场景</p>
+        <div class="scenarios">
+          <span class="scenario-tag tag-air">紧急货物</span>
+          <span class="scenario-tag tag-air">高价值品</span>
+          <span class="scenario-tag tag-air">医药品</span>
+          <span class="scenario-tag tag-air">样品寄送</span>
+        </div>
+        <button class="btn btn-air" onclick="showToast('✈️ 空运咨询已提交，我们将尽快与您联系！')">获取报价</button>
+      </div>
+
+      <!-- 海运（推荐） -->
+      <div class="card card-sea featured reveal reveal-delay-2">
+        <div class="badge">★ 最受欢迎</div>
+        <div class="card-icon icon-sea">🚢</div>
+        <p class="card-name name-sea">Sea Freight</p>
+        <h2 class="card-title">海运服务</h2>
+        <p class="card-subtitle">经济 · 大容量 · 全球港口</p>
+        <p class="price-from">起价</p>
+        <div class="price-wrap">
+          <span class="price">¥2,800</span>
+          <span class="price-unit">/ 柜</span>
+        </div>
+        <p class="price-note">* 20GP整柜含基础海运费</p>
+        <div class="divider"></div>
+        <ul class="features">
+          <li><span class="check check-sea">✓</span>整柜 FCL / 拼箱 LCL 均可</li>
+          <li><span class="check check-sea">✓</span>覆盖全球主要港口，时效15〜35天</li>
+          <li><span class="check check-sea">✓</span>大批量货物最优性价比选择</li>
+          <li><span class="check check-sea">✓</span>在线提单追踪，全程可视化</li>
+          <li><span class="check check-sea">✓</span>提供目的港清关代理服务</li>
+        </ul>
+        <p style="font-size:11px;color:#9ca3af;margin-bottom:10px;letter-spacing:0.08em;">适用场景</p>
+        <div class="scenarios">
+          <span class="scenario-tag tag-sea">大批量货物</span>
+          <span class="scenario-tag tag-sea">原材料</span>
+          <span class="scenario-tag tag-sea">工业设备</span>
+          <span class="scenario-tag tag-sea">消费品</span>
+        </div>
+        <button class="btn btn-featured" onclick="showToast('🚢 海运咨询已提交，我们将尽快与您联系！')">获取报价</button>
+      </div>
+
+      <!-- 综合门到门 -->
+      <div class="card card-combo reveal reveal-delay-3">
+        <div class="card-icon icon-combo">📦</div>
+        <p class="card-name name-combo">Door to Door</p>
+        <h2 class="card-title">综合门到门</h2>
+        <p class="card-subtitle">一站式 · 全流程 · 省心无忧</p>
+        <p class="price-from">起价</p>
+        <div class="price-wrap">
+          <span class="price">¥25</span>
+          <span class="price-unit">/ kg</span>
+        </div>
+        <p class="price-note">* 含提货、运输、清关、派送</p>
+        <div class="divider"></div>
+        <ul class="features">
+          <li><span class="check check-combo">✓</span>从发货地直送收货地，全程托管</li>
+          <li><span class="check check-combo">✓</span>包含出口清关 + 目的地清关</li>
+          <li><span class="check check-combo">✓</span>专属客服一对一跟进</li>
+          <li><span class="check check-combo">✓</span>支持空运 + 海运灵活组合</li>
+          <li><span class="check check-combo">✓</span>展会物流 / 特殊货物专项服务</li>
+        </ul>
+        <p style="font-size:11px;color:#9ca3af;margin-bottom:10px;letter-spacing:0.08em;">适用场景</p>
+        <div class="scenarios">
+          <span class="scenario-tag tag-combo">展会运输</span>
+          <span class="scenario-tag tag-combo">跨境电商</span>
+          <span class="scenario-tag tag-combo">零经验客户</span>
+          <span class="scenario-tag tag-combo">急单</span>
+        </div>
+        <button class="btn" style="background:rgba(5,150,105,0.08);color:#059669;" onclick="showToast('📦 综合方案咨询已提交，我们将尽快与您联系！')">获取报价</button>
+      </div>
+
+    </div>
+
+    <!-- 对比表格 -->
+    <div class="table-section reveal">
+      <h2 class="table-title">方案详细对比</h2>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>对比项目</th>
+            <th>✈️ 空运</th>
+            <th>🚢 海运</th>
+            <th>📦 综合门到门</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>运输时效</td>
+            <td>3 〜 7 天</td>
+            <td>15 〜 35 天</td>
+            <td>视方案而定</td>
+          </tr>
+          <tr>
+            <td>起始价格</td>
+            <td>¥18 / kg</td>
+            <td class="highlight-col">¥2,800 / 柜</td>
+            <td>¥25 / kg</td>
+          </tr>
+          <tr>
+            <td>最低起运量</td>
+            <td>45 kg</td>
+            <td>1 CBM（拼箱）</td>
+            <td>无限制</td>
+          </tr>
+          <tr>
+            <td>清关服务</td>
+            <td><span class="yes">●</span></td>
+            <td class="highlight-col"><span class="yes">●</span></td>
+            <td><span class="yes">●</span> 含目的地</td>
+          </tr>
+          <tr>
+            <td>实时追踪</td>
+            <td><span class="yes">●</span></td>
+            <td class="highlight-col"><span class="yes">●</span></td>
+            <td><span class="yes">●</span></td>
+          </tr>
+          <tr>
+            <td>温控运输</td>
+            <td><span class="yes">●</span></td>
+            <td class="highlight-col"><span class="no">○</span></td>
+            <td><span class="yes">●</span></td>
+          </tr>
+          <tr>
+            <td>危险品资质</td>
+            <td><span class="yes">●</span></td>
+            <td class="highlight-col"><span class="yes">●</span></td>
+            <td><span class="no">○</span></td>
+          </tr>
+          <tr>
+            <td>上门提货</td>
+            <td><span class="no">○</span></td>
+            <td class="highlight-col"><span class="no">○</span></td>
+            <td><span class="yes">●</span></td>
+          </tr>
+          <tr>
+            <td>专属客服</td>
+            <td><span class="no">○</span></td>
+            <td class="highlight-col"><span class="no">○</span></td>
+            <td><span class="yes">●</span></td>
+          </tr>
+          <tr>
+            <td>适合货物规模</td>
+            <td>小 〜 中批量</td>
+            <td class="highlight-col">中 〜 大批量</td>
+            <td>不限</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 如何选择 -->
+    <div class="guide-section reveal">
+      <h2 class="guide-title">如何选择适合我的方案？</h2>
+      <p class="guide-subtitle">三个问题帮你快速锁定最优选择</p>
+      <div class="guide-grid">
+        <div class="guide-card guide-air">
+          <p class="guide-card-label label-air">选择空运，如果…</p>
+          <h4>✈️ 时效是第一优先级</h4>
+          <ul>
+            <li class="li-air">货物价值高、体积小、重量轻</li>
+            <li class="li-air">需要3〜7天内到达目的地</li>
+            <li class="li-air">医药品、样品或紧急补货</li>
+            <li class="li-air">预算充足，不在乎单价</li>
+          </ul>
+        </div>
+        <div class="guide-card guide-sea">
+          <p class="guide-card-label label-sea">选择海运，如果…</p>
+          <h4>🚢 控制成本是首要目标</h4>
+          <ul>
+            <li class="li-sea">货物体积大、重量重、批量多</li>
+            <li class="li-sea">交货时间宽裕，不急于到货</li>
+            <li class="li-sea">原材料、工业设备、消费品</li>
+            <li class="li-sea">希望单位运费最低</li>
+          </ul>
+        </div>
+        <div class="guide-card guide-combo">
+          <p class="guide-card-label label-combo">选择综合门到门，如果…</p>
+          <h4>📦 省心省力是最大需求</h4>
+          <ul>
+            <li class="li-combo">首次进行国际货运，流程不熟悉</li>
+            <li class="li-combo">需要展会布展等特殊服务</li>
+            <li class="li-combo">希望一个联系人搞定全部环节</li>
+            <li class="li-combo">时间紧、不想处理清关手续</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section reveal">
+      <h2>还不确定选哪个方案？</h2>
+      <p>联系我们的专业顾问，免费获取量身定制的物流解决方案</p>
+      <div class="cta-btns">
+        <button class="cta-btn-primary" onclick="showToast('🎉 已收到您的咨询，顾问将在2小时内联系您！')">立即免费咨询</button>
+        <button class="cta-btn-secondary" onclick="showToast('📧 报价申请已发送至 sales@optec-exp.com')">发送报价申请</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 弹窗 Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon">✓</div>
+    <span id="toastMsg"></span>
+  </div>
+
+  <footer>
+    <p>以上价格均为参考起价，实际报价请联系 <strong>sales@optec-exp.com</strong></p>
+    <p style="margin-top:8px;">© 2026 OPTEC株式会社 · Made with <span>Claude Code</span></p>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    let toastTimer;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+  </script>
+
+</body>
+</html>
