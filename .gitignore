@@ -1,0 +1,11 @@
+# 忽略所有文件
+*
+
+# 只跟踪项目文件
+!.gitignore
+!optec-profile.html
+!01_profile_美丽的nicole ji/
+!01_profile_美丽的nicole ji/index.html
+!01_profile_美丽的nicole ji/nicole-photo.png
+!zhangsiyuan/
+!zhangsiyuan/**

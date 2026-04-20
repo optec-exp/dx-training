@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自我介绍 — 王莹</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:ital@0;1&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      background: #faf9f7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    /* 顶部彩条 */
+    .card-stripe {
+      height: 5px;
+      background: linear-gradient(90deg, #b5a48a, #d4c4a8, #b5a48a);
+    }
+
+    /* 头部 */
+    .card-hero {
+      padding: 44px 44px 32px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      border-bottom: 1px solid #f0ece6;
+    }
+
+    .avatar img {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 1px solid #e8e2da;
+    }
+
+    .hero-text h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #2c2825;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .company {
+      font-size: 12px;
+      color: #a89880;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .position-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #7a6a56;
+      background: #f5f0e8;
+      padding: 3px 12px;
+      border-radius: 4px;
+    }
+
+    /* 内容区 */
+    .card-body {
+      padding: 32px 44px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .section-label {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: #7a6a56;
+      margin-bottom: 10px;
+    }
+
+    .section-content {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #5a5048;
+      font-weight: 300;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      color: #7a6a56;
+      border: 1px solid #e0d8ce;
+      background: #faf8f5;
+    }
+
+    /* 分割线 */
+    .divider {
+      height: 1px;
+      background: #f0ece6;
+    }
+
+    /* 格言 */
+    .motto {
+      font-family: "Playfair Display", "Noto Sans SC", serif;
+      font-size: 15px;
+      font-style: italic;
+      color: #8a7a68;
+      line-height: 1.8;
+      padding-left: 16px;
+      border-left: 2px solid #d4c4a8;
+    }
+
+    /* 底部 */
+    footer {
+      margin-top: 32px;
+      font-size: 11px;
+      color: #c8beb4;
+      letter-spacing: 0.08em;
+    }
+
+    footer span { color: #b5a48a; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-stripe"></div>
+
+    <div class="card-hero">
+      <div class="avatar">
+        <img src="./avatar.jpg" alt="王莹头像" />
+      </div>
+      <div class="hero-text">
+        <p class="company">OPTEC株式会社 · DX室</p>
+        <h1>王 莹</h1>
+        <span class="position-tag">财务主管</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+
+      <div>
+        <p class="section-label">工作职责</p>
+        <p class="section-content">
+          主导公司财务管理工作，负责财务规划、预算管控与报表分析。同时承担风险控制职责，建立健全风险识别与防控体系，确保公司财务合规、稳健运营。
+        </p>
+        <div class="tags">
+          <span class="tag">财务管理</span>
+          <span class="tag">预算管控</span>
+          <span class="tag">风险控制</span>
+          <span class="tag">合规运营</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <p class="section-label">个人格言</p>
+        <p class="motto">完成比完美更重要，持续行动才能创造改变。</p>
+      </div>
+
+    </div>
+  </div>
+
+  <footer style="margin-top:28px;">Made with <span>Claude Code</span> · OPTEC AI Academy 60天训练营</footer>
+
+</body>
+</html>
