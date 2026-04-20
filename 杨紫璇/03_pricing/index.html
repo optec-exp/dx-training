@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>OPTEC Express — 服务价格对比</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5b0;
+      --dark: #08080f;
+      --dark-2: #0e0e1a;
+      --dark-3: #141424;
+      --text: #e8e8f0;
+      --muted: rgba(232,232,240,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', "Microsoft YaHei", sans-serif;
+      background: var(--dark);
+      color: var(--text);
+    }
+
+    /* ━━━ 页头 ━━━ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 80px;
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      background: rgba(8,8,15,0.9);
+      backdrop-filter: blur(20px);
+    }
+
+    .logo-wrap { display: flex; flex-direction: column; gap: 1px; }
+    .logo-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700;
+      letter-spacing: 6px; color: #fff; text-transform: uppercase;
+    }
+    .logo-sub { font-size: 9px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+
+    nav a {
+      font-size: 11px; letter-spacing: 2px;
+      color: var(--muted); text-decoration: none;
+      text-transform: uppercase; margin-left: 36px; transition: color 0.2s;
+    }
+    nav a:hover { color: var(--gold); }
+
+    /* ━━━ 英雄区 ━━━ */
+    .hero {
+      padding: 160px 80px 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 800px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(201,169,110,0.07) 0%, transparent 70%);
+      top: 60px; left: 50%; transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--gold); text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: ''; width: 40px; height: 1px; background: rgba(201,169,110,0.4);
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(44px, 6vw, 72px);
+      font-weight: 600; color: #fff; line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 14px; font-weight: 300;
+      color: var(--muted); line-height: 2;
+      max-width: 480px; margin: 0 auto;
+    }
+
+    /* ━━━ 套餐卡片区 ━━━ */
+    .plans {
+      padding: 80px 80px 100px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .plan-card {
+      background: var(--dark-2);
+      border: 1px solid rgba(201,169,110,0.1);
+      border-radius: 4px;
+      padding: 48px 36px;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    }
+
+    .plan-card.featured {
+      border-color: var(--gold);
+      background: var(--dark-3);
+    }
+
+    .plan-card.featured::before {
+      content: 'RECOMMENDED';
+      position: absolute;
+      top: -1px; left: 50%; transform: translateX(-50%);
+      background: var(--gold);
+      color: var(--dark);
+      font-size: 9px; letter-spacing: 3px;
+      padding: 5px 20px;
+      font-weight: 600;
+    }
+
+    .plan-tag {
+      font-size: 9px; letter-spacing: 3px;
+      color: var(--gold); text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .plan-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 700;
+      color: #fff; margin-bottom: 8px;
+    }
+
+    .plan-en {
+      font-size: 11px; letter-spacing: 2px;
+      color: var(--muted); margin-bottom: 28px;
+    }
+
+    .plan-price-area {
+      padding: 24px 0;
+      border-top: 1px solid rgba(201,169,110,0.1);
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      margin-bottom: 28px;
+    }
+
+    .plan-price-label {
+      font-size: 10px; letter-spacing: 2px;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
+    }
+
+    .plan-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; color: var(--gold); font-weight: 600;
+    }
+
+    .plan-price-note {
+      font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.6;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin-bottom: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .plan-features li {
+      font-size: 13px; font-weight: 300;
+      color: rgba(232,232,240,0.75);
+      display: flex; gap: 10px; align-items: flex-start;
+      line-height: 1.6;
+    }
+
+    .plan-features li::before {
+      content: '—';
+      color: var(--gold); flex-shrink: 0;
+      font-size: 12px; margin-top: 1px;
+    }
+
+    .plan-scene {
+      font-size: 11px; letter-spacing: 1px;
+      color: var(--muted);
+      padding: 14px 16px;
+      background: rgba(201,169,110,0.05);
+      border-left: 2px solid rgba(201,169,110,0.3);
+      line-height: 1.7;
+    }
+
+    /* ━━━ 详细对比表 ━━━ */
+    .compare-section {
+      padding: 80px 80px 100px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--gold); text-transform: uppercase;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-eyebrow::before {
+      content: ''; width: 32px; height: 1px; background: var(--gold);
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px; font-weight: 600;
+      color: #fff; margin-bottom: 48px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      border-bottom: 1px solid rgba(201,169,110,0.2);
+    }
+
+    th {
+      padding: 20px 28px;
+      text-align: left;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    th:first-child { color: var(--muted); width: 22%; }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover { background: rgba(201,169,110,0.03); }
+
+    td {
+      padding: 20px 28px;
+      font-size: 13px; font-weight: 300;
+      color: rgba(232,232,240,0.8);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+
+    td:first-child {
+      font-size: 12px; font-weight: 500;
+      color: var(--muted); letter-spacing: 0.5px;
+    }
+
+    .check { color: #4ade80; font-size: 15px; }
+    .cross { color: rgba(255,255,255,0.2); font-size: 15px; }
+    .star  { color: var(--gold); font-size: 13px; }
+
+    /* ━━━ 注意事项 ━━━ */
+    .notes {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 80px 100px;
+    }
+
+    .notes-box {
+      background: var(--dark-2);
+      border: 1px solid rgba(201,169,110,0.1);
+      border-radius: 4px;
+      padding: 40px 48px;
+    }
+
+    .notes-title {
+      font-size: 11px; letter-spacing: 3px;
+      color: var(--gold); text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .notes-title::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+
+    .notes-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 48px;
+    }
+
+    .notes-list li {
+      font-size: 12px; font-weight: 300;
+      color: var(--muted); line-height: 1.8;
+      display: flex; gap: 10px;
+    }
+
+    .notes-list li::before {
+      content: '※'; color: rgba(201,169,110,0.5); flex-shrink: 0;
+    }
+
+    /* ━━━ 页脚 ━━━ */
+    footer {
+      background: #030306;
+      padding: 32px 80px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(201,169,110,0.08);
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; letter-spacing: 5px;
+      color: rgba(255,255,255,0.3); text-transform: uppercase;
+    }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.15); letter-spacing: 1px; }
+    .footer-ja   { font-size: 11px; color: rgba(201,169,110,0.3); letter-spacing: 1px; }
+
+    /* ━━━ 动画 ━━━ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow { animation: fadeUp 0.7s 0.1s both; }
+    .hero h1      { animation: fadeUp 0.7s 0.25s both; }
+    .hero p       { animation: fadeUp 0.7s 0.4s both; }
+  </style>
+</head>
+<body>
+
+  <!-- 页头 -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-main">Optec Express</div>
+      <div class="logo-sub">Emergency Logistics</div>
+    </div>
+    <nav>
+      <a href="#plans">服务套餐</a>
+      <a href="#compare">详细对比</a>
+    </nav>
+  </header>
+
+  <!-- 英雄区 -->
+  <div class="hero">
+    <div class="hero-eyebrow">Service & Pricing</div>
+    <h1>找到最适合<br>您货物的方案</h1>
+    <p>三种服务级别，覆盖从经济运输到极速随身的全场景需求。<br>所有报价 30 分钟内响应，24 小时全年无休。</p>
+  </div>
+
+  <!-- 套餐卡片 -->
+  <div class="plans" id="plans">
+
+    <!-- 普通航空 -->
+    <div class="plan-card">
+      <div class="plan-tag">Economy</div>
+      <div class="plan-name">普通航空</div>
+      <div class="plan-en">General Air Freight</div>
+      <div class="plan-price-area">
+        <div class="plan-price-label">费用参考</div>
+        <div class="plan-price">询价制</div>
+        <div class="plan-price-note">按实重 / 体积重量计费<br>适合非紧急批量货物</div>
+      </div>
+      <ul class="plan-features">
+        <li>标准国际航空运输</li>
+        <li>灵活排期，容量充足</li>
+        <li>适合 3〜7 天交期</li>
+        <li>覆盖全球 186 城市</li>
+        <li>IATA 认证全程合规</li>
+      </ul>
+      <div class="plan-scene">
+        适用场景：非紧急批量货物、样品、一般商业货物
+      </div>
+    </div>
+
+    <!-- NFO 紧急空运（推荐） -->
+    <div class="plan-card featured">
+      <div class="plan-tag">Most Popular</div>
+      <div class="plan-name">NFO 紧急</div>
+      <div class="plan-en">Next Flight Out</div>
+      <div class="plan-price-area">
+        <div class="plan-price-label">费用参考</div>
+        <div class="plan-price">询价制</div>
+        <div class="plan-price-note">次班机出发，性价比最优<br>30 分钟内提供报价</div>
+      </div>
+      <ul class="plan-features">
+        <li>搭乘最近一班航班出发</li>
+        <li>单箱至大型货物均可</li>
+        <li>客机最高 160cm / 货机 243cm</li>
+        <li>半导体、服装、医疗等 800+ 品类</li>
+        <li>危险品专业处理（IATA 认证）</li>
+      </ul>
+      <div class="plan-scene">
+        适用场景：生产停线、紧急备件、时效要求严格的商业货物
+      </div>
+    </div>
+
+    <!-- 随身携带 -->
+    <div class="plan-card">
+      <div class="plan-tag">Premium</div>
+      <div class="plan-name">随身携带</div>
+      <div class="plan-en">Hand Carry / OBC</div>
+      <div class="plan-price-area">
+        <div class="plan-price-label">费用参考</div>
+        <div class="plan-price">询价制</div>
+        <div class="plan-price-note">专人随身携带，全球最速<br>参考容量：5 箱 / 100kg</div>
+      </div>
+      <ul class="plan-features">
+        <li>专属快递员亲自携带乘机</li>
+        <li>全球最高安全等级</li>
+        <li>点对点无中转直达</li>
+        <li>适合细胞、器官、机密文件</li>
+        <li>全程实时状态追踪</li>
+      </ul>
+      <div class="plan-scene">
+        适用场景：再生医疗细胞、高价值精密仪器、机密重要文件
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 详细对比表 -->
+  <section class="compare-section" id="compare">
+    <div class="section-eyebrow">Comparison</div>
+    <h2 class="section-title">三种服务详细对比</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>对比项目</th>
+          <th>普通航空</th>
+          <th>NFO 紧急空运</th>
+          <th>随身携带 OBC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>交货速度</td>
+          <td>3〜7 个工作日</td>
+          <td>当日〜翌日</td>
+          <td>当日（数小时级）</td>
+        </tr>
+        <tr>
+          <td>费用水平</td>
+          <td>经济</td>
+          <td><span class="star">★</span> 性价比最优</td>
+          <td>高（专属人员费用）</td>
+        </tr>
+        <tr>
+          <td>重量限制</td>
+          <td>无上限</td>
+          <td>客机 160cm / 货机 243cm</td>
+          <td>约 5 箱 / 100kg / 人</td>
+        </tr>
+        <tr>
+          <td>适用货物</td>
+          <td>一般商业货物</td>
+          <td>800+ 品类含危险品</td>
+          <td>高价值 / 医疗 / 机密</td>
+        </tr>
+        <tr>
+          <td>安全等级</td>
+          <td>标准</td>
+          <td>高</td>
+          <td><span class="check">✓</span> 最高</td>
+        </tr>
+        <tr>
+          <td>危险品对应</td>
+          <td><span class="cross">—</span></td>
+          <td><span class="check">✓</span> IATA 认证</td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>实时追踪</td>
+          <td><span class="cross">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span> 全程</td>
+        </tr>
+        <tr>
+          <td>报价响应</td>
+          <td>当日内</td>
+          <td><span class="star">★</span> 30 分钟以内</td>
+          <td><span class="star">★</span> 30 分钟以内</td>
+        </tr>
+        <tr>
+          <td>24H 对应</td>
+          <td><span class="cross">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>医疗品対応</td>
+          <td><span class="cross">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span> 最優先</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 注意事项 -->
+  <div class="notes">
+    <div class="notes-box">
+      <div class="notes-title">价格说明与注意事项</div>
+      <ul class="notes-list">
+        <li>所有价格均为询价制，依货物规格、目的地、时间而定</li>
+        <li>计费重量取实重与体积重量（长×宽×高÷6000）的较大值</li>
+        <li>节假日、深夜操作可能产生时外附加费</li>
+        <li>最低计费重量另有规定，报价时一并告知</li>
+        <li>危险品运输须提前提供 MSDS 及相关合规文件</li>
+        <li>报价有效期通常为 24 小时，旺季可能变动</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-logo">Optec Express</div>
+    <div class="footer-copy">© 2026 OPTEC Express Co., Ltd. All rights reserved.</div>
+    <div class="footer-ja">オプテックエクスプレス株式会社</div>
+  </footer>
+
+</body>
+</html>
