@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>OPTEC Express — FAQ & 联系我们</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5b0;
+      --dark: #08080f;
+      --dark-2: #0e0e1a;
+      --dark-3: #141424;
+      --text: #e8e8f0;
+      --muted: rgba(232,232,240,0.4);
+      --error: #f87171;
+      --success: #4ade80;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', "Microsoft YaHei", sans-serif;
+      background: var(--dark);
+      color: var(--text);
+    }
+
+    /* ━━━ 页头 ━━━ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 80px; height: 76px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      background: rgba(8,8,15,0.9);
+      backdrop-filter: blur(20px);
+    }
+    .logo-wrap { display: flex; flex-direction: column; gap: 1px; }
+    .logo-main {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 700;
+      letter-spacing: 6px; color: #fff; text-transform: uppercase;
+    }
+    .logo-sub { font-size: 9px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+    nav a {
+      font-size: 11px; letter-spacing: 2px;
+      color: var(--muted); text-decoration: none;
+      text-transform: uppercase; margin-left: 36px; transition: color 0.2s;
+    }
+    nav a:hover { color: var(--gold); }
+
+    /* ━━━ 英雄区 ━━━ */
+    .hero {
+      padding: 160px 80px 80px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 350px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(201,169,110,0.06) 0%, transparent 70%);
+      top: 80px; left: 50%; transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--gold); text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after { content: ''; width: 40px; height: 1px; background: rgba(201,169,110,0.4); }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(44px, 6vw, 68px);
+      font-weight: 600; color: #fff; line-height: 1.15; margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 14px; font-weight: 300;
+      color: var(--muted); line-height: 2;
+      max-width: 460px; margin: 0 auto;
+    }
+
+    /* ━━━ FAQ 区 ━━━ */
+    .faq-section {
+      max-width: 800px; margin: 0 auto;
+      padding: 80px 80px 100px;
+    }
+    .section-eyebrow {
+      font-size: 10px; letter-spacing: 4px;
+      color: var(--gold); text-transform: uppercase;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 40px; font-weight: 600; color: #fff; margin-bottom: 48px;
+    }
+
+    /* FAQ 每一条 */
+    .faq-item {
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+    }
+    .faq-item:first-of-type { border-top: 1px solid rgba(201,169,110,0.1); }
+
+    /* 点击的标题按钮 */
+    .faq-question {
+      width: 100%;
+      background: none; border: none; cursor: pointer;
+      padding: 28px 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      text-align: left;
+    }
+    .faq-question:hover .faq-q-text { color: var(--gold-light); }
+
+    .faq-q-text {
+      font-size: 15px; font-weight: 500;
+      color: var(--text); line-height: 1.5;
+      transition: color 0.2s;
+    }
+
+    .faq-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border: 1px solid rgba(201,169,110,0.3); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 16px; font-weight: 300;
+      transition: transform 0.3s, background 0.2s;
+    }
+
+    /* 展开时图标旋转 */
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+      background: rgba(201,169,110,0.1);
+    }
+
+    /* 答案区域 — 默认隐藏 */
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s ease;
+    }
+
+    /* 展开时显示 */
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding-bottom: 28px;
+    }
+
+    .faq-answer p {
+      font-size: 13px; font-weight: 300;
+      color: var(--muted); line-height: 2;
+    }
+
+    /* ━━━ 联系表单区 ━━━ */
+    .form-section {
+      background: var(--dark-2);
+      padding: 100px 80px;
+    }
+    .form-inner {
+      max-width: 640px; margin: 0 auto;
+    }
+
+    .form-row { margin-bottom: 28px; }
+
+    label {
+      display: block;
+      font-size: 10px; letter-spacing: 2px;
+      color: var(--gold); text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,169,110,0.15);
+      border-radius: 2px;
+      padding: 14px 18px;
+      font-size: 14px; font-weight: 300;
+      color: var(--text);
+      font-family: 'Inter', "Microsoft YaHei", sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: rgba(201,169,110,0.5);
+    }
+    textarea { resize: vertical; min-height: 140px; }
+
+    /* 验证错误提示 */
+    .error-msg {
+      display: none;
+      font-size: 11px; color: var(--error);
+      margin-top: 6px; letter-spacing: 0.5px;
+    }
+    .form-row.has-error input,
+    .form-row.has-error textarea {
+      border-color: var(--error);
+    }
+    .form-row.has-error .error-msg { display: block; }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      border: none; border-radius: 2px;
+      padding: 16px;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--dark); cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+
+    /* 提交成功提示 */
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      border: 1px solid rgba(74,222,128,0.2);
+      border-radius: 4px;
+      background: rgba(74,222,128,0.04);
+    }
+    .success-msg .success-icon { font-size: 36px; margin-bottom: 16px; }
+    .success-msg h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; color: #fff; margin-bottom: 8px;
+    }
+    .success-msg p { font-size: 13px; color: var(--muted); }
+
+    /* ━━━ 页脚 ━━━ */
+    footer {
+      background: #030306;
+      padding: 32px 80px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(201,169,110,0.08);
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; letter-spacing: 5px;
+      color: rgba(255,255,255,0.3); text-transform: uppercase;
+    }
+    .footer-copy { font-size: 11px; color: rgba(255,255,255,0.15); letter-spacing: 1px; }
+    .footer-ja   { font-size: 11px; color: rgba(201,169,110,0.3); letter-spacing: 1px; }
+
+    /* ━━━ 动画 ━━━ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-eyebrow { animation: fadeUp 0.7s 0.1s both; }
+    .hero h1      { animation: fadeUp 0.7s 0.25s both; }
+    .hero p       { animation: fadeUp 0.7s 0.4s both; }
+  </style>
+</head>
+<body>
+
+  <!-- 页头 -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-main">Optec Express</div>
+      <div class="logo-sub">Emergency Logistics</div>
+    </div>
+    <nav>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">联系我们</a>
+    </nav>
+  </header>
+
+  <!-- 英雄区 -->
+  <div class="hero">
+    <div class="hero-eyebrow">Support</div>
+    <h1>常见问题<br>与联系我们</h1>
+    <p>在这里找到您最关心的问题的答案，<br>或直接向我们发送询问。</p>
+  </div>
+
+  <!-- FAQ 区 -->
+  <section class="faq-section" id="faq">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="section-title">常见问题</h2>
+
+    <!-- FAQ 第1条 -->
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span class="faq-q-text">从日本寄货到中国，最快多久能到？</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>选择 NFO（次班机出发）服务，通常可以实现当日或翌日送达。如果选择随身携带（OBC）服务，专属快递员会携带货物乘坐最早航班，最快数小时内即可抵达目的地。具体时效取决于当日航班时刻，请联系我们获取最新报价。</p>
+      </div>
+    </div>
+
+    <!-- FAQ 第2条 -->
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span class="faq-q-text">如何计算运费？</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>运费以「计费重量」为基准，计费重量取实际重量与体积重量（长cm × 宽cm × 高cm ÷ 6000）中的较大值。节假日或深夜操作可能产生时外附加费。我们承诺在30分钟内提供详细报价，请随时联系我们。</p>
+      </div>
+    </div>
+
+    <!-- FAQ 第3条 -->
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span class="faq-q-text">可以运输危险品吗？</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>可以。OPTEC Express 拥有 IATA 认证的危险品处理专业人员，可承运符合航空规定的危险品货物。托运前需提供 MSDS（物质安全数据表）及相关合规文件。请提前联系我们确认具体品类是否可运。</p>
+      </div>
+    </div>
+
+    <!-- FAQ 第4条 -->
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span class="faq-q-text">医药品和细胞类货物可以托运吗？</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>可以。我们专设医药品物流服务，支持再生医疗、细胞治疗、医疗器械等高品质温控运输。全程维持规定温度，符合 GDP（药品流通质量管理规范）要求。如有特殊温度要求，请在询价时说明。</p>
+      </div>
+    </div>
+
+    <!-- FAQ 第5条 -->
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span class="faq-q-text">是否提供实时货物追踪？</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>NFO 紧急空运及随身携带（OBC）服务均提供全程实时状态追踪。您可以随时掌握货物当前位置与状态。如需进一步了解追踪系统的使用方法，欢迎联系我们的客服团队。</p>
+      </div>
+    </div>
+
+    <!-- FAQ 第6条 -->
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span class="faq-q-text">节假日和深夜也可以联系你们吗？</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        <p>可以。OPTEC Express 提供 24 小时 365 天全年无休的紧急对应服务。无论节假日、深夜还是清晨，我们的专属团队随时待命，确保您的货物不因时间问题而耽误。请拨打热线 03-4500-1918 或通过 LINE / WeChat 联系我们。</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 联系表单 -->
+  <section class="form-section" id="contact">
+    <div class="form-inner">
+      <div class="section-eyebrow">Contact</div>
+      <h2 class="section-title">发送询问</h2>
+
+      <form id="contactForm" novalidate>
+
+        <div class="form-row" id="row-name">
+          <label for="name">姓名 <span style="color:var(--error)">*</span></label>
+          <input type="text" id="name" placeholder="请输入您的姓名">
+          <div class="error-msg">请填写姓名</div>
+        </div>
+
+        <div class="form-row" id="row-email">
+          <label for="email">邮箱地址 <span style="color:var(--error)">*</span></label>
+          <input type="email" id="email" placeholder="example@company.com">
+          <div class="error-msg" id="email-error">请填写有效的邮箱地址</div>
+        </div>
+
+        <div class="form-row" id="row-message">
+          <label for="message">留言内容 <span style="color:var(--error)">*</span></label>
+          <textarea id="message" placeholder="请描述您的货物需求、目的地、重量等信息…"></textarea>
+          <div class="error-msg">请填写留言内容</div>
+        </div>
+
+        <button type="submit" class="submit-btn">发送询问</button>
+      </form>
+
+      <!-- 提交成功提示 -->
+      <div class="success-msg" id="successMsg">
+        <div class="success-icon">✉️</div>
+        <h3>已收到您的询问</h3>
+        <p>我们将在 30 分钟内与您联系，感谢您选择 OPTEC Express。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-logo">Optec Express</div>
+    <div class="footer-copy">© 2026 OPTEC Express Co., Ltd. All rights reserved.</div>
+    <div class="footer-ja">オプテックエクスプレス株式会社</div>
+  </footer>
+
+  <!-- ━━━ JavaScript ━━━ -->
+  <script>
+    // ── FAQ 展开/收起 ──
+    // 当用户点击问题标题时，这个函数会被调用
+    function toggleFaq(btn) {
+      // 找到这个按钮的父元素（整条FAQ）
+      var item = btn.parentElement;
+      // 切换 "open" 这个class：有就删掉，没有就加上
+      item.classList.toggle('open');
+    }
+
+    // ── 表单验证 ──
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      // 阻止表单默认提交（防止页面跳转）
+      e.preventDefault();
+
+      var name    = document.getElementById('name');
+      var email   = document.getElementById('email');
+      var message = document.getElementById('message');
+      var isValid = true;
+
+      // 检查姓名是否为空
+      if (name.value.trim() === '') {
+        document.getElementById('row-name').classList.add('has-error');
+        isValid = false;
+      } else {
+        document.getElementById('row-name').classList.remove('has-error');
+      }
+
+      // 检查邮箱格式（必须含有 @ 和 .）
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+      if (!emailOk) {
+        document.getElementById('row-email').classList.add('has-error');
+        isValid = false;
+      } else {
+        document.getElementById('row-email').classList.remove('has-error');
+      }
+
+      // 检查留言是否为空
+      if (message.value.trim() === '') {
+        document.getElementById('row-message').classList.add('has-error');
+        isValid = false;
+      } else {
+        document.getElementById('row-message').classList.remove('has-error');
+      }
+
+      // 如果全部通过验证，显示成功提示
+      if (isValid) {
+        document.getElementById('contactForm').style.display = 'none';
+        document.getElementById('successMsg').style.display  = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
