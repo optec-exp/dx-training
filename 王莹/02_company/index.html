@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OPTEC — 公司概要</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      background: #0a0818;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* ── 滚动动画基础 ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── 页头 ── */
+    header {
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      position: sticky;
+      top: 0;
+      background: rgba(10,8,24,0.8);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      background: linear-gradient(90deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    nav { display: flex; gap: 32px; }
+    nav a {
+      font-size: 13px;
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 0.04em;
+    }
+    nav a:hover { color: #e2e8f0; }
+
+    /* ── 主视觉 ── */
+    .hero {
+      min-height: 92vh;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 背景网格 */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(167,139,250,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(167,139,250,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* 光晕 */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -100px; left: -100px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-left { position: relative; z-index: 1; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: #a78bfa;
+      border: 1px solid rgba(167,139,250,0.25);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      animation: fadeDown 0.8s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #a78bfa;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 4.5vw, 58px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 22px;
+      background: linear-gradient(135deg, #ffffff 40%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.9;
+      font-weight: 300;
+      max-width: 480px;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    /* 统计数字 */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+
+    .stat {
+      padding: 36px 32px;
+      background: rgba(10,8,24,0.6);
+      transition: background 0.3s;
+    }
+
+    .stat:hover { background: rgba(167,139,250,0.06); }
+
+    .stat-num {
+      font-size: 38px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .stat-label { font-size: 12px; color: #64748b; letter-spacing: 0.05em; }
+
+    /* ── 分割线 ── */
+    hr { border: none; border-top: 1px solid rgba(255,255,255,0.05); }
+
+    /* ── 通用 section ── */
+    section { padding: 80px 40px; }
+
+    .section-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: #a78bfa;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 48px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── 业务卡片 ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .service-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 32px 24px;
+      transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(167,139,250,0.35);
+      background: rgba(167,139,250,0.05);
+    }
+
+    .service-icon { font-size: 32px; margin-bottom: 18px; display: block; }
+    .service-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 10px; color: #f1f5f9; }
+    .service-card p { font-size: 13px; color: #64748b; line-height: 1.75; font-weight: 300; }
+
+    /* ── 服务流程 ── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      position: relative;
+    }
+
+    .steps-line {
+      position: absolute;
+      top: 30px;
+      left: calc(10% + 12px);
+      width: calc(80% - 24px);
+      height: 1px;
+      background: linear-gradient(90deg, #a78bfa33, #60a5fa33, #a78bfa33);
+    }
+
+    .step { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 16px; }
+
+    .step-circle {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+
+    .step:hover .step-circle {
+      background: rgba(167,139,250,0.2);
+      border-color: #a78bfa;
+      transform: scale(1.1);
+    }
+
+    .step-title { font-size: 14px; font-weight: 600; color: #f1f5f9; margin-bottom: 8px; }
+    .step-desc { font-size: 12px; color: #64748b; line-height: 1.65; }
+
+    /* ── 世界地图 ── */
+    .map-wrap {
+      position: relative;
+      background: #080615;
+      border: 1px solid rgba(167,139,250,0.12);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .map-wrap svg { width: 100%; height: auto; display: block; }
+
+    @keyframes cityPulse {
+      0%, 100% { opacity: 0.8; r: 10; }
+      50%       { opacity: 0.2; r: 18; }
+    }
+
+    @keyframes hubPulse {
+      0%, 100% { opacity: 0.5; r: 18; }
+      50%       { opacity: 0.1; r: 30; }
+    }
+
+    @keyframes dashMove {
+      to { stroke-dashoffset: -200; }
+    }
+
+    /* 地图底部统计 */
+    .map-footer {
+      display: flex;
+      justify-content: center;
+      gap: 56px;
+      padding: 20px 32px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .map-stat { text-align: center; }
+    .map-stat-num {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .map-stat-label { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+    /* ── OPTEC 标志 ── */
+    .brand-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .brand-logo-svg { width: 180px; height: 180px; }
+
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @keyframes rotateReverse {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-360deg); }
+    }
+
+    .ring-outer { transform-origin: 90px 90px; animation: rotateSlow 12s linear infinite; }
+    .ring-inner { transform-origin: 90px 90px; animation: rotateReverse 8s linear infinite; }
+
+    .brand-tagline {
+      font-size: 13px;
+      color: #64748b;
+      letter-spacing: 0.15em;
+      text-align: center;
+    }
+
+    /* ── 核心优势 ── */
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .strength-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .strength-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(167,139,250,0.35);
+    }
+
+    .strength-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      display: block;
+      filter: drop-shadow(0 0 12px rgba(167,139,250,0.3));
+    }
+
+    .strength-card h3 { font-size: 15px; font-weight: 600; color: #f1f5f9; margin-bottom: 10px; }
+    .strength-card p { font-size: 13px; color: #64748b; line-height: 1.75; }
+
+    /* ── 客户评价轮播 ── */
+    .reviews-track-wrap {
+      overflow: hidden;
+      mask: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+      -webkit-mask: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+    }
+
+    .reviews-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: scrollReviews 36s linear infinite;
+    }
+
+    .reviews-track:hover { animation-play-state: paused; }
+
+    @keyframes scrollReviews {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .review-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 28px;
+      width: 320px;
+      flex-shrink: 0;
+      transition: border-color 0.3s;
+    }
+
+    .review-card:hover { border-color: rgba(167,139,250,0.3); }
+
+    .review-stars { color: #a78bfa; font-size: 13px; letter-spacing: 2px; margin-bottom: 14px; }
+
+    .review-text {
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.85;
+      font-weight: 300;
+      margin-bottom: 22px;
+      padding-left: 14px;
+      border-left: 2px solid rgba(167,139,250,0.3);
+    }
+
+    .review-author { display: flex; align-items: center; gap: 12px; }
+
+    .review-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(96,165,250,0.25));
+      border: 1px solid rgba(167,139,250,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #c4b5fd;
+      flex-shrink: 0;
+    }
+
+    .review-name { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+    .review-company { font-size: 11px; color: #64748b; margin-top: 3px; }
+
+    /* ── FAQ ── */
+    .faq-list { display: flex; flex-direction: column; gap: 12px; max-width: 860px; margin: 0 auto; }
+
+    .faq-item {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .faq-item:hover { border-color: rgba(167,139,250,0.25); }
+
+    .faq-q {
+      padding: 22px 28px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .faq-q-icon {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #a78bfa;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .faq-a {
+      padding: 0 28px 22px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.85;
+      font-weight: 300;
+    }
+
+    /* ── 联系方式 ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .contact-item {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 32px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .contact-item:hover {
+      border-color: rgba(167,139,250,0.3);
+      transform: translateY(-4px);
+    }
+
+    .contact-label {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: #a78bfa;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .contact-value { font-size: 14px; color: #94a3b8; line-height: 1.9; }
+
+    /* ── 页脚 ── */
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .footer-logo {
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      background: linear-gradient(90deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">OPTEC</div>
+    <nav>
+      <a href="#services">业务介绍</a>
+      <a href="#process">服务流程</a>
+      <a href="#coverage">全球航线</a>
+      <a href="#contact">联系我们</a>
+    </nav>
+  </header>
+
+  <!-- 主视觉 -->
+  <div class="hero">
+    <div class="hero-left">
+      <svg width="96" height="96" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:24px;display:block;">
+        <defs>
+          <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#60a5fa"/>
+          </linearGradient>
+          <filter id="logoGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle cx="90" cy="90" r="82" fill="none" stroke="url(#logoGrad)" stroke-width="0.5" opacity="0.2"/>
+        <g class="ring-outer">
+          <circle cx="90" cy="90" r="72" fill="none" stroke="url(#logoGrad)" stroke-width="1" stroke-dasharray="12,8" opacity="0.5"/>
+          <circle cx="90" cy="18" r="3" fill="#a78bfa" filter="url(#logoGlow)"/>
+          <circle cx="90" cy="162" r="3" fill="#60a5fa" filter="url(#logoGlow)"/>
+          <circle cx="18" cy="90" r="3" fill="#a78bfa" filter="url(#logoGlow)"/>
+          <circle cx="162" cy="90" r="3" fill="#60a5fa" filter="url(#logoGlow)"/>
+        </g>
+        <g class="ring-inner">
+          <ellipse cx="90" cy="90" rx="52" ry="18" fill="none" stroke="url(#logoGrad)" stroke-width="1" stroke-dasharray="8,6" opacity="0.5"/>
+          <circle cx="90" cy="72" r="2.5" fill="#c4b5fd" filter="url(#logoGlow)"/>
+          <circle cx="90" cy="108" r="2.5" fill="#93c5fd" filter="url(#logoGlow)"/>
+        </g>
+        <circle cx="90" cy="90" r="42" fill="rgba(167,139,250,0.06)" stroke="url(#logoGrad)" stroke-width="1.2"/>
+        <ellipse cx="90" cy="90" rx="42" ry="15" fill="none" stroke="url(#logoGrad)" stroke-width="0.8" opacity="0.35"/>
+        <line x1="90" y1="48" x2="90" y2="132" stroke="url(#logoGrad)" stroke-width="0.8" opacity="0.35"/>
+        <text x="90" y="86" text-anchor="middle" font-size="16" font-weight="700" font-family="sans-serif" letter-spacing="3" fill="url(#logoGrad)" filter="url(#logoGlow)">OPTEC</text>
+        <text x="90" y="100" text-anchor="middle" font-size="7" font-family="sans-serif" letter-spacing="2.5" fill="#64748b">LOGISTICS</text>
+        <circle cx="90" cy="90" r="3.5" fill="url(#logoGrad)" filter="url(#logoGlow)"/>
+      </svg>
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Global Logistics Solutions
+      </div>
+      <h1>连接世界的<br>国际货运物流</h1>
+      <p class="hero-desc">OPTEC株式会社专注于国际货运物流领域，以空运、海运为核心，提供医药品冷链运输及展会物流等专业一体化服务，构建高效可靠的全球供应链网络。</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">50+</div>
+        <div class="stat-label">覆盖国家地区</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10yr</div>
+        <div class="stat-label">行业经验</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">全天候服务</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">合作客户</div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- 业务说明 -->
+  <section id="services">
+    <p class="section-eyebrow reveal">Services</p>
+    <h2 class="section-title reveal">业务说明</h2>
+    <div class="services-grid">
+      <div class="service-card reveal reveal-delay-1">
+        <span class="service-icon">✈️</span>
+        <h3>空运</h3>
+        <p>整合全球主要航线资源，提供紧急货物、小批量高价值货物的快速空运服务，确保时效与安全。</p>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <span class="service-icon">🚢</span>
+        <h3>海运</h3>
+        <p>整箱及拼箱海运方案，覆盖亚欧美主要港口，适合大批量货物经济运输需求。</p>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <span class="service-icon">💊</span>
+        <h3>医药品物流</h3>
+        <p>符合GDP标准的医药品冷链运输，全程温度监控，确保药品品质与合规性。</p>
+      </div>
+      <div class="service-card reveal reveal-delay-4">
+        <span class="service-icon">🎪</span>
+        <h3>展会物流</h3>
+        <p>展品一站式物流方案，涵盖包装、运输、清关及现场布撤展全流程支持。</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 服务流程 -->
+  <section id="process">
+    <p class="section-eyebrow reveal">Process</p>
+    <h2 class="section-title reveal">服务流程</h2>
+    <div class="steps reveal">
+      <div class="steps-line"></div>
+      <div class="step">
+        <div class="step-circle">📋</div>
+        <div class="step-title">询价下单</div>
+        <div class="step-desc">提交货物信息，获取专属报价方案</div>
+      </div>
+      <div class="step">
+        <div class="step-circle">📦</div>
+        <div class="step-title">订舱备货</div>
+        <div class="step-desc">确认舱位，安排提货与包装</div>
+      </div>
+      <div class="step">
+        <div class="step-circle">🛫</div>
+        <div class="step-title">运输发货</div>
+        <div class="step-desc">货物出发，实时追踪运输状态</div>
+      </div>
+      <div class="step">
+        <div class="step-circle">🔍</div>
+        <div class="step-title">清关报检</div>
+        <div class="step-desc">专业团队处理目的地清关手续</div>
+      </div>
+      <div class="step">
+        <div class="step-circle">🏁</div>
+        <div class="step-title">签收交货</div>
+        <div class="step-desc">安全送达，确认签收完成交付</div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 全球航线地图 -->
+  <section id="coverage">
+    <p class="section-eyebrow reveal">Coverage</p>
+    <h2 class="section-title reveal">全球航线网络</h2>
+    <div class="map-wrap reveal">
+      <svg viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgGlow" cx="84%" cy="28%" r="45%">
+            <stop offset="0%" stop-color="#3b1d8a" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#080615" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="lineAsia" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#60a5fa" stop-opacity="0.3"/>
+          </linearGradient>
+          <linearGradient id="lineEurope" x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.2"/>
+          </linearGradient>
+          <linearGradient id="lineAmerica" x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#c4b5fd" stop-opacity="0.2"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="5" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- 背景 -->
+        <rect width="1000" height="520" fill="#080615"/>
+        <rect width="1000" height="520" fill="url(#bgGlow)"/>
+
+        <!-- 经纬格网 -->
+        <g stroke="rgba(167,139,250,0.05)" stroke-width="0.6" fill="none">
+          <line x1="0" y1="104" x2="1000" y2="104"/>
+          <line x1="0" y1="208" x2="1000" y2="208"/>
+          <line x1="0" y1="312" x2="1000" y2="312"/>
+          <line x1="0" y1="416" x2="1000" y2="416"/>
+          <line x1="200" y1="0" x2="200" y2="520"/>
+          <line x1="400" y1="0" x2="400" y2="520"/>
+          <line x1="600" y1="0" x2="600" y2="520"/>
+          <line x1="800" y1="0" x2="800" y2="520"/>
+        </g>
+
+        <!-- 大陆轮廓（更精准的简化版） -->
+        <!-- 北美洲 -->
+        <path d="M 95,55 C 130,45 190,50 240,68 C 275,82 295,108 308,138 C 318,162 312,192 295,210 C 272,234 240,242 210,238 C 182,232 158,218 138,198 C 112,172 88,145 82,115 C 76,88 78,62 95,55 Z"
+          fill="rgba(139,111,234,0.08)" stroke="rgba(139,111,234,0.2)" stroke-width="1.2"/>
+        <!-- 南美洲 -->
+        <path d="M 218,248 C 248,238 285,242 305,262 C 322,280 328,312 322,350 C 316,385 296,412 268,422 C 242,430 215,422 200,402 C 184,380 180,350 185,318 C 190,284 196,258 218,248 Z"
+          fill="rgba(139,111,234,0.08)" stroke="rgba(139,111,234,0.2)" stroke-width="1.2"/>
+        <!-- 欧洲 -->
+        <path d="M 448,58 C 478,50 528,52 556,68 C 570,78 568,100 555,116 C 540,132 512,138 485,135 C 460,130 440,118 435,100 C 430,82 432,64 448,58 Z"
+          fill="rgba(139,111,234,0.08)" stroke="rgba(139,111,234,0.2)" stroke-width="1.2"/>
+        <!-- 非洲 -->
+        <path d="M 448,148 C 485,138 548,140 582,162 C 608,180 614,220 610,268 C 606,316 586,355 555,372 C 522,388 482,384 455,365 C 428,345 418,310 415,272 C 412,232 418,185 435,162 C 440,155 444,150 448,148 Z"
+          fill="rgba(139,111,234,0.08)" stroke="rgba(139,111,234,0.2)" stroke-width="1.2"/>
+        <!-- 亚洲 -->
+        <path d="M 555,48 C 640,38 755,36 852,55 C 908,68 942,98 938,148 C 934,192 902,222 858,232 C 815,240 768,228 728,212 C 690,196 655,175 618,158 C 582,140 558,115 552,85 C 548,68 550,55 555,48 Z"
+          fill="rgba(139,111,234,0.08)" stroke="rgba(139,111,234,0.2)" stroke-width="1.2"/>
+        <!-- 大洋洲 -->
+        <path d="M 798,302 C 835,290 898,292 932,318 C 952,335 952,372 930,392 C 905,412 862,415 832,398 C 800,380 785,352 788,326 C 790,312 794,306 798,302 Z"
+          fill="rgba(139,111,234,0.08)" stroke="rgba(139,111,234,0.2)" stroke-width="1.2"/>
+
+        <!-- 航线（流动虚线，从上海出发） -->
+        <!-- 上海 → 东京 -->
+        <path d="M 838,162 Q 858,138 882,148" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="6,4" opacity="0.7">
+          <animate attributeName="stroke-dashoffset" from="0" to="-60" dur="2s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 首尔 -->
+        <path d="M 838,162 Q 848,142 862,148" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="5,3" opacity="0.65">
+          <animate attributeName="stroke-dashoffset" from="0" to="-50" dur="1.8s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 香港 -->
+        <path d="M 838,162 Q 835,178 828,192" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="5,3" opacity="0.65">
+          <animate attributeName="stroke-dashoffset" from="0" to="-50" dur="1.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 新加坡 -->
+        <path d="M 838,162 Q 808,205 780,248" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="6,4" opacity="0.6">
+          <animate attributeName="stroke-dashoffset" from="0" to="-60" dur="2.2s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 迪拜 -->
+        <path d="M 838,162 Q 730,170 648,194" fill="none" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="7,4" opacity="0.6">
+          <animate attributeName="stroke-dashoffset" from="0" to="-66" dur="2.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 法兰克福 -->
+        <path d="M 838,162 Q 680,88 524,98" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="8,5" opacity="0.65">
+          <animate attributeName="stroke-dashoffset" from="0" to="-78" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 伦敦 -->
+        <path d="M 838,162 Q 660,72 460,85" fill="none" stroke="#a78bfa" stroke-width="1.3" stroke-dasharray="8,5" opacity="0.55">
+          <animate attributeName="stroke-dashoffset" from="0" to="-78" dur="3.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 纽约 -->
+        <path d="M 838,162 Q 580,55 205,118" fill="none" stroke="#c4b5fd" stroke-width="1.5" stroke-dasharray="10,5" opacity="0.5">
+          <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="4s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 洛杉矶 -->
+        <path d="M 838,162 Q 760,220 148,152" fill="none" stroke="#c4b5fd" stroke-width="1.3" stroke-dasharray="10,5" opacity="0.45">
+          <animate attributeName="stroke-dashoffset" from="0" to="-90" dur="4.5s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 悉尼 -->
+        <path d="M 838,162 Q 885,265 905,342" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-dasharray="6,4" opacity="0.55">
+          <animate attributeName="stroke-dashoffset" from="0" to="-60" dur="2.8s" repeatCount="indefinite"/>
+        </path>
+        <!-- 上海 → 约翰内斯堡 -->
+        <path d="M 838,162 Q 700,280 525,338" fill="none" stroke="#a78bfa" stroke-width="1" stroke-dasharray="6,4" opacity="0.4">
+          <animate attributeName="stroke-dashoffset" from="0" to="-60" dur="3.2s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- 城市节点 -->
+
+        <!-- 上海（枢纽） -->
+        <circle cx="838" cy="162" r="28" fill="#a78bfa" opacity="0.05" filter="url(#softGlow)">
+          <animate attributeName="r" values="22;32;22" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.05;0.12;0.05" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="838" cy="162" r="9" fill="#a78bfa" opacity="0.25"/>
+        <circle cx="838" cy="162" r="5.5" fill="#a78bfa" filter="url(#glow)"/>
+        <text x="848" y="155" font-size="11.5" font-weight="bold" fill="#e2e8f0" font-family="sans-serif">上海</text>
+
+        <!-- 亚洲城市 -->
+        <circle cx="882" cy="148" r="14" fill="#60a5fa" opacity="0.07"><animate attributeName="r" values="10;16;10" dur="2.8s" repeatCount="indefinite"/></circle>
+        <circle cx="882" cy="148" r="3.5" fill="#60a5fa" opacity="0.9" filter="url(#glow)"/>
+        <text x="890" y="145" font-size="10" fill="#94a3b8" font-family="sans-serif">东京</text>
+
+        <circle cx="862" cy="148" r="3.5" fill="#60a5fa" opacity="0.9" filter="url(#glow)"/>
+        <text x="840" y="143" font-size="10" fill="#94a3b8" font-family="sans-serif">首尔</text>
+
+        <circle cx="828" cy="194" r="3.5" fill="#60a5fa" opacity="0.9" filter="url(#glow)"/>
+        <text x="836" y="191" font-size="10" fill="#94a3b8" font-family="sans-serif">香港</text>
+
+        <circle cx="780" cy="250" r="3.5" fill="#60a5fa" opacity="0.9" filter="url(#glow)"/>
+        <text x="788" y="247" font-size="10" fill="#94a3b8" font-family="sans-serif">新加坡</text>
+
+        <circle cx="762" cy="220" r="3.5" fill="#60a5fa" opacity="0.9" filter="url(#glow)"/>
+        <text x="740" y="232" font-size="10" fill="#94a3b8" font-family="sans-serif">曼谷</text>
+
+        <!-- 中东 -->
+        <circle cx="648" cy="194" r="12" fill="#a78bfa" opacity="0.07"><animate attributeName="r" values="8;14;8" dur="3.2s" repeatCount="indefinite"/></circle>
+        <circle cx="648" cy="194" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="656" y="191" font-size="10" fill="#94a3b8" font-family="sans-serif">迪拜</text>
+
+        <!-- 欧洲 -->
+        <circle cx="524" cy="98" r="14" fill="#a78bfa" opacity="0.07"><animate attributeName="r" values="10;16;10" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="524" cy="98" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="532" y="95" font-size="10" fill="#94a3b8" font-family="sans-serif">法兰克福</text>
+
+        <circle cx="500" cy="88" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="458" y="84" font-size="10" fill="#94a3b8" font-family="sans-serif">阿姆斯特丹</text>
+
+        <circle cx="460" cy="85" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="435" y="78" font-size="10" fill="#94a3b8" font-family="sans-serif">伦敦</text>
+
+        <circle cx="505" cy="100" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="505" y="112" font-size="10" fill="#94a3b8" font-family="sans-serif">巴黎</text>
+
+        <circle cx="512" cy="82" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="512" y="74" font-size="10" fill="#94a3b8" font-family="sans-serif">汉堡</text>
+
+        <!-- 北美 -->
+        <circle cx="205" cy="118" r="14" fill="#c4b5fd" opacity="0.07"><animate attributeName="r" values="10;16;10" dur="3.5s" repeatCount="indefinite"/></circle>
+        <circle cx="205" cy="118" r="3.5" fill="#c4b5fd" opacity="0.9" filter="url(#glow)"/>
+        <text x="213" y="115" font-size="10" fill="#94a3b8" font-family="sans-serif">纽约</text>
+
+        <circle cx="148" cy="152" r="3.5" fill="#c4b5fd" opacity="0.9" filter="url(#glow)"/>
+        <text x="112" y="148" font-size="10" fill="#94a3b8" font-family="sans-serif">洛杉矶</text>
+
+        <circle cx="188" cy="132" r="3.5" fill="#c4b5fd" opacity="0.9" filter="url(#glow)"/>
+        <text x="196" y="129" font-size="10" fill="#94a3b8" font-family="sans-serif">芝加哥</text>
+
+        <circle cx="212" cy="105" r="3.5" fill="#c4b5fd" opacity="0.9" filter="url(#glow)"/>
+        <text x="220" y="102" font-size="10" fill="#94a3b8" font-family="sans-serif">多伦多</text>
+
+        <!-- 大洋洲 -->
+        <circle cx="905" cy="345" r="12" fill="#60a5fa" opacity="0.07"><animate attributeName="r" values="8;14;8" dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="905" cy="345" r="3.5" fill="#60a5fa" opacity="0.9" filter="url(#glow)"/>
+        <text x="913" y="342" font-size="10" fill="#94a3b8" font-family="sans-serif">悉尼</text>
+
+        <!-- 南美 -->
+        <circle cx="258" cy="315" r="3.5" fill="#c4b5fd" opacity="0.9" filter="url(#glow)"/>
+        <text x="266" y="312" font-size="10" fill="#94a3b8" font-family="sans-serif">圣保罗</text>
+
+        <!-- 非洲 -->
+        <circle cx="525" cy="338" r="3.5" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+        <text x="533" y="335" font-size="10" fill="#94a3b8" font-family="sans-serif">约翰内斯堡</text>
+
+        <!-- 图例 -->
+        <g transform="translate(28, 478)">
+          <circle cx="7" cy="7" r="4" fill="#60a5fa" filter="url(#glow)"/>
+          <text x="16" y="11" font-size="10" fill="#475569" font-family="sans-serif">东北亚 / 东南亚 / 大洋洲</text>
+          <circle cx="190" cy="7" r="4" fill="#a78bfa" filter="url(#glow)"/>
+          <text x="199" y="11" font-size="10" fill="#475569" font-family="sans-serif">欧洲 / 中东 / 非洲</text>
+          <circle cx="345" cy="7" r="4" fill="#c4b5fd" filter="url(#glow)"/>
+          <text x="354" y="11" font-size="10" fill="#475569" font-family="sans-serif">美洲</text>
+          <circle cx="390" cy="7" r="6" fill="#a78bfa" opacity="0.9" filter="url(#glow)"/>
+          <text x="401" y="11" font-size="10" fill="#475569" font-family="sans-serif">枢纽城市（上海）</text>
+        </g>
+      </svg>
+
+      <div class="map-footer">
+        <div class="map-stat">
+          <div class="map-stat-num">50+</div>
+          <div class="map-stat-label">覆盖国家地区</div>
+        </div>
+        <div class="map-stat">
+          <div class="map-stat-num">19</div>
+          <div class="map-stat-label">主要枢纽城市</div>
+        </div>
+        <div class="map-stat">
+          <div class="map-stat-num">200+</div>
+          <div class="map-stat-label">合作航司与船公司</div>
+        </div>
+        <div class="map-stat">
+          <div class="map-stat-num">5</div>
+          <div class="map-stat-label">大洲覆盖</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 核心优势 -->
+  <section id="strengths">
+    <p class="section-eyebrow reveal">Why OPTEC</p>
+    <h2 class="section-title reveal">核心优势</h2>
+    <div class="strengths-grid">
+      <div class="strength-card reveal reveal-delay-1">
+        <span class="strength-icon">⚡</span>
+        <h3>时效保障</h3>
+        <p>与全球主要航司深度合作，优先舱位保障，准时交货率达98%。</p>
+      </div>
+      <div class="strength-card reveal reveal-delay-2">
+        <span class="strength-icon">🛡️</span>
+        <h3>合规认证</h3>
+        <p>持有IATA、GDP等国际资质认证，严格遵守各国进出口法规。</p>
+      </div>
+      <div class="strength-card reveal reveal-delay-3">
+        <span class="strength-icon">📡</span>
+        <h3>全程追踪</h3>
+        <p>实时在线追踪系统，货物状态随时可查，物流透明无盲区。</p>
+      </div>
+      <div class="strength-card reveal reveal-delay-4">
+        <span class="strength-icon">👥</span>
+        <h3>专业团队</h3>
+        <p>拥有10年以上经验的物流专家，提供一对一专属贴心服务。</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 客户评价轮播 -->
+  <section id="reviews">
+    <p class="section-eyebrow reveal">Reviews</p>
+    <h2 class="section-title reveal">客户评价</h2>
+    <div class="reviews-track-wrap reveal">
+      <div class="reviews-track" id="reviewTrack">
+        <!-- 第一组 -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">与OPTEC合作三年，空运时效一直非常稳定。医药品的冷链管理尤其专业，完全符合我们的合规要求。</p>
+          <div class="review-author">
+            <div class="review-avatar">田</div>
+            <div><div class="review-name">田中 健一</div><div class="review-company">某制药株式会社 · 物流部长</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">展会物流交给OPTEC后省心多了，从包装到现场布置全程跟进，没有出过任何差错。强烈推荐！</p>
+          <div class="review-author">
+            <div class="review-avatar">李</div>
+            <div><div class="review-name">李 明华</div><div class="review-company">国际展览集团 · 运营总监</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <p class="review-text">海运拼箱价格合理，清关速度比之前的物流商快很多。实时追踪功能很实用，随时掌握货物动态。</p>
+          <div class="review-author">
+            <div class="review-avatar">王</div>
+            <div><div class="review-name">王 志远</div><div class="review-company">跨境电商平台 · 供应链经理</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">首次使用OPTEC的展会物流服务，从北京到迪拜的展品运输全程无损，现场布展也非常顺利，超出预期。</p>
+          <div class="review-author">
+            <div class="review-avatar">陈</div>
+            <div><div class="review-name">陈 雨晴</div><div class="review-company">科技展览公司 · 项目总监</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">OPTEC的客服响应非常及时，半夜遇到清关问题也能马上得到处理，真正做到了24/7服务承诺。</p>
+          <div class="review-author">
+            <div class="review-avatar">张</div>
+            <div><div class="review-name">张 伟明</div><div class="review-company">进出口贸易公司 · 总经理</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <p class="review-text">医药品进口通关手续繁琐，OPTEC的专业团队全程代办，资质文件准备得非常齐全，省了我们很多精力。</p>
+          <div class="review-author">
+            <div class="review-avatar">林</div>
+            <div><div class="review-name">林 静怡</div><div class="review-company">医疗器械公司 · 采购总监</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">从上海发往欧洲的整箱货，OPTEC给出了市场上最具竞争力的价格，而且服务质量一点没打折。</p>
+          <div class="review-author">
+            <div class="review-avatar">吴</div>
+            <div><div class="review-name">吴 海涛</div><div class="review-company">制造业出口企业 · 物流经理</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">合作两年来，OPTEC的追踪系统让我们随时掌握货物动态，大幅提升了我们对客户的服务响应速度。</p>
+          <div class="review-author">
+            <div class="review-avatar">赵</div>
+            <div><div class="review-name">赵 小燕</div><div class="review-company">电商平台 · 供应链总监</div></div>
+          </div>
+        </div>
+        <!-- 第二组（复制，实现无缝循环） -->
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">与OPTEC合作三年，空运时效一直非常稳定。医药品的冷链管理尤其专业，完全符合我们的合规要求。</p>
+          <div class="review-author">
+            <div class="review-avatar">田</div>
+            <div><div class="review-name">田中 健一</div><div class="review-company">某制药株式会社 · 物流部长</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">展会物流交给OPTEC后省心多了，从包装到现场布置全程跟进，没有出过任何差错。强烈推荐！</p>
+          <div class="review-author">
+            <div class="review-avatar">李</div>
+            <div><div class="review-name">李 明华</div><div class="review-company">国际展览集团 · 运营总监</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <p class="review-text">海运拼箱价格合理，清关速度比之前的物流商快很多。实时追踪功能很实用，随时掌握货物动态。</p>
+          <div class="review-author">
+            <div class="review-avatar">王</div>
+            <div><div class="review-name">王 志远</div><div class="review-company">跨境电商平台 · 供应链经理</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">首次使用OPTEC的展会物流服务，从北京到迪拜的展品运输全程无损，现场布展也非常顺利，超出预期。</p>
+          <div class="review-author">
+            <div class="review-avatar">陈</div>
+            <div><div class="review-name">陈 雨晴</div><div class="review-company">科技展览公司 · 项目总监</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">OPTEC的客服响应非常及时，半夜遇到清关问题也能马上得到处理，真正做到了24/7服务承诺。</p>
+          <div class="review-author">
+            <div class="review-avatar">张</div>
+            <div><div class="review-name">张 伟明</div><div class="review-company">进出口贸易公司 · 总经理</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <p class="review-text">医药品进口通关手续繁琐，OPTEC的专业团队全程代办，资质文件准备得非常齐全，省了我们很多精力。</p>
+          <div class="review-author">
+            <div class="review-avatar">林</div>
+            <div><div class="review-name">林 静怡</div><div class="review-company">医疗器械公司 · 采购总监</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">从上海发往欧洲的整箱货，OPTEC给出了市场上最具竞争力的价格，而且服务质量一点没打折。</p>
+          <div class="review-author">
+            <div class="review-avatar">吴</div>
+            <div><div class="review-name">吴 海涛</div><div class="review-company">制造业出口企业 · 物流经理</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">合作两年来，OPTEC的追踪系统让我们随时掌握货物动态，大幅提升了我们对客户的服务响应速度。</p>
+          <div class="review-author">
+            <div class="review-avatar">赵</div>
+            <div><div class="review-name">赵 小燕</div><div class="review-company">电商平台 · 供应链总监</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- FAQ -->
+  <section id="faq">
+    <p class="section-eyebrow reveal">FAQ</p>
+    <h2 class="section-title reveal" style="text-align:center;">常见问题</h2>
+    <div class="faq-list">
+      <div class="faq-item reveal reveal-delay-1">
+        <div class="faq-q">
+          空运和海运应该如何选择？
+          <div class="faq-q-icon">+</div>
+        </div>
+        <div class="faq-a">一般来说，时效要求高、货值高或数量少的货物建议选择空运；货量大、重量重且时间充裕的货物选择海运更经济。我们的专业团队可根据您的具体情况提供最优建议。</div>
+      </div>
+      <div class="faq-item reveal reveal-delay-2">
+        <div class="faq-q">
+          医药品运输需要哪些资质和文件？
+          <div class="faq-q-icon">+</div>
+        </div>
+        <div class="faq-a">医药品国际运输通常需要原产地证明、药品注册证、出口许可证及相关检验报告。我们具备完整的GDP认证资质，可全程协助客户准备和审核所需文件。</div>
+      </div>
+      <div class="faq-item reveal reveal-delay-3">
+        <div class="faq-q">
+          如何追踪货物状态？
+          <div class="faq-q-icon">+</div>
+        </div>
+        <div class="faq-a">您可通过我们提供的在线追踪系统，使用货物单号实时查询运输状态。同时，我们的客服团队也会在关键节点主动通知您货物进展。</div>
+      </div>
+      <div class="faq-item reveal reveal-delay-4">
+        <div class="faq-q">
+          报价流程需要多长时间？
+          <div class="faq-q-icon">+</div>
+        </div>
+        <div class="faq-a">提交货物信息后我们会在2小时内给出初步报价，正式报价单在1个工作日内完成。紧急情况可联系我们的24/7服务热线。</div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- 联系方式 -->
+  <section id="contact">
+    <p class="section-eyebrow reveal">Contact</p>
+    <h2 class="section-title reveal">联系方式</h2>
+    <div class="contact-grid">
+      <div class="contact-item reveal reveal-delay-1">
+        <p class="contact-label">Address</p>
+        <p class="contact-value">上海市浦东新区<br>陆家嘴金融贸易区<br>XX大厦 18F</p>
+      </div>
+      <div class="contact-item reveal reveal-delay-2">
+        <p class="contact-label">Phone / Fax</p>
+        <p class="contact-value">TEL: 021-0000-0000<br>FAX: 021-0000-0001<br>全天候服务 24/7</p>
+      </div>
+      <div class="contact-item reveal reveal-delay-3">
+        <p class="contact-label">Email / Web</p>
+        <p class="contact-value">info@optec-exp.com<br>sales@optec-exp.com<br>www.optec-exp.com</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="footer-logo">OPTEC</span>
+    <span>© 2026 OPTEC株式会社. All rights reserved. · Made with Claude Code</span>
+  </footer>
+
+  <script>
+    // 滚动触发动画
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
