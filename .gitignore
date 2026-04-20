@@ -4,5 +4,7 @@
 # 只跟踪项目文件
 !.gitignore
 !optec-profile.html
-!self-intro.html
-!nicole-photo.png
+!Desktop/
+!Desktop/培训内容/
+!Desktop/培训内容/self-intro.html
+!Desktop/培训内容/nicole-photo.png
