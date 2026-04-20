@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>自我介绍 — NICOLE JI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f0f4f8;
+      color: #1a1a2e;
+      line-height: 1.7;
+    }
+
+    /* HEADER */
+    header {
+      background: #0a1628;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,.5);
+      border-bottom: 2px solid #00b4d8;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; color: #fff; font-size: 18px;
+    }
+    .logo-text { font-size: 15px; font-weight: 700; color: #e0f4ff; letter-spacing: 1px; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0a1628 0%, #0d2149 55%, #0077b6 100%);
+      padding: 64px 32px 72px;
+      text-align: center;
+    }
+    .avatar-wrap {
+      margin-bottom: 24px;
+      display: inline-block;
+      position: relative;
+    }
+    .avatar-wrap img {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #00b4d8;
+      box-shadow: 0 0 32px rgba(0,180,216,.5);
+      display: block;
+    }
+    .badge {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      background: #00b4d8;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 16px rgba(0,180,216,.4);
+    }
+    .hero .role {
+      font-size: 1rem;
+      color: #00b4d8;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .hero .tagline {
+      font-size: 1.05rem;
+      color: #b0c8e0;
+      max-width: 480px;
+      margin: 0 auto;
+      font-style: italic;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 960px;
+      margin: 48px auto 64px;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.06);
+    }
+    .card.full { grid-column: 1 / -1; }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #0077b6;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e0f4ff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* info list */
+    .info-list { list-style: none; }
+    .info-list li {
+      display: flex; gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f4f8;
+      font-size: 0.95rem;
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list .lbl { min-width: 80px; font-weight: 700; color: #0077b6; }
+
+    /* goal list */
+    .goal-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f4f8;
+    }
+    .goal-item:last-child { border-bottom: none; }
+    .goal-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      color: #fff;
+    }
+    .goal-title { font-weight: 700; color: #1a1a2e; font-size: 0.97rem; }
+    .goal-desc { font-size: 0.88rem; color: #666; margin-top: 2px; }
+
+    /* quote */
+    .quote-box {
+      background: linear-gradient(135deg, #0a1628, #0d2149);
+      border-radius: 12px;
+      padding: 28px 32px;
+      border-left: 4px solid #00b4d8;
+      color: #e0f4ff;
+      font-size: 1.1rem;
+      font-style: italic;
+      line-height: 1.8;
+    }
+    .quote-box .author { text-align: right; color: #00b4d8; font-size: 0.9rem; font-weight: 700; margin-top: 12px; font-style: normal; }
+
+    /* FOOTER */
+    footer {
+      background: #0a1628;
+      color: #6a8aaa;
+      text-align: center;
+      padding: 28px;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      main { grid-template-columns: 1fr; }
+      .card.full { grid-column: 1; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-icon">O</div>
+    <span class="logo-text">OPTEC AI Academy — 作品 01</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="avatar-wrap">
+    <img src="nicole-photo.png" alt="NICOLE JI" />
+    <span class="badge">DX室</span>
+  </div>
+  <h1>美丽的 NICOLE JI</h1>
+  <p class="role">OPTEC AI Academy · 第1期学员</p>
+  <p class="tagline">「打败一切不可能」</p>
+</section>
+
+<main>
+
+  <div class="card">
+    <h2>基本信息</h2>
+    <ul class="info-list">
+      <li><span class="lbl">姓名</span><span>美丽的 NICOLE JI</span></li>
+      <li><span class="lbl">所属</span><span>DX室</span></li>
+      <li><span class="lbl">担当业务</span><span>DX推进相关工作</span></li>
+      <li><span class="lbl">参加期</span><span>OPTEC AI Academy 第1期</span></li>
+      <li><span class="lbl">兴趣</span><span>打败一切不可能</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>我的目标</h2>
+    <div class="goal-item">
+      <div class="goal-icon">🚀</div>
+      <div>
+        <div class="goal-title">成为马斯克一样的男人</div>
+        <div class="goal-desc">无惧挑战，用技术改变世界</div>
+      </div>
+    </div>
+    <div class="goal-item">
+      <div class="goal-icon">💡</div>
+      <div>
+        <div class="goal-title">60天内完成55〜65个作品</div>
+        <div class="goal-desc">数量转化为质量，不断做、做、做</div>
+      </div>
+    </div>
+    <div class="goal-item">
+      <div class="goal-icon">⚡</div>
+      <div>
+        <div class="goal-title">用AI重构公司业务</div>
+        <div class="goal-desc">将DX知识转化为实际可用的数字化解决方案</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <h2>自我PR</h2>
+    <div class="quote-box">
+      「打败一切不可能」——这不只是一句口号，而是我每天起床的理由。<br><br>
+      作为OPTEC DX室的成员，我相信技术的边界就是想象力的边界。
+      没有IT背景又怎样？马斯克也不是生来就懂火箭。
+      重要的是<strong style="color:#00b4d8">敢想、敢做、快速验证</strong>。<br><br>
+      60天后，站在发表会的舞台上，我要让所有人看到：
+      一个美丽的NICOLE JI，能用AI做到什么。
+      <div class="author">— NICOLE JI · 2026</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>OPTEC AI Academy 第1期 &nbsp;|&nbsp; 作品01 — 自我介绍页面 &nbsp;|&nbsp; 2026</p>
+</footer>
+
+</body>
+</html>

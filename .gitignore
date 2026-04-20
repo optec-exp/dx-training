@@ -4,3 +4,5 @@
 # 只跟踪项目文件
 !.gitignore
 !optec-profile.html
+!self-intro.html
+!nicole-photo.png
