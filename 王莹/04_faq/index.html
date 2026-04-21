@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ & 联系我们 — OPTEC EXPRESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Noto Sans SC', sans-serif; background: #F9F7F4; color: #1a1a1a; }
+
+  /* ─── HEADER ─── */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #F9F7F4cc; backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e8e4de;
+    padding: 0 48px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 13px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #111; }
+  nav { display: flex; gap: 40px; }
+  nav a { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #888; text-decoration: none; transition: color 0.2s; }
+  nav a:hover { color: #111; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 140px 48px 72px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: 'FAQ'; position: absolute;
+    right: 32px; top: 72px;
+    font-size: 200px; font-weight: 700; color: #f0ede8;
+    line-height: 1; letter-spacing: -8px; user-select: none; pointer-events: none; z-index: 0;
+  }
+  .hero-left, .hero-right { position: relative; z-index: 1; }
+  .hero-label { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #aaa; margin-bottom: 28px; display: flex; align-items: center; gap: 12px; }
+  .hero-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: #aaa; }
+  .hero h1 { font-size: 52px; font-weight: 300; line-height: 1.15; color: #111; }
+  .hero h1 strong { font-weight: 700; display: block; }
+  .hero-desc { font-size: 15px; color: #777; line-height: 1.8; margin-top: 24px; max-width: 440px; }
+  .hero-right { display: flex; flex-direction: column; gap: 24px; padding-bottom: 8px; }
+  .stat-item { border-left: 2px solid #111; padding-left: 20px; }
+  .stat-num { font-size: 36px; font-weight: 300; color: #111; line-height: 1; }
+  .stat-num span { font-size: 18px; }
+  .stat-label { font-size: 12px; color: #999; margin-top: 6px; letter-spacing: 1px; }
+
+  /* ─── DIVIDER ─── */
+  .divider { max-width: 1400px; margin: 0 auto; padding: 0 48px; }
+  .divider hr { border: none; border-top: 1px solid #e0dbd4; }
+
+  /* ─── MAIN ─── */
+  .main { max-width: 1400px; margin: 0 auto; padding: 72px 48px 100px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 80px; align-items: start; }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: #aaa; margin-bottom: 40px; display: flex; align-items: center; gap: 12px; }
+  .section-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: #aaa; }
+
+  /* ─── FAQ SEARCH ─── */
+  .faq-search-wrap { position: relative; margin-bottom: 40px; }
+  .faq-search {
+    width: 100%; background: transparent; border: none; border-bottom: 1px solid #ddd;
+    padding: 10px 32px 10px 0; font-size: 14px; font-family: inherit; color: #111;
+    outline: none; transition: border-color 0.25s;
+  }
+  .faq-search::placeholder { color: #ccc; }
+  .faq-search:focus { border-bottom-color: #111; }
+  .search-icon { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; opacity: 0.3; pointer-events: none; }
+  .no-results { font-size: 13px; color: #aaa; padding: 24px 0; display: none; }
+  .no-results.show { display: block; }
+
+  /* ─── FAQ CATEGORY ─── */
+  .faq-category { margin-bottom: 48px; }
+  .faq-category.hidden { display: none; }
+  .category-header { padding-bottom: 16px; border-bottom: 2px solid #111; }
+  .category-title-wrap { display: flex; align-items: center; gap: 12px; }
+  .category-num { font-size: 11px; color: #ccc; font-weight: 700; letter-spacing: 1px; }
+  .category-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #333; font-weight: 600; }
+  .category-desc { font-size: 12px; color: #bbb; margin-top: 10px; line-height: 1.6; }
+
+  /* ─── FAQ ITEM ─── */
+  .faq-item { border-top: 1px solid #e8e8e8; transition: border-color 0.2s; }
+  .faq-item:last-child { border-bottom: 1px solid #e8e8e8; }
+  .faq-item.active { border-top-color: #bbb; }
+  .faq-item.hidden { display: none; }
+  .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; cursor: pointer; user-select: none; }
+  .faq-q-inner { display: flex; align-items: flex-start; gap: 14px; }
+  .faq-index { font-size: 11px; color: #ccc; font-weight: 500; padding-top: 2px; flex-shrink: 0; }
+  .faq-question span.text { font-size: 14px; font-weight: 500; color: #222; line-height: 1.5; transition: color 0.2s; }
+  .faq-question:hover span.text { color: #000; }
+  .faq-icon { width: 18px; height: 18px; flex-shrink: 0; margin-left: 16px; position: relative; }
+  .faq-icon::before, .faq-icon::after { content: ''; position: absolute; background: #aaa; border-radius: 2px; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s; }
+  .faq-icon::before { width: 10px; height: 1.5px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .faq-icon::after  { width: 1.5px; height: 10px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .faq-item.active .faq-icon::before { background: #111; }
+  .faq-item.active .faq-icon::after  { transform: translate(-50%,-50%) rotate(90deg); opacity: 0; }
+  .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1); }
+  .faq-answer-inner { padding: 0 0 22px 28px; border-left: 2px solid #e8e8e8; margin-left: 2px; transition: border-color 0.3s; }
+  .faq-item.active .faq-answer-inner { border-left-color: #111; }
+  .faq-answer p { font-size: 13px; color: #666; line-height: 1.9; }
+  .faq-item.active .faq-answer { max-height: 250px; }
+
+  /* ─── FORM ─── */
+  .form-sticky { position: sticky; top: 88px; }
+  .form-group { margin-bottom: 28px; position: relative; }
+  .form-group label { display: block; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #aaa; margin-bottom: 10px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; background: transparent; border: none; border-bottom: 1px solid #ddd;
+    padding: 10px 0; font-size: 14px; font-family: inherit; color: #111;
+    outline: none; transition: border-color 0.25s; -webkit-appearance: none;
+  }
+  .form-group select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23999' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 4px center; padding-right: 20px;
+  }
+  .form-group select option { color: #111; background: #F9F7F4; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: #ccc; }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-bottom-color: #111; }
+  .form-group textarea { resize: none; height: 100px; }
+
+  /* 实时验证指示器 */
+  .field-indicator { position: absolute; right: 0; bottom: 12px; width: 6px; height: 6px; border-radius: 50%; background: transparent; transition: background 0.3s; }
+  .field-ok .field-indicator { background: #4CAF50; }
+  .field-err .field-indicator { background: #c0392b; }
+
+  .error-msg { font-size: 12px; color: #c0392b; margin-top: 6px; display: none; letter-spacing: 0.5px; }
+  .error-msg.show { display: block; }
+
+  .submit-btn {
+    background: #111; color: #F9F7F4; border: none;
+    padding: 16px 48px; font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.2s, transform 0.2s, letter-spacing 0.2s; margin-top: 8px;
+  }
+  .submit-btn:hover { background: #333; transform: translateY(-2px); letter-spacing: 5px; }
+  .submit-btn:active { transform: translateY(0); }
+
+  .success-msg { display: none; margin-top: 24px; padding: 20px 24px; background: #f0ede8; border-left: 3px solid #111; font-size: 14px; color: #444; line-height: 1.7; }
+  .success-msg.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ─── FLOAT BUTTON ─── */
+  .float-btn {
+    position: fixed; bottom: 40px; right: 40px; z-index: 200;
+    width: 52px; height: 52px; background: #111; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .float-btn:hover { transform: translateY(-4px) scale(1.08); box-shadow: 0 16px 32px rgba(0,0,0,0.22); }
+  .float-btn svg { width: 20px; height: 20px; fill: none; stroke: #F9F7F4; stroke-width: 1.5; }
+  .float-tooltip {
+    position: fixed; bottom: 100px; right: 40px; z-index: 200;
+    background: #111; color: #F9F7F4; font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 8px 14px; white-space: nowrap;
+    opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+  .float-btn:hover ~ .float-tooltip { opacity: 1; transform: translateY(0); }
+
+  /* ─── FOOTER ─── */
+  footer { border-top: 1px solid #e0dbd4; padding: 36px 48px; max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-size: 12px; font-weight: 700; letter-spacing: 4px; color: #999; text-transform: uppercase; }
+  .footer-copy { font-size: 12px; color: #ccc; }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">OPTEC EXPRESS</div>
+  <nav><a href="#faq">FAQ</a><a href="#contact">联系</a></nav>
+</header>
+
+<section class="hero">
+  <div class="hero-left reveal">
+    <p class="hero-label">常见问题 & 联系我们</p>
+    <h1>解答疑问<strong>随时联系</strong></h1>
+    <p class="hero-desc">整理了客户最常询问的国际货运问题，按主题分类排列。如有其他需求，欢迎通过表单直接与我们联系，1个工作日内回复。</p>
+  </div>
+  <div class="hero-right reveal" style="transition-delay:0.15s">
+    <div class="stat-item"><div class="stat-num">15<span>年+</span></div><div class="stat-label">国际物流服务经验</div></div>
+    <div class="stat-item"><div class="stat-num">48<span>h</span></div><div class="stat-label">平均询价响应时效</div></div>
+    <div class="stat-item"><div class="stat-num">99<span>%</span></div><div class="stat-label">客户问题解决率</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<div class="main">
+
+  <div id="faq">
+    <p class="section-label">常见问题</p>
+
+    <div class="faq-search-wrap reveal">
+      <input class="faq-search" type="text" id="faqSearch" placeholder="搜索问题关键词…" autocomplete="off">
+      <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="6.5" cy="6.5" r="5"/><path d="M10.5 10.5l4 4"/>
+      </svg>
+    </div>
+    <p class="no-results" id="noResults">未找到相关问题，欢迎通过右侧表单直接联系我们。</p>
+
+    <!-- 分类1 -->
+    <div class="faq-category reveal" data-category="运输方式">
+      <div class="category-header">
+        <div class="category-title-wrap"><span class="category-num">01</span><span class="category-title">运输方式</span></div>
+      </div>
+      <p class="category-desc">了解空运、海运的适用场景与费用差异，选择最适合您的方案。</p>
+      <div style="margin-top:16px">
+        <div class="faq-item" data-text="空运和海运的主要区别是什么">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">01</span><span class="text">空运和海运的主要区别是什么？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>空运速度快，适合时效性强的货物，通常3–7天即可到达目的地；海运成本低，适合大批量货物，运输周期约15–45天。选择方式主要取决于货物的时效要求与预算安排。</p></div></div>
+        </div>
+        <div class="faq-item" data-text="如何获取运费报价需要提供哪些信息">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">02</span><span class="text">如何获取运费报价？需要提供哪些信息？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>请通过右侧表单或邮件告知：起运地与目的地、货物品名及HS编码、重量与体积尺寸、期望交货日期。提供信息越完整，报价越精准，通常可在48小时内给出正式报价。</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类2 -->
+    <div class="faq-category reveal" style="transition-delay:0.1s" data-category="文件与手续">
+      <div class="category-header">
+        <div class="category-title-wrap"><span class="category-num">02</span><span class="category-title">文件与手续</span></div>
+      </div>
+      <p class="category-desc">报关所需的核心文件清单，以及清关受阻时的应对方式。</p>
+      <div style="margin-top:16px">
+        <div class="faq-item" data-text="进口货物需要准备哪些基本报关文件">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">03</span><span class="text">进口货物需要准备哪些基本报关文件？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>通常需要：商业发票、装箱单、提单（海运）或航空运单（空运）、原产地证书。特殊品类（如医药品、食品、化工品）还需额外提供相应的进出口许可证或检验证书。</p></div></div>
+        </div>
+        <div class="faq-item" data-text="货物清关卡关时OPTEC会提供哪些支持">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">04</span><span class="text">货物清关卡关时，OPTEC会提供哪些支持？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>我们配备专职报关团队，熟悉日本、中国及主要目的国的海关法规。出现查验或补件情况时，我们会第一时间通知客户并协助准备所需文件，最大程度缩短清关等待时间。</p></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类3 -->
+    <div class="faq-category reveal" style="transition-delay:0.2s" data-category="特殊货物">
+      <div class="category-header">
+        <div class="category-title-wrap"><span class="category-num">03</span><span class="category-title">特殊货物</span></div>
+      </div>
+      <p class="category-desc">展会物品、医药品、易损货物的专项处理流程与注意事项。</p>
+      <div style="margin-top:16px">
+        <div class="faq-item" data-text="展会物品的国际运输有哪些注意事项">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">05</span><span class="text">展会物品的国际运输有哪些注意事项？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>展会货物对时效要求极为严格，建议提前2–3周安排运输计划。我们提供展会专项服务，涵盖临时进口手续办理、展后货物复运及现场清关全程支持，确保展品准时到位。</p></div></div>
+        </div>
+        <div class="faq-item" data-text="医药品国际运输有哪些特殊合规要求">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">06</span><span class="text">医药品国际运输有哪些特殊合规要求？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>医药品运输须严格遵循GDP规范，部分温控品类需要全程冷链管理（2–8°C）。发货前需备齐进出口许可证及药品注册证明等资质文件。我们设有专业医药物流团队，可提供全程合规操作方案。</p></div></div>
+        </div>
+        <div class="faq-item" data-text="运输途中货物发生损坏应如何处理">
+          <div class="faq-question"><div class="faq-q-inner"><span class="faq-index">07</span><span class="text">运输途中货物发生损坏，应如何处理？</span></div><div class="faq-icon"></div></div>
+          <div class="faq-answer"><div class="faq-answer-inner"><p>建议在发货前投保货运险以降低风险。发现损坏后，请在签收时注明异常情况并拍照留证，并在24小时内联系我们提交理赔申请，我们将全程协助完成后续保险理赔处理。</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div id="contact" class="form-sticky reveal" style="transition-delay:0.2s">
+    <p class="section-label">发送留言</p>
+    <form id="contactForm" novalidate>
+
+      <div class="form-group">
+        <label>咨询类型</label>
+        <select id="type">
+          <option value="">请选择咨询类型</option>
+          <option value="air">空运</option>
+          <option value="sea">海运</option>
+          <option value="pharma">医药品运输</option>
+          <option value="exhibition">展会物品</option>
+          <option value="other">其他</option>
+        </select>
+        <span class="field-indicator" id="typeInd"></span>
+        <p class="error-msg" id="typeError">请选择咨询类型</p>
+      </div>
+
+      <div class="form-group">
+        <label>姓名</label>
+        <input type="text" id="name" placeholder="您的姓名" autocomplete="name">
+        <span class="field-indicator" id="nameInd"></span>
+        <p class="error-msg" id="nameError">请输入您的姓名</p>
+      </div>
+
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="email" placeholder="example@company.com" autocomplete="email">
+        <span class="field-indicator" id="emailInd"></span>
+        <p class="error-msg" id="emailError">请输入有效的邮箱地址</p>
+      </div>
+
+      <div class="form-group">
+        <label>留言内容</label>
+        <textarea id="message" placeholder="请描述您的货运需求或问题…"></textarea>
+        <span class="field-indicator" id="messageInd"></span>
+        <p class="error-msg" id="messageError">请输入留言内容</p>
+      </div>
+
+      <button type="submit" class="submit-btn">发送</button>
+      <div class="success-msg" id="successMsg">感谢您的留言！<br>我们已收到您的信息，将在1个工作日内通过邮件与您联系。</div>
+    </form>
+  </div>
+
+</div>
+
+<div class="divider" style="max-width:1400px;margin:0 auto;padding:0 48px;"><hr></div>
+<footer>
+  <div class="footer-logo">OPTEC EXPRESS</div>
+  <div class="footer-copy">© 2025 OPTEC株式会社 · 国际物流事业部</div>
+</footer>
+
+<a href="#contact" class="float-btn" aria-label="快速联系">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+</a>
+<div class="float-tooltip">快速联系</div>
+
+<script>
+  /* FAQ accordion */
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const isOpen = item.classList.contains('active');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+      if (!isOpen) item.classList.add('active');
+    });
+  });
+
+  /* FAQ search */
+  document.getElementById('faqSearch').addEventListener('input', function() {
+    const kw = this.value.trim().toLowerCase();
+    let anyVisible = false;
+    document.querySelectorAll('.faq-category').forEach(cat => {
+      const items = cat.querySelectorAll('.faq-item');
+      let catVisible = false;
+      items.forEach(item => {
+        const text = (item.dataset.text || '') + item.querySelector('.text').textContent;
+        const match = !kw || text.toLowerCase().includes(kw);
+        item.classList.toggle('hidden', !match);
+        if (match) catVisible = true;
+      });
+      cat.classList.toggle('hidden', !catVisible);
+      if (catVisible) anyVisible = true;
+    });
+    document.getElementById('noResults').classList.toggle('show', !anyVisible && kw !== '');
+  });
+
+  /* 实时验证 */
+  function setField(id, state) {
+    const group = document.getElementById(id).closest('.form-group');
+    group.classList.remove('field-ok', 'field-err');
+    if (state) group.classList.add('field-' + state);
+  }
+  document.getElementById('type').addEventListener('change', function() {
+    setField('type', this.value ? 'ok' : 'err');
+    document.getElementById('typeError').classList.remove('show');
+  });
+  document.getElementById('name').addEventListener('input', function() {
+    setField('name', this.value.trim() ? 'ok' : 'err');
+    document.getElementById('nameError').classList.remove('show');
+  });
+  document.getElementById('email').addEventListener('input', function() {
+    const v = this.value.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    setField('email', v ? (ok ? 'ok' : 'err') : '');
+    document.getElementById('emailError').classList.remove('show');
+  });
+  document.getElementById('message').addEventListener('input', function() {
+    setField('message', this.value.trim() ? 'ok' : 'err');
+    document.getElementById('messageError').classList.remove('show');
+  });
+
+  /* 提交验证 */
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+    document.getElementById('successMsg').classList.remove('show');
+    if (!document.getElementById('type').value)   { document.getElementById('typeError').classList.add('show');    setField('type','err');    valid = false; }
+    if (!document.getElementById('name').value.trim())  { document.getElementById('nameError').classList.add('show');    setField('name','err');    valid = false; }
+    const email = document.getElementById('email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('emailError').classList.add('show');   setField('email','err');   valid = false; }
+    if (!document.getElementById('message').value.trim()) { document.getElementById('messageError').classList.add('show'); setField('message','err'); valid = false; }
+    if (valid) {
+      document.getElementById('successMsg').classList.add('show');
+      this.reset();
+      ['type','name','email','message'].forEach(id => setField(id, ''));
+    }
+  });
+
+  /* Scroll reveal */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+      else e.target.classList.remove('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
