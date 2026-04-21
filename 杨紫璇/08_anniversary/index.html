@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPTEC Express — 10th Anniversary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --bg:    #020b18;
+      --bg2:   #050f20;
+      --bg3:   #091826;
+      --blue:  #4a9eff;
+      --blue2: #1e6eb5;
+      --blue3: #7ec8ff;
+      --silver:#b8d4f0;
+      --gold:  #c9a96e;
+      --text:  #e2f0ff;
+      --muted: rgba(180,210,255,0.4);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter',"Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+    /* ━━━ 星空 ━━━ */
+    #stars-canvas {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      pointer-events:none; z-index:0;
+    }
+
+    /* ━━━ 页头 ━━━ */
+    header {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      padding:0 6%; height:72px;
+      display:flex; align-items:center; justify-content:space-between;
+      background:rgba(2,11,24,0.9); backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(74,158,255,0.1);
+    }
+    .logo-wrap { display:flex; flex-direction:column; gap:4px; }
+    .header-logo-img { height:28px; width:auto; filter:brightness(0) invert(1); opacity:0.9; }
+    .logo-sub  { font-size:9px; letter-spacing:3px; color:var(--blue); text-transform:uppercase; }
+    .hero-logo-img {
+      height:48px; width:auto; margin-bottom:28px;
+      filter:brightness(0) invert(1); opacity:0.25;
+    }
+    .footer-logo-img { height:22px; width:auto; filter:brightness(0) invert(1); opacity:0.25; margin-bottom:8px; display:block; }
+    nav a { font-size:11px; letter-spacing:2px; color:var(--muted); text-decoration:none; text-transform:uppercase; margin-left:28px; transition:color .2s; }
+    nav a:hover { color:var(--blue); }
+
+    /* ━━━ HERO ━━━ */
+    .hero {
+      position:relative; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:120px 6% 80px; text-align:center; z-index:1;
+    }
+    .hero-glow {
+      position:absolute; width:900px; height:900px; border-radius:50%;
+      background:radial-gradient(ellipse,rgba(74,158,255,0.07) 0%,transparent 65%);
+      top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none;
+    }
+    .hero-glow2 {
+      position:absolute; width:400px; height:400px; border-radius:50%;
+      background:radial-gradient(ellipse,rgba(30,110,181,0.12) 0%,transparent 70%);
+      top:30%; left:30%; pointer-events:none;
+    }
+
+    .anniv-badge {
+      display:inline-flex; align-items:center; gap:12px;
+      font-size:10px; letter-spacing:4px; text-transform:uppercase;
+      color:var(--blue); margin-bottom:36px;
+      padding:9px 24px; border:1px solid rgba(74,158,255,0.25);
+      border-radius:30px; background:rgba(74,158,255,0.06);
+    }
+    .anniv-badge .dot { width:5px; height:5px; border-radius:50%; background:var(--blue); animation:blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    .hero-num {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(80px,14vw,160px); font-weight:700;
+      line-height:0.9; color:#fff; margin-bottom:4px;
+      background:linear-gradient(160deg,#fff 0%,#c0deff 45%,#4a9eff 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-anniversary {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(18px,3vw,34px); font-weight:400; font-style:italic;
+      color:var(--silver); letter-spacing:8px; margin-bottom:24px;
+    }
+    .hero-tagline {
+      font-size:12px; letter-spacing:3px; color:var(--muted); margin-bottom:64px;
+      text-transform:uppercase; line-height:2.2;
+    }
+
+    /* 倒计时 */
+    .countdown { display:flex; align-items:stretch; margin-bottom:20px; }
+    .cd-unit {
+      display:flex; flex-direction:column; align-items:center;
+      padding:28px 36px;
+      background:rgba(74,158,255,0.04);
+      border:1px solid rgba(74,158,255,0.14);
+    }
+    .cd-unit:first-child { border-radius:14px 0 0 14px; }
+    .cd-unit:last-child  { border-radius:0 14px 14px 0; }
+    .cd-unit + .cd-unit  { border-left:none; }
+    .cd-num {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(44px,7vw,80px); font-weight:700; line-height:1;
+      color:#fff; min-width:88px; text-align:center;
+      text-shadow:0 0 40px rgba(74,158,255,0.4);
+    }
+    .cd-label { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-top:10px; }
+    .cd-sep {
+      display:flex; align-items:center; padding:0 6px;
+      font-size:48px; color:rgba(74,158,255,0.25);
+      align-self:flex-start; padding-top:28px;
+    }
+    .cd-caption { font-size:11px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase; }
+
+    /* ━━━ 分隔线 ━━━ */
+    .divider {
+      height:1px;
+      background:linear-gradient(to right,transparent,rgba(74,158,255,0.15) 30%,rgba(74,158,255,0.15) 70%,transparent);
+      position:relative; z-index:1;
+    }
+
+    /* ━━━ 通用 section ━━━ */
+    .sec { padding:100px 6%; max-width:1200px; margin:0 auto; position:relative; z-index:1; }
+    .sec-full { padding:100px 0; position:relative; z-index:1; }
+    .sec-inner { max-width:1200px; margin:0 auto; padding:0 6%; }
+    .eyebrow {
+      font-size:10px; letter-spacing:4px; color:var(--blue); text-transform:uppercase;
+      display:flex; align-items:center; gap:12px; margin-bottom:16px;
+    }
+    .eyebrow::before { content:''; width:32px; height:1px; background:var(--blue); }
+    .sec-title { font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:600; color:#fff; margin-bottom:12px; }
+    .sec-desc  { font-size:13px; font-weight:300; color:var(--muted); line-height:2; margin-bottom:56px; }
+
+    /* ━━━ 数据栏 ━━━ */
+    .stats-bar {
+      background:var(--bg2);
+      border-top:1px solid rgba(74,158,255,0.07);
+      border-bottom:1px solid rgba(74,158,255,0.07);
+      position:relative; z-index:1;
+    }
+    .stats-grid {
+      max-width:1200px; margin:0 auto;
+      display:grid; grid-template-columns:repeat(4,1fr);
+    }
+    .stat-item {
+      text-align:center; padding:44px 24px;
+      border-right:1px solid rgba(74,158,255,0.07);
+      transition:background .3s;
+    }
+    .stat-item:last-child { border-right:none; }
+    .stat-item:hover { background:rgba(74,158,255,0.03); }
+    .stat-num {
+      font-family:'Cormorant Garamond',serif; font-size:54px; font-weight:700;
+      background:linear-gradient(160deg,#fff,#4a9eff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      line-height:1;
+    }
+    .stat-unit { font-size:13px; font-weight:600; color:var(--blue); margin-left:2px; }
+    .stat-label { font-size:10px; letter-spacing:2px; color:var(--muted); margin-top:10px; text-transform:uppercase; line-height:1.8; }
+
+    /* ━━━ 时间线 ━━━ */
+    .timeline { position:relative; }
+    .timeline-axis {
+      position:absolute; left:50%; top:0; bottom:0; width:1px;
+      background:linear-gradient(to bottom,transparent,rgba(74,158,255,0.18) 8%,rgba(74,158,255,0.18) 92%,transparent);
+      transform:translateX(-50%);
+    }
+    .tl-item {
+      display:grid; grid-template-columns:1fr 56px 1fr;
+      align-items:center; margin-bottom:44px;
+    }
+    .tl-item:last-child { margin-bottom:0; }
+    .tl-content {
+      background:rgba(5,15,32,0.85); border:1px solid rgba(74,158,255,0.1);
+      border-radius:14px; padding:30px 34px;
+      backdrop-filter:blur(12px);
+      transition:border-color .3s, transform .3s, box-shadow .3s;
+    }
+    .tl-content:hover {
+      border-color:rgba(74,158,255,0.3); transform:translateY(-3px);
+      box-shadow:0 12px 40px rgba(74,158,255,0.08);
+    }
+    .tl-right { grid-column:1; text-align:right; }
+    .tl-left  { grid-column:3; }
+    .tl-center { grid-column:2; display:flex; justify-content:center; position:relative; z-index:2; }
+    .tl-empty  { }
+    .tl-dot {
+      width:44px; height:44px; border-radius:50%;
+      background:var(--bg); border:2px solid rgba(74,158,255,0.6);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 0 24px rgba(74,158,255,0.3);
+    }
+    .tl-dot-inner { width:14px; height:14px; border-radius:50%; background:var(--blue); box-shadow:0 0 10px rgba(74,158,255,0.8); }
+    .tl-year {
+      font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:700;
+      color:var(--blue); line-height:1; margin-bottom:4px;
+    }
+    .tl-tag {
+      display:inline-block; font-size:10px; letter-spacing:1.5px; padding:3px 10px;
+      border-radius:4px; background:rgba(74,158,255,0.08); color:var(--blue3);
+      border:1px solid rgba(74,158,255,0.18); margin-bottom:10px; margin-top:4px;
+    }
+    .tl-milestone { font-size:15px; font-weight:600; color:#fff; margin-bottom:8px; }
+    .tl-desc { font-size:12px; font-weight:300; color:var(--muted); line-height:1.9; }
+
+    /* ━━━ 留言卡 ━━━ */
+    .messages-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
+    .msg-card {
+      background:linear-gradient(145deg,rgba(5,15,32,0.95) 0%,rgba(9,24,42,0.9) 100%);
+      border:1px solid rgba(74,158,255,0.1); border-radius:16px; padding:36px 36px 32px;
+      position:relative; overflow:hidden;
+      display:flex; flex-direction:column;
+      transition:border-color .3s, transform .3s, box-shadow .3s;
+    }
+    .msg-card:hover {
+      border-color:rgba(74,158,255,0.28); transform:translateY(-4px);
+      box-shadow:0 16px 48px rgba(74,158,255,0.07);
+    }
+    .msg-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(to right,transparent,rgba(74,158,255,0.5),transparent);
+    }
+    .msg-card::after {
+      content:''; position:absolute; top:0; right:0; width:120px; height:120px;
+      background:radial-gradient(circle at top right,rgba(74,158,255,0.04),transparent 70%);
+      pointer-events:none;
+    }
+    .msg-quote {
+      font-family:'Cormorant Garamond',serif; font-size:72px; line-height:0.7;
+      color:rgba(74,158,255,0.1); position:absolute; top:24px; right:28px; font-weight:700;
+    }
+    .msg-stars { color:var(--blue3); font-size:11px; letter-spacing:3px; margin-bottom:14px; opacity:0.7; }
+    .msg-text {
+      font-size:13.5px; font-weight:300; color:rgba(226,240,255,0.82);
+      line-height:2; margin-bottom:28px; position:relative; z-index:1;
+      flex:1;
+    }
+    .msg-footer { display:flex; align-items:center; gap:14px; }
+    .msg-avatar {
+      width:46px; height:46px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700;
+      background:linear-gradient(135deg,rgba(74,158,255,0.18),rgba(30,110,181,0.28));
+      border:1px solid rgba(74,158,255,0.28); color:var(--blue3);
+    }
+    .msg-name { font-size:14px; font-weight:600; color:#fff; }
+    .msg-role { font-size:11px; color:var(--muted); margin-top:3px; letter-spacing:0.5px; }
+
+    /* ━━━ 页脚 ━━━ */
+    footer {
+      background:#010810; padding:52px 6%;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;
+      border-top:1px solid rgba(74,158,255,0.06); position:relative; z-index:1;
+    }
+    .footer-logo { font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:6px; color:rgba(255,255,255,0.25); text-transform:uppercase; margin-bottom:8px; }
+    .footer-addr { font-size:11px; color:rgba(255,255,255,0.15); line-height:2; }
+    .footer-anniv { font-family:'Cormorant Garamond',serif; font-size:16px; letter-spacing:3px; color:rgba(74,158,255,0.3); text-align:center; }
+    .footer-copy  { font-size:11px; color:rgba(255,255,255,0.12); text-align:right; }
+
+    /* ━━━ 淡入 ━━━ */
+    .fi { opacity:0; transform:translateY(24px); transition:opacity .8s,transform .8s; }
+    .fi.v { opacity:1; transform:translateY(0); }
+    .fi-d1 { transition-delay:.1s; }
+    .fi-d2 { transition-delay:.2s; }
+    .fi-d3 { transition-delay:.3s; }
+
+    /* ━━━ 响应式 ━━━ */
+    @media(max-width:900px) {
+      .stats-grid { grid-template-columns:repeat(2,1fr); }
+      .stat-item { border-right:none; border-bottom:1px solid rgba(74,158,255,0.07); }
+      .stat-item:nth-child(odd) { border-right:1px solid rgba(74,158,255,0.07); }
+      .stat-item:last-child,.stat-item:nth-last-child(2) { border-bottom:none; }
+      .timeline-axis { display:none; }
+      .tl-item { grid-template-columns:1fr; }
+      .tl-right,.tl-left { text-align:left; grid-column:1; }
+      .tl-center { display:none; }
+      .messages-grid { grid-template-columns:1fr; }
+    }
+    @media(max-width:600px) {
+      .countdown { flex-wrap:wrap; justify-content:center; gap:10px; }
+      .cd-unit { border-radius:12px !important; border:1px solid rgba(74,158,255,0.14) !important; }
+      .cd-sep { display:none; }
+      footer { flex-direction:column; align-items:flex-start; }
+      .footer-copy { text-align:left; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<!-- 页头 -->
+<header>
+  <div class="logo-wrap">
+    <img src="https://optec-exp.com/wp/wp-content/themes/optec-express/img/header_logo.svg"
+         alt="OPTEC Express" class="header-logo-img">
+    <div class="logo-sub">10th Anniversary · 2016 — 2026</div>
+  </div>
+  <nav>
+    <a href="#milestones">十年历程</a>
+    <a href="#messages">员工留言</a>
+  </nav>
+</header>
+
+<!-- 英雄区 -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <img src="https://optec-exp.com/wp/wp-content/themes/optec-express/img/header_logo.svg"
+       alt="OPTEC Express" class="hero-logo-img">
+
+  <div class="anniv-badge">
+    <span class="dot"></span>
+    Celebrating a Decade of Excellence
+    <span class="dot"></span>
+  </div>
+
+  <div class="hero-num">10</div>
+  <div class="hero-anniversary">Years of Moving the World</div>
+  <div class="hero-tagline">
+    物流で、時を証明する。<br>
+    用物流，证明时间的价值。
+  </div>
+
+  <div class="countdown">
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-days">000</div>
+      <div class="cd-label">Days</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-hours">00</div>
+      <div class="cd-label">Hours</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-minutes">00</div>
+      <div class="cd-label">Min</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-unit">
+      <div class="cd-num" id="cd-seconds">00</div>
+      <div class="cd-label">Sec</div>
+    </div>
+  </div>
+  <div class="cd-caption">距 2026年12月8日 创立10周年纪念日</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 数据栏 -->
+<div class="stats-bar fi">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div><span class="stat-num">2,428</span></div>
+      <div class="stat-label">年度紧急<br>货运件次</div>
+    </div>
+    <div class="stat-item">
+      <div><span class="stat-num">186</span></div>
+      <div class="stat-label">全球目的地<br>城市</div>
+    </div>
+    <div class="stat-item">
+      <div><span class="stat-num">30</span><span class="stat-unit">亿+</span></div>
+      <div class="stat-label">年营业额<br>（日元）</div>
+    </div>
+    <div class="stat-item">
+      <div><span class="stat-num">54</span></div>
+      <div class="stat-label">日本 & 中国<br>在职员工</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 时间线 -->
+<section class="sec-full" id="milestones">
+  <div class="sec-inner">
+    <div class="eyebrow fi">Our Journey</div>
+    <h2 class="sec-title fi fi-d1">十年足迹</h2>
+    <p class="sec-desc fi fi-d2">从东京新桥出发，走向全球186座城市。每一年，都是对"时间价值"更深的诠释。</p>
+  </div>
+
+  <div class="sec-inner">
+    <div class="timeline">
+      <div class="timeline-axis"></div>
+
+      <div class="tl-item fi">
+        <div class="tl-content tl-right">
+          <div class="tl-year">2016</div>
+          <div class="tl-tag">创立元年</div>
+          <div class="tl-milestone">OPTEC Express 创立</div>
+          <div class="tl-desc">12月8日，木村 勇貴（时年30岁）于东京新桥创立 OPTEC Express 株式会社，资本金5000万日元。以"紧急物流专业企业"为定位，立志用物流证明时间的价值。</div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-empty"></div>
+      </div>
+
+      <div class="tl-item fi">
+        <div class="tl-empty"></div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-content tl-left">
+          <div class="tl-year">2017</div>
+          <div class="tl-tag">亚洲起步</div>
+          <div class="tl-milestone">东京运营中心 & 香港子公司</div>
+          <div class="tl-desc">东京运营中心正式启动，建立24/7全天候紧急响应体系。同年香港子公司设立，迈出国际化扩张的第一步。</div>
+        </div>
+      </div>
+
+      <div class="tl-item fi">
+        <div class="tl-content tl-right">
+          <div class="tl-year">2018–19</div>
+          <div class="tl-tag">东南亚布局</div>
+          <div class="tl-milestone">越南河内 & 中国烟台运营开始</div>
+          <div class="tl-desc">先后开拓越南河内及中国烟台业务，构建覆盖东北亚与东南亚的区域物流网络，服务能力大幅提升。</div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-empty"></div>
+      </div>
+
+      <div class="tl-item fi">
+        <div class="tl-empty"></div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-content tl-left">
+          <div class="tl-year">2020</div>
+          <div class="tl-tag">日本深化</div>
+          <div class="tl-milestone">成田办事处 & 贸易子公司</div>
+          <div class="tl-desc">成田机场办事处正式运营，强化空运接驳能力。同年贸易子公司创立，进一步扩展综合物流业务版图。</div>
+        </div>
+      </div>
+
+      <div class="tl-item fi">
+        <div class="tl-content tl-right">
+          <div class="tl-year">2021</div>
+          <div class="tl-tag">走向世界</div>
+          <div class="tl-milestone">美国运营启动 & 核心认证获得</div>
+          <div class="tl-desc">美国业务正式开启，IATA认证代理资格等核心资质相继获得，全球紧急物流网络初具规模。</div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-empty"></div>
+      </div>
+
+      <div class="tl-item fi">
+        <div class="tl-empty"></div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-content tl-left">
+          <div class="tl-year">2022</div>
+          <div class="tl-tag">全球网络</div>
+          <div class="tl-milestone">英国・墨西哥子公司 & 大阪办事处</div>
+          <div class="tl-desc">英国、墨西哥子公司相继成立，触达欧洲与拉丁美洲市场。大阪办事处开设，完善日本国内服务布局。</div>
+        </div>
+      </div>
+
+      <div class="tl-item fi">
+        <div class="tl-content tl-right">
+          <div class="tl-year">2023</div>
+          <div class="tl-tag">飞跃成长</div>
+          <div class="tl-milestone">特定航空货物资格 & 营业额突破30亿</div>
+          <div class="tl-desc">获得特定航空货物运营资格，进入高端航空物流领域。全年营业额突破30亿日元，服务覆盖全球186座城市。</div>
+        </div>
+        <div class="tl-center">
+          <div class="tl-dot"><div class="tl-dot-inner"></div></div>
+        </div>
+        <div class="tl-empty"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 员工留言 -->
+<section class="sec" id="messages">
+  <div class="eyebrow fi">Voices from the Team</div>
+  <h2 class="sec-title fi fi-d1">员工留言</h2>
+  <p class="sec-desc fi fi-d2">十年风雨，感谢每一位与 OPTEC 同行的伙伴。这是属于我们所有人共同的里程碑。</p>
+
+  <div class="messages-grid">
+
+    <div class="msg-card fi">
+      <div class="msg-quote">"</div>
+      <div class="msg-stars">★ ★ ★ ★ ★</div>
+      <div class="msg-text">十年前，我们只有一个信念——让紧急的货物比任何人都快地抵达目的地。如今，当我看到 OPTEC 的网络遍布全球186座城市，那个信念已经成为现实。感谢每一位同仁的坚守与付出，这是我们共同创造的奇迹。</div>
+      <div class="msg-footer">
+        <div class="msg-avatar">木</div>
+        <div>
+          <div class="msg-name">木村 勇貴</div>
+          <div class="msg-role">代表取締役 · CEO</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="msg-card fi fi-d1">
+      <div class="msg-quote">"</div>
+      <div class="msg-stars">★ ★ ★ ★ ★</div>
+      <div class="msg-text">加入 OPTEC 的第一天，前辈告诉我："我们的每一个包裹背后，都有一条生产线、一位患者、一架飞机在等待。"这句话让我明白了这份工作的重量。十年过去，我依然以同样的心情，对待每一票货物。</div>
+      <div class="msg-footer">
+        <div class="msg-avatar">杨</div>
+        <div>
+          <div class="msg-name">杨 紫璇</div>
+          <div class="msg-role">治理室 · 高级员工</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="msg-card fi fi-d1">
+      <div class="msg-quote">"</div>
+      <div class="msg-stars">★ ★ ★ ★ ★</div>
+      <div class="msg-text">从烟台到东京，每当客户的货物在最紧急的时刻安全抵达，那种成就感无法用语言形容。OPTEC 不只是一份工作，更是我们每天在全球各地书写的速度与信任的故事。期待未来十年继续创造奇迹！</div>
+      <div class="msg-footer">
+        <div class="msg-avatar">J</div>
+        <div>
+          <div class="msg-name">Jenny</div>
+          <div class="msg-role">管理部 · 部长</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="msg-card fi fi-d2">
+      <div class="msg-quote">"</div>
+      <div class="msg-stars">★ ★ ★ ★ ★</div>
+      <div class="msg-text">在 OPTEC，我学到最重要的一件事：时间从来不等人，但我们可以比时间更快。每一次深夜的紧急调度、每一通跨时区的协调电话，都是我们对客户承诺的具体呈现。为下一个十年干杯！</div>
+      <div class="msg-footer">
+        <div class="msg-avatar">L</div>
+        <div>
+          <div class="msg-name">Luna</div>
+          <div class="msg-role">业务部 · 部长</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer>
+  <div>
+    <img src="https://optec-exp.com/wp/wp-content/themes/optec-express/img/header_logo.svg"
+       alt="OPTEC Express" class="footer-logo-img">
+    <div class="footer-addr">
+      〒105-0004 東京都港区新橋 2-10-5 新橋原ビル3F<br>
+      TEL: 03-4500-7408 &nbsp;·&nbsp; 緊急 24/7: 03-4500-1918
+    </div>
+  </div>
+  <div class="footer-anniv">2016 — 2026 &nbsp;·&nbsp; 10 Years</div>
+  <div class="footer-copy">© 2026 OPTEC Express Co., Ltd.<br>All rights reserved.</div>
+</footer>
+
+<script>
+  /* ━━━ 星空 Canvas ━━━ */
+  (function () {
+    var canvas = document.getElementById('stars-canvas');
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    function initStars() {
+      stars = [];
+      for (var i = 0; i < 220; i++) {
+        stars.push({
+          x:  Math.random() * canvas.width,
+          y:  Math.random() * canvas.height,
+          r:  Math.random() * 1.3 + 0.2,
+          o:  Math.random() * 0.5 + 0.1,
+          ph: Math.random() * Math.PI * 2,
+          sp: Math.random() * 0.4 + 0.2
+        });
+      }
+    }
+    var t = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t += 0.016;
+      stars.forEach(function (s) {
+        var opacity = s.o * (0.5 + 0.5 * Math.sin(t * s.sp + s.ph));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(180,210,255,' + opacity + ')';
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    window.addEventListener('resize', function () { resize(); initStars(); });
+    resize(); initStars(); draw();
+  })();
+
+  /* ━━━ 倒计时 ━━━ */
+  (function () {
+    var target = new Date('2026-12-08T00:00:00+09:00').getTime();
+    function pad(n, len) { return String(n).padStart(len || 2, '0'); }
+    function tick() {
+      var diff = Math.max(0, target - Date.now());
+      document.getElementById('cd-days').textContent    = pad(Math.floor(diff / 86400000), 3);
+      document.getElementById('cd-hours').textContent   = pad(Math.floor(diff % 86400000 / 3600000));
+      document.getElementById('cd-minutes').textContent = pad(Math.floor(diff % 3600000 / 60000));
+      document.getElementById('cd-seconds').textContent = pad(Math.floor(diff % 60000 / 1000));
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  /* ━━━ 滚动淡入 ━━━ */
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('v'); });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.fi').forEach(function (el) { obs.observe(el); });
+</script>
+
+</body>
+</html>
