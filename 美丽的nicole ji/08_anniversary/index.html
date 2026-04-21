@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTEC 10周年纪念</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700&family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold:      #c8973a;
+  --gold-lt:   #f0d898;
+  --gold-dk:   #8a6420;
+  --gold-glow: rgba(200,151,58,0.35);
+  --bg:        #0a0c10;
+  --bg2:       #0f1219;
+  --bg3:       #141820;
+  --white:     #fff;
+  --text:      #e8e0d0;
+  --text2:     #a09880;
+  --border:    rgba(200,151,58,0.2);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  font-weight: 300;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── STARS BACKGROUND ── */
+.stars {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(200,151,58,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(200,151,58,0.03) 0%, transparent 60%);
+}
+.stars::before, .stars::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 45%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5%  70%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 85% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.2) 0%, transparent 100%);
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 64px;
+  background: rgba(10,12,16,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700; font-size: 1rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a {
+  font-size: 0.8rem; color: var(--text2);
+  text-decoration: none; letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+
+/* ── HERO ── */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 80px 40px 60px;
+  overflow: hidden;
+}
+.hero-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  animation: ringPulse 6s ease-in-out infinite;
+}
+.ring1 { width: 520px; height: 520px; animation-delay: 0s; }
+.ring2 { width: 720px; height: 720px; animation-delay: 1s; opacity: 0.6; }
+.ring3 { width: 940px; height: 940px; animation-delay: 2s; opacity: 0.3; }
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1); opacity: var(--op, 0.4); }
+  50%       { transform: scale(1.03); opacity: calc(var(--op, 0.4) * 0.6); }
+}
+
+.hero-eyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 1.6rem; position: relative; z-index: 1;
+}
+.hero-10 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(5rem, 16vw, 11rem);
+  font-weight: 800; line-height: 0.85;
+  background: linear-gradient(135deg, #c8973a 0%, #f0d898 40%, #c8973a 60%, #8a6420 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative; z-index: 1;
+  filter: drop-shadow(0 0 40px var(--gold-glow));
+  animation: shimmer 4s linear infinite;
+  background-size: 200% 100%;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+.hero-anniversary {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+  font-weight: 700; color: var(--text);
+  letter-spacing: 0.25em; margin-top: 0.6rem;
+  position: relative; z-index: 1;
+}
+.hero-tagline {
+  font-size: 0.92rem; color: var(--text2);
+  margin-top: 1.4rem; letter-spacing: 0.06em; line-height: 2;
+  position: relative; z-index: 1;
+}
+.hero-divider {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 2rem auto; position: relative; z-index: 1;
+}
+.scroll-hint {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  font-size: 0.7rem; color: var(--text2); letter-spacing: 0.12em;
+  text-transform: uppercase; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.scroll-arrow {
+  width: 20px; height: 20px; border-right: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
+  transform: rotate(45deg);
+  animation: bounce 1.8s ease-in-out infinite;
+}
+@keyframes bounce { 0%,100%{transform:rotate(45deg) translateY(0)} 50%{transform:rotate(45deg) translateY(5px)} }
+
+/* ── COUNTDOWN ── */
+.countdown-section {
+  position: relative; z-index: 1;
+  padding: 80px 40px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.sec-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 0.6rem;
+}
+.sec-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 700; color: var(--white);
+  margin-bottom: 0.5rem;
+}
+.sec-sub { font-size: 0.85rem; color: var(--text2); margin-bottom: 3rem; }
+
+.countdown-grid {
+  display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
+}
+.cd-box {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 28px 36px;
+  position: relative; overflow: hidden;
+  min-width: 120px;
+}
+.cd-box::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.cd-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 3.5rem);
+  font-weight: 700; line-height: 1;
+  background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  min-width: 2ch; text-align: center;
+}
+.cd-label {
+  font-size: 0.72rem; color: var(--text2); margin-top: 8px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.cd-sep {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem; font-weight: 300; color: var(--gold);
+  align-self: center; line-height: 1; padding-bottom: 24px;
+  opacity: 0.5;
+}
+
+.anniversary-date {
+  margin-top: 2.5rem; font-size: 0.82rem; color: var(--text2);
+  letter-spacing: 0.08em;
+}
+.anniversary-date strong { color: var(--gold); font-weight: 500; }
+
+/* ── TIMELINE ── */
+.timeline-section {
+  position: relative; z-index: 1;
+  padding: 100px 40px;
+  max-width: 900px; margin: 0 auto;
+}
+.timeline-line {
+  position: absolute;
+  left: 50%; top: 160px; bottom: 80px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--gold) 10%, var(--gold) 90%, transparent);
+  transform: translateX(-50%);
+}
+
+.tl-item {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0 20px;
+  align-items: center;
+  margin-bottom: 56px;
+  position: relative;
+}
+
+/* dot */
+.tl-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgba(200,151,58,0.2), 0 0 16px var(--gold-glow);
+  justify-self: center; z-index: 1;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.tl-item:hover .tl-dot {
+  transform: scale(1.4);
+  box-shadow: 0 0 0 6px rgba(200,151,58,0.25), 0 0 28px var(--gold-glow);
+}
+
+/* card */
+.tl-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px 24px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.tl-card::before {
+  content: '';
+  position: absolute; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+.tl-card.left::before { left: 0; right: 40%; }
+.tl-card.right::before { right: 0; left: 40%; background: linear-gradient(270deg, var(--gold), transparent); }
+.tl-item:hover .tl-card {
+  border-color: rgba(200,151,58,0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(200,151,58,0.08);
+}
+
+/* left card occupies col 1; right card occupies col 3 */
+.tl-card.left  { grid-column: 1; }
+.tl-card.right { grid-column: 3; }
+.tl-dot-wrap { grid-column: 2; display: flex; justify-content: center; }
+
+/* alternate layout: even items flip */
+.tl-item.flip .tl-card.left  { grid-column: 3; grid-row: 1; }
+.tl-item.flip .tl-card.right { grid-column: 1; grid-row: 1; }
+.tl-item.flip .tl-dot-wrap   { grid-column: 2; grid-row: 1; }
+
+.tl-year {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 4px;
+}
+.tl-card h3 {
+  font-size: 0.95rem; font-weight: 700; color: var(--white);
+  margin-bottom: 4px; line-height: 1.4;
+}
+.tl-card p { font-size: 0.82rem; color: var(--text2); line-height: 1.7; }
+.tl-badge {
+  display: inline-block;
+  font-size: 0.68rem; padding: 2px 10px; border-radius: 10px;
+  border: 1px solid var(--border); color: var(--gold);
+  margin-top: 8px; background: rgba(200,151,58,0.06);
+}
+
+/* ── MESSAGES ── */
+.messages-section {
+  position: relative; z-index: 1;
+  padding: 100px 40px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.messages-section .sec-title { text-align: center; }
+.messages-section .sec-label { text-align: center; display: block; }
+.messages-section .sec-sub   { text-align: center; }
+
+.msg-grid {
+  max-width: 1100px; margin: 3rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.4rem;
+}
+
+/* flip card */
+.flip-card {
+  height: 220px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.flip-inner {
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flip-card:hover .flip-inner,
+.flip-card.flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-front, .flip-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 24px;
+  display: flex; flex-direction: column;
+}
+.flip-front {
+  background: var(--bg3);
+  justify-content: space-between;
+}
+.flip-back {
+  background: linear-gradient(135deg, #1a1500 0%, #120e00 100%);
+  border-color: rgba(200,151,58,0.4);
+  transform: rotateY(180deg);
+  justify-content: center; align-items: center;
+  text-align: center;
+}
+.flip-front::before {
+  content: '';
+  position: absolute; top: 0; left: 24px; right: 24px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.msg-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 700; color: var(--gold);
+  background: rgba(200,151,58,0.1);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.msg-meta { display: flex; align-items: center; gap: 12px; }
+.msg-name { font-size: 0.9rem; font-weight: 700; color: var(--white); }
+.msg-role { font-size: 0.72rem; color: var(--text2); margin-top: 2px; }
+.msg-preview {
+  font-size: 0.82rem; color: var(--text2); line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.msg-hint {
+  font-size: 0.68rem; color: rgba(200,151,58,0.5);
+  letter-spacing: 0.1em; text-align: right;
+}
+.msg-quote {
+  font-size: 2.5rem; line-height: 1; color: var(--gold); opacity: 0.3;
+  margin-bottom: 8px;
+}
+.msg-full {
+  font-size: 0.88rem; color: var(--text); line-height: 1.8;
+  font-style: italic;
+}
+.msg-sig {
+  margin-top: 16px; font-size: 0.76rem; color: var(--gold);
+  font-weight: 500;
+}
+
+/* add message form */
+.add-msg-wrap {
+  max-width: 600px; margin: 3rem auto 0; text-align: center;
+}
+.add-msg-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.9rem 2.5rem; border-radius: 4px;
+  border: 1.5px solid var(--gold); color: var(--gold);
+  background: transparent; cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.add-msg-btn:hover { background: rgba(200,151,58,0.1); }
+
+.add-msg-form {
+  display: none;
+  margin-top: 2rem; text-align: left;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 28px;
+}
+.add-msg-form.open { display: block; }
+.form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.form-field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.form-field label {
+  font-size: 0.74rem; color: var(--text2); letter-spacing: 0.06em;
+}
+.form-field input, .form-field textarea {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 10px 14px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 0.85rem; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.form-field input:focus, .form-field textarea:focus {
+  border-color: rgba(200,151,58,0.6);
+}
+.form-field textarea { resize: none; height: 90px; }
+.form-submit {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem; border-radius: 4px;
+  background: var(--gold); color: var(--bg); border: none; cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.form-submit:hover { opacity: 0.85; transform: translateY(-2px); }
+
+/* ── FOOTER ── */
+footer {
+  position: relative; z-index: 1;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  text-align: center; padding: 3rem 40px;
+}
+.footer-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem; font-weight: 700; color: var(--gold);
+  letter-spacing: 0.1em; margin-bottom: 0.8rem;
+}
+.footer-copy {
+  font-size: 0.74rem; color: var(--text2); line-height: 1.8;
+}
+.footer-divider {
+  width: 40px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 1.2rem auto;
+}
+
+/* ── REVEAL ANIMATION ── */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.in { opacity: 1; transform: none; }
+.rl { opacity: 0; transform: translateX(-30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.rl.in { opacity: 1; transform: none; }
+.rr { opacity: 0; transform: translateX(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.rr.in { opacity: 1; transform: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .timeline-section { padding: 80px 20px; }
+  .timeline-line { left: 24px; }
+  .tl-item {
+    grid-template-columns: 48px 1fr;
+    grid-template-rows: auto;
+  }
+  .tl-dot-wrap { grid-column: 1; grid-row: 1; }
+  .tl-card.left, .tl-card.right,
+  .tl-item.flip .tl-card.left, .tl-item.flip .tl-card.right {
+    grid-column: 2; grid-row: 1;
+  }
+  .messages-section { padding: 80px 20px; }
+  .countdown-section { padding: 60px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">OPTEC</div>
+  <ul class="nav-links">
+    <li><a href="#countdown">倒计时</a></li>
+    <li><a href="#timeline">历程</a></li>
+    <li><a href="#messages">留言</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ring ring1"></div>
+  <div class="hero-ring ring2"></div>
+  <div class="hero-ring ring3"></div>
+
+  <div class="hero-eyebrow">2015 — 2025 · Anniversary</div>
+  <div class="hero-10">10</div>
+  <div class="hero-anniversary">周 年 纪 念</div>
+  <div class="hero-divider"></div>
+  <p class="hero-tagline">
+    十年耕耘，感恩同行<br>
+    每一段历程，都因你们而闪光
+  </p>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- COUNTDOWN -->
+<section class="countdown-section" id="countdown">
+  <div class="sec-label reveal">Countdown · 倒计时</div>
+  <h2 class="sec-title reveal">距离10周年纪念日</h2>
+  <p class="sec-sub reveal">时光荏苒，共同期待这特别的一天</p>
+
+  <div class="countdown-grid reveal">
+    <div class="cd-box">
+      <div class="cd-num" id="cd-days">--</div>
+      <div class="cd-label">天 Days</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-box">
+      <div class="cd-num" id="cd-hours">--</div>
+      <div class="cd-label">时 Hours</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-box">
+      <div class="cd-num" id="cd-minutes">--</div>
+      <div class="cd-label">分 Minutes</div>
+    </div>
+    <div class="cd-sep">:</div>
+    <div class="cd-box">
+      <div class="cd-num" id="cd-seconds">--</div>
+      <div class="cd-label">秒 Seconds</div>
+    </div>
+  </div>
+
+  <p class="anniversary-date reveal">
+    纪念日：<strong>2025年10月1日</strong>
+  </p>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline-section" id="timeline">
+  <div style="text-align:center; margin-bottom: 4rem;">
+    <div class="sec-label reveal">Timeline · 历程</div>
+    <h2 class="sec-title reveal">十年足迹</h2>
+    <p class="sec-sub reveal" style="max-width:480px;margin:0.5rem auto 0;">从第一步到第一千步，每一个节点都是我们共同书写的故事</p>
+  </div>
+
+  <div class="timeline-line"></div>
+
+  <!-- 2015 -->
+  <div class="tl-item reveal">
+    <div class="tl-card left">
+      <div class="tl-year">2015</div>
+      <h3>OPTEC 正式成立</h3>
+      <p>在大阪注册成立，以专业航空货运代理起步，开启国际物流事业第一章。</p>
+      <span class="tl-badge">创业元年</span>
+    </div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div></div>
+  </div>
+
+  <!-- 2016 -->
+  <div class="tl-item flip reveal">
+    <div></div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div class="tl-card right">
+      <div class="tl-year">2016</div>
+      <h3>中日航线首票成功</h3>
+      <p>完成首批中日航空货物运输，建立与主要航司的合作关系，业务初具规模。</p>
+      <span class="tl-badge">里程碑</span>
+    </div>
+  </div>
+
+  <!-- 2017 -->
+  <div class="tl-item reveal">
+    <div class="tl-card left">
+      <div class="tl-year">2017</div>
+      <h3>上海分支机构设立</h3>
+      <p>在上海设立中国运营中心，实现两地协同作业，响应速度大幅提升。</p>
+      <span class="tl-badge">团队扩张</span>
+    </div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div></div>
+  </div>
+
+  <!-- 2018 -->
+  <div class="tl-item flip reveal">
+    <div></div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div class="tl-card right">
+      <div class="tl-year">2018</div>
+      <h3>医药冷链业务拓展</h3>
+      <p>引入 GDP 合规冷链方案，开始承接疫苗、生物制品等高附加值货物运输。</p>
+      <span class="tl-badge">业务突破</span>
+    </div>
+  </div>
+
+  <!-- 2019 -->
+  <div class="tl-item reveal">
+    <div class="tl-card left">
+      <div class="tl-year">2019</div>
+      <h3>OBC 随机押运服务上线</h3>
+      <p>推出专属随机押运服务，覆盖紧急医疗样品、精密仪器等特殊货物需求。</p>
+      <span class="tl-badge">新服务</span>
+    </div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div></div>
+  </div>
+
+  <!-- 2020 -->
+  <div class="tl-item flip reveal">
+    <div></div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div class="tl-card right">
+      <div class="tl-year">2020</div>
+      <h3>疫情中坚守，保障物资通道</h3>
+      <p>疫情最严峻时期，全员投入，确保防疫物资跨境运输畅通，完成逾百票紧急任务。</p>
+      <span class="tl-badge">关键时刻</span>
+    </div>
+  </div>
+
+  <!-- 2021 -->
+  <div class="tl-item reveal">
+    <div class="tl-card left">
+      <div class="tl-year">2021</div>
+      <h3>KINTONE 系统全面上线</h3>
+      <p>引入数字化管理系统，实现案件全生命周期追踪，作业效率提升40%。</p>
+      <span class="tl-badge">数字化转型</span>
+    </div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div></div>
+  </div>
+
+  <!-- 2022 -->
+  <div class="tl-item flip reveal">
+    <div></div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div class="tl-card right">
+      <div class="tl-year">2022</div>
+      <h3>累计完成 500+ 件运输</h3>
+      <p>年度在运件数突破 500 件，客户满意度达 98%，成为同行标杆服务商。</p>
+      <span class="tl-badge">500件里程碑</span>
+    </div>
+  </div>
+
+  <!-- 2023 -->
+  <div class="tl-item reveal">
+    <div class="tl-card left">
+      <div class="tl-year">2023</div>
+      <h3>再生医療物流特化</h3>
+      <p>专注细胞治疗物流领域，推出 CellChain 品牌，承接 iPS 细胞超低温运输项目。</p>
+      <span class="tl-badge">专精领域</span>
+    </div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div></div>
+  </div>
+
+  <!-- 2024 -->
+  <div class="tl-item flip reveal">
+    <div></div>
+    <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+    <div class="tl-card right">
+      <div class="tl-year">2024</div>
+      <h3>覆盖30+国家与地区</h3>
+      <p>全球网络进一步延伸，与日本、欧美、东南亚的合作伙伴建立稳定协作体系。</p>
+      <span class="tl-badge">全球化</span>
+    </div>
+  </div>
+
+  <!-- 2025 -->
+  <div class="tl-item reveal">
+    <div class="tl-card left" style="border-color:rgba(200,151,58,0.6);background:linear-gradient(135deg,#1a1500,#120e00);">
+      <div class="tl-year" style="font-size:0.78rem;">2025 · 十周年</div>
+      <h3 style="color:var(--gold-lt);">迈向下一个十年</h3>
+      <p>十年耕耘，感恩每一位伙伴。带着这份积淀，我们将继续前行，创造更多可能。</p>
+      <span class="tl-badge" style="border-color:var(--gold);color:var(--gold);">★ 10th Anniversary</span>
+    </div>
+    <div class="tl-dot-wrap">
+      <div class="tl-dot" style="width:20px;height:20px;background:var(--gold-lt);box-shadow:0 0 0 6px rgba(200,151,58,0.3),0 0 30px var(--gold-glow);"></div>
+    </div>
+    <div></div>
+  </div>
+
+</section>
+
+<!-- MESSAGES -->
+<section class="messages-section" id="messages">
+  <div class="sec-label">Messages · 员工留言</div>
+  <h2 class="sec-title reveal">来自伙伴们的话</h2>
+  <p class="sec-sub reveal" style="margin-bottom:0">悬停卡片查看完整留言</p>
+
+  <div class="msg-grid" id="msgGrid">
+
+    <div class="flip-card reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="msg-meta">
+            <div class="msg-avatar">N</div>
+            <div><div class="msg-name">Nicole Ji</div><div class="msg-role">业务部 · 操作组</div></div>
+          </div>
+          <p class="msg-preview">十年前我们只是一个小团队，但每个人都怀抱着同样的热情……</p>
+          <div class="msg-hint">hover to read ↗</div>
+        </div>
+        <div class="flip-back">
+          <div class="msg-quote">"</div>
+          <p class="msg-full">十年前我们只是一个小团队，但每个人都怀抱着同样的热情。看着公司一步步成长，我深深感受到——每一票货物背后，都是我们用心铸就的信任。感谢这十年，期待下一个十年！</p>
+          <div class="msg-sig">— Nicole Ji</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="msg-meta">
+            <div class="msg-avatar">J</div>
+            <div><div class="msg-name">Jenny</div><div class="msg-role">业务部 · 报价组</div></div>
+          </div>
+          <p class="msg-preview">加入OPTEC是我职业生涯中最正确的选择之一，这里有最好的团队……</p>
+          <div class="msg-hint">hover to read ↗</div>
+        </div>
+        <div class="flip-back">
+          <div class="msg-quote">"</div>
+          <p class="msg-full">加入 OPTEC 是我职业生涯中最正确的选择之一，这里有最好的团队。每次攻克一个难题，每次客户说一声"谢谢"，都让我觉得这一切值得。十周年快乐！</p>
+          <div class="msg-sig">— Jenny</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="msg-meta">
+            <div class="msg-avatar">Y</div>
+            <div><div class="msg-name">杨紫璟</div><div class="msg-role">品质管理部</div></div>
+          </div>
+          <p class="msg-preview">品质是我们最坚守的底线，十年来我们从未妥协……</p>
+          <div class="msg-hint">hover to read ↗</div>
+        </div>
+        <div class="flip-back">
+          <div class="msg-quote">"</div>
+          <p class="msg-full">品质是我们最坚守的底线，十年来我们从未妥协。每一份 GDP 报告、每一条温度曲线，背后都是整个团队对客户的承诺。祝 OPTEC 再创辉煌！</p>
+          <div class="msg-sig">— 杨紫璟</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="msg-meta">
+            <div class="msg-avatar">T</div>
+            <div><div class="msg-name">田中 誠</div><div class="msg-role">日本総括 · GM</div></div>
+          </div>
+          <p class="msg-preview">10年間、中国と日本をつなぐ架け橋として歩んできました……</p>
+          <div class="msg-hint">hover to read ↗</div>
+        </div>
+        <div class="flip-back">
+          <div class="msg-quote">"</div>
+          <p class="msg-full">10年間、中国と日本をつなぐ架け橋として歩んできました。困難な時期も乗り越えてきたのは、優秀なチームのおかげです。これからも共に、新しい可能性を切り開いていきましょう。</p>
+          <div class="msg-sig">— 田中 誠 · GM</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="msg-meta">
+            <div class="msg-avatar">L</div>
+            <div><div class="msg-name">李明慧</div><div class="msg-role">财务部</div></div>
+          </div>
+          <p class="msg-preview">十年的账本里，记录的不只是数字，更是每一个拼搏的瞬间……</p>
+          <div class="msg-hint">hover to read ↗</div>
+        </div>
+        <div class="flip-back">
+          <div class="msg-quote">"</div>
+          <p class="msg-full">十年的账本里，记录的不只是数字，更是每一个拼搏的瞬间。看着公司从零到现在，我为自己是 OPTEC 的一员感到骄傲。十周年快乐，我们一起继续！</p>
+          <div class="msg-sig">— 李明慧</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="msg-meta">
+            <div class="msg-avatar">W</div>
+            <div><div class="msg-name">王浩然</div><div class="msg-role">业务部 · 新人</div></div>
+          </div>
+          <p class="msg-preview">虽然我加入的时间不长，但已经深深感受到OPTEC文化的温度……</p>
+          <div class="msg-hint">hover to read ↗</div>
+        </div>
+        <div class="flip-back">
+          <div class="msg-quote">"</div>
+          <p class="msg-full">虽然我加入的时间不长，但已经深深感受到 OPTEC 文化的温度。前辈们的认真与耐心让我成长很快。能在公司十周年之际加入，是我的荣幸。未来的路，我们一起走！</p>
+          <div class="msg-sig">— 王浩然</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Add message form -->
+  <div class="add-msg-wrap">
+    <button class="add-msg-btn" onclick="toggleForm()">＋ 写下你的祝福</button>
+    <div class="add-msg-form" id="addForm">
+      <div class="form-row">
+        <div class="form-field">
+          <label>姓名 Name</label>
+          <input type="text" id="fName" placeholder="你的名字">
+        </div>
+        <div class="form-field">
+          <label>部门 / 职位</label>
+          <input type="text" id="fRole" placeholder="例：业务部 · 操作组">
+        </div>
+      </div>
+      <div class="form-field" style="margin-bottom:1rem">
+        <label>留言 Message</label>
+        <textarea id="fMsg" placeholder="写下你想对 OPTEC 说的话……"></textarea>
+      </div>
+      <button class="form-submit" onclick="addMessage()">提交留言 →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">OPTEC · 10th Anniversary</div>
+  <div class="footer-divider"></div>
+  <p class="footer-copy">
+    感谢十年来每一位员工、客户与伙伴的陪伴与支持<br>
+    © 2015–2025 OPTEC. All rights reserved.
+  </p>
+</footer>
+
+<script>
+/* ── COUNTDOWN ── */
+function updateCountdown() {
+  const target = new Date('2025-10-01T00:00:00+09:00');
+  const now = new Date();
+  const diff = target - now;
+
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent    = '00';
+    document.getElementById('cd-hours').textContent   = '00';
+    document.getElementById('cd-minutes').textContent = '00';
+    document.getElementById('cd-seconds').textContent = '00';
+    document.querySelector('.anniversary-date').innerHTML =
+      '<strong style="color:var(--gold)">🎉 十周年纪念日已到来！</strong>';
+    return;
+  }
+
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+
+  document.getElementById('cd-days').textContent    = String(d).padStart(2, '0');
+  document.getElementById('cd-hours').textContent   = String(h).padStart(2, '0');
+  document.getElementById('cd-minutes').textContent = String(m).padStart(2, '0');
+  document.getElementById('cd-seconds').textContent = String(s).padStart(2, '0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ── SCROLL REVEAL ── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) setTimeout(() => e.target.classList.add('in'), i * 80);
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal, .rl, .rr').forEach(el => obs.observe(el));
+
+/* ── FORM TOGGLE ── */
+function toggleForm() {
+  const f = document.getElementById('addForm');
+  f.classList.toggle('open');
+}
+
+/* ── ADD MESSAGE ── */
+function addMessage() {
+  const name = document.getElementById('fName').value.trim();
+  const role = document.getElementById('fRole').value.trim();
+  const msg  = document.getElementById('fMsg').value.trim();
+  if (!name || !msg) { alert('请填写姓名和留言内容'); return; }
+
+  const initial = name.charAt(0).toUpperCase();
+  const colors = ['#c8973a','#27ae60','#3498db','#e67e22','#8e44ad','#e74c3c'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+
+  const card = document.createElement('div');
+  card.className = 'flip-card';
+  card.innerHTML = `
+    <div class="flip-inner">
+      <div class="flip-front">
+        <div class="msg-meta">
+          <div class="msg-avatar" style="background:rgba(200,151,58,0.15);color:${color}">${initial}</div>
+          <div><div class="msg-name">${name}</div><div class="msg-role">${role || '员工'}</div></div>
+        </div>
+        <p class="msg-preview">${msg.slice(0, 60)}${msg.length > 60 ? '……' : ''}</p>
+        <div class="msg-hint">hover to read ↗</div>
+      </div>
+      <div class="flip-back">
+        <div class="msg-quote">"</div>
+        <p class="msg-full">${msg}</p>
+        <div class="msg-sig">— ${name}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('msgGrid').appendChild(card);
+  obs.observe(card);
+
+  document.getElementById('fName').value = '';
+  document.getElementById('fRole').value = '';
+  document.getElementById('fMsg').value  = '';
+  document.getElementById('addForm').classList.remove('open');
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+</body>
+</html>
