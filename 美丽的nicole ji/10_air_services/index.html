@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTEC Air Services — AOG · NFO · OBC</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:   #050d1a;
+  --navy2:  #091428;
+  --navy3:  #0c1c36;
+  --blue:   #0a6ebd;
+  --blue2:  #1488db;
+  --cyan:   #00c8e8;
+  --cyan2:  #00e5ff;
+  --amber:  #f0a040;
+  --green:  #27d98a;
+  --red:    #e84040;
+  --white:  #ffffff;
+  --off:    #f0f4f8;
+  --gray:   #8ba0b8;
+  --border: rgba(255,255,255,0.08);
+  --text:   #1e2d42;
+  --text2:  #4a6080;
+
+  /* service colors */
+  --aog:    #e84040;
+  --aog2:   #ff6060;
+  --nfo:    #f0a040;
+  --nfo2:   #ffc040;
+  --obc:    #00c8e8;
+  --obc2:   #00e5ff;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Barlow', sans-serif; background: var(--navy); color: var(--white); overflow-x: hidden; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 60px;
+  background: rgba(5,13,26,0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800; font-size: 1.2rem; letter-spacing: 0.08em;
+  color: var(--white); display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+}
+.logo-box {
+  width: 28px; height: 28px; border-radius: 4px; background: var(--blue2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 800;
+}
+.logo span { color: var(--cyan); }
+.nav-r { display: flex; align-items: center; gap: 24px; }
+.nav-r a {
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--gray); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-r a:hover { color: var(--cyan); }
+.nav-cta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 20px; border-radius: 3px;
+  background: var(--blue2); color: var(--white); text-decoration: none;
+  transition: background 0.2s;
+}
+.nav-cta:hover { background: var(--blue); }
+
+/* ── HERO ── */
+.hero {
+  padding: 120px 40px 60px;
+  background: linear-gradient(160deg, var(--navy) 0%, #0a2050 60%, #0d1a35 100%);
+  text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-inner { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+.eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 1.2rem;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.eyebrow::before, .eyebrow::after {
+  content: ''; width: 36px; height: 1.5px; background: var(--cyan); opacity: 0.5;
+}
+.hero h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4.2rem); font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.04em; line-height: 1.0; margin-bottom: 1.2rem;
+}
+.hero h1 em { font-style: normal; color: var(--cyan); }
+.hero p {
+  font-size: 0.98rem; color: rgba(255,255,255,0.55); max-width: 600px; margin: 0 auto 3rem;
+  line-height: 1.85;
+}
+
+/* badge pills in hero */
+.hero-pills {
+  display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 3rem;
+}
+.pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 8px 20px; border-radius: 30px;
+  display: flex; align-items: center; gap: 8px;
+}
+.pill-aog { background: rgba(232,64,64,0.15); border: 1px solid rgba(232,64,64,0.4); color: var(--aog2); }
+.pill-nfo { background: rgba(240,160,64,0.15); border: 1px solid rgba(240,160,64,0.4); color: var(--nfo2); }
+.pill-obc { background: rgba(0,200,232,0.15); border: 1px solid rgba(0,200,232,0.4); color: var(--obc2); }
+.pill-dot { width: 8px; height: 8px; border-radius: 50%; }
+.pill-aog .pill-dot { background: var(--aog2); box-shadow: 0 0 6px var(--aog); }
+.pill-nfo .pill-dot { background: var(--nfo2); box-shadow: 0 0 6px var(--nfo); }
+.pill-obc .pill-dot { background: var(--obc2); box-shadow: 0 0 6px var(--obc); }
+
+/* hero stats strip */
+.stats-strip {
+  display: flex; justify-content: center; flex-wrap: wrap;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  max-width: 680px; margin: 0 auto;
+  background: rgba(255,255,255,0.03);
+}
+.ss-item {
+  flex: 1; min-width: 130px; padding: 20px 16px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.ss-item:last-child { border-right: none; }
+.ss-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem; font-weight: 800; line-height: 1;
+}
+.ss-label { font-size: 0.7rem; color: var(--gray); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ── SECTION WRAPPER ── */
+.section { padding: 80px 40px; }
+.section-alt { background: var(--navy2); }
+.container { max-width: 1160px; margin: 0 auto; }
+.section-head { text-align: center; margin-bottom: 56px; }
+.section-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--cyan); margin-bottom: 0.8rem;
+}
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.section-title em { font-style: normal; color: var(--cyan); }
+.section-sub {
+  font-size: 0.9rem; color: rgba(255,255,255,0.45); margin-top: 0.8rem; line-height: 1.75;
+}
+
+/* ── SERVICE CARDS ── */
+.service-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+@media (max-width: 900px) {
+  .service-cards { grid-template-columns: 1fr; }
+}
+.svc-card {
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--navy3);
+  display: flex; flex-direction: column;
+  transition: transform 0.25s, box-shadow 0.25s;
+  position: relative;
+}
+.svc-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.35); }
+
+.svc-card-top {
+  padding: 32px 28px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.svc-card-top::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: var(--border);
+}
+.svc-icon {
+  width: 52px; height: 52px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; margin-bottom: 18px;
+}
+.svc-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+  display: inline-block;
+}
+.svc-card h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;
+  line-height: 1.1; margin-bottom: 6px;
+}
+.svc-card h3 small {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+  display: block; margin-top: 2px; opacity: 0.6; text-transform: uppercase;
+}
+.svc-card .svc-tagline {
+  font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 10px; line-height: 1.65;
+}
+.svc-urgency {
+  position: absolute; top: 20px; right: 20px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 2px;
+}
+
+.svc-card-body { padding: 24px 28px; flex: 1; display: flex; flex-direction: column; gap: 20px; }
+
+.svc-kv-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 0.82rem; border-bottom: 1px solid var(--border); padding-bottom: 10px;
+}
+.svc-kv-row:last-of-type { border-bottom: none; padding-bottom: 0; }
+.kv-label { color: var(--gray); font-size: 0.75rem; letter-spacing: 0.04em; }
+.kv-val { font-weight: 600; font-size: 0.85rem; }
+
+.svc-features { display: flex; flex-direction: column; gap: 8px; }
+.svc-feat {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.82rem; color: rgba(255,255,255,0.72); line-height: 1.55;
+}
+.svc-feat-icon { flex-shrink: 0; margin-top: 2px; font-size: 0.75rem; }
+
+.svc-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 12px 0; border-radius: 5px; width: 100%; text-align: center;
+  cursor: pointer; border: 1px solid; text-decoration: none; display: block;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: auto;
+}
+.svc-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+/* per-service colors */
+.aog .svc-icon   { background: rgba(232,64,64,0.15); }
+.aog .svc-tag    { background: rgba(232,64,64,0.18); color: var(--aog2); }
+.aog .svc-urgency{ background: rgba(232,64,64,0.2);  color: var(--aog2); border: 1px solid rgba(232,64,64,0.4); }
+.aog h3          { color: var(--aog2); }
+.aog .kv-val     { color: var(--aog2); }
+.aog .svc-feat-icon { color: var(--aog2); }
+.aog .svc-card-top { border-top: 3px solid var(--aog); }
+.aog .svc-btn    { background: rgba(232,64,64,0.12); border-color: rgba(232,64,64,0.5); color: var(--aog2); }
+
+.nfo .svc-icon   { background: rgba(240,160,64,0.15); }
+.nfo .svc-tag    { background: rgba(240,160,64,0.18); color: var(--nfo2); }
+.nfo .svc-urgency{ background: rgba(240,160,64,0.2);  color: var(--nfo2); border: 1px solid rgba(240,160,64,0.4); }
+.nfo h3          { color: var(--nfo2); }
+.nfo .kv-val     { color: var(--nfo2); }
+.nfo .svc-feat-icon { color: var(--nfo2); }
+.nfo .svc-card-top { border-top: 3px solid var(--nfo); }
+.nfo .svc-btn    { background: rgba(240,160,64,0.12); border-color: rgba(240,160,64,0.5); color: var(--nfo2); }
+
+.obc .svc-icon   { background: rgba(0,200,232,0.12); }
+.obc .svc-tag    { background: rgba(0,200,232,0.15); color: var(--obc2); }
+.obc .svc-urgency{ background: rgba(0,200,232,0.15); color: var(--obc2); border: 1px solid rgba(0,200,232,0.35); }
+.obc h3          { color: var(--obc2); }
+.obc .kv-val     { color: var(--obc2); }
+.obc .svc-feat-icon { color: var(--obc2); }
+.obc .svc-card-top { border-top: 3px solid var(--obc); }
+.obc .svc-btn    { background: rgba(0,200,232,0.1); border-color: rgba(0,200,232,0.4); color: var(--obc2); }
+
+/* ── COMPARISON TABLE ── */
+.compare-wrap {
+  overflow-x: auto; border-radius: 10px;
+  border: 1px solid var(--border);
+}
+table.compare {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.85rem;
+}
+table.compare thead th {
+  padding: 20px 24px; text-align: left;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  background: var(--navy3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+table.compare thead th:first-child { color: var(--gray); }
+table.compare thead th.th-aog { color: var(--aog2); }
+table.compare thead th.th-nfo { color: var(--nfo2); }
+table.compare thead th.th-obc { color: var(--obc2); }
+table.compare tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+table.compare tbody tr:last-child { border-bottom: none; }
+table.compare tbody tr:hover { background: rgba(255,255,255,0.03); }
+table.compare td {
+  padding: 16px 24px; vertical-align: middle;
+  color: rgba(255,255,255,0.75);
+}
+table.compare td:first-child {
+  font-weight: 600; font-size: 0.8rem; color: var(--gray);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  white-space: nowrap;
+}
+table.compare td.cell-aog { color: var(--aog2); font-weight: 600; }
+table.compare td.cell-nfo { color: var(--nfo2); font-weight: 600; }
+table.compare td.cell-obc { color: var(--obc2); font-weight: 600; }
+
+.check  { color: #27d98a; }
+.cross  { color: rgba(255,255,255,0.2); }
+.dash   { color: var(--gray); }
+
+/* row group header */
+table.compare tr.row-group td {
+  background: rgba(255,255,255,0.02);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--cyan); padding: 10px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── PROCESS FLOW ── */
+.flow-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+}
+@media (max-width: 860px) {
+  .flow-grid { grid-template-columns: 1fr; }
+}
+.flow-col { display: flex; flex-direction: column; gap: 0; }
+.flow-header {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 14px 20px; border-radius: 6px 6px 0 0;
+  display: flex; align-items: center; gap: 10px;
+}
+.flow-header.h-aog { background: rgba(232,64,64,0.15); color: var(--aog2); border: 1px solid rgba(232,64,64,0.3); border-bottom: none; }
+.flow-header.h-nfo { background: rgba(240,160,64,0.15); color: var(--nfo2); border: 1px solid rgba(240,160,64,0.3); border-bottom: none; }
+.flow-header.h-obc { background: rgba(0,200,232,0.12); color: var(--obc2); border: 1px solid rgba(0,200,232,0.25); border-bottom: none; }
+
+.flow-steps {
+  border: 1px solid var(--border); border-radius: 0 0 6px 6px;
+  overflow: hidden; flex: 1;
+}
+.flow-step {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.flow-step:last-child { border-bottom: none; }
+.flow-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 800; width: 24px; height: 24px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.flow-num.n-aog { background: rgba(232,64,64,0.2); color: var(--aog2); }
+.flow-num.n-nfo { background: rgba(240,160,64,0.2); color: var(--nfo2); }
+.flow-num.n-obc { background: rgba(0,200,232,0.15); color: var(--obc2); }
+
+.flow-step-body { flex: 1; }
+.flow-step-title { font-size: 0.82rem; font-weight: 700; margin-bottom: 3px; }
+.flow-step-desc  { font-size: 0.75rem; color: rgba(255,255,255,0.45); line-height: 1.55; }
+.flow-sla {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 2px; white-space: nowrap; margin-top: 4px; display: inline-block;
+}
+.flow-sla.s-aog { background: rgba(232,64,64,0.15); color: var(--aog2); }
+.flow-sla.s-nfo { background: rgba(240,160,64,0.15); color: var(--nfo2); }
+.flow-sla.s-obc { background: rgba(0,200,232,0.12); color: var(--obc2); }
+
+/* ── USE CASE GRID ── */
+.usecase-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
+}
+.uc-card {
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--navy3); padding: 24px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: border-color 0.2s;
+}
+.uc-card:hover { border-color: rgba(0,200,232,0.3); }
+.uc-header { display: flex; align-items: center; gap: 12px; }
+.uc-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.uc-icon.i-aog { background: rgba(232,64,64,0.15); }
+.uc-icon.i-nfo { background: rgba(240,160,64,0.15); }
+.uc-icon.i-obc { background: rgba(0,200,232,0.12); }
+.uc-title { font-size: 0.9rem; font-weight: 700; }
+.uc-industry {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--gray);
+}
+.uc-desc { font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+.uc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.uc-tag {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+}
+.uc-tag.t-aog { background: rgba(232,64,64,0.15); color: var(--aog2); }
+.uc-tag.t-nfo { background: rgba(240,160,64,0.15); color: var(--nfo2); }
+.uc-tag.t-obc { background: rgba(0,200,232,0.12); color: var(--obc2); }
+
+/* ── DECISION WIDGET ── */
+.decision-box {
+  background: var(--navy3); border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; max-width: 900px; margin: 0 auto;
+}
+.dq-tabs {
+  display: flex; border-bottom: 1px solid var(--border); overflow-x: auto;
+}
+.dq-tab {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0 28px; height: 50px; line-height: 50px;
+  color: var(--gray); cursor: pointer; border: none; background: none;
+  border-bottom: 3px solid transparent; white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+.dq-tab:hover  { color: var(--white); }
+.dq-tab.active { border-bottom-color: var(--cyan); color: var(--cyan); }
+.dq-panel { display: none; padding: 32px; }
+.dq-panel.active { display: block; }
+.dq-question {
+  font-size: 1rem; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 20px; line-height: 1.6;
+}
+.dq-options { display: flex; flex-direction: column; gap: 10px; }
+.dq-option {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 18px; border-radius: 6px;
+  border: 1px solid var(--border); cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: rgba(255,255,255,0.02);
+}
+.dq-option:hover { border-color: rgba(0,200,232,0.35); background: rgba(0,200,232,0.04); }
+.dq-option input { display: none; }
+.dq-opt-radio {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--gray); flex-shrink: 0; margin-top: 2px;
+  transition: border-color 0.2s;
+}
+.dq-option:hover .dq-opt-radio { border-color: var(--cyan); }
+.dq-opt-body { flex: 1; }
+.dq-opt-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 2px; }
+.dq-opt-desc  { font-size: 0.75rem; color: rgba(255,255,255,0.4); line-height: 1.5; }
+.dq-result {
+  margin-top: 20px; padding: 18px 20px; border-radius: 6px; display: none;
+  font-size: 0.85rem; line-height: 1.6;
+}
+.dq-result.show-aog { display: block; background: rgba(232,64,64,0.1); border: 1px solid rgba(232,64,64,0.3); color: var(--aog2); }
+.dq-result.show-nfo { display: block; background: rgba(240,160,64,0.1); border: 1px solid rgba(240,160,64,0.3); color: var(--nfo2); }
+.dq-result.show-obc { display: block; background: rgba(0,200,232,0.1); border: 1px solid rgba(0,200,232,0.25); color: var(--obc2); }
+.dq-result strong { font-weight: 800; font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ── CTA ── */
+.cta-band {
+  padding: 80px 40px; text-align: center;
+  background: linear-gradient(135deg, #091428 0%, #0a2050 50%, #091428 100%);
+  position: relative; overflow: hidden;
+}
+.cta-band::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(20,136,219,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+.cta-band h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.04em; margin-bottom: 1rem;
+}
+.cta-band h2 em { font-style: normal; color: var(--cyan); }
+.cta-band p { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-bottom: 2rem; line-height: 1.75; }
+.cta-btns { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.btn-primary {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 14px 36px; border-radius: 4px;
+  background: var(--blue2); color: var(--white); text-decoration: none;
+  border: none; cursor: pointer; transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--blue); }
+.btn-outline {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 14px 36px; border-radius: 4px;
+  background: transparent; color: var(--white); text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.25); cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 28px 40px; background: var(--navy);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.foot-copy { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+.foot-links { display: flex; gap: 20px; }
+.foot-links a { font-size: 0.75rem; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+.foot-links a:hover { color: var(--cyan); }
+
+/* ── SCROLL ANIMATION ── */
+.fade-up {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ── STICKY NAV TABS ── */
+.page-nav {
+  position: sticky; top: 60px; z-index: 400;
+  background: rgba(9,20,40,0.97); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto; padding: 0 40px;
+}
+.pnav-link {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gray); text-decoration: none; padding: 0 18px; height: 48px;
+  line-height: 48px; white-space: nowrap; border-bottom: 3px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.pnav-link:hover  { color: var(--white); }
+.pnav-link.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-box">O</div>
+    OPTEC<span>-EXP</span>
+  </a>
+  <div class="nav-r">
+    <a href="#">Services</a>
+    <a href="#">Network</a>
+    <a href="#">Tracking</a>
+    <a href="#">About</a>
+    <a class="nav-cta" href="#">Get Quote</a>
+  </div>
+</nav>
+
+<!-- PAGE NAV TABS -->
+<div class="page-nav">
+  <a class="pnav-link active" href="#overview">Overview</a>
+  <a class="pnav-link" href="#services">Services</a>
+  <a class="pnav-link" href="#compare">Compare</a>
+  <a class="pnav-link" href="#process">Process</a>
+  <a class="pnav-link" href="#usecases">Use Cases</a>
+  <a class="pnav-link" href="#selector">Selector</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <div class="hero-inner">
+    <div class="eyebrow">Premium Air Transport Services</div>
+    <h1>AOG · NFO · <em>OBC</em><br>When Every Hour Counts</h1>
+    <p>Three specialized service tiers designed for time-critical cargo. From grounded aircraft emergencies to high-value personal courier delivery — OPTEC-EXP ensures your shipment arrives exactly when it must.</p>
+
+    <div class="hero-pills">
+      <div class="pill pill-aog"><span class="pill-dot"></span>AOG — Aircraft on Ground</div>
+      <div class="pill pill-nfo"><span class="pill-dot"></span>NFO — Next Flight Out</div>
+      <div class="pill pill-obc"><span class="pill-dot"></span>OBC — On Board Courier</div>
+    </div>
+
+    <div class="stats-strip">
+      <div class="ss-item">
+        <div class="ss-num" style="color:var(--aog2)">2h</div>
+        <div class="ss-label">AOG Response SLA</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-num" style="color:var(--nfo2)">4h</div>
+        <div class="ss-label">NFO Dispatch Target</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-num" style="color:var(--obc2)">Door-to-Door</div>
+        <div class="ss-label">OBC Hand-Carry</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-num" style="color:var(--cyan)">96</div>
+        <div class="ss-label">Countries Covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICES ── -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="section-eyebrow">Service Tiers</div>
+      <div class="section-title">Choose Your <em>Service Level</em></div>
+      <div class="section-sub">Three precision-engineered solutions for time-critical air logistics</div>
+    </div>
+
+    <div class="service-cards">
+
+      <!-- AOG -->
+      <div class="svc-card aog fade-up">
+        <div class="svc-card-top">
+          <div class="svc-urgency">&#9888; Emergency</div>
+          <div class="svc-icon">✈</div>
+          <div class="svc-tag">AOG</div>
+          <h3>Aircraft on Ground
+            <small>Aircraft on Ground Emergency</small>
+          </h3>
+          <p class="svc-tagline">Dedicated emergency logistics activated within minutes when a commercial or cargo aircraft is grounded due to a technical defect — delivering critical parts to restore operations.</p>
+        </div>
+        <div class="svc-card-body">
+          <div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Response SLA</span>
+              <span class="kv-val">Within 2 hours</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Cargo Type</span>
+              <span class="kv-val">Aircraft Parts · AOG Spares</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Priority Level</span>
+              <span class="kv-val">P1 — Absolute Priority</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Coverage</span>
+              <span class="kv-val">96 Countries · 24/7/365</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Typical Transit</span>
+              <span class="kv-val">Same Day – 24 Hours</span>
+            </div>
+          </div>
+          <div class="svc-features">
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Immediate agent activation upon notification</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Priority freight booking on next available flight</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Dedicated ground handler at both origin &amp; destination</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Real-time milestone updates every 30 minutes</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Airport-to-aircraft ramp delivery coordination</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> CASS / IATA compliant documentation support</div>
+          </div>
+          <a class="svc-btn" href="#">Request AOG Service</a>
+        </div>
+      </div>
+
+      <!-- NFO -->
+      <div class="svc-card nfo fade-up" style="transition-delay:0.1s">
+        <div class="svc-card-top">
+          <div class="svc-urgency">⚡ Urgent</div>
+          <div class="svc-icon">🚀</div>
+          <div class="svc-tag">NFO</div>
+          <h3>Next Flight Out
+            <small>Next Available Flight Dispatch</small>
+          </h3>
+          <p class="svc-tagline">Your shipment booked on the very next departing flight — no consolidation, no waiting for scheduled freight runs. Maximum speed through direct airline priority booking.</p>
+        </div>
+        <div class="svc-card-body">
+          <div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Dispatch Target</span>
+              <span class="kv-val">Within 4 hours of booking</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Cargo Type</span>
+              <span class="kv-val">General · Pharma · Tech</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Priority Level</span>
+              <span class="kv-val">P2 — High Priority</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Coverage</span>
+              <span class="kv-val">Global Major Routes · 24/7</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Typical Transit</span>
+              <span class="kv-val">Next Day – 48 Hours</span>
+            </div>
+          </div>
+          <div class="svc-features">
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Automatic scanning of all departing flights within 4 hours</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Direct airline priority booking — no consolidation</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Express customs pre-clearance preparation</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Active flight monitoring &amp; automated re-routing</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Dedicated pick-up within 60 minutes of booking</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Proof of delivery with timestamp</div>
+          </div>
+          <a class="svc-btn" href="#">Request NFO Service</a>
+        </div>
+      </div>
+
+      <!-- OBC -->
+      <div class="svc-card obc fade-up" style="transition-delay:0.2s">
+        <div class="svc-card-top">
+          <div class="svc-urgency">★ Premium</div>
+          <div class="svc-icon">💼</div>
+          <div class="svc-tag">OBC</div>
+          <h3>On Board Courier
+            <small>Personal Hand-Carry Service</small>
+          </h3>
+          <p class="svc-tagline">A dedicated OPTEC courier physically travels with your cargo as personal hand baggage — never leaving the shipment unattended from origin door to destination door.</p>
+        </div>
+        <div class="svc-card-body">
+          <div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Activation</span>
+              <span class="kv-val">Courier dispatched in 3–4 hrs</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Cargo Type</span>
+              <span class="kv-val">High-Value · Sensitive · Legal</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Priority Level</span>
+              <span class="kv-val">P1 — White Glove</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Coverage</span>
+              <span class="kv-val">Worldwide · Any Airport</span>
+            </div>
+            <div class="svc-kv-row">
+              <span class="kv-label">Typical Transit</span>
+              <span class="kv-val">Door-to-Door on fastest flight</span>
+            </div>
+          </div>
+          <div class="svc-features">
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Dedicated courier travels with cargo as hand baggage</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Continuous chain of custody — zero unattended time</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Personal delivery to named recipient with signature</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Carnet / diplomatic documentation handling</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Live GPS tracking of courier + cargo</div>
+            <div class="svc-feat"><span class="svc-feat-icon">▸</span> Available for items up to 32 kg in cabin</div>
+          </div>
+          <a class="svc-btn" href="#">Request OBC Service</a>
+        </div>
+      </div>
+
+    </div><!-- /service-cards -->
+  </div>
+</section>
+
+<!-- ── COMPARISON TABLE ── -->
+<section class="section section-alt" id="compare">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="section-eyebrow">Side-by-Side Comparison</div>
+      <div class="section-title">AOG vs NFO vs <em>OBC</em></div>
+      <div class="section-sub">Key attributes compared across all three service tiers</div>
+    </div>
+
+    <div class="compare-wrap fade-up">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th style="min-width:180px">Attribute</th>
+            <th class="th-aog">✈ AOG</th>
+            <th class="th-nfo">⚡ NFO</th>
+            <th class="th-obc">💼 OBC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-group"><td colspan="4">Timing &amp; Response</td></tr>
+          <tr>
+            <td>Initial Response</td>
+            <td class="cell-aog">≤ 2 hours</td>
+            <td class="cell-nfo">≤ 4 hours</td>
+            <td class="cell-obc">≤ 4 hours</td>
+          </tr>
+          <tr>
+            <td>Typical Door-to-Door</td>
+            <td class="cell-aog">Same day – 24 h</td>
+            <td class="cell-nfo">12 h – 48 h</td>
+            <td class="cell-obc">Fastest available flight</td>
+          </tr>
+          <tr>
+            <td>24 / 7 / 365 Ops</td>
+            <td class="cell-aog check">✔ Yes</td>
+            <td class="cell-nfo check">✔ Yes</td>
+            <td class="cell-obc check">✔ Yes</td>
+          </tr>
+
+          <tr class="row-group"><td colspan="4">Cargo Suitability</td></tr>
+          <tr>
+            <td>Aircraft Spare Parts</td>
+            <td class="cell-aog check">✔ Primary use</td>
+            <td class="cell-nfo check">✔ Suitable</td>
+            <td class="cell-obc">— Not typical</td>
+          </tr>
+          <tr>
+            <td>Pharmaceuticals</td>
+            <td>— Not primary</td>
+            <td class="cell-nfo check">✔ With temp control</td>
+            <td class="cell-obc check">✔ Excellent</td>
+          </tr>
+          <tr>
+            <td>High-Value / Fragile</td>
+            <td>— Secondary</td>
+            <td class="cell-nfo check">✔ Suitable</td>
+            <td class="cell-obc check">✔ Ideal</td>
+          </tr>
+          <tr>
+            <td>Legal / Sensitive Docs</td>
+            <td class="cross">✗ Not typical</td>
+            <td class="cross">✗ Not typical</td>
+            <td class="cell-obc check">✔ Preferred</td>
+          </tr>
+          <tr>
+            <td>Max Weight</td>
+            <td>Up to freight limits</td>
+            <td>Up to freight limits</td>
+            <td class="cell-obc">≤ 32 kg (cabin)</td>
+          </tr>
+
+          <tr class="row-group"><td colspan="4">Service Features</td></tr>
+          <tr>
+            <td>Dedicated Handler</td>
+            <td class="cell-aog check">✔ At both ends</td>
+            <td class="cell-nfo check">✔ At origin</td>
+            <td class="cell-obc check">✔ Full journey</td>
+          </tr>
+          <tr>
+            <td>Chain of Custody</td>
+            <td>Partial</td>
+            <td>Partial</td>
+            <td class="cell-obc check">✔ Unbroken</td>
+          </tr>
+          <tr>
+            <td>Live Tracking</td>
+            <td class="cell-aog check">✔ Every 30 min</td>
+            <td class="cell-nfo check">✔ Milestone updates</td>
+            <td class="cell-obc check">✔ GPS real-time</td>
+          </tr>
+          <tr>
+            <td>Customs Pre-clearance</td>
+            <td class="cell-aog check">✔ Yes</td>
+            <td class="cell-nfo check">✔ Yes</td>
+            <td class="cell-obc check">✔ Carnet / personal</td>
+          </tr>
+          <tr>
+            <td>Re-routing on Delay</td>
+            <td class="cell-aog check">✔ Automatic</td>
+            <td class="cell-nfo check">✔ Automatic</td>
+            <td class="cell-obc check">✔ Courier adapts live</td>
+          </tr>
+          <tr>
+            <td>Physical Escort</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cell-obc check">✔ Full journey</td>
+          </tr>
+
+          <tr class="row-group"><td colspan="4">Commercial</td></tr>
+          <tr>
+            <td>Relative Cost</td>
+            <td class="cell-aog">Very High</td>
+            <td class="cell-nfo">High</td>
+            <td class="cell-obc">Premium</td>
+          </tr>
+          <tr>
+            <td>Invoiced By</td>
+            <td>Shipment + emergency surcharge</td>
+            <td>Per shipment / kg</td>
+            <td>Per courier day + flights</td>
+          </tr>
+          <tr>
+            <td>Insurance</td>
+            <td class="cell-aog check">✔ Included</td>
+            <td class="cell-nfo check">✔ Optional / standard</td>
+            <td class="cell-obc check">✔ Full coverage</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCESS FLOW ── -->
+<section class="section" id="process">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="section-eyebrow">Step-by-Step Workflow</div>
+      <div class="section-title">How Each Service <em>Works</em></div>
+      <div class="section-sub">From first contact to final delivery — the operational sequence for each tier</div>
+    </div>
+
+    <div class="flow-grid fade-up">
+
+      <!-- AOG flow -->
+      <div class="flow-col">
+        <div class="flow-header h-aog">✈ AOG Process</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num n-aog">1</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Emergency Notification</div>
+              <div class="flow-step-desc">Airline / MRO contacts OPTEC AOG desk with part number, aircraft type, and grounded location.</div>
+              <span class="flow-sla s-aog">T+0 min</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-aog">2</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Rapid Assessment &amp; Sourcing</div>
+              <div class="flow-step-desc">AOG controller validates part availability, confirms shipper, and selects fastest routing option.</div>
+              <span class="flow-sla s-aog">T+30 min</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-aog">3</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Priority Flight Booking</div>
+              <div class="flow-step-desc">Cargo space secured on the next possible flight — commercial or charter if required.</div>
+              <span class="flow-sla s-aog">T+1 hour</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-aog">4</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Express Collection</div>
+              <div class="flow-step-desc">Dedicated driver dispatched to shipper. Documentation prepared in transit.</div>
+              <span class="flow-sla s-aog">T+2 hours</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-aog">5</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Flight &amp; Customs</div>
+              <div class="flow-step-desc">30-minute milestone updates. Pre-arrival customs notification sent to destination agent.</div>
+              <span class="flow-sla s-aog">In-flight</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-aog">6</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Ramp Delivery</div>
+              <div class="flow-step-desc">Ground handler receives part and delivers directly to aircraft — ramp-side if approved.</div>
+              <span class="flow-sla s-aog">POD issued</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NFO flow -->
+      <div class="flow-col">
+        <div class="flow-header h-nfo">⚡ NFO Process</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num n-nfo">1</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Booking Request</div>
+              <div class="flow-step-desc">Customer submits shipment details — dimensions, weight, destination, and required delivery window.</div>
+              <span class="flow-sla s-nfo">T+0 min</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-nfo">2</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Flight Scan</div>
+              <div class="flow-step-desc">System scans all departing flights within next 4 hours across all carriers and selects optimal option.</div>
+              <span class="flow-sla s-nfo">T+15 min</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-nfo">3</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Pick-Up Dispatch</div>
+              <div class="flow-step-desc">Driver dispatched; confirmed ETD shared with customer. Labels and AWB generated.</div>
+              <span class="flow-sla s-nfo">T+60 min</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-nfo">4</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Cargo Acceptance</div>
+              <div class="flow-step-desc">Shipment checked in as priority freight. Airline acceptance confirmed with flight number.</div>
+              <span class="flow-sla s-nfo">T+3 hours</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-nfo">5</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">In-Flight Monitoring</div>
+              <div class="flow-step-desc">Active flight monitoring; if disruption detected, agent immediately re-books on next available flight.</div>
+              <span class="flow-sla s-nfo">In-flight</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-nfo">6</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Destination Delivery</div>
+              <div class="flow-step-desc">Express customs clearance; final mile delivery to consignee address with timestamped POD.</div>
+              <span class="flow-sla s-nfo">POD issued</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OBC flow -->
+      <div class="flow-col">
+        <div class="flow-header h-obc">💼 OBC Process</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num n-obc">1</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">OBC Request &amp; Briefing</div>
+              <div class="flow-step-desc">Client confirms cargo details, sensitivity level, and destination. Courier is selected and briefed.</div>
+              <span class="flow-sla s-obc">T+0 min</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-obc">2</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Courier Flight Booking</div>
+              <div class="flow-step-desc">OPTEC books the courier on the fastest available flight — with cabin baggage allowance confirmed.</div>
+              <span class="flow-sla s-obc">T+1 hour</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-obc">3</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Collection &amp; Handover</div>
+              <div class="flow-step-desc">Courier collects cargo from origin; handover receipt signed. Cargo enters personal custody.</div>
+              <span class="flow-sla s-obc">T+3–4 hours</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-obc">4</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Airport &amp; Boarding</div>
+              <div class="flow-step-desc">Courier processes cargo through security as hand baggage. Continuous GPS tracking active from departure.</div>
+              <span class="flow-sla s-obc">Boarding</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-obc">5</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">In-Flight Custody</div>
+              <div class="flow-step-desc">Cargo remains with courier in cabin at all times. No cargo hold exposure. Updates on landing.</div>
+              <span class="flow-sla s-obc">In-flight</span>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num n-obc">6</div>
+            <div class="flow-step-body">
+              <div class="flow-step-title">Personal Delivery</div>
+              <div class="flow-step-desc">Courier delivers directly to named recipient. Signed proof of delivery with photo and timestamp.</div>
+              <span class="flow-sla s-obc">POD issued</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /flow-grid -->
+  </div>
+</section>
+
+<!-- ── USE CASES ── -->
+<section class="section section-alt" id="usecases">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="section-eyebrow">Real-World Applications</div>
+      <div class="section-title">Who Uses These <em>Services</em></div>
+      <div class="section-sub">Industry-specific scenarios where AOG, NFO, and OBC deliver critical value</div>
+    </div>
+
+    <div class="usecase-grid fade-up">
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-aog">✈</div>
+          <div>
+            <div class="uc-title">Airline MRO — Engine Component</div>
+            <div class="uc-industry">Aviation Maintenance</div>
+          </div>
+        </div>
+        <div class="uc-desc">A B737 hydraulic actuator fails in Frankfurt. The part is available in Chicago. AOG service delivers it to the gate in under 18 hours, minimizing flight cancellations.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-aog">AOG</span>
+          <span class="uc-tag t-aog">P1 Emergency</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-nfo">💊</div>
+          <div>
+            <div class="uc-title">Clinical Trial Drug Shipment</div>
+            <div class="uc-industry">Pharmaceutical</div>
+          </div>
+        </div>
+        <div class="uc-desc">Investigational drug batches must reach a clinical site within 24 hours. NFO ensures direct airline booking with GDP-compliant temperature monitoring throughout.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-nfo">NFO</span>
+          <span class="uc-tag t-nfo">Temp-Controlled</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-obc">💎</div>
+          <div>
+            <div class="uc-title">High-Value Jewelry Transport</div>
+            <div class="uc-industry">Luxury / Retail</div>
+          </div>
+        </div>
+        <div class="uc-desc">A luxury brand needs custom pieces at a fashion event in Tokyo by morning. An OBC courier hand-carries the consignment, maintaining unbroken custody with live GPS tracking.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-obc">OBC</span>
+          <span class="uc-tag t-obc">White Glove</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-aog">🔧</div>
+          <div>
+            <div class="uc-title">Landing Gear Strut Replacement</div>
+            <div class="uc-industry">Aviation — Charter Ops</div>
+          </div>
+        </div>
+        <div class="uc-desc">A charter aircraft is grounded in Kuala Lumpur awaiting a nose gear strut. AOG logistics charters a freighter to deliver the oversize part overnight from Singapore.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-aog">AOG</span>
+          <span class="uc-tag t-aog">Charter</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-nfo">💻</div>
+          <div>
+            <div class="uc-title">Server Hardware — Production Down</div>
+            <div class="uc-industry">Technology / Data Center</div>
+          </div>
+        </div>
+        <div class="uc-desc">A failed RAID controller threatens data center SLAs. NFO gets the replacement part on the next flight from Amsterdam to Seoul, restoring operations within 36 hours.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-nfo">NFO</span>
+          <span class="uc-tag t-nfo">Tech Logistics</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-obc">📋</div>
+          <div>
+            <div class="uc-title">M&amp;A Legal Document Delivery</div>
+            <div class="uc-industry">Finance / Legal</div>
+          </div>
+        </div>
+        <div class="uc-desc">Signed original merger agreements must reach a law firm in New York for a next-day closing. OBC courier ensures documents arrive in-cabin, intact, and on-time.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-obc">OBC</span>
+          <span class="uc-tag t-obc">Sensitive Docs</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-nfo">🏭</div>
+          <div>
+            <div class="uc-title">Automotive Assembly Line Down</div>
+            <div class="uc-industry">Manufacturing</div>
+          </div>
+        </div>
+        <div class="uc-desc">A missing transmission component stops an entire production line. NFO moves the part from supplier to factory within 20 hours, avoiding six-figure hourly losses.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-nfo">NFO</span>
+          <span class="uc-tag t-nfo">Manufacturing</span>
+        </div>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-header">
+          <div class="uc-icon i-obc">🧬</div>
+          <div>
+            <div class="uc-title">Organ Transport — Research Samples</div>
+            <div class="uc-industry">Medical / Life Sciences</div>
+          </div>
+        </div>
+        <div class="uc-desc">Time-sensitive biological samples must reach a research lab within a strict viability window. OBC courier provides unbroken cold-chain custody in cabin-approved containers.</div>
+        <div class="uc-tags">
+          <span class="uc-tag t-obc">OBC</span>
+          <span class="uc-tag t-obc">Cold Chain</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICE SELECTOR ── -->
+<section class="section" id="selector">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div class="section-eyebrow">Decision Guide</div>
+      <div class="section-title">Which Service Do <em>You Need?</em></div>
+      <div class="section-sub">Answer a few questions to find the right service tier for your shipment</div>
+    </div>
+
+    <div class="decision-box fade-up">
+      <div class="dq-tabs">
+        <button class="dq-tab active" onclick="switchTab('q1',this)">Step 1 — Urgency</button>
+        <button class="dq-tab" onclick="switchTab('q2',this)">Step 2 — Cargo Type</button>
+        <button class="dq-tab" onclick="switchTab('q3',this)">Step 3 — Custody</button>
+      </div>
+
+      <div id="q1" class="dq-panel active">
+        <div class="dq-question">How critical is your delivery timeline?</div>
+        <div class="dq-options">
+          <div class="dq-option" onclick="showResult('aog-result')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--aog2)">Aircraft is grounded — every hour costs tens of thousands</div>
+              <div class="dq-opt-desc">An AOG situation — you need the part to reach the aircraft within hours, not days</div>
+            </div>
+          </div>
+          <div class="dq-option" onclick="showResult('nfo-result')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--nfo2)">Urgent but not a minute-by-minute emergency</div>
+              <div class="dq-opt-desc">Production or operations will halt within 24–48 h if shipment doesn't arrive</div>
+            </div>
+          </div>
+          <div class="dq-option" onclick="showResult('obc-result')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--obc2)">High-value / sensitive — custody is as important as speed</div>
+              <div class="dq-opt-desc">The shipment cannot go unattended or through standard cargo holds</div>
+            </div>
+          </div>
+        </div>
+        <div id="aog-result" class="dq-result">
+          <strong>Recommended: AOG Service</strong><br>
+          Your situation matches an Aircraft on Ground emergency. Our AOG desk will activate within 2 hours with a dedicated controller, priority flight booking, and ramp delivery coordination.
+        </div>
+        <div id="nfo-result" class="dq-result">
+          <strong>Recommended: NFO — Next Flight Out</strong><br>
+          Your shipment needs to move immediately but not necessarily under a dedicated escort. NFO will secure space on the next departing flight and deliver within 12–48 hours.
+        </div>
+        <div id="obc-result" class="dq-result">
+          <strong>Recommended: OBC — On Board Courier</strong><br>
+          Your cargo requires personal escort throughout the journey. A dedicated OPTEC courier will hand-carry it door-to-door with unbroken chain of custody and live GPS tracking.
+        </div>
+      </div>
+
+      <div id="q2" class="dq-panel">
+        <div class="dq-question">What type of cargo are you shipping?</div>
+        <div class="dq-options">
+          <div class="dq-option" onclick="showResult('q2-aog')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--aog2)">Aircraft spare parts / aviation components</div>
+              <div class="dq-opt-desc">Engine parts, landing gear components, avionics, hydraulic systems</div>
+            </div>
+          </div>
+          <div class="dq-option" onclick="showResult('q2-nfo')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--nfo2)">Industrial / manufacturing / pharmaceutical goods</div>
+              <div class="dq-opt-desc">Machine parts, electronics, temperature-sensitive goods, industrial components</div>
+            </div>
+          </div>
+          <div class="dq-option" onclick="showResult('q2-obc')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--obc2)">High-value, sensitive, or classified items</div>
+              <div class="dq-opt-desc">Jewelry, legal documents, biological samples, diplomatic materials, luxury goods</div>
+            </div>
+          </div>
+        </div>
+        <div id="q2-aog" class="dq-result">
+          <strong>Recommended: AOG Service</strong><br>
+          Aviation components, especially those grounding an aircraft, are prime candidates for our AOG service with airline-priority freight booking and ramp-side delivery capability.
+        </div>
+        <div id="q2-nfo" class="dq-result">
+          <strong>Recommended: NFO — Next Flight Out</strong><br>
+          Industrial and pharmaceutical shipments benefit from NFO's rapid dispatch, express customs handling, and automated re-routing to ensure the fastest possible delivery.
+        </div>
+        <div id="q2-obc" class="dq-result">
+          <strong>Recommended: OBC — On Board Courier</strong><br>
+          Sensitive, classified, or irreplaceable items require OBC's personal escort. Your cargo stays in the courier's hands from your door to the recipient's hands.
+        </div>
+      </div>
+
+      <div id="q3" class="dq-panel">
+        <div class="dq-question">What level of custody does your shipment require?</div>
+        <div class="dq-options">
+          <div class="dq-option" onclick="showResult('q3-standard')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--nfo2)">Standard priority cargo — tracked but can go in cargo hold</div>
+              <div class="dq-opt-desc">Cargo can travel as regular air freight with milestone tracking</div>
+            </div>
+          </div>
+          <div class="dq-option" onclick="showResult('q3-aog')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--aog2)">Emergency freight — dedicated handlers at each end</div>
+              <div class="dq-opt-desc">Cargo is critical enough to warrant dedicated agents at origin and destination airports</div>
+            </div>
+          </div>
+          <div class="dq-option" onclick="showResult('q3-obc')">
+            <div class="dq-opt-radio"></div>
+            <div class="dq-opt-body">
+              <div class="dq-opt-title" style="color:var(--obc2)">Zero-gap custody — cargo must never leave a person's hands</div>
+              <div class="dq-opt-desc">Cargo must be physically held or supervised by a trusted person at all times during transit</div>
+            </div>
+          </div>
+        </div>
+        <div id="q3-standard" class="dq-result">
+          <strong>Recommended: NFO — Next Flight Out</strong><br>
+          NFO provides the speed of the next available flight with active tracking and re-routing — the right balance of urgency and cost when standard cargo custody is sufficient.
+        </div>
+        <div id="q3-aog" class="dq-result">
+          <strong>Recommended: AOG Service</strong><br>
+          AOG service deploys dedicated ground handlers at both the origin and destination airports, ensuring your freight is prioritized and tracked at every transfer point.
+        </div>
+        <div id="q3-obc" class="dq-result">
+          <strong>Recommended: OBC — On Board Courier</strong><br>
+          If your cargo needs unbroken human custody, OBC is the only choice. Our courier stays with your shipment as hand baggage from origin door to destination recipient.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+  <div class="cta-inner">
+    <div class="eyebrow" style="justify-content:center">24/7 Emergency Desk</div>
+    <h2>Ready to <em>Move</em> Your Shipment?</h2>
+    <p>Our operations team is standing by around the clock. Whether it's an aircraft on the ground at 3 AM or a last-minute courier for a deal closing — we respond in minutes.</p>
+    <div class="cta-btns">
+      <a class="btn-primary" href="#">Request AOG / NFO / OBC</a>
+      <a class="btn-outline" href="#">Download Service Guide</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-copy">© 2025 OPTEC Express Logistics Co., Ltd. All rights reserved.</div>
+  <div class="foot-links">
+    <a href="#">AOG Desk</a>
+    <a href="#">Tracking</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+/* ── Scroll fade-in ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+/* ── Page nav active state ── */
+const sections  = document.querySelectorAll('section[id]');
+const pnavLinks = document.querySelectorAll('.pnav-link');
+const pnavObs   = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      pnavLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.pnav-link[href="#${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+sections.forEach(s => pnavObs.observe(s));
+
+/* ── Decision panel tabs ── */
+function switchTab(panelId, btn) {
+  document.querySelectorAll('.dq-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dq-tab').forEach(b  => b.classList.remove('active'));
+  document.getElementById(panelId).classList.add('active');
+  btn.classList.add('active');
+  // hide all results on tab switch
+  document.querySelectorAll('.dq-result').forEach(r => {
+    r.className = r.className.replace(/\bshow-\w+\b/g, '');
+  });
+}
+
+/* ── Decision result reveal ── */
+function showResult(id) {
+  // hide all results within the same panel
+  const panel = document.querySelector('.dq-panel.active');
+  panel.querySelectorAll('.dq-result').forEach(r => {
+    r.className = r.className.replace(/\bshow-\w+\b/g, '');
+  });
+  // determine color from id
+  const color = id.includes('aog') ? 'aog' : id.includes('nfo') ? 'nfo' : 'obc';
+  const el = document.getElementById(id);
+  if (el) el.classList.add('show-' + color);
+}
+</script>
+
+</body>
+</html>
