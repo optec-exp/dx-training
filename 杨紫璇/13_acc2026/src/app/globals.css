@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #c9a96e;
+  --gold-light: #e2c48a;
+  --dark: #08080f;
+  --dark-2: #0e0e1a;
+  --dark-3: #141424;
+  --muted: rgba(232, 232, 240, 0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--dark);
+  color: #e8e8f0;
+  font-family: 'Inter', 'Noto Sans JP', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+}
+
+html { scroll-behavior: smooth; }

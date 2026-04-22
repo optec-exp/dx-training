@@ -1,0 +1,276 @@
+export type Lang = 'ja' | 'en' | 'zh';
+
+export const locales = {
+  ja: {
+    langLabel: '日本語',
+    nav: {
+      exhibition: '展示会概要',
+      showcase: '展示内容',
+      contact: 'お問い合わせ',
+    },
+    hero: {
+      badge: 'Air Cargo China 2026 出展',
+      title: 'アジアの物流が、\nここに集まる。',
+      subtitle: 'OPTEC Express は Air Cargo China 2026 に出展いたします。\nぜひブースへお越しください。',
+      date: '2026年6月10日（水）〜 12日（金）',
+      venue: '上海新国際博覧センター（SNIEC）',
+      booth: 'ホール E1 ブース No. 523',
+      cta: '商談を予約する',
+      ctaSub: 'お問い合わせ',
+    },
+    info: {
+      sectionLabel: 'Exhibition Info',
+      title: '展示会概要',
+      items: [
+        { label: '展示会名', value: 'Air Cargo China 2026' },
+        { label: '会期', value: '2026年6月10日（水）〜 12日（金）' },
+        { label: '会場', value: '上海新国際博覧センター（SNIEC）\n浦東新区龍陽路2345号' },
+        { label: 'ブース番号', value: 'ホール E1 / ブース 523' },
+        { label: '開催時間', value: '10:00 〜 17:00（最終日 16:00まで）' },
+        { label: '入場', value: '事前登録制（無料）' },
+      ],
+    },
+    showcase: {
+      sectionLabel: 'Our Showcase',
+      title: '展示サービス',
+      subtitle: 'OPTEC Express が今回展示する緊急物流ソリューションをご紹介します。',
+      items: [
+        {
+          icon: '✈',
+          title: 'AOG 航空機材緊急輸送',
+          desc: '航空機停止を最短時間で解消。世界186都市への24/7緊急部品調達ネットワーク。',
+        },
+        {
+          icon: '🧬',
+          title: '医薬品・ライフサイエンス',
+          desc: 'CellChain全温度帯管理、GDP/GMP準拠。医薬品・細胞・試薬の国際輸送を専門に対応。',
+        },
+        {
+          icon: '⚡',
+          title: 'NFO 最速フライト',
+          desc: '次の便で発送。優先搭載・24/7専任コーディネーターが最速輸送を実現。',
+        },
+        {
+          icon: '👤',
+          title: 'OBC 随行輸送',
+          desc: '専属クーリエが荷物を手荷物として随行。最高レベルのスピードと安全性。',
+        },
+        {
+          icon: '🌐',
+          title: 'TALA エージェントネットワーク',
+          desc: '96ヶ国のパートナーネットワーク。現地通関・ラストマイル配送をシームレスに連携。',
+        },
+        {
+          icon: '📋',
+          title: '通関・書類サポート',
+          desc: '輸出入申告、危険品申告、ATA Carnet、各種許可証取得まで一括対応。',
+        },
+      ],
+    },
+    stats: [
+      { num: '186', label: '就航都市' },
+      { num: '96', label: '対応国' },
+      { num: '24/7', label: '緊急対応' },
+      { num: '10+', label: '年の実績' },
+    ],
+    contact: {
+      sectionLabel: 'Meet Us',
+      title: 'ブースでお会いしましょう',
+      subtitle: '商談のご予約・お問い合わせはこちらから。\n担当者より24時間以内にご連絡いたします。',
+      namePlaceholder: 'お名前',
+      companyPlaceholder: '会社名',
+      emailPlaceholder: 'メールアドレス',
+      messagePlaceholder: 'ご用件・ご質問など',
+      submit: '送信する',
+      sent: 'お問い合わせを受け付けました。担当者よりご連絡いたします。',
+      emergency: '緊急連絡先',
+      emergencyNum: '03-4500-1918',
+    },
+    footer: {
+      copy: '© 2026 OPTEC Express Co., Ltd. All rights reserved.',
+      tagline: 'Global Urgent Logistics Since 2016',
+    },
+  },
+
+  en: {
+    langLabel: 'English',
+    nav: {
+      exhibition: 'Exhibition',
+      showcase: 'Showcase',
+      contact: 'Contact',
+    },
+    hero: {
+      badge: 'Air Cargo China 2026 Exhibitor',
+      title: 'Where Asia\'s\nLogistics Converge.',
+      subtitle: 'OPTEC Express will be exhibiting at Air Cargo China 2026.\nCome visit us at our booth.',
+      date: 'June 10–12, 2026 (Wed–Fri)',
+      venue: 'Shanghai New International Expo Centre (SNIEC)',
+      booth: 'Hall E1, Booth No. 523',
+      cta: 'Book a Meeting',
+      ctaSub: 'Contact Us',
+    },
+    info: {
+      sectionLabel: 'Exhibition Info',
+      title: 'Exhibition Overview',
+      items: [
+        { label: 'Event', value: 'Air Cargo China 2026' },
+        { label: 'Dates', value: 'June 10–12, 2026 (Wed–Fri)' },
+        { label: 'Venue', value: 'Shanghai New International Expo Centre (SNIEC)\n2345 Longyang Road, Pudong' },
+        { label: 'Booth', value: 'Hall E1 / Booth 523' },
+        { label: 'Hours', value: '10:00–17:00 (Last day until 16:00)' },
+        { label: 'Admission', value: 'Pre-registration required (Free)' },
+      ],
+    },
+    showcase: {
+      sectionLabel: 'Our Showcase',
+      title: 'Services on Display',
+      subtitle: 'Discover the urgent logistics solutions OPTEC Express will showcase at this year\'s exhibition.',
+      items: [
+        {
+          icon: '✈',
+          title: 'AOG Aircraft-on-Ground',
+          desc: 'Minimize AOG downtime with our 24/7 global parts sourcing network covering 186 cities worldwide.',
+        },
+        {
+          icon: '🧬',
+          title: 'Pharma & Life Sciences',
+          desc: 'Full cold chain management via CellChain. GDP/GMP compliant handling for pharmaceuticals, cells, and reagents.',
+        },
+        {
+          icon: '⚡',
+          title: 'NFO Next Flight Out',
+          desc: 'Ship on the next available flight. Priority loading with 24/7 dedicated coordinators for maximum speed.',
+        },
+        {
+          icon: '👤',
+          title: 'OBC On Board Courier',
+          desc: 'A dedicated courier accompanies your shipment as carry-on luggage — maximum speed and security.',
+        },
+        {
+          icon: '🌐',
+          title: 'TALA Agent Network',
+          desc: 'Partners in 96 countries seamlessly handling local customs clearance and last-mile delivery.',
+        },
+        {
+          icon: '📋',
+          title: 'Customs & Documentation',
+          desc: 'End-to-end support for import/export declarations, dangerous goods, ATA Carnets, and permits.',
+        },
+      ],
+    },
+    stats: [
+      { num: '186', label: 'Cities Served' },
+      { num: '96', label: 'Countries' },
+      { num: '24/7', label: 'Emergency Response' },
+      { num: '10+', label: 'Years Experience' },
+    ],
+    contact: {
+      sectionLabel: 'Meet Us',
+      title: 'Meet Us at the Booth',
+      subtitle: 'Book a meeting or send us an inquiry.\nOur team will respond within 24 hours.',
+      namePlaceholder: 'Your Name',
+      companyPlaceholder: 'Company Name',
+      emailPlaceholder: 'Email Address',
+      messagePlaceholder: 'Your message or inquiry',
+      submit: 'Send Message',
+      sent: 'Thank you! We will get back to you within 24 hours.',
+      emergency: '24/7 Emergency Line',
+      emergencyNum: '03-4500-1918',
+    },
+    footer: {
+      copy: '© 2026 OPTEC Express Co., Ltd. All rights reserved.',
+      tagline: 'Global Urgent Logistics Since 2016',
+    },
+  },
+
+  zh: {
+    langLabel: '中文',
+    nav: {
+      exhibition: '展会概要',
+      showcase: '展示内容',
+      contact: '联系我们',
+    },
+    hero: {
+      badge: 'Air Cargo China 2026 参展商',
+      title: '亚洲物流，\n在此汇聚。',
+      subtitle: 'OPTEC Express 将参加 Air Cargo China 2026 展会。\n欢迎莅临我们的展位。',
+      date: '2026年6月10日（周三）至 12日（周五）',
+      venue: '上海新国际博览中心（SNIEC）',
+      booth: 'E1馆 523号展位',
+      cta: '预约商务会谈',
+      ctaSub: '联系我们',
+    },
+    info: {
+      sectionLabel: 'Exhibition Info',
+      title: '展会概要',
+      items: [
+        { label: '展会名称', value: 'Air Cargo China 2026' },
+        { label: '展会日期', value: '2026年6月10日（周三）至 12日（周五）' },
+        { label: '展会地点', value: '上海新国际博览中心（SNIEC）\n浦东新区龙阳路2345号' },
+        { label: '展位号', value: 'E1馆 / 523号展位' },
+        { label: '开放时间', value: '10:00–17:00（最后一天至16:00）' },
+        { label: '入场方式', value: '预登记入场（免费）' },
+      ],
+    },
+    showcase: {
+      sectionLabel: 'Our Showcase',
+      title: '展示服务内容',
+      subtitle: '了解 OPTEC Express 本次展会重点展示的国际紧急物流解决方案。',
+      items: [
+        {
+          icon: '✈',
+          title: 'AOG 航材紧急运输',
+          desc: '全球186城市24/7紧急零件调配网络，以最短时间恢复航班运营。',
+        },
+        {
+          icon: '🧬',
+          title: '医药品 & 生命科学',
+          desc: 'CellChain全程温控，符合GDP/GMP法规，专业处理医药品、细胞及试剂的国际运输。',
+        },
+        {
+          icon: '⚡',
+          title: 'NFO 最速航班',
+          desc: '下一班最快航班出发，优先装载，24/7专属协调员全程跟进。',
+        },
+        {
+          icon: '👤',
+          title: 'OBC 随身携带运输',
+          desc: '专属信使随行护送，手提行李运输，最高速度与安全等级。',
+        },
+        {
+          icon: '🌐',
+          title: 'TALA 代理网络',
+          desc: '96国合作伙伴网络，本地通关与末端配送无缝衔接。',
+        },
+        {
+          icon: '📋',
+          title: '通关 & 文件支持',
+          desc: '进出口报关、危险品申报、ATA单证册、各类许可证一站式办理。',
+        },
+      ],
+    },
+    stats: [
+      { num: '186', label: '目的地城市' },
+      { num: '96', label: '合作国家' },
+      { num: '24/7', label: '全天候响应' },
+      { num: '10+', label: '年行业经验' },
+    ],
+    contact: {
+      sectionLabel: 'Meet Us',
+      title: '期待与您在展位相见',
+      subtitle: '预约商务会谈或发送询盘，\n我们将在24小时内与您联系。',
+      namePlaceholder: '您的姓名',
+      companyPlaceholder: '公司名称',
+      emailPlaceholder: '邮箱地址',
+      messagePlaceholder: '您的留言或询盘内容',
+      submit: '发送',
+      sent: '已收到您的留言，我们将在24小时内与您联系。',
+      emergency: '24/7 紧急热线',
+      emergencyNum: '03-4500-1918',
+    },
+    footer: {
+      copy: '© 2026 OPTEC Express Co., Ltd. All rights reserved.',
+      tagline: 'Global Urgent Logistics Since 2016',
+    },
+  },
+};
