@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPTEC Express — 教育培训计划日历 2026</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --gold:   #c9a96e;
+      --dark:   #08080f;
+      --dark-2: #0e0e1a;
+      --dark-3: #141424;
+      --text:   #e8e8f0;
+      --muted:  rgba(232,232,240,0.4);
+      --c-iso:    #f87171;
+      --c-inner:  #60a5fa;
+      --c-mgmt:   #a78bfa;
+      --c-safety: #fb923c;
+      --c-quality:#34d399;
+      --c-special:#fbbf24;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter',"Microsoft YaHei",sans-serif; background:var(--dark); color:var(--text); min-height:100vh; }
+
+    /* ━━━ 页头 ━━━ */
+    header {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      height:72px; padding:0 5%;
+      display:flex; align-items:center; justify-content:space-between;
+      background:rgba(8,8,15,0.95); backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(201,169,110,0.1);
+    }
+    .logo-wrap { display:flex; flex-direction:column; gap:2px; }
+    .logo-main { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:700; letter-spacing:4px; color:#fff; text-transform:uppercase; }
+    .logo-sub  { font-size:9px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; }
+
+    /* 图例 */
+    .header-legend { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+    .leg-item { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted); letter-spacing:0.5px; }
+    .leg-dot  { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+    /* ━━━ 主布局 ━━━ */
+    .layout {
+      margin-top:72px;
+      display:grid;
+      grid-template-columns:1fr 300px;
+      min-height:calc(100vh - 72px);
+    }
+
+    /* ━━━ 左侧日历区 ━━━ */
+    .cal-area { padding:32px 36px; background:var(--dark); }
+
+    /* 控制栏 */
+    .cal-controls {
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;
+    }
+    .cal-nav { display:flex; align-items:center; gap:12px; }
+    .nav-btn {
+      width:36px; height:36px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);
+      background:var(--dark-3); color:var(--muted); font-size:16px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all .2s;
+    }
+    .nav-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .cal-month-label {
+      font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#fff;
+      min-width:180px;
+    }
+    .cal-year-label { font-size:13px; color:var(--gold); font-weight:500; margin-left:8px; }
+
+    /* 视图切换 */
+    .view-tabs { display:flex; gap:4px; }
+    .view-tab {
+      padding:7px 18px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);
+      background:transparent; color:var(--muted); font-size:11px; letter-spacing:1px;
+      cursor:pointer; transition:all .2s; text-transform:uppercase;
+    }
+    .view-tab.active { background:var(--gold); border-color:var(--gold); color:#08080f; font-weight:700; }
+
+    /* ── 月视图 ── */
+    #monthView { display:block; }
+    .weekdays {
+      display:grid; grid-template-columns:repeat(7,1fr);
+      margin-bottom:8px;
+    }
+    .weekday {
+      text-align:center; font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); padding:8px 0; font-weight:500;
+    }
+    .weekday:first-child { color:var(--c-iso); opacity:0.7; }
+    .weekday:last-child  { color:#60a5fa; opacity:0.7; }
+
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+
+    .cal-cell {
+      min-height:100px; background:var(--dark-3); border-radius:6px; padding:8px;
+      border:1px solid rgba(255,255,255,0.04); position:relative;
+      transition:background .2s;
+    }
+    .cal-cell:hover { background:rgba(255,255,255,0.03); }
+    .cal-cell.other-month { opacity:0.3; }
+    .cal-cell.today { border-color:rgba(201,169,110,0.4); background:rgba(201,169,110,0.04); }
+    .cal-cell.today .cell-num { color:var(--gold); font-weight:700; }
+
+    .cell-num {
+      font-size:12px; font-weight:500; color:rgba(232,232,240,0.5);
+      margin-bottom:6px; display:block;
+    }
+    .cell-events { display:flex; flex-direction:column; gap:3px; }
+    .cell-event {
+      font-size:10px; font-weight:500; border-radius:3px; padding:2px 6px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      cursor:pointer; transition:opacity .15s; line-height:1.5;
+    }
+    .cell-event:hover { opacity:0.8; }
+    .cell-event.iso    { background:rgba(248,113,113,0.18); color:#fca5a5; border-left:2px solid var(--c-iso); }
+    .cell-event.inner  { background:rgba(96,165,250,0.15);  color:#93c5fd; border-left:2px solid var(--c-inner); }
+    .cell-event.mgmt   { background:rgba(167,139,250,0.15); color:#c4b5fd; border-left:2px solid var(--c-mgmt); }
+    .cell-event.safety { background:rgba(251,146,60,0.15);  color:#fdba74; border-left:2px solid var(--c-safety); }
+    .cell-event.quality{ background:rgba(52,211,153,0.12);  color:#6ee7b7; border-left:2px solid var(--c-quality); }
+    .cell-event.special{ background:rgba(251,191,36,0.15);  color:#fde68a; border-left:2px solid var(--c-special); }
+    .cell-more { font-size:9px; color:var(--muted); padding:1px 6px; cursor:pointer; }
+
+    /* ── 年视图 ── */
+    #yearView { display:none; }
+    .year-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .mini-month { background:var(--dark-3); border-radius:10px; padding:16px; border:1px solid rgba(255,255,255,0.05); cursor:pointer; transition:border-color .2s; }
+    .mini-month:hover { border-color:rgba(201,169,110,0.3); }
+    .mini-month-name { font-size:11px; font-weight:600; color:var(--gold); letter-spacing:1px; margin-bottom:10px; text-transform:uppercase; }
+    .mini-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; }
+    .mini-cell { text-align:center; font-size:9px; color:var(--muted); padding:2px 0; border-radius:2px; }
+    .mini-cell.has-event { color:#fff; font-weight:600; }
+    .mini-cell.today-mini { background:var(--gold); color:#08080f !important; border-radius:3px; font-weight:700; }
+    .mini-cell.wd-head { color:rgba(255,255,255,0.2); font-size:8px; letter-spacing:1px; }
+    .mini-event-bar { display:flex; gap:2px; flex-wrap:wrap; margin-top:6px; }
+    .mini-bar { width:6px; height:4px; border-radius:1px; }
+
+    /* ━━━ 右侧面板 ━━━ */
+    .side-panel {
+      background:var(--dark-2); border-left:1px solid rgba(255,255,255,0.04);
+      padding:32px 24px; overflow-y:auto;
+    }
+    .side-title {
+      font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; color:#fff;
+      margin-bottom:4px;
+    }
+    .side-sub { font-size:11px; color:var(--muted); margin-bottom:24px; letter-spacing:0.5px; }
+
+    /* 统计 */
+    .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px; }
+    .stat-box { background:var(--dark-3); border-radius:8px; padding:14px; text-align:center; }
+    .stat-num { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:var(--gold); line-height:1; }
+    .stat-label { font-size:9px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-top:4px; }
+
+    /* 即将到来 */
+    .upcoming-title {
+      font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--gold);
+      margin-bottom:14px; display:flex; align-items:center; gap:8px;
+    }
+    .upcoming-title::before { content:''; width:20px; height:1px; background:var(--gold); }
+    .event-list { display:flex; flex-direction:column; gap:10px; }
+    .event-card {
+      background:var(--dark-3); border-radius:8px; padding:14px;
+      border-left:3px solid;
+      transition:background .2s;
+    }
+    .event-card:hover { background:rgba(255,255,255,0.03); }
+    .event-card.iso    { border-left-color:var(--c-iso); }
+    .event-card.inner  { border-left-color:var(--c-inner); }
+    .event-card.mgmt   { border-left-color:var(--c-mgmt); }
+    .event-card.safety { border-left-color:var(--c-safety); }
+    .event-card.quality{ border-left-color:var(--c-quality); }
+    .event-card.special{ border-left-color:var(--c-special); }
+    .event-date { font-size:10px; color:var(--muted); margin-bottom:5px; letter-spacing:0.5px; }
+    .event-name { font-size:13px; font-weight:500; color:#fff; margin-bottom:4px; line-height:1.4; }
+    .event-meta { font-size:10px; color:var(--muted); }
+
+    /* 弹窗 */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+      z-index:300; align-items:center; justify-content:center;
+      backdrop-filter:blur(4px);
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:var(--dark-2); border-radius:16px; padding:36px;
+      max-width:400px; width:90%;
+      border:1px solid rgba(201,169,110,0.2);
+      box-shadow:0 24px 80px rgba(0,0,0,0.6);
+      position:relative;
+    }
+    .modal-close {
+      position:absolute; top:16px; right:16px;
+      background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer;
+      transition:color .2s; line-height:1;
+    }
+    .modal-close:hover { color:#fff; }
+    .modal-cat { font-size:10px; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+    .modal-name { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:#fff; margin-bottom:20px; line-height:1.3; }
+    .modal-row { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; font-size:12px; }
+    .modal-key { color:var(--muted); min-width:52px; flex-shrink:0; }
+    .modal-val { color:rgba(232,232,240,0.8); line-height:1.6; }
+
+    /* 页脚 */
+    footer {
+      background:#030306; padding:20px 5%;
+      display:flex; align-items:center; justify-content:space-between;
+      border-top:1px solid rgba(201,169,110,0.06);
+      font-size:11px; color:rgba(255,255,255,0.12);
+    }
+
+    @media(max-width:900px) {
+      .layout { grid-template-columns:1fr; }
+      .side-panel { display:none; }
+      .header-legend { display:none; }
+      .cal-cell { min-height:72px; }
+      .year-grid { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 页头 -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-main">Optec Express</div>
+    <div class="logo-sub">Education & Training Calendar 2026</div>
+  </div>
+  <div class="header-legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c-iso)"></div>ISO 审计</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c-inner)"></div>内部培训</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c-mgmt)"></div>管理层</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c-safety)"></div>安全合规</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c-quality)"></div>品质管理</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c-special)"></div>特别活动</div>
+  </div>
+</header>
+
+<!-- 主布局 -->
+<div class="layout">
+
+  <!-- 左侧日历 -->
+  <div class="cal-area">
+    <div class="cal-controls">
+      <div class="cal-nav">
+        <button class="nav-btn" id="prevBtn">‹</button>
+        <div>
+          <span class="cal-month-label" id="monthLabel"></span>
+          <span class="cal-year-label" id="yearLabel"></span>
+        </div>
+        <button class="nav-btn" id="nextBtn">›</button>
+        <button class="nav-btn" id="todayBtn" style="width:auto;padding:0 12px;font-size:11px;letter-spacing:1px;">今日</button>
+      </div>
+      <div class="view-tabs">
+        <button class="view-tab active" id="tabMonth">月视图</button>
+        <button class="view-tab" id="tabYear">年视图</button>
+      </div>
+    </div>
+
+    <!-- 月视图 -->
+    <div id="monthView">
+      <div class="weekdays">
+        <div class="weekday">日</div><div class="weekday">一</div>
+        <div class="weekday">二</div><div class="weekday">三</div>
+        <div class="weekday">四</div><div class="weekday">五</div>
+        <div class="weekday">六</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <!-- 年视图 -->
+    <div id="yearView">
+      <div class="year-grid" id="yearGrid"></div>
+    </div>
+  </div>
+
+  <!-- 右侧面板 -->
+  <div class="side-panel">
+    <div class="side-title">2026 培训概览</div>
+    <div class="side-sub">教育 · 审计 · 品质管理</div>
+
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">全年场次</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">6</div>
+        <div class="stat-label">培训类别</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statMonth">0</div>
+        <div class="stat-label">本月场次</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statUpcoming">0</div>
+        <div class="stat-label">即将到来</div>
+      </div>
+    </div>
+
+    <div class="upcoming-title">即将到来的培训</div>
+    <div class="event-list" id="upcomingList"></div>
+  </div>
+</div>
+
+<!-- 事件弹窗 -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">×</button>
+    <div class="modal-cat" id="modalCat"></div>
+    <div class="modal-name" id="modalName"></div>
+    <div class="modal-row"><span class="modal-key">日期</span><span class="modal-val" id="modalDate"></span></div>
+    <div class="modal-row"><span class="modal-key">类别</span><span class="modal-val" id="modalType"></span></div>
+    <div class="modal-row"><span class="modal-key">对象</span><span class="modal-val" id="modalTarget"></span></div>
+    <div class="modal-row"><span class="modal-key">说明</span><span class="modal-val" id="modalDesc"></span></div>
+  </div>
+</div>
+
+<footer>
+  <span>OPTEC Express · 教育培训计划日历 2026</span>
+  <span>FRM-CO · Quality Management</span>
+</footer>
+
+<script>
+/* ━━━ 全年培训数据 ━━━ */
+var EVENTS = [
+  /* 1月 */
+  { date:'2026-01-08', name:'新年度MVV方针发布会',     cat:'mgmt',   type:'管理层培训', target:'全员',         desc:'2026年度使命・愿景・价值观方针发布，CEO主讲。' },
+  { date:'2026-01-15', name:'NCR处理流程内部培训',     cat:'inner',  type:'内部培训',   target:'全部门担当',   desc:'NCR登录、有效性判定、遏制措施及9步流程操作培训。' },
+  { date:'2026-01-21', name:'Kintone系统操作培训',     cat:'inner',  type:'内部培训',   target:'新入职员工',   desc:'Kintone品质管理系统录入与查询操作实操。' },
+  /* 2月 */
+  { date:'2026-02-10', name:'ISO 9001 内审员培训',     cat:'iso',    type:'ISO 审计',   target:'内审员候补',   desc:'ISO 9001:2015内审员资格培训，SGS认定讲师主讲。' },
+  { date:'2026-02-25', name:'MVV实践表填写指导',       cat:'quality',type:'品质管理',   target:'全员',         desc:'半年度挑战宣言设定、利基领域定义填写指导说明会。' },
+  /* 3月 */
+  { date:'2026-03-05', name:'ISO 9001 内部审计（Day1）',cat:'iso',   type:'ISO 审计',   target:'内审员',       desc:'2026年度第一次内部审计，管理部・业务部审计。' },
+  { date:'2026-03-06', name:'ISO 9001 内部审计（Day2）',cat:'iso',   type:'ISO 审计',   target:'内审员',       desc:'2026年度第一次内部审计，运营部・治理室审计。' },
+  { date:'2026-03-18', name:'危险品处理规程培训',      cat:'safety', type:'安全合规',   target:'运营担当全员', desc:'IATA危险品DGR规程年度复习及2026年修订版更新内容。' },
+  { date:'2026-03-25', name:'品质月例会（3月）',       cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有・风险一览更新确认。' },
+  /* 4月 */
+  { date:'2026-04-01', name:'MVV实践表生效日',         cat:'special',type:'特别活动',   target:'全员',         desc:'2026年度MVV实践津贴制度正式生效，挑战宣言锁定。' },
+  { date:'2026-04-10', name:'CellChain温控物流培训',   cat:'inner',  type:'内部培训',   target:'运营担当',     desc:'CryoWing/ThermoSure/CellPass产品操作与温控SLA培训。' },
+  { date:'2026-04-22', name:'品质月例会（4月）',       cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有・风险一览更新确认。' },
+  /* 5月 */
+  { date:'2026-05-14', name:'新员工入职培训',          cat:'inner',  type:'内部培训',   target:'新入职员工',   desc:'公司概要・MVV・品质方针・ISO体系・Kintone操作综合培训。' },
+  { date:'2026-05-20', name:'AOG紧急货运处理培训',     cat:'inner',  type:'内部培训',   target:'业务担当',     desc:'AOG航材紧急运输SLA・路线设计・通关要点培训。' },
+  { date:'2026-05-27', name:'品质月例会（5月）',       cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有。' },
+  /* 6月 */
+  { date:'2026-06-03', name:'半年度MVV评估会议',       cat:'mgmt',   type:'管理层培训', target:'全员',         desc:'上半期MVV实践津贴自我评价提交・上级面谈开始。' },
+  { date:'2026-06-15', name:'ISO外部审计预备说明会',   cat:'iso',    type:'ISO 审计',   target:'内审员・部长', desc:'7月SGS监督审计前的重点事项・文件整备確認。' },
+  { date:'2026-06-24', name:'品质管理评审会议（H1）',  cat:'mgmt',   type:'管理层培训', target:'社长・部长',   desc:'上半期品质KPI评审・风险一览・CAPA有效性総評。' },
+  /* 7月 */
+  { date:'2026-07-08', name:'SGS ISO 9001 监督审计',   cat:'iso',    type:'ISO 审计',   target:'全部门',       desc:'SGS认证机构2026年度监督审计，CN25/00007055维持确认。' },
+  { date:'2026-07-22', name:'IATA规则年度更新培训',    cat:'safety', type:'安全合规',   target:'运营担当全员', desc:'IATA第65版规则更新要点・危险品申告書変更点解説。' },
+  { date:'2026-07-29', name:'品质月例会（7月）',       cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有。' },
+  /* 8月 */
+  { date:'2026-08-05', name:'安全操作规程年度复习',    cat:'safety', type:'安全合规',   target:'全员',         desc:'年度安全操作规程复习考核，全员参加，合格必须。' },
+  { date:'2026-08-19', name:'客户投诉处理培训',        cat:'inner',  type:'内部培训',   target:'业务・运营担当',desc:'客户投诉受理・NCR登录・遏制・客户初步联系标准流程培训。' },
+  { date:'2026-08-26', name:'品质月例会（8月）',       cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有。' },
+  /* 9月 */
+  { date:'2026-09-02', name:'品质月例会（9月）',       cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有・下半期目标確認。' },
+  { date:'2026-09-16', name:'跨部门协作培训',          cat:'inner',  type:'内部培训',   target:'全员',         desc:'日中跨部门沟通规范・业务连携・信息共有流程培训。' },
+  { date:'2026-09-28', name:'ISO内审员复训',           cat:'iso',    type:'ISO 审计',   target:'内审员',       desc:'内审员年度复训及新审查技法・不适合指摘演练。' },
+  /* 10月 */
+  { date:'2026-10-09', name:'年度风险评估会议',        cat:'mgmt',   type:'管理层培训', target:'部长以上',     desc:'全年风险一览表全面更新・新风险识别・管控措施策定。' },
+  { date:'2026-10-21', name:'新SOP发布培训',           cat:'inner',  type:'内部培训',   target:'相关担当',     desc:'本年度修订SOP（运营・品质・客服）正式发布，操作演练。' },
+  { date:'2026-10-28', name:'品质月例会（10月）',      cat:'quality',type:'品质管理',   target:'部长以上',     desc:'NCR月次集计・CAPA进展共有。' },
+  /* 11月 */
+  { date:'2026-11-04', name:'CAPA效果验证方法培训',    cat:'quality',type:'品质管理',   target:'QMR・内审员',  desc:'30日/90日/半年效果验证・KPI追踪・判定基准培训。' },
+  { date:'2026-11-18', name:'年度ISO 9001 内部审计',   cat:'iso',    type:'ISO 审计',   target:'内审员',       desc:'2026年度第二次内部审计（全部门），审计报告提交。' },
+  { date:'2026-11-25', name:'管理评审会议',            cat:'mgmt',   type:'管理层培训', target:'社长・部长・QMR',desc:'ISO管理评审：品质目标评估・资源投入・顾客满意度・改善事项。' },
+  /* 12月 */
+  { date:'2026-12-02', name:'年度品质总结大会',        cat:'mgmt',   type:'管理层培训', target:'全员',         desc:'2026年度品质成果发表・MVP表彰・2027年方针预告。' },
+  { date:'2026-12-08', name:'OPTEC Express 10周年纪念日',cat:'special',type:'特别活动', target:'全员',         desc:'创立10周年纪念日。感谢每一位与OPTEC同行的伙伴。🎉' },
+  { date:'2026-12-16', name:'2027年度培训计划発布',    cat:'quality',type:'品质管理',   target:'部长以上',     desc:'2027年全年教育训练计划草案发布・意见征集。' },
+];
+
+/* ━━━ 状态 ━━━ */
+var today    = new Date(2026, 3, 22); // 2026-04-22
+var curYear  = today.getFullYear();
+var curMonth = today.getMonth();
+var viewMode = 'month';
+
+var MONTHS_ZH = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+var CAT_NAMES  = { iso:'ISO 审计', inner:'内部培训', mgmt:'管理层培训', safety:'安全合规', quality:'品质管理', special:'特别活动' };
+
+/* ━━━ 辅助 ━━━ */
+function eventsOn(y, m, d) {
+  var key = y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+  return EVENTS.filter(function(e){ return e.date === key; });
+}
+function eventsInMonth(y, m) {
+  return EVENTS.filter(function(e){
+    var d = new Date(e.date);
+    return d.getFullYear()===y && d.getMonth()===m;
+  });
+}
+
+/* ━━━ 渲染月视图 ━━━ */
+function renderMonth() {
+  document.getElementById('monthLabel').textContent = MONTHS_ZH[curMonth];
+  document.getElementById('yearLabel').textContent  = curYear;
+
+  var grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  var firstDay = new Date(curYear, curMonth, 1).getDay();
+  var daysInMonth = new Date(curYear, curMonth+1, 0).getDate();
+  var daysInPrev  = new Date(curYear, curMonth, 0).getDate();
+
+  var cells = [];
+  // 上月补位
+  for (var i = firstDay - 1; i >= 0; i--) {
+    cells.push({ d: daysInPrev - i, m: curMonth - 1, y: curYear, other: true });
+  }
+  // 本月
+  for (var d = 1; d <= daysInMonth; d++) {
+    cells.push({ d: d, m: curMonth, y: curYear, other: false });
+  }
+  // 补满6行42格
+  var remain = 42 - cells.length;
+  for (var j = 1; j <= remain; j++) {
+    cells.push({ d: j, m: curMonth + 1, y: curYear, other: true });
+  }
+
+  cells.forEach(function(c) {
+    var cell = document.createElement('div');
+    cell.className = 'cal-cell' + (c.other ? ' other-month' : '');
+
+    var isToday = !c.other && c.d === today.getDate() && c.m === today.getMonth() && c.y === today.getFullYear();
+    if (isToday) cell.classList.add('today');
+
+    var numEl = document.createElement('span');
+    numEl.className = 'cell-num';
+    numEl.textContent = c.d;
+    cell.appendChild(numEl);
+
+    if (!c.other) {
+      var evs = eventsOn(c.y, c.m, c.d);
+      var evContainer = document.createElement('div');
+      evContainer.className = 'cell-events';
+      var show = Math.min(evs.length, 2);
+      for (var k = 0; k < show; k++) {
+        var ev = evs[k];
+        var chip = document.createElement('div');
+        chip.className = 'cell-event ' + ev.cat;
+        chip.textContent = ev.name;
+        chip.addEventListener('click', openModal.bind(null, ev));
+        evContainer.appendChild(chip);
+      }
+      if (evs.length > 2) {
+        var more = document.createElement('div');
+        more.className = 'cell-more';
+        more.textContent = '+' + (evs.length - 2) + ' 项';
+        evContainer.appendChild(more);
+      }
+      cell.appendChild(evContainer);
+    }
+    grid.appendChild(cell);
+  });
+
+  updateSidePanel();
+}
+
+/* ━━━ 渲染年视图 ━━━ */
+function renderYear() {
+  document.getElementById('monthLabel').textContent = '全年';
+  document.getElementById('yearLabel').textContent  = curYear;
+
+  var yg = document.getElementById('yearGrid');
+  yg.innerHTML = '';
+
+  for (var m = 0; m < 12; m++) {
+    var mm = m;
+    var box = document.createElement('div');
+    box.className = 'mini-month';
+    box.innerHTML = '<div class="mini-month-name">' + MONTHS_ZH[m] + '</div>';
+
+    // 迷你格
+    var mg = document.createElement('div');
+    mg.className = 'mini-grid';
+
+    // 星期头
+    ['日','一','二','三','四','五','六'].forEach(function(w){
+      var h = document.createElement('div');
+      h.className = 'mini-cell wd-head'; h.textContent = w;
+      mg.appendChild(h);
+    });
+
+    var fd = new Date(curYear, m, 1).getDay();
+    var dim = new Date(curYear, m+1, 0).getDate();
+
+    for (var pad = 0; pad < fd; pad++) {
+      var blank = document.createElement('div'); blank.className = 'mini-cell'; mg.appendChild(blank);
+    }
+    for (var d = 1; d <= dim; d++) {
+      var dc = document.createElement('div');
+      dc.className = 'mini-cell';
+      dc.textContent = d;
+      var evs = eventsOn(curYear, m, d);
+      if (evs.length > 0) dc.classList.add('has-event');
+      var isT = d===today.getDate() && m===today.getMonth() && curYear===today.getFullYear();
+      if (isT) dc.classList.add('today-mini');
+      mg.appendChild(dc);
+    }
+    box.appendChild(mg);
+
+    // 事件色条
+    var evMonth = eventsInMonth(curYear, m);
+    if (evMonth.length > 0) {
+      var bar = document.createElement('div');
+      bar.className = 'mini-event-bar';
+      var seen = {};
+      evMonth.forEach(function(e){
+        if (!seen[e.cat]) {
+          seen[e.cat] = true;
+          var b = document.createElement('div');
+          b.className = 'mini-bar';
+          var colors = { iso:'#f87171', inner:'#60a5fa', mgmt:'#a78bfa', safety:'#fb923c', quality:'#34d399', special:'#fbbf24' };
+          b.style.background = colors[e.cat];
+          bar.appendChild(b);
+        }
+      });
+      var cnt = document.createElement('span');
+      cnt.style.cssText = 'font-size:9px;color:rgba(232,232,240,0.4);margin-left:4px;';
+      cnt.textContent = evMonth.length + ' 场';
+      bar.appendChild(cnt);
+      box.appendChild(bar);
+    }
+
+    box.addEventListener('click', function(mo){ return function(){
+      curMonth = mo; viewMode = 'month';
+      document.getElementById('monthView').style.display = 'block';
+      document.getElementById('yearView').style.display  = 'none';
+      document.getElementById('tabMonth').classList.add('active');
+      document.getElementById('tabYear').classList.remove('active');
+      renderMonth();
+    }; }(mm));
+
+    yg.appendChild(box);
+  }
+}
+
+/* ━━━ 侧边面板 ━━━ */
+function updateSidePanel() {
+  document.getElementById('statTotal').textContent = EVENTS.length;
+
+  var monthEvs = eventsInMonth(curYear, curMonth);
+  document.getElementById('statMonth').textContent = monthEvs.length;
+
+  var todayMs = today.getTime();
+  var upcoming = EVENTS.filter(function(e){
+    return new Date(e.date).getTime() >= todayMs;
+  }).slice(0, 6);
+  document.getElementById('statUpcoming').textContent = upcoming.length;
+
+  var list = document.getElementById('upcomingList');
+  list.innerHTML = '';
+  upcoming.forEach(function(e){
+    var d = new Date(e.date);
+    var card = document.createElement('div');
+    card.className = 'event-card ' + e.cat;
+    card.innerHTML = '<div class="event-date">' + d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日</div>'
+      + '<div class="event-name">' + e.name + '</div>'
+      + '<div class="event-meta">' + CAT_NAMES[e.cat] + ' · ' + e.target + '</div>';
+    card.addEventListener('click', openModal.bind(null, e));
+    list.appendChild(card);
+  });
+}
+
+/* ━━━ 弹窗 ━━━ */
+function openModal(ev) {
+  var d = new Date(ev.date);
+  var colors = { iso:'#fca5a5', inner:'#93c5fd', mgmt:'#c4b5fd', safety:'#fdba74', quality:'#6ee7b7', special:'#fde68a' };
+  document.getElementById('modalCat').textContent  = CAT_NAMES[ev.cat];
+  document.getElementById('modalCat').style.color  = colors[ev.cat];
+  document.getElementById('modalName').textContent = ev.name;
+  document.getElementById('modalDate').textContent = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' + ['日','一','二','三','四','五','六'][d.getDay()] + '）';
+  document.getElementById('modalType').textContent = ev.type;
+  document.getElementById('modalTarget').textContent = ev.target;
+  document.getElementById('modalDesc').textContent = ev.desc;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', function(){
+  document.getElementById('modalOverlay').classList.remove('open');
+});
+document.getElementById('modalOverlay').addEventListener('click', function(e){
+  if (e.target === this) this.classList.remove('open');
+});
+
+/* ━━━ 导航 ━━━ */
+document.getElementById('prevBtn').addEventListener('click', function(){
+  if (viewMode === 'month') { curMonth--; if (curMonth < 0) { curMonth = 11; curYear--; } renderMonth(); }
+  else { curYear--; renderYear(); }
+});
+document.getElementById('nextBtn').addEventListener('click', function(){
+  if (viewMode === 'month') { curMonth++; if (curMonth > 11) { curMonth = 0; curYear++; } renderMonth(); }
+  else { curYear++; renderYear(); }
+});
+document.getElementById('todayBtn').addEventListener('click', function(){
+  curYear = today.getFullYear(); curMonth = today.getMonth();
+  viewMode = 'month';
+  document.getElementById('monthView').style.display = 'block';
+  document.getElementById('yearView').style.display  = 'none';
+  document.getElementById('tabMonth').classList.add('active');
+  document.getElementById('tabYear').classList.remove('active');
+  renderMonth();
+});
+
+/* ━━━ 视图切换 ━━━ */
+document.getElementById('tabMonth').addEventListener('click', function(){
+  viewMode = 'month';
+  document.getElementById('monthView').style.display = 'block';
+  document.getElementById('yearView').style.display  = 'none';
+  this.classList.add('active');
+  document.getElementById('tabYear').classList.remove('active');
+  renderMonth();
+});
+document.getElementById('tabYear').addEventListener('click', function(){
+  viewMode = 'year';
+  document.getElementById('monthView').style.display = 'none';
+  document.getElementById('yearView').style.display  = 'block';
+  this.classList.add('active');
+  document.getElementById('tabMonth').classList.remove('active');
+  renderYear();
+});
+
+/* ━━━ 初始化 ━━━ */
+renderMonth();
+</script>
+</body>
+</html>
