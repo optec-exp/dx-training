@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C业务 — 配送计划日历 | OPTEC-EXP</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue:     #1488db;
+  --blue2:    #0a6ebd;
+  --blue3:    #e8f4fd;
+  --navy:     #0d2240;
+  --white:    #fff;
+  --bg:       #f5f9ff;
+  --bg2:      #eaf3fc;
+  --border:   #d0e4f5;
+  --text:     #1a2d45;
+  --text2:    #4a6888;
+  --gray:     #8baac4;
+
+  /* service type (from 作品10) */
+  --nfo:      #e67e22;  --nfo-bg: #fff8f0; --nfo-bdr: #f5d9b0;
+  --obc:      #1488db;  --obc-bg: #eef6ff; --obc-bdr: #b8d9f5;
+  --aog:      #d63031;  --aog-bg: #fff0f0; --aog-bdr: #f5c0c0;
+
+  /* case status (from 作品06 流程) */
+  --st-inquiry:  #8b5cf6;  --st-inquiry-bg:  #f5f3ff;
+  --st-quote:    #0891b2;  --st-quote-bg:    #ecfeff;
+  --st-ops:      #e67e22;  --st-ops-bg:      #fff8f0;
+  --st-awb:      #1488db;  --st-awb-bg:      #eef6ff;
+  --st-customs:  #7c3aed;  --st-customs-bg:  #f3f0ff;
+  --st-transit:  #0ea5e9;  --st-transit-bg:  #f0f9ff;
+  --st-dest:     #16a34a;  --st-dest-bg:     #f0fdf4;
+  --st-done:     #15803d;  --st-done-bg:     #dcfce7;
+  --st-cancel:   #dc2626;  --st-cancel-bg:   #fff0f0;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Noto Sans SC', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── NAV ── */
+.app-nav {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  box-shadow: 0 2px 10px rgba(20,136,219,0.07);
+  position: sticky; top: 0; z-index: 300;
+}
+.nav-brand {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.05rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--navy); display: flex; align-items: center; gap: 8px;
+}
+.brand-badge {
+  background: var(--blue); color: #fff;
+  font-size: 0.65rem; padding: 2px 8px; border-radius: 3px; font-weight: 800; letter-spacing: 0.1em;
+}
+.nav-center { display: flex; align-items: center; gap: 8px; }
+.mnav {
+  width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--white); color: var(--text2); font-size: 1.05rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+}
+.mnav:hover { background: var(--blue3); border-color: var(--blue); color: var(--blue); }
+.month-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em;
+  color: var(--navy); min-width: 148px; text-align: center;
+}
+.today-btn {
+  font-size: 0.72rem; font-weight: 600; padding: 5px 11px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--white); color: var(--text2);
+  cursor: pointer; transition: all 0.15s;
+}
+.today-btn:hover { background: var(--blue3); border-color: var(--blue); color: var(--blue); }
+.nav-r { display: flex; align-items: center; gap: 8px; }
+.view-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.vbtn {
+  font-size: 0.72rem; font-weight: 700; padding: 6px 13px;
+  border: none; cursor: pointer; background: var(--white); color: var(--text2); transition: all 0.15s;
+}
+.vbtn.active { background: var(--blue); color: #fff; }
+.icon-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.72rem; font-weight: 600; padding: 6px 13px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--white); color: var(--text2);
+  cursor: pointer; transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--bg2); }
+.add-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.72rem; font-weight: 700; padding: 7px 15px; border-radius: 6px;
+  border: none; background: var(--blue); color: #fff; cursor: pointer; transition: background 0.15s;
+}
+.add-btn:hover { background: var(--blue2); }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 7px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.fl { font-size: 0.68rem; color: var(--gray); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.chip {
+  font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+  border: 1px solid; cursor: pointer; transition: all 0.15s; user-select: none; white-space: nowrap;
+}
+/* service type chips */
+.chip.all-svc { border-color: var(--border); background: var(--bg); color: var(--text2); }
+.chip.all-svc.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.chip.t-nfo { border-color: var(--nfo); color: var(--nfo); background: var(--nfo-bg); }
+.chip.t-nfo.on { background: var(--nfo); color: #fff; }
+.chip.t-obc { border-color: var(--obc); color: var(--obc); background: var(--obc-bg); }
+.chip.t-obc.on { background: var(--obc); color: #fff; }
+.chip.t-aog { border-color: var(--aog); color: var(--aog); background: var(--aog-bg); }
+.chip.t-aog.on { background: var(--aog); color: #fff; }
+/* status chips */
+.chip.st-inquiry { border-color: var(--st-inquiry); color: var(--st-inquiry); background: var(--st-inquiry-bg); }
+.chip.st-inquiry.on { background: var(--st-inquiry); color: #fff; }
+.chip.st-awb     { border-color: var(--st-awb);     color: var(--st-awb);     background: var(--st-awb-bg); }
+.chip.st-awb.on  { background: var(--st-awb);     color: #fff; }
+.chip.st-transit { border-color: var(--st-transit); color: var(--st-transit); background: var(--st-transit-bg); }
+.chip.st-transit.on { background: var(--st-transit); color: #fff; }
+.chip.st-done    { border-color: var(--st-done);    color: var(--st-done);    background: var(--st-done-bg); }
+.chip.st-done.on { background: var(--st-done);    color: #fff; }
+
+.fsep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+.stat-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-left: auto; }
+.spill {
+  font-size: 0.68rem; font-weight: 600; padding: 2px 9px; border-radius: 20px;
+  background: var(--bg); border: 1px solid var(--border); color: var(--text2); white-space: nowrap;
+}
+.spill b { font-weight: 800; }
+
+/* ── CALENDAR ── */
+.cal-wrap { padding: 16px 24px 40px; }
+.cal-grid {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: 0 4px 20px rgba(20,136,219,0.07);
+}
+.cal-hrow {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  background: var(--navy); border-bottom: 2px solid var(--blue2);
+}
+.cal-hcell {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  text-align: center; padding: 9px 0; color: rgba(255,255,255,0.6);
+}
+.cal-hcell:first-child { color: #ff9090; }
+.cal-hcell:last-child  { color: #90c8ff; }
+.cal-body { display: grid; grid-template-columns: repeat(7,1fr); }
+.cal-cell {
+  min-height: 110px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 5px 5px 5px 6px; display: flex; flex-direction: column; gap: 3px;
+  cursor: pointer; transition: background 0.12s; position: relative;
+}
+.cal-cell:hover { background: #f0f8ff; }
+.cal-cell:nth-child(7n) { border-right: none; }
+.cal-cell.other-m { background: #fafcff; }
+.cal-cell.other-m .cdate { color: var(--border); }
+.cal-cell.is-today { background: #eef6ff; }
+.cal-cell.is-today .cdate { background: var(--blue); color: #fff; }
+.cal-cell.is-sun .cdate { color: var(--aog); }
+.cal-cell.is-sat .cdate { color: var(--blue); }
+.cdate {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.86rem; font-weight: 800; width: 23px; height: 23px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: var(--navy); flex-shrink: 0; align-self: flex-start;
+}
+.cell-pills { display: flex; flex-direction: column; gap: 2px; flex: 1; overflow: hidden; }
+
+/* entry pill — color by service type, left border by status */
+.epill {
+  font-size: 0.64rem; font-weight: 600; padding: 2px 5px; border-radius: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer; transition: opacity 0.12s; line-height: 1.55;
+  display: flex; align-items: center; gap: 3px;
+  border-left: 3px solid;
+}
+.epill:hover { opacity: 0.78; }
+.epill.nfo { background: var(--nfo-bg); color: var(--nfo); border-left-color: var(--nfo); }
+.epill.obc { background: var(--obc-bg); color: var(--obc); border-left-color: var(--obc); }
+.epill.aog { background: var(--aog-bg); color: var(--aog); border-left-color: var(--aog); }
+/* dim/strikethrough cancelled */
+.epill.cancelled { opacity: 0.45; text-decoration: line-through; }
+
+/* status dot on pill */
+.sdot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+.more-lnk { font-size: 0.62rem; color: var(--gray); font-weight: 600; cursor: pointer; }
+.cell-plus {
+  position: absolute; bottom: 4px; right: 4px;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: var(--blue3); color: var(--blue); font-size: 0.78rem;
+  display: none; align-items: center; justify-content: center;
+  border: 1px solid var(--blue); cursor: pointer; font-weight: 700;
+}
+.cal-cell:hover .cell-plus { display: flex; }
+
+/* ── LIST VIEW ── */
+.list-view { padding: 0 24px 40px; display: none; }
+.list-view.on { display: block; }
+.cal-wrap.lmode { display: none; }
+.list-dhead {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--blue); padding: 14px 0 7px; border-bottom: 2px solid var(--blue3); margin-bottom: 8px;
+}
+.list-row {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 16px; border-radius: 8px; background: var(--white);
+  border: 1px solid var(--border); margin-bottom: 5px;
+  cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s;
+}
+.list-row:hover { box-shadow: 0 4px 14px rgba(20,136,219,0.1); border-color: var(--blue); }
+.ldate-col { text-align: center; min-width: 40px; flex-shrink: 0; }
+.lday-n { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--navy); line-height: 1; }
+.lday-w { font-size: 0.64rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.06em; }
+.lsep { width: 1px; background: var(--border); align-self: stretch; }
+.lbody { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.ltitle { font-size: 0.88rem; font-weight: 700; color: var(--navy); }
+.lmeta { font-size: 0.73rem; color: var(--text2); display: flex; gap: 10px; flex-wrap: wrap; }
+.lright { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.svc-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 3px;
+}
+.svc-nfo { background: var(--nfo-bg); color: var(--nfo); }
+.svc-obc { background: var(--obc-bg); color: var(--obc); }
+.svc-aog { background: var(--aog-bg); color: var(--aog); }
+.st-badge {
+  font-size: 0.64rem; font-weight: 700; padding: 2px 8px; border-radius: 3px;
+}
+
+/* ── MODAL ── */
+.overlay {
+  position: fixed; inset: 0; z-index: 800;
+  background: rgba(13,34,64,0.42); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(13,34,64,0.22);
+  width: 100%; max-width: 540px; overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(18px); } }
+.modal-hd {
+  padding: 18px 22px 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.modal-hd-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--navy);
+}
+.modal-hd-sub { font-size: 0.74rem; color: var(--text2); margin-top: 2px; }
+.modal-x {
+  width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+  background: none; cursor: pointer; font-size: 0.95rem; color: var(--text2);
+  display: flex; align-items: center; justify-content: center; transition: all 0.12s; flex-shrink: 0;
+}
+.modal-x:hover { background: var(--bg); }
+.modal-bd { padding: 18px 22px; display: flex; flex-direction: column; gap: 13px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.frow.full { grid-template-columns: 1fr; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.flabel {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text2);
+}
+.finput, .fselect, .ftextarea {
+  padding: 8px 11px; border-radius: 6px; border: 1px solid var(--border);
+  font-family: 'Noto Sans SC', sans-serif; font-size: 0.82rem; color: var(--text);
+  background: var(--white); transition: border-color 0.15s; width: 100%;
+}
+.finput:focus, .fselect:focus, .ftextarea:focus {
+  outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(20,136,219,0.1);
+}
+.ftextarea { resize: vertical; min-height: 60px; }
+.modal-ft {
+  padding: 12px 22px 18px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.btn-del {
+  font-size: 0.76rem; font-weight: 600; padding: 7px 14px; border-radius: 6px;
+  border: 1px solid rgba(220,38,38,0.3); background: rgba(220,38,38,0.05); color: var(--aog);
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-del:hover { background: rgba(220,38,38,0.12); }
+.btn-sec {
+  font-size: 0.76rem; font-weight: 600; padding: 7px 14px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--white); color: var(--text2);
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-sec:hover { background: var(--bg); }
+.btn-pri {
+  font-size: 0.76rem; font-weight: 700; padding: 8px 20px; border-radius: 6px;
+  border: none; background: var(--blue); color: #fff; cursor: pointer; transition: background 0.15s;
+}
+.btn-pri:hover { background: var(--blue2); }
+
+/* ── DETAIL MODAL ── */
+.det-modal {
+  background: var(--white); border-radius: 14px;
+  box-shadow: 0 24px 80px rgba(13,34,64,0.22);
+  width: 100%; max-width: 460px; overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+.det-top { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); }
+.det-title { font-size: 1.02rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.det-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.det-rows { padding: 14px 22px; display: flex; flex-direction: column; gap: 9px; }
+.drow { display: flex; gap: 10px; font-size: 0.82rem; }
+.dk { color: var(--gray); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; min-width: 70px; flex-shrink: 0; padding-top: 1px; }
+.dv { color: var(--text); font-weight: 500; }
+
+/* ── AWB STEP TRACKER ── */
+.awb-track {
+  margin: 0 22px 16px; padding: 14px 16px; border-radius: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+}
+.awb-track-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 10px; }
+.awb-steps { display: flex; gap: 0; overflow-x: auto; }
+.awb-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 60px; position: relative; }
+.awb-step:not(:last-child)::after {
+  content: ''; position: absolute; top: 10px; left: 50%; width: 100%; height: 2px; background: var(--border); z-index: 0;
+}
+.awb-step.done:not(:last-child)::after { background: var(--st-done); }
+.awb-dot {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+  background: var(--white); z-index: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 0.55rem; flex-shrink: 0;
+}
+.awb-step.done .awb-dot { border-color: var(--st-done); background: var(--st-done); color: #fff; }
+.awb-step.active .awb-dot { border-color: var(--blue); background: var(--blue); color: #fff; }
+.awb-step-label { font-size: 0.58rem; color: var(--gray); text-align: center; margin-top: 5px; line-height: 1.3; }
+.awb-step.done .awb-step-label { color: var(--st-done); font-weight: 600; }
+.awb-step.active .awb-step-label { color: var(--blue); font-weight: 700; }
+
+.det-ft { padding: 10px 22px 16px; display: flex; gap: 7px; justify-content: flex-end; border-top: 1px solid var(--border); }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 50px 20px; color: var(--gray); }
+.empty-ico { font-size: 2.2rem; margin-bottom: 10px; }
+.empty-txt { font-size: 0.85rem; line-height: 1.75; }
+
+/* ══════════════════════
+   PRINT
+══════════════════════ */
+@media print {
+  @page { size: A4 landscape; margin: 10mm 8mm; }
+  body { background: #fff; }
+  .app-nav, .filter-bar, .overlay, .add-btn, .icon-btn,
+  .view-toggle, .today-btn, .mnav, .cell-plus, .list-view { display: none !important; }
+  .cal-wrap { padding: 0 !important; display: block !important; }
+
+  .print-hd { display: flex !important; align-items: center; justify-content: space-between; padding-bottom: 7pt; border-bottom: 2pt solid #0d2240; margin-bottom: 7pt; }
+  .print-hd-l { font-family: 'Barlow Condensed', sans-serif; }
+  .print-hd-title { font-size: 16pt; font-weight: 800; text-transform: uppercase; color: #0d2240; }
+  .print-hd-sub { font-size: 8pt; color: #666; margin-top: 2pt; }
+  .print-hd-r { font-size: 7pt; color: #666; text-align: right; }
+
+  .cal-grid { border: 1pt solid #ccc; border-radius: 0 !important; box-shadow: none !important; page-break-inside: avoid; }
+  .cal-hrow { background: #0d2240 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cal-hcell { color: #fff !important; font-size: 7pt; padding: 5pt 0; }
+  .cal-cell { min-height: 65pt !important; padding: 3pt !important; border-color: #ddd; }
+  .cal-cell:hover { background: #fff !important; }
+  .cdate { font-size: 7.5pt !important; width: 14pt !important; height: 14pt !important; }
+  .cal-cell.is-today .cdate { background: #1488db !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cal-cell.other-m { background: #fafafa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  .epill { font-size: 5.5pt !important; padding: 1pt 3pt !important; margin-bottom: 1pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .epill.nfo { background: #fff8f0 !important; color: #e67e22 !important; }
+  .epill.obc { background: #eef6ff !important; color: #1488db !important; }
+  .epill.aog { background: #fff0f0 !important; color: #d63031 !important; }
+
+  .print-legend { display: flex !important; gap: 14pt; margin-top: 7pt; font-size: 7pt; flex-wrap: wrap; align-items: center; }
+  .pl-item { display: flex; align-items: center; gap: 4pt; }
+  .pl-dot { width: 7pt; height: 7pt; border-radius: 2pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+.print-hd { display: none; }
+.print-legend { display: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="app-nav">
+  <div class="nav-brand">
+    <span class="brand-badge">C业务</span>
+    配送计划日历
+  </div>
+  <div class="nav-center">
+    <button class="mnav" onclick="changeMonth(-1)">&#8249;</button>
+    <div class="month-label" id="monthLabel"></div>
+    <button class="mnav" onclick="changeMonth(1)">&#8250;</button>
+    <button class="today-btn" onclick="goToday()">今天</button>
+  </div>
+  <div class="nav-r">
+    <div class="view-toggle">
+      <button class="vbtn active" id="vbtn-m" onclick="setView('month')">月视图</button>
+      <button class="vbtn"        id="vbtn-l" onclick="setView('list')">列表</button>
+    </div>
+    <button class="icon-btn" onclick="window.print()">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5 1h6v3H5V1zm-2 4h10a2 2 0 012 2v4a2 2 0 01-2 2h-1v2H4v-2H3a2 2 0 01-2-2V7a2 2 0 012-2zm1 6v3h8v-3H4zm9-5a.75.75 0 100 1.5.75.75 0 000-1.5z"/></svg>
+      打印
+    </button>
+    <button class="add-btn" onclick="openAdd()">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.75.75 0 01.75.75v4.5h4.5a.75.75 0 010 1.5h-4.5v4.5a.75.75 0 01-1.5 0v-4.5h-4.5a.75.75 0 010-1.5h4.5v-4.5A.75.75 0 018 2z"/></svg>
+      新增案件
+    </button>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="fl">服务类型</span>
+  <div class="chips" id="svcChips">
+    <div class="chip all-svc on" onclick="setFilter('svc','all',this)">全部</div>
+    <div class="chip t-nfo"  onclick="setFilter('svc','nfo',this)">⚡ NFO</div>
+    <div class="chip t-obc"  onclick="setFilter('svc','obc',this)">💼 OBC</div>
+    <div class="chip t-aog"  onclick="setFilter('svc','aog',this)">✈ AOG</div>
+  </div>
+  <div class="fsep"></div>
+  <span class="fl">案件状态</span>
+  <div class="chips" id="stChips">
+    <div class="chip all-svc on" onclick="setFilter('st','all',this)">全部</div>
+    <div class="chip st-inquiry" onclick="setFilter('st','inquiry',this)">询价中</div>
+    <div class="chip st-awb"     onclick="setFilter('st','awb',this)">已订舱</div>
+    <div class="chip st-transit" onclick="setFilter('st','transit',this)">在途</div>
+    <div class="chip st-done"    onclick="setFilter('st','done',this)">已完成</div>
+  </div>
+  <div class="stat-pills" id="statPills"></div>
+</div>
+
+<!-- CALENDAR -->
+<div class="cal-wrap" id="calWrap">
+  <!-- print header -->
+  <div class="print-hd" id="pHd">
+    <div class="print-hd-l">
+      <div class="print-hd-title">C业务 — 配送计划日历</div>
+      <div class="print-hd-sub" id="pSub"></div>
+    </div>
+    <div class="print-hd-r" id="pRight"></div>
+  </div>
+
+  <div class="cal-grid">
+    <div class="cal-hrow">
+      <div class="cal-hcell">日</div><div class="cal-hcell">一</div>
+      <div class="cal-hcell">二</div><div class="cal-hcell">三</div>
+      <div class="cal-hcell">四</div><div class="cal-hcell">五</div>
+      <div class="cal-hcell">六</div>
+    </div>
+    <div class="cal-body" id="calBody"></div>
+  </div>
+
+  <!-- print legend -->
+  <div class="print-legend" id="pLegend">
+    <strong style="font-size:7pt">服务类型：</strong>
+    <div class="pl-item"><div class="pl-dot" style="background:#e67e22"></div>NFO 下一班机</div>
+    <div class="pl-item"><div class="pl-dot" style="background:#1488db"></div>OBC 专人押运</div>
+    <div class="pl-item"><div class="pl-dot" style="background:#d63031"></div>AOG 飞机停场</div>
+    &nbsp;&nbsp;
+    <strong style="font-size:7pt">案件状态：</strong>
+    <div class="pl-item"><div class="pl-dot" style="background:#8b5cf6"></div>询价中</div>
+    <div class="pl-item"><div class="pl-dot" style="background:#1488db"></div>已订舱/AWB</div>
+    <div class="pl-item"><div class="pl-dot" style="background:#0ea5e9"></div>在途</div>
+    <div class="pl-item"><div class="pl-dot" style="background:#15803d"></div>已完成</div>
+  </div>
+</div>
+
+<!-- LIST VIEW -->
+<div class="list-view" id="listView">
+  <div id="listBody"></div>
+</div>
+
+<!-- ── ADD/EDIT MODAL ── -->
+<div class="overlay" id="addOverlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-hd-title" id="mTitle">新增案件</div>
+        <div class="modal-hd-sub"   id="mSub"></div>
+      </div>
+      <button class="modal-x" onclick="closeAdd()">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="frow">
+        <div class="fg">
+          <label class="flabel">配送日期</label>
+          <input class="finput" type="date" id="fDate">
+        </div>
+        <div class="fg">
+          <label class="flabel">取件时间</label>
+          <input class="finput" type="time" id="fTime" value="09:00">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="flabel">服务类型 (作品10)</label>
+          <select class="fselect" id="fSvc">
+            <option value="nfo">⚡ NFO — 下一班机</option>
+            <option value="obc">💼 OBC — 专人押运</option>
+            <option value="aog">✈ AOG — 飞机停场</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flabel">案件状态 (作品06)</label>
+          <select class="fselect" id="fStatus">
+            <option value="inquiry">询价/报价中</option>
+            <option value="quote">已报价确认</option>
+            <option value="ops">操作中</option>
+            <option value="awb">已订舱 / AWB已出</option>
+            <option value="customs">申报/清关</option>
+            <option value="transit">在途追踪</option>
+            <option value="dest">目的港处理</option>
+            <option value="done">已完成 / POD</option>
+            <option value="cancel">取消</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow full">
+        <div class="fg">
+          <label class="flabel">案件编号 (KINTONE)</label>
+          <input class="finput" type="text" id="fCaseId" placeholder="例：KT-2025-0042">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="flabel">AWB号</label>
+          <input class="finput" type="text" id="fAwb" placeholder="例：618-12345678">
+        </div>
+        <div class="fg">
+          <label class="flabel">航班号</label>
+          <input class="finput" type="text" id="fFlight" placeholder="例：CA981">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="flabel">起运地</label>
+          <input class="finput" type="text" id="fFrom" placeholder="例：上海浦东">
+        </div>
+        <div class="fg">
+          <label class="flabel">目的地</label>
+          <input class="finput" type="text" id="fTo" placeholder="例：东京成田">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label class="flabel">货物品名</label>
+          <input class="finput" type="text" id="fGoods" placeholder="例：细胞样本 / 医疗器械">
+        </div>
+        <div class="fg">
+          <label class="flabel">操作负责人</label>
+          <input class="finput" type="text" id="fOps" placeholder="姓名">
+        </div>
+      </div>
+      <div class="frow full">
+        <div class="fg">
+          <label class="flabel">备注 / 特殊要求</label>
+          <textarea class="ftextarea" id="fNote" placeholder="温度要求、报关注意、客户要求…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <div>
+        <button class="btn-del" id="btnDel" onclick="deleteEntry()" style="display:none">删除案件</button>
+      </div>
+      <div style="display:flex;gap:7px">
+        <button class="btn-sec" onclick="closeAdd()">取消</button>
+        <button class="btn-pri" onclick="saveEntry()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DETAIL MODAL ── -->
+<div class="overlay" id="detOverlay">
+  <div class="det-modal">
+    <div class="det-top">
+      <div class="det-title" id="dtTitle"></div>
+      <div class="det-badges" id="dtBadges"></div>
+    </div>
+    <!-- AWB process step tracker -->
+    <div class="awb-track" id="awbTrack">
+      <div class="awb-track-title">案件进度 — 参照作品06作业流程</div>
+      <div class="awb-steps" id="awbSteps"></div>
+    </div>
+    <div class="det-rows" id="dtRows"></div>
+    <div class="det-ft">
+      <button class="btn-del" onclick="delFromDet()">删除</button>
+      <button class="btn-sec" onclick="closeDet()">关闭</button>
+      <button class="btn-pri" onclick="editFromDet()">编辑</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ STATE ══ */
+const STORE = 'cc_cal_v2';
+let S = {
+  y: 0, m: 0,
+  entries: [],
+  fSvc: 'all', fSt: 'all',
+  view: 'month',
+  editId: null, detId: null,
+};
+const today = new Date();
+
+/* ══ CONSTS ══ */
+const SVC_LABELS  = { nfo:'NFO', obc:'OBC', aog:'AOG' };
+const SVC_FULL    = { nfo:'NFO — 下一班机', obc:'OBC — 专人押运', aog:'AOG — 飞机停场' };
+const ST_LABELS   = {
+  inquiry:'询价中', quote:'已报价', ops:'操作中',
+  awb:'已订舱/AWB', customs:'申报/清关', transit:'在途',
+  dest:'目的港', done:'已完成', cancel:'取消'
+};
+const ST_ORDER = ['inquiry','quote','ops','awb','customs','transit','dest','done'];
+const ST_SHORT = { inquiry:'询价', quote:'报价', ops:'操作', awb:'AWB', customs:'申报', transit:'在途', dest:'目的港', done:'完成' };
+const DAYS = ['日','一','二','三','四','五','六'];
+const MO_ZH = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+
+function load() {
+  try { const s=localStorage.getItem(STORE); if(s){ const p=JSON.parse(s); S.entries=p.entries||[]; } } catch(e){}
+  S.y = today.getFullYear(); S.m = today.getMonth();
+}
+function save() { localStorage.setItem(STORE, JSON.stringify({entries:S.entries})); }
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+function dstr(y,m,d){ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function matchF(e){ return (S.fSvc==='all'||e.svc===S.fSvc) && (S.fSt==='all'||e.status===S.fSt); }
+function forDate(ds){ return S.entries.filter(e=>e.date===ds && matchF(e)); }
+
+/* ══ SEED ══ */
+function seed() {
+  if (S.entries.length) return;
+  const y=today.getFullYear(), mp=today.getMonth()+1;
+  const p=n=>String(n).padStart(2,'0');
+  S.entries=[
+    {id:uid(),date:`${y}-${p(mp)}-${p(2)}`, time:'09:00',svc:'nfo',status:'done',   caseId:'KT-'+y+'-001',awb:'618-12340001',flight:'CA981',  from:'上海浦东',to:'东京成田',  goods:'细胞样本',  ops:'张伟',  note:'CAR-T细胞，优先处理，-196°C液氮'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(4)}`, time:'14:00',svc:'obc',status:'done',   caseId:'KT-'+y+'-002',awb:'',           flight:'MU553',  from:'广州白云',to:'大阪关西',  goods:'高价值医疗器械',ops:'李明',note:'专人随机押运'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(7)}`, time:'10:00',svc:'nfo',status:'done',   caseId:'KT-'+y+'-003',awb:'618-12340003',flight:'NH921',  from:'北京首都',to:'名古屋中部',goods:'干细胞',    ops:'王芳',  note:''},
+    {id:uid(),date:`${y}-${p(mp)}-${p(9)}`, time:'08:00',svc:'aog',status:'transit',caseId:'KT-'+y+'-004',awb:'618-12340004',flight:'CX365',  from:'香港',    to:'法兰克福',  goods:'飞机液压件', ops:'赵磊',  note:'AOG 紧急 — 6小时内必达'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(9)}`, time:'15:00',svc:'nfo',status:'transit',caseId:'KT-'+y+'-005',awb:'618-12340005',flight:'JL793',  from:'上海虹桥',to:'东京羽田',  goods:'血液制品',   ops:'陈佳',  note:'2–8°C冷藏'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(11)}`,time:'09:00',svc:'nfo',status:'awb',    caseId:'KT-'+y+'-006',awb:'618-12340006',flight:'MU541',  from:'成都双流',to:'首尔仁川',  goods:'组织样本',   ops:'刘洋',  note:''},
+    {id:uid(),date:`${y}-${p(mp)}-${p(13)}`,time:'11:30',svc:'obc',status:'ops',    caseId:'KT-'+y+'-007',awb:'',           flight:'',       from:'深圳宝安',to:'纽约JFK',   goods:'法律文件',   ops:'孙浩',  note:'OBC 专人押运，次日签约'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(15)}`,time:'09:00',svc:'nfo',status:'quote',  caseId:'KT-'+y+'-008',awb:'',           flight:'',       from:'武汉天河',to:'大阪',      goods:'精密仪器',   ops:'周静',  note:'报价已发，等客户确认'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(16)}`,time:'14:00',svc:'nfo',status:'inquiry',caseId:'KT-'+y+'-009',awb:'',           flight:'',       from:'杭州萧山',to:'东京成田',  goods:'医药品',     ops:'吴鹏',  note:'正在询价阶段'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(18)}`,time:'09:30',svc:'obc',status:'inquiry',caseId:'KT-'+y+'-010',awb:'',           flight:'',       from:'上海浦东',to:'伦敦希思罗', goods:'艺术品',     ops:'郑雪',  note:''},
+    {id:uid(),date:`${y}-${p(mp)}-${p(20)}`,time:'10:00',svc:'nfo',status:'inquiry',caseId:'KT-'+y+'-011',awb:'',           flight:'',       from:'北京首都',to:'洛杉矶',    goods:'细胞株',     ops:'黄强',  note:'干细胞，-80°C'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(22)}`,time:'09:00',svc:'nfo',status:'inquiry',caseId:'KT-'+y+'-012',awb:'',           flight:'',       from:'广州白云',to:'新加坡',    goods:'血清样本',   ops:'林可',  note:'2–8°C冷藏'},
+    {id:uid(),date:`${y}-${p(mp)}-${p(25)}`,time:'13:00',svc:'aog',status:'inquiry',caseId:'KT-'+y+'-013',awb:'',           flight:'',       from:'上海浦东',to:'悉尼',      goods:'航材',       ops:'张伟',  note:'AOG 预定'},
+  ];
+  save();
+}
+
+/* ══ RENDER ══ */
+function render() {
+  renderLabel(); renderCal(); renderList(); renderStats(); renderPrintMeta();
+}
+function renderLabel() {
+  document.getElementById('monthLabel').textContent = `${S.y}年 ${MO_ZH[S.m]}`;
+}
+function renderPrintMeta() {
+  document.getElementById('pSub').textContent = `${S.y}年${S.m+1}月 配送计划`;
+  document.getElementById('pRight').innerHTML = `打印：${today.toLocaleDateString('zh-CN')}<br>OPTEC-EXP C业务 / 内部文件`;
+}
+function renderStats() {
+  const vis = S.entries.filter(matchF);
+  const c = st => vis.filter(e=>e.status===st).length;
+  document.getElementById('statPills').innerHTML = `
+    <div class="spill">全部 <b>${S.entries.length}</b></div>
+    <div class="spill" style="border-color:var(--nfo);color:var(--nfo)">NFO <b>${S.entries.filter(e=>e.svc==='nfo').length}</b></div>
+    <div class="spill" style="border-color:var(--obc);color:var(--obc)">OBC <b>${S.entries.filter(e=>e.svc==='obc').length}</b></div>
+    <div class="spill" style="border-color:var(--aog);color:var(--aog)">AOG <b>${S.entries.filter(e=>e.svc==='aog').length}</b></div>
+    <div class="spill" style="border-color:var(--st-transit);color:var(--st-transit)">在途 <b>${c('transit')}</b></div>
+    <div class="spill" style="border-color:var(--st-done);color:var(--st-done)">完成 <b>${c('done')}</b></div>
+  `;
+}
+
+function statusDotColor(st) {
+  const map = { inquiry:'#8b5cf6', quote:'#0891b2', ops:'#e67e22', awb:'#1488db', customs:'#7c3aed', transit:'#0ea5e9', dest:'#16a34a', done:'#15803d', cancel:'#dc2626' };
+  return map[st] || '#aaa';
+}
+
+function renderCal() {
+  const {y,m} = S;
+  const firstDay = new Date(y,m,1).getDay();
+  const days     = new Date(y,m+1,0).getDate();
+  const prevDays = new Date(y,m,0).getDate();
+  const todayStr = dstr(today.getFullYear(), today.getMonth(), today.getDate());
+  const totalCells = Math.ceil((firstDay+days)/7)*7;
+  let html = '';
+
+  for (let i=0; i<totalCells; i++) {
+    let day, other=false, ds;
+    if (i<firstDay)          { day=prevDays-firstDay+i+1; ds=dstr(y,m-1,day); other=true; }
+    else if (i<firstDay+days){ day=i-firstDay+1;          ds=dstr(y,m,day); }
+    else                     { day=i-firstDay-days+1;      ds=dstr(y,m+1,day); other=true; }
+
+    const col=i%7, isSun=col===0, isSat=col===6;
+    const isToday=ds===todayStr&&!other;
+    const entries=forDate(ds);
+
+    let pills='';
+    entries.slice(0,3).forEach(e=>{
+      const txt = e.awb ? `${e.awb.slice(-6)}` : (e.caseId||'—');
+      pills+=`<div class="epill ${e.svc}${e.status==='cancel'?' cancelled':''}" onclick="openDet('${e.id}',event)">
+        <span class="sdot" style="background:${statusDotColor(e.status)};flex-shrink:0"></span>
+        <span style="opacity:.7;font-size:.58rem;flex-shrink:0">${e.time||''}</span>
+        ${txt}
+      </div>`;
+    });
+    if (entries.length>3) pills+=`<div class="more-lnk">+${entries.length-3} 件</div>`;
+
+    html+=`<div class="cal-cell${other?' other-m':''}${isToday?' is-today':''}${isSun?' is-sun':''}${isSat?' is-sat':''}"
+         onclick="openAdd('${ds}')">
+      <div class="cdate">${day}</div>
+      <div class="cell-pills">${pills}</div>
+      <div class="cell-plus">+</div>
+    </div>`;
+  }
+  document.getElementById('calBody').innerHTML = html;
+}
+
+function renderList() {
+  const {y,m} = S;
+  const days = new Date(y,m+1,0).getDate();
+  let html='', any=false;
+
+  for (let d=1; d<=days; d++) {
+    const ds=dstr(y,m,d);
+    const ents=forDate(ds).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+    if (!ents.length) continue;
+    any=true;
+    const dt=new Date(y,m,d);
+    const dn=DAYS[dt.getDay()], isSun=dt.getDay()===0, isSat=dt.getDay()===6;
+    ents.forEach(e=>{
+      html+=`<div class="list-row" onclick="openDet('${e.id}')">
+        <div class="ldate-col">
+          <div class="lday-n" style="${isSun?'color:var(--aog)':isSat?'color:var(--blue)':''}">${d}</div>
+          <div class="lday-w">${dn}</div>
+        </div>
+        <div class="lsep"></div>
+        <div class="lbody">
+          <div class="ltitle">${e.caseId||'—'} &nbsp; ${e.from||''} → ${e.to||''}</div>
+          <div class="lmeta">
+            <span>🕐 ${e.time||'—'}</span>
+            <span>✈ ${e.flight||'—'}</span>
+            <span>AWB: ${e.awb||'待出'}</span>
+            <span>📦 ${e.goods||'—'}</span>
+            <span>👤 ${e.ops||'—'}</span>
+          </div>
+        </div>
+        <div class="lright">
+          <div class="svc-badge svc-${e.svc}">${SVC_LABELS[e.svc]}</div>
+          <div class="st-badge" style="background:var(--st-${e.status}-bg,#f3f4f6);color:var(--st-${e.status},#666)">${ST_LABELS[e.status]||e.status}</div>
+        </div>
+      </div>`;
+    });
+  }
+  if (!any) html=`<div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">本月暂无案件<br>点击日历或右上角"新增案件"</div></div>`;
+  document.getElementById('listBody').innerHTML = html;
+}
+
+/* ══ NAVIGATION ══ */
+function changeMonth(d) {
+  S.m+=d;
+  if(S.m>11){S.m=0;S.y++;}
+  if(S.m<0) {S.m=11;S.y--;}
+  render();
+}
+function goToday() { S.y=today.getFullYear(); S.m=today.getMonth(); render(); }
+
+/* ══ VIEW ══ */
+function setView(v) {
+  S.view=v;
+  document.getElementById('vbtn-m').classList.toggle('active',v==='month');
+  document.getElementById('vbtn-l').classList.toggle('active',v==='list');
+  document.getElementById('calWrap').classList.toggle('lmode',v==='list');
+  document.getElementById('listView').classList.toggle('on',v==='list');
+  render();
+}
+
+/* ══ FILTER ══ */
+function setFilter(type, val, el) {
+  if(type==='svc') {
+    S.fSvc=val;
+    document.querySelectorAll('#svcChips .chip').forEach(c=>c.classList.remove('on'));
+  } else {
+    S.fSt=val;
+    document.querySelectorAll('#stChips .chip').forEach(c=>c.classList.remove('on'));
+  }
+  el.classList.add('on');
+  render();
+}
+
+/* ══ ADD MODAL ══ */
+function openAdd(ds, e) {
+  if(e) e.stopPropagation();
+  S.editId=null;
+  document.getElementById('mTitle').textContent='新增案件';
+  const d=ds||dstr(today.getFullYear(),today.getMonth(),today.getDate());
+  document.getElementById('mSub').textContent=fmtDate(d);
+  document.getElementById('fDate').value=d;
+  document.getElementById('fTime').value='09:00';
+  document.getElementById('fSvc').value='nfo';
+  document.getElementById('fStatus').value='inquiry';
+  document.getElementById('fCaseId').value=genCaseId();
+  document.getElementById('fAwb').value='';
+  document.getElementById('fFlight').value='';
+  document.getElementById('fFrom').value='';
+  document.getElementById('fTo').value='';
+  document.getElementById('fGoods').value='';
+  document.getElementById('fOps').value='';
+  document.getElementById('fNote').value='';
+  document.getElementById('btnDel').style.display='none';
+  document.getElementById('addOverlay').classList.add('open');
+}
+function openEdit(id) {
+  const e=S.entries.find(x=>x.id===id); if(!e) return;
+  S.editId=id;
+  document.getElementById('mTitle').textContent='编辑案件';
+  document.getElementById('mSub').textContent=fmtDate(e.date);
+  document.getElementById('fDate').value=e.date;
+  document.getElementById('fTime').value=e.time||'';
+  document.getElementById('fSvc').value=e.svc;
+  document.getElementById('fStatus').value=e.status;
+  document.getElementById('fCaseId').value=e.caseId||'';
+  document.getElementById('fAwb').value=e.awb||'';
+  document.getElementById('fFlight').value=e.flight||'';
+  document.getElementById('fFrom').value=e.from||'';
+  document.getElementById('fTo').value=e.to||'';
+  document.getElementById('fGoods').value=e.goods||'';
+  document.getElementById('fOps').value=e.ops||'';
+  document.getElementById('fNote').value=e.note||'';
+  document.getElementById('btnDel').style.display='';
+  document.getElementById('addOverlay').classList.add('open');
+}
+function closeAdd() { document.getElementById('addOverlay').classList.remove('open'); S.editId=null; }
+function saveEntry() {
+  const entry = {
+    id:     S.editId||uid(),
+    date:   document.getElementById('fDate').value,
+    time:   document.getElementById('fTime').value,
+    svc:    document.getElementById('fSvc').value,
+    status: document.getElementById('fStatus').value,
+    caseId: document.getElementById('fCaseId').value.trim()||genCaseId(),
+    awb:    document.getElementById('fAwb').value.trim(),
+    flight: document.getElementById('fFlight').value.trim(),
+    from:   document.getElementById('fFrom').value.trim(),
+    to:     document.getElementById('fTo').value.trim(),
+    goods:  document.getElementById('fGoods').value.trim(),
+    ops:    document.getElementById('fOps').value.trim(),
+    note:   document.getElementById('fNote').value.trim(),
+  };
+  if(!entry.date){alert('请填写配送日期');return;}
+  if(S.editId){const i=S.entries.findIndex(e=>e.id===S.editId);if(i>-1)S.entries[i]=entry;}
+  else S.entries.push(entry);
+  save(); closeAdd(); render();
+}
+function deleteEntry() {
+  if(!S.editId||!confirm('确认删除此案件？'))return;
+  S.entries=S.entries.filter(e=>e.id!==S.editId);
+  save(); closeAdd(); render();
+}
+
+/* ══ DETAIL MODAL ══ */
+function openDet(id, e) {
+  if(e) e.stopPropagation();
+  S.detId=id;
+  const en=S.entries.find(x=>x.id===id); if(!en) return;
+
+  document.getElementById('dtTitle').textContent=`${en.caseId||'案件'} — ${en.from||''}→${en.to||''}`;
+  document.getElementById('dtBadges').innerHTML=`
+    <span class="svc-badge svc-${en.svc}">${SVC_FULL[en.svc]}</span>
+    <span class="st-badge" style="background:var(--st-${en.status}-bg,#f3f4f6);color:var(--st-${en.status},#666)">${ST_LABELS[en.status]||en.status}</span>
+  `;
+
+  // AWB step tracker (from 作品06 workflow)
+  const curIdx = ST_ORDER.indexOf(en.status);
+  let stepsHtml='';
+  ST_ORDER.forEach((s,i)=>{
+    const done=i<curIdx, active=i===curIdx;
+    stepsHtml+=`<div class="awb-step${done?' done':''}${active?' active':''}">
+      <div class="awb-dot">${done?'✓':i+1}</div>
+      <div class="awb-step-label">${ST_SHORT[s]}</div>
+    </div>`;
+  });
+  document.getElementById('awbSteps').innerHTML=stepsHtml;
+
+  document.getElementById('dtRows').innerHTML=`
+    <div class="drow"><span class="dk">日期</span><span class="dv">${fmtDate(en.date)} ${en.time||''}</span></div>
+    <div class="drow"><span class="dk">服务</span><span class="dv">${SVC_FULL[en.svc]}</span></div>
+    <div class="drow"><span class="dk">航班</span><span class="dv">${en.flight||'待定'}</span></div>
+    <div class="drow"><span class="dk">AWB No.</span><span class="dv" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--blue)">${en.awb||'待出'}</span></div>
+    <div class="drow"><span class="dk">货物</span><span class="dv">${en.goods||'—'}</span></div>
+    <div class="drow"><span class="dk">负责人</span><span class="dv">${en.ops||'—'}</span></div>
+    ${en.note?`<div class="drow"><span class="dk">备注</span><span class="dv">${en.note}</span></div>`:''}
+  `;
+  document.getElementById('detOverlay').classList.add('open');
+}
+function closeDet() { document.getElementById('detOverlay').classList.remove('open'); S.detId=null; }
+function editFromDet() { const id=S.detId; closeDet(); openEdit(id); }
+function delFromDet() {
+  if(!S.detId||!confirm('确认删除？'))return;
+  S.entries=S.entries.filter(e=>e.id!==S.detId);
+  save(); closeDet(); render();
+}
+
+/* ══ UTILS ══ */
+function fmtDate(ds) {
+  if(!ds)return'';
+  const d=new Date(ds+'T00:00:00');
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${DAYS[d.getDay()]}）`;
+}
+function genCaseId() {
+  return `KT-${today.getFullYear()}-${String(S.entries.length+1).padStart(3,'0')}`;
+}
+
+/* close on bg click / ESC */
+['addOverlay','detOverlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){ if(e.target===this){ if(id==='addOverlay')closeAdd(); else closeDet(); } });
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeAdd();closeDet();} });
+
+/* ══ INIT ══ */
+load(); seed(); render();
+</script>
+</body>
+</html>
