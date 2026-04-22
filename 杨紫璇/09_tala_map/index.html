@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TALA Network — 全球据点地图</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --gold:  #c9a96e;
+      --dark:  #08080f;
+      --dark-2:#0e0e1a;
+      --dark-3:#141424;
+      --text:  #e8e8f0;
+      --muted: rgba(232,232,240,0.4);
+      --c-asia:    #60a5fa;
+      --c-europe:  #a78bfa;
+      --c-americas:#34d399;
+      --c-mideast: #fbbf24;
+      --c-africa:  #fb923c;
+      --c-oceania: #f472b6;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter',"Microsoft YaHei",sans-serif; background:var(--dark); color:var(--text); }
+
+    /* ━━━ 页头 ━━━ */
+    header {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      height:72px; padding:0 6%;
+      display:flex; align-items:center; justify-content:space-between;
+      background:rgba(8,8,15,0.94); backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(201,169,110,0.1);
+    }
+    .logo-wrap { display:flex; flex-direction:column; gap:2px; }
+    .logo-main { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:700; letter-spacing:5px; color:#fff; text-transform:uppercase; }
+    .logo-sub  { font-size:9px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; }
+    nav a { font-size:11px; letter-spacing:2px; color:var(--muted); text-decoration:none; text-transform:uppercase; margin-left:28px; transition:color .2s; }
+    nav a:hover { color:var(--gold); }
+
+    /* ━━━ 英雄区 ━━━ */
+    .hero {
+      padding:140px 6% 64px; text-align:center; position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; width:700px; height:350px;
+      background:radial-gradient(ellipse,rgba(201,169,110,0.06) 0%,transparent 65%);
+      top:60px; left:50%; transform:translateX(-50%); pointer-events:none; border-radius:50%;
+    }
+    .hero-eyebrow {
+      font-size:10px; letter-spacing:4px; color:var(--gold); text-transform:uppercase;
+      display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:20px;
+    }
+    .hero-eyebrow::before,.hero-eyebrow::after { content:''; width:40px; height:1px; background:rgba(201,169,110,0.4); }
+    .hero h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(40px,5vw,68px); font-weight:600; color:#fff; line-height:1.1; margin-bottom:16px; }
+    .hero p  { font-size:14px; font-weight:300; color:var(--muted); line-height:2; max-width:520px; margin:0 auto 40px; }
+
+    /* 统计栏 */
+    .hero-stats { display:flex; justify-content:center; gap:48px; flex-wrap:wrap; }
+    .h-stat { text-align:center; }
+    .h-stat-num { font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:600; color:var(--gold); line-height:1; }
+    .h-stat-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-top:4px; }
+
+    .divider { height:1px; background:linear-gradient(to right,transparent,rgba(201,169,110,0.15) 30%,rgba(201,169,110,0.15) 70%,transparent); }
+
+    /* ━━━ 筛选栏 ━━━ */
+    .filter-bar {
+      position:sticky; top:72px; z-index:100;
+      background:rgba(8,8,15,0.96); backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      padding:16px 6%;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .filter-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-right:6px; flex-shrink:0; }
+    .filter-btn {
+      font-size:11px; letter-spacing:1px; font-weight:500;
+      padding:6px 16px; border-radius:20px; cursor:pointer;
+      border:1px solid rgba(255,255,255,0.1); background:transparent;
+      color:var(--muted); transition:all .2s; text-transform:uppercase;
+    }
+    .filter-btn:hover { border-color:rgba(201,169,110,0.4); color:var(--gold); }
+    .filter-btn.active { background:var(--gold); border-color:var(--gold); color:#08080f; font-weight:700; }
+    .filter-btn[data-region="asia"].active    { background:var(--c-asia);    border-color:var(--c-asia);    color:#0a0a14; }
+    .filter-btn[data-region="europe"].active  { background:var(--c-europe);  border-color:var(--c-europe);  color:#0a0a14; }
+    .filter-btn[data-region="americas"].active{ background:var(--c-americas);border-color:var(--c-americas);color:#0a0a14; }
+    .filter-btn[data-region="mideast"].active { background:var(--c-mideast); border-color:var(--c-mideast); color:#0a0a14; }
+    .filter-btn[data-region="africa"].active  { background:var(--c-africa);  border-color:var(--c-africa);  color:#0a0a14; }
+    .filter-btn[data-region="oceania"].active { background:var(--c-oceania); border-color:var(--c-oceania); color:#0a0a14; }
+
+    /* 地区图例 */
+    .legend { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-left:auto; }
+    .legend-item { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted); letter-spacing:0.5px; }
+    .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* ━━━ 地图 ━━━ */
+    #map {
+      width:100%; height:520px;
+      background:var(--dark-2);
+      border-top:1px solid rgba(255,255,255,0.04);
+      border-bottom:1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Leaflet popup 样式覆盖 */
+    .leaflet-popup-content-wrapper {
+      background:rgba(14,14,26,0.97) !important;
+      border:1px solid rgba(201,169,110,0.25) !important;
+      border-radius:10px !important;
+      box-shadow:0 8px 32px rgba(0,0,0,0.6) !important;
+      padding:0 !important;
+    }
+    .leaflet-popup-content { margin:0 !important; }
+    .leaflet-popup-tip-container { display:none; }
+    .pop-inner { padding:16px 20px; }
+    .pop-region { font-size:9px; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; font-weight:600; }
+    .pop-city { font-size:14px; font-weight:600; color:#fff; margin-bottom:2px; }
+    .pop-country { font-size:11px; color:rgba(232,232,240,0.5); }
+
+    /* ━━━ 国家卡片网格 ━━━ */
+    .sec { padding:64px 6%; max-width:1400px; margin:0 auto; }
+    .eyebrow {
+      font-size:10px; letter-spacing:4px; color:var(--gold); text-transform:uppercase;
+      display:flex; align-items:center; gap:12px; margin-bottom:16px;
+    }
+    .eyebrow::before { content:''; width:32px; height:1px; background:var(--gold); }
+    .sec-title { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:600; color:#fff; margin-bottom:8px; }
+    .sec-desc  { font-size:13px; font-weight:300; color:var(--muted); line-height:2; margin-bottom:40px; }
+
+    .count-line {
+      font-size:12px; color:var(--muted); margin-bottom:24px; letter-spacing:0.5px;
+    }
+    .count-line span { color:var(--gold); font-weight:600; }
+
+    .countries-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+      gap:12px;
+    }
+
+    .country-card {
+      background:var(--dark-3); border-radius:10px; padding:18px 20px;
+      border:1px solid rgba(255,255,255,0.05);
+      border-left:3px solid;
+      display:flex; align-items:center; gap:14px;
+      transition:background .2s, transform .2s;
+      cursor:default;
+    }
+    .country-card:hover { background:rgba(255,255,255,0.02); transform:translateY(-2px); }
+    .country-card[data-region="asia"]     { border-left-color:var(--c-asia); }
+    .country-card[data-region="europe"]   { border-left-color:var(--c-europe); }
+    .country-card[data-region="americas"] { border-left-color:var(--c-americas); }
+    .country-card[data-region="mideast"]  { border-left-color:var(--c-mideast); }
+    .country-card[data-region="africa"]   { border-left-color:var(--c-africa); }
+    .country-card[data-region="oceania"]  { border-left-color:var(--c-oceania); }
+    .country-card.hidden { display:none; }
+
+    .card-flag { font-size:22px; flex-shrink:0; line-height:1; }
+    .card-info { flex:1; min-width:0; }
+    .card-country { font-size:13px; font-weight:500; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .card-city    { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .card-region-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+    .country-card[data-region="asia"]     .card-region-dot { background:var(--c-asia); }
+    .country-card[data-region="europe"]   .card-region-dot { background:var(--c-europe); }
+    .country-card[data-region="americas"] .card-region-dot { background:var(--c-americas); }
+    .country-card[data-region="mideast"]  .card-region-dot { background:var(--c-mideast); }
+    .country-card[data-region="africa"]   .card-region-dot { background:var(--c-africa); }
+    .country-card[data-region="oceania"]  .card-region-dot { background:var(--c-oceania); }
+
+    /* ━━━ 页脚 ━━━ */
+    footer {
+      background:#030306; padding:28px 6%;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+      border-top:1px solid rgba(201,169,110,0.06);
+    }
+    .footer-logo { font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:5px; color:rgba(255,255,255,0.2); text-transform:uppercase; }
+    .footer-copy { font-size:11px; color:rgba(255,255,255,0.12); }
+
+    /* 淡入 */
+    .fi { opacity:0; transform:translateY(16px); transition:opacity .6s,transform .6s; }
+    .fi.v { opacity:1; transform:translateY(0); }
+
+    @media(max-width:768px) {
+      .hero-stats { gap:28px; }
+      .legend { display:none; }
+      #map { height:360px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 页头 -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-main">TALA Network</div>
+    <div class="logo-sub">Global Station Map · 96 Countries</div>
+  </div>
+  <nav>
+    <a href="#map">地图</a>
+    <a href="#stations">据点列表</a>
+  </nav>
+</header>
+
+<!-- 英雄区 -->
+<div class="hero">
+  <div class="hero-eyebrow">Global Agent Network</div>
+  <h1>全球 96 国<br>据点一览</h1>
+  <p>TALA Network 在全球六大洲、96 个国家和地区设有合作物流据点，为 OPTEC Express 提供端到端的紧急货运覆盖。</p>
+  <div class="hero-stats">
+    <div class="h-stat"><div class="h-stat-num">96</div><div class="h-stat-label">覆盖国家</div></div>
+    <div class="h-stat"><div class="h-stat-num">6</div><div class="h-stat-label">大洲地区</div></div>
+    <div class="h-stat"><div class="h-stat-num">24/7</div><div class="h-stat-label">全天候响应</div></div>
+    <div class="h-stat"><div class="h-stat-num">186</div><div class="h-stat-label">目的地城市</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 筛选栏 -->
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">地区筛选</span>
+  <button class="filter-btn active" data-region="all">全部</button>
+  <button class="filter-btn" data-region="asia">亚洲</button>
+  <button class="filter-btn" data-region="europe">欧洲</button>
+  <button class="filter-btn" data-region="americas">美洲</button>
+  <button class="filter-btn" data-region="mideast">中东</button>
+  <button class="filter-btn" data-region="africa">非洲</button>
+  <button class="filter-btn" data-region="oceania">大洋洲</button>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-asia)"></div>亚洲</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-europe)"></div>欧洲</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-americas)"></div>美洲</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-mideast)"></div>中东</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-africa)"></div>非洲</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-oceania)"></div>大洋洲</div>
+  </div>
+</div>
+
+<!-- 地图 -->
+<div id="map"></div>
+
+<div class="divider"></div>
+
+<!-- 据点列表 -->
+<section class="sec" id="stations">
+  <div class="eyebrow fi">Station Directory</div>
+  <h2 class="sec-title fi">据点列表</h2>
+  <p class="sec-desc fi">点击地图标记或使用上方筛选按钮，按地区查看各据点详情。</p>
+  <div class="count-line fi">当前显示 <span id="count-display">96</span> / 96 个据点</div>
+  <div class="countries-grid" id="countriesGrid"></div>
+</section>
+
+<!-- 页脚 -->
+<footer>
+  <div class="footer-logo">TALA Network</div>
+  <div class="footer-copy">© 2026 OPTEC Express Co., Ltd. · TALA Global Agent Network</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ━━━ 96 国数据 ━━━ */
+var STATIONS = [
+  /* ── 亚洲 20 ── */
+  { country:"日本",       city:"东京",          region:"asia",     lat:35.6762, lng:139.6503, flag:"🇯🇵" },
+  { country:"中国",       city:"上海",          region:"asia",     lat:31.2304, lng:121.4737, flag:"🇨🇳" },
+  { country:"中国",       city:"北京",          region:"asia",     lat:39.9042, lng:116.4074, flag:"🇨🇳" },
+  { country:"韩国",       city:"首尔",          region:"asia",     lat:37.5665, lng:126.9780, flag:"🇰🇷" },
+  { country:"新加坡",     city:"新加坡",        region:"asia",     lat:1.3521,  lng:103.8198, flag:"🇸🇬" },
+  { country:"泰国",       city:"曼谷",          region:"asia",     lat:13.7563, lng:100.5018, flag:"🇹🇭" },
+  { country:"越南",       city:"胡志明市",      region:"asia",     lat:10.8231, lng:106.6297, flag:"🇻🇳" },
+  { country:"马来西亚",   city:"吉隆坡",        region:"asia",     lat:3.1390,  lng:101.6869, flag:"🇲🇾" },
+  { country:"印度尼西亚", city:"雅加达",        region:"asia",     lat:-6.2088, lng:106.8456, flag:"🇮🇩" },
+  { country:"菲律宾",     city:"马尼拉",        region:"asia",     lat:14.5995, lng:120.9842, flag:"🇵🇭" },
+  { country:"印度",       city:"孟买",          region:"asia",     lat:19.0760, lng:72.8777,  flag:"🇮🇳" },
+  { country:"香港",       city:"香港",          region:"asia",     lat:22.3193, lng:114.1694, flag:"🇭🇰" },
+  { country:"台湾",       city:"台北",          region:"asia",     lat:25.0330, lng:121.5654, flag:"🇹🇼" },
+  { country:"缅甸",       city:"仰光",          region:"asia",     lat:16.8661, lng:96.1951,  flag:"🇲🇲" },
+  { country:"柬埔寨",     city:"金边",          region:"asia",     lat:11.5564, lng:104.9282, flag:"🇰🇭" },
+  { country:"孟加拉国",   city:"达卡",          region:"asia",     lat:23.8103, lng:90.4125,  flag:"🇧🇩" },
+  { country:"斯里兰卡",   city:"科伦坡",        region:"asia",     lat:6.9271,  lng:79.8612,  flag:"🇱🇰" },
+  { country:"巴基斯坦",   city:"卡拉奇",        region:"asia",     lat:24.8607, lng:67.0011,  flag:"🇵🇰" },
+  { country:"老挝",       city:"万象",          region:"asia",     lat:17.9757, lng:102.6331, flag:"🇱🇦" },
+  { country:"文莱",       city:"斯里巴加湾市",  region:"asia",     lat:4.9031,  lng:114.9398, flag:"🇧🇳" },
+
+  /* ── 欧洲 26 ── */
+  { country:"德国",       city:"法兰克福",      region:"europe",   lat:50.1109, lng:8.6821,   flag:"🇩🇪" },
+  { country:"英国",       city:"伦敦",          region:"europe",   lat:51.5074, lng:-0.1278,  flag:"🇬🇧" },
+  { country:"法国",       city:"巴黎",          region:"europe",   lat:48.8566, lng:2.3522,   flag:"🇫🇷" },
+  { country:"荷兰",       city:"阿姆斯特丹",    region:"europe",   lat:52.3676, lng:4.9041,   flag:"🇳🇱" },
+  { country:"比利时",     city:"布鲁塞尔",      region:"europe",   lat:50.8503, lng:4.3517,   flag:"🇧🇪" },
+  { country:"瑞士",       city:"苏黎世",        region:"europe",   lat:47.3769, lng:8.5417,   flag:"🇨🇭" },
+  { country:"意大利",     city:"米兰",          region:"europe",   lat:45.4654, lng:9.1859,   flag:"🇮🇹" },
+  { country:"西班牙",     city:"马德里",        region:"europe",   lat:40.4168, lng:-3.7038,  flag:"🇪🇸" },
+  { country:"瑞典",       city:"斯德哥尔摩",    region:"europe",   lat:59.3293, lng:18.0686,  flag:"🇸🇪" },
+  { country:"丹麦",       city:"哥本哈根",      region:"europe",   lat:55.6761, lng:12.5683,  flag:"🇩🇰" },
+  { country:"芬兰",       city:"赫尔辛基",      region:"europe",   lat:60.1699, lng:24.9384,  flag:"🇫🇮" },
+  { country:"挪威",       city:"奥斯陆",        region:"europe",   lat:59.9139, lng:10.7522,  flag:"🇳🇴" },
+  { country:"奥地利",     city:"维也纳",        region:"europe",   lat:48.2082, lng:16.3738,  flag:"🇦🇹" },
+  { country:"波兰",       city:"华沙",          region:"europe",   lat:52.2297, lng:21.0122,  flag:"🇵🇱" },
+  { country:"捷克",       city:"布拉格",        region:"europe",   lat:50.0755, lng:14.4378,  flag:"🇨🇿" },
+  { country:"匈牙利",     city:"布达佩斯",      region:"europe",   lat:47.4979, lng:19.0402,  flag:"🇭🇺" },
+  { country:"葡萄牙",     city:"里斯本",        region:"europe",   lat:38.7223, lng:-9.1393,  flag:"🇵🇹" },
+  { country:"爱尔兰",     city:"都柏林",        region:"europe",   lat:53.3498, lng:-6.2603,  flag:"🇮🇪" },
+  { country:"卢森堡",     city:"卢森堡市",      region:"europe",   lat:49.6117, lng:6.1319,   flag:"🇱🇺" },
+  { country:"土耳其",     city:"伊斯坦布尔",    region:"europe",   lat:41.0082, lng:28.9784,  flag:"🇹🇷" },
+  { country:"希腊",       city:"雅典",          region:"europe",   lat:37.9838, lng:23.7275,  flag:"🇬🇷" },
+  { country:"罗马尼亚",   city:"布加勒斯特",    region:"europe",   lat:44.4268, lng:26.1025,  flag:"🇷🇴" },
+  { country:"俄罗斯",     city:"莫斯科",        region:"europe",   lat:55.7558, lng:37.6173,  flag:"🇷🇺" },
+  { country:"乌克兰",     city:"基辅",          region:"europe",   lat:50.4501, lng:30.5234,  flag:"🇺🇦" },
+  { country:"斯洛伐克",   city:"布拉迪斯拉发",  region:"europe",   lat:48.1486, lng:17.1077,  flag:"🇸🇰" },
+  { country:"克罗地亚",   city:"萨格勒布",      region:"europe",   lat:45.8150, lng:15.9819,  flag:"🇭🇷" },
+
+  /* ── 美洲 18 ── */
+  { country:"美国",       city:"纽约",          region:"americas", lat:40.7128, lng:-74.0060, flag:"🇺🇸" },
+  { country:"美国",       city:"洛杉矶",        region:"americas", lat:34.0522, lng:-118.2437,flag:"🇺🇸" },
+  { country:"美国",       city:"芝加哥",        region:"americas", lat:41.8781, lng:-87.6298, flag:"🇺🇸" },
+  { country:"美国",       city:"迈阿密",        region:"americas", lat:25.7617, lng:-80.1918, flag:"🇺🇸" },
+  { country:"美国",       city:"达拉斯",        region:"americas", lat:32.7767, lng:-96.7970, flag:"🇺🇸" },
+  { country:"加拿大",     city:"多伦多",        region:"americas", lat:43.6532, lng:-79.3832, flag:"🇨🇦" },
+  { country:"加拿大",     city:"温哥华",        region:"americas", lat:49.2827, lng:-123.1207,flag:"🇨🇦" },
+  { country:"墨西哥",     city:"墨西哥城",      region:"americas", lat:19.4326, lng:-99.1332, flag:"🇲🇽" },
+  { country:"巴西",       city:"圣保罗",        region:"americas", lat:-23.5505,lng:-46.6333, flag:"🇧🇷" },
+  { country:"巴西",       city:"里约热内卢",    region:"americas", lat:-22.9068,lng:-43.1729, flag:"🇧🇷" },
+  { country:"阿根廷",     city:"布宜诺斯艾利斯",region:"americas", lat:-34.6037,lng:-58.3816, flag:"🇦🇷" },
+  { country:"智利",       city:"圣地亚哥",      region:"americas", lat:-33.4489,lng:-70.6693, flag:"🇨🇱" },
+  { country:"哥伦比亚",   city:"波哥大",        region:"americas", lat:4.7110,  lng:-74.0721, flag:"🇨🇴" },
+  { country:"秘鲁",       city:"利马",          region:"americas", lat:-12.0464,lng:-77.0428, flag:"🇵🇪" },
+  { country:"巴拿马",     city:"巴拿马城",      region:"americas", lat:8.9936,  lng:-79.5197, flag:"🇵🇦" },
+  { country:"危地马拉",   city:"危地马拉城",    region:"americas", lat:14.6349, lng:-90.5069, flag:"🇬🇹" },
+  { country:"多米尼加",   city:"圣多明各",      region:"americas", lat:18.4861, lng:-69.9312, flag:"🇩🇴" },
+  { country:"特立尼达和多巴哥",city:"西班牙港", region:"americas", lat:10.6549, lng:-61.5019, flag:"🇹🇹" },
+
+  /* ── 中东 12 ── */
+  { country:"阿联酋",     city:"迪拜",          region:"mideast",  lat:25.2048, lng:55.2708,  flag:"🇦🇪" },
+  { country:"阿联酋",     city:"阿布扎比",      region:"mideast",  lat:24.4539, lng:54.3773,  flag:"🇦🇪" },
+  { country:"卡塔尔",     city:"多哈",          region:"mideast",  lat:25.2854, lng:51.5310,  flag:"🇶🇦" },
+  { country:"沙特阿拉伯", city:"利雅得",        region:"mideast",  lat:24.7136, lng:46.6753,  flag:"🇸🇦" },
+  { country:"巴林",       city:"麦纳麦",        region:"mideast",  lat:26.2285, lng:50.5860,  flag:"🇧🇭" },
+  { country:"科威特",     city:"科威特城",      region:"mideast",  lat:29.3759, lng:47.9774,  flag:"🇰🇼" },
+  { country:"约旦",       city:"安曼",          region:"mideast",  lat:31.9454, lng:35.9284,  flag:"🇯🇴" },
+  { country:"以色列",     city:"特拉维夫",      region:"mideast",  lat:32.0853, lng:34.7818,  flag:"🇮🇱" },
+  { country:"阿曼",       city:"马斯喀特",      region:"mideast",  lat:23.5880, lng:58.3829,  flag:"🇴🇲" },
+  { country:"黎巴嫩",     city:"贝鲁特",        region:"mideast",  lat:33.8938, lng:35.5018,  flag:"🇱🇧" },
+  { country:"伊朗",       city:"德黑兰",        region:"mideast",  lat:35.6892, lng:51.3890,  flag:"🇮🇷" },
+  { country:"伊拉克",     city:"巴格达",        region:"mideast",  lat:33.3152, lng:44.3661,  flag:"🇮🇶" },
+
+  /* ── 非洲 12 ── */
+  { country:"南非",       city:"约翰内斯堡",    region:"africa",   lat:-26.2041,lng:28.0473,  flag:"🇿🇦" },
+  { country:"埃及",       city:"开罗",          region:"africa",   lat:30.0444, lng:31.2357,  flag:"🇪🇬" },
+  { country:"肯尼亚",     city:"内罗毕",        region:"africa",   lat:-1.2921, lng:36.8219,  flag:"🇰🇪" },
+  { country:"尼日利亚",   city:"拉各斯",        region:"africa",   lat:6.5244,  lng:3.3792,   flag:"🇳🇬" },
+  { country:"埃塞俄比亚", city:"亚的斯亚贝巴",  region:"africa",   lat:9.0249,  lng:38.7469,  flag:"🇪🇹" },
+  { country:"摩洛哥",     city:"卡萨布兰卡",    region:"africa",   lat:33.5731, lng:-7.5898,  flag:"🇲🇦" },
+  { country:"坦桑尼亚",   city:"达累斯萨拉姆",  region:"africa",   lat:-6.7924, lng:39.2083,  flag:"🇹🇿" },
+  { country:"加纳",       city:"阿克拉",        region:"africa",   lat:5.6037,  lng:-0.1870,  flag:"🇬🇭" },
+  { country:"塞内加尔",   city:"达喀尔",        region:"africa",   lat:14.6928, lng:-17.4467, flag:"🇸🇳" },
+  { country:"突尼斯",     city:"突尼斯",        region:"africa",   lat:36.8188, lng:10.1658,  flag:"🇹🇳" },
+  { country:"安哥拉",     city:"罗安达",        region:"africa",   lat:-8.8368, lng:13.2343,  flag:"🇦🇴" },
+  { country:"科特迪瓦",   city:"阿比让",        region:"africa",   lat:5.3600,  lng:-4.0083,  flag:"🇨🇮" },
+
+  /* ── 大洋洲 8 ── */
+  { country:"澳大利亚",   city:"悉尼",          region:"oceania",  lat:-33.8688,lng:151.2093, flag:"🇦🇺" },
+  { country:"澳大利亚",   city:"墨尔本",        region:"oceania",  lat:-37.8136,lng:144.9631, flag:"🇦🇺" },
+  { country:"澳大利亚",   city:"布里斯班",      region:"oceania",  lat:-27.4698,lng:153.0251, flag:"🇦🇺" },
+  { country:"新西兰",     city:"奥克兰",        region:"oceania",  lat:-36.8485,lng:174.7633, flag:"🇳🇿" },
+  { country:"巴布亚新几内亚",city:"莫尔兹比港", region:"oceania",  lat:-9.4438, lng:147.1803, flag:"🇵🇬" },
+  { country:"斐济",       city:"苏瓦",          region:"oceania",  lat:-18.1416,lng:178.4419, flag:"🇫🇯" },
+  { country:"关岛",       city:"阿加尼亚",      region:"oceania",  lat:13.4443, lng:144.7937, flag:"🇬🇺" },
+  { country:"新喀里多尼亚",city:"努美阿",       region:"oceania",  lat:-22.2758,lng:166.4580, flag:"🇳🇨" }
+];
+
+/* ━━━ 地区颜色 ━━━ */
+var COLORS = {
+  asia:     '#60a5fa',
+  europe:   '#a78bfa',
+  americas: '#34d399',
+  mideast:  '#fbbf24',
+  africa:   '#fb923c',
+  oceania:  '#f472b6'
+};
+
+/* ━━━ 初始化地图 ━━━ */
+var map = L.map('map', {
+  center: [20, 15],
+  zoom: 2,
+  minZoom: 2,
+  maxZoom: 8,
+  zoomControl: true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
+
+/* ━━━ 创建自定义标记 ━━━ */
+function makeIcon(region) {
+  var color = COLORS[region];
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">'
+    + '<circle cx="10" cy="10" r="5" fill="' + color + '" opacity="0.9"/>'
+    + '<circle cx="10" cy="10" r="8" fill="none" stroke="' + color + '" stroke-width="1.5" opacity="0.35"/>'
+    + '</svg>';
+  return L.divIcon({
+    html: svg,
+    className: '',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -12]
+  });
+}
+
+/* ━━━ 地区名称 ━━━ */
+var REGION_NAMES = { asia:'亚洲', europe:'欧洲', americas:'美洲', mideast:'中东', africa:'非洲', oceania:'大洋洲' };
+
+/* ━━━ 添加标记 & 生成卡片 ━━━ */
+var markers = [];
+var grid = document.getElementById('countriesGrid');
+var currentRegion = 'all';
+
+STATIONS.forEach(function(s) {
+  /* 地图标记 */
+  var marker = L.marker([s.lat, s.lng], { icon: makeIcon(s.region) })
+    .addTo(map)
+    .bindPopup(
+      '<div class="pop-inner">'
+      + '<div class="pop-region" style="color:' + COLORS[s.region] + '">' + REGION_NAMES[s.region] + '</div>'
+      + '<div class="pop-city">' + s.flag + ' ' + s.city + '</div>'
+      + '<div class="pop-country">' + s.country + '</div>'
+      + '</div>',
+      { closeButton: false, maxWidth: 160 }
+    );
+  markers.push({ marker: marker, region: s.region });
+
+  /* 国家卡片 */
+  var card = document.createElement('div');
+  card.className = 'country-card fi';
+  card.setAttribute('data-region', s.region);
+  card.innerHTML = '<div class="card-flag">' + s.flag + '</div>'
+    + '<div class="card-info">'
+    + '<div class="card-country">' + s.country + '</div>'
+    + '<div class="card-city">' + s.city + '</div>'
+    + '</div>'
+    + '<div class="card-region-dot"></div>';
+  grid.appendChild(card);
+});
+
+/* ━━━ 筛选逻辑 ━━━ */
+var countDisplay = document.getElementById('count-display');
+
+function applyFilter(region) {
+  currentRegion = region;
+  var visible = 0;
+
+  /* 更新按钮状态 */
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.region === region);
+  });
+
+  /* 地图标记显示/隐藏 */
+  markers.forEach(function(m) {
+    if (region === 'all' || m.region === region) {
+      m.marker.addTo(map);
+    } else {
+      map.removeLayer(m.marker);
+    }
+  });
+
+  /* 卡片显示/隐藏 */
+  document.querySelectorAll('.country-card').forEach(function(card) {
+    var match = region === 'all' || card.dataset.region === region;
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  countDisplay.textContent = visible;
+}
+
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { applyFilter(btn.dataset.region); });
+});
+
+/* ━━━ 淡入动画 ━━━ */
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('v'); });
+}, { threshold: 0.05 });
+document.querySelectorAll('.fi').forEach(function(el) { obs.observe(el); });
+</script>
+</body>
+</html>
