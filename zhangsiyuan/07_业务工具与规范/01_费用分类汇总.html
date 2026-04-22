@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>费用分类汇总模板 — 山东上星国际货运</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:    #080b10;
+      --gold:  #f59e0b;
+      --gold2: #fbbf24;
+      --teal:  #0d9488;
+      --line:  rgba(255,255,255,.07);
+      --muted: rgba(255,255,255,.42);
+      --r:12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; background:var(--bg); color:#e2e8f0; line-height:1.7; overflow-x:hidden; }
+
+    /* HERO */
+    .hero { position:relative; min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:5rem 2rem 4rem; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80'); background-size:cover; background-position:center; filter:blur(4px) brightness(.2) saturate(.5) hue-rotate(20deg); transform:scale(1.05); z-index:0; }
+    .hero::after { content:''; position:absolute; inset:0; background:linear-gradient(160deg,rgba(8,11,16,.5) 0%,rgba(245,158,11,.08) 50%,rgba(8,11,16,.9) 100%); z-index:1; }
+    .hero-content { position:relative; z-index:2; max-width:700px; }
+    .badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.3); color:var(--gold2); font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; padding:.35rem 1rem; border-radius:20px; margin-bottom:1.2rem; animation:fD .8s ease both; }
+    .hero h1 { font-size:clamp(1.9rem,5vw,3rem); font-weight:900; letter-spacing:-.03em; line-height:1.1; margin-bottom:.8rem; animation:fD .8s .1s ease both; }
+    .hero h1 span { color:var(--gold2); }
+    .hero p { font-size:.95rem; color:var(--muted); animation:fD .8s .2s ease both; }
+    .hero-tags { display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; margin-top:1.3rem; animation:fD .8s .3s ease both; }
+    .htag { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:.3rem .8rem; font-size:.75rem; font-weight:600; }
+
+    @keyframes fD { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+    .reveal { opacity:0; transform:translateY(22px); transition:opacity .6s ease,transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* LAYOUT */
+    main { max-width:1060px; margin:0 auto; padding:3rem 1.5rem 6rem; }
+    .sl { font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:1.5rem; display:flex; align-items:center; gap:.7rem; }
+    .sl::after { content:''; flex:1; height:1px; background:var(--line); }
+
+    /* USAGE STRIP */
+    .usage-strip { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-bottom:2.5rem; }
+    .uc { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); padding:1.1rem 1.2rem; }
+    .uc .uc-num { font-size:1.5rem; font-weight:900; color:var(--gold2); line-height:1; margin-bottom:.3rem; }
+    .uc .uc-label { font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+    .uc .uc-desc { font-size:.78rem; color:rgba(255,255,255,.6); margin-top:.3rem; }
+
+    /* TEMPLATE GRID */
+    .tpl-grid { display:grid; grid-template-columns:1fr 360px; gap:1.5rem; align-items:start; }
+
+    /* SECTION CARD (accordion) */
+    .sec-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; margin-bottom:1rem; transition:border-color .3s; }
+    .sec-card.open { border-color:rgba(245,158,11,.35); }
+    .sec-header { display:flex; align-items:center; gap:1rem; padding:1.1rem 1.4rem; cursor:pointer; user-select:none; }
+    .sec-header:hover { background:rgba(255,255,255,.02); }
+    .sec-icon { width:40px; height:40px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .rev .sec-icon { background:rgba(16,185,129,.15); }
+    .dct .sec-icon { background:rgba(239,68,68,.15); }
+    .prd .sec-icon { background:rgba(99,102,241,.15); }
+    .fin .sec-icon { background:rgba(245,158,11,.15); }
+    .sec-title { flex:1; }
+    .sec-title h3 { font-size:.95rem; font-weight:700; margin-bottom:.1rem; }
+    .sec-title .sub { font-size:.73rem; color:var(--muted); font-style:italic; }
+    .sec-total { font-size:1rem; font-weight:800; color:var(--gold2); flex-shrink:0; font-family:monospace; }
+    .sec-toggle { width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:transform .3s,background .3s; flex-shrink:0; }
+    .sec-card.open .sec-toggle { transform:rotate(180deg); background:rgba(245,158,11,.2); }
+    .sec-body { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.4,0,.2,1); }
+    .sec-body-inner { padding:0 1.4rem 1.4rem; border-top:1px solid var(--line); }
+
+    /* ROWS inside section */
+    .item-row { display:grid; grid-template-columns:1fr auto 110px; gap:.6rem; align-items:center; padding:.55rem 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .item-row:last-child { border-bottom:none; }
+    .item-row .ir-name { font-size:.83rem; color:rgba(255,255,255,.8); }
+    .item-row .ir-note { font-size:.7rem; color:var(--muted); margin-top:.1rem; }
+    .item-row .ir-badge { font-size:.65rem; font-weight:700; padding:.18rem .5rem; border-radius:4px; white-space:nowrap; flex-shrink:0; }
+    .badge-direct { background:rgba(239,68,68,.15); color:#fca5a5; border:1px solid rgba(239,68,68,.25); }
+    .badge-indirect { background:rgba(99,102,241,.15); color:#a5b4fc; border:1px solid rgba(99,102,241,.25); }
+    .badge-fin { background:rgba(245,158,11,.15); color:#fcd34d; border:1px solid rgba(245,158,11,.25); }
+    .badge-tax { background:rgba(13,148,136,.15); color:#5eead4; border:1px solid rgba(13,148,136,.25); }
+    .ir-input {
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:6px;
+      padding:.4rem .7rem; color:#e2e8f0; font-size:.85rem; font-family:inherit;
+      outline:none; text-align:right; width:100%;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .ir-input:focus { border-color:var(--gold); box-shadow:0 0 0 2px rgba(245,158,11,.12); }
+    .ir-input::placeholder { color:rgba(255,255,255,.2); }
+
+    /* note box inside section */
+    .sec-note { border-radius:8px; padding:.7rem 1rem; font-size:.8rem; margin-top:.8rem; line-height:1.55; }
+    .sn-gold { background:rgba(245,158,11,.08); border-left:3px solid var(--gold); color:#fcd34d; }
+    .sn-red  { background:rgba(239,68,68,.08); border-left:3px solid #ef4444; color:#fca5a5; }
+    .sn-teal { background:rgba(13,148,136,.08); border-left:3px solid var(--teal); color:#5eead4; }
+
+    /* SUMMARY PANEL */
+    .summary-panel { position:sticky; top:1.5rem; }
+    .sum-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; }
+    .sum-header { background:rgba(245,158,11,.1); border-bottom:1px solid var(--line); padding:1rem 1.3rem; }
+    .sum-header h3 { font-size:.9rem; font-weight:800; color:var(--gold2); }
+    .sum-body { padding:1.3rem; }
+    .sum-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid rgba(255,255,255,.05); }
+    .sum-row:last-child { border-bottom:none; }
+    .sum-row.subtotal { border-top:1px solid rgba(255,255,255,.1); margin-top:.3rem; padding-top:.7rem; }
+    .sum-row.total { background:rgba(245,158,11,.08); border-radius:6px; padding:.6rem .8rem; margin-top:.5rem; border:1px solid rgba(245,158,11,.2); }
+    .sr-label { font-size:.8rem; color:var(--muted); }
+    .sr-val { font-size:.9rem; font-weight:700; font-family:monospace; color:#e2e8f0; }
+    .sr-val.green { color:#6ee7b7; }
+    .sr-val.red { color:#fca5a5; }
+    .sr-val.gold { color:var(--gold2); font-size:1.05rem; }
+    .margin-bar { margin-top:1rem; }
+    .mb-label { font-size:.72rem; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:.4rem; }
+    .mb-track { height:8px; background:rgba(255,255,255,.08); border-radius:10px; overflow:hidden; }
+    .mb-fill { height:100%; border-radius:10px; background:linear-gradient(to right,#10b981,#6ee7b7); transition:width .5s ease; }
+    .mb-fill.low { background:linear-gradient(to right,#ef4444,#fca5a5); }
+    .mb-fill.mid { background:linear-gradient(to right,#f59e0b,#fcd34d); }
+
+    /* COST STRUCTURE CHART */
+    .chart-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); padding:1.3rem; margin-top:1.2rem; }
+    .chart-card h4 { font-size:.8rem; font-weight:700; color:var(--gold2); margin-bottom:1rem; }
+    .bar-row { margin-bottom:.7rem; }
+    .br-head { display:flex; justify-content:space-between; font-size:.75rem; color:rgba(255,255,255,.65); margin-bottom:.25rem; }
+    .br-track { height:7px; background:rgba(255,255,255,.07); border-radius:10px; overflow:hidden; }
+    .br-fill { height:100%; border-radius:10px; transition:width .6s ease; }
+
+    /* FORMULA */
+    .formula-strip { background:rgba(0,0,0,.3); border:1px solid var(--line); border-radius:var(--r); padding:1.2rem 1.5rem; margin-bottom:2rem; font-family:monospace; font-size:.85rem; line-height:2; }
+    .fml-line { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+    .fml-term { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:5px; padding:.2rem .7rem; color:#e2e8f0; }
+    .fml-op { color:var(--gold2); font-weight:900; }
+    .fml-res { color:#6ee7b7; font-weight:800; }
+
+    footer { background:rgba(0,0,0,.4); border-top:1px solid var(--line); text-align:center; padding:1.8rem; font-size:.78rem; color:var(--muted); }
+    footer strong { color:var(--gold2); }
+
+    @media(max-width:900px) { .tpl-grid { grid-template-columns:1fr; } .summary-panel { position:static; } }
+    @media(max-width:580px) { .usage-strip { grid-template-columns:1fr 1fr; } .item-row { grid-template-columns:1fr 80px; } .item-row .ir-badge { display:none; } }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="badge">财务管理部 · Day 4 · Work 07</div>
+    <h1>货代企业<span>费用分类汇总</span>模板</h1>
+    <p>覆盖营业收入、直接成本、期间费用、财务费用四大模块——实时计算毛利率与净利润，辅助月度经营决策</p>
+    <div class="hero-tags">
+      <span class="htag">营业收入</span>
+      <span class="htag">直接成本</span>
+      <span class="htag">期间费用</span>
+      <span class="htag">财务费用</span>
+      <span class="htag">利润分析</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <div class="usage-strip reveal">
+    <div class="uc"><div class="uc-num">4</div><div class="uc-label">费用大类</div><div class="uc-desc">收入·直接成本·期间费用·财务费用</div></div>
+    <div class="uc"><div class="uc-num">30+</div><div class="uc-label">细项科目</div><div class="uc-desc">覆盖货代全业务链条费用</div></div>
+    <div class="uc"><div class="uc-num">实时</div><div class="uc-label">自动计算</div><div class="uc-desc">毛利率、净利润即时更新</div></div>
+    <div class="uc"><div class="uc-num">月度</div><div class="uc-label">使用频率</div><div class="uc-desc">配合月度结算流程使用</div></div>
+  </div>
+
+  <div class="sl reveal">核心利润公式</div>
+  <div class="formula-strip reveal">
+    <div class="fml-line">
+      <span class="fml-term">营业收入</span><span class="fml-op">－</span>
+      <span class="fml-term">直接成本</span><span class="fml-op">＝</span>
+      <span class="fml-res">毛利润（Gross Profit）</span>
+    </div>
+    <div class="fml-line" style="margin-top:.5rem;">
+      <span class="fml-term">毛利润</span><span class="fml-op">－</span>
+      <span class="fml-term">期间费用</span><span class="fml-op">－</span>
+      <span class="fml-term">财务费用</span><span class="fml-op">＝</span>
+      <span class="fml-res">税前净利润（EBIT）</span>
+    </div>
+    <div class="fml-line" style="margin-top:.5rem;">
+      <span class="fml-term">毛利率</span><span class="fml-op">＝</span>
+      <span class="fml-res">毛利润 ÷ 营业收入 × 100%</span>
+      <span style="color:var(--muted);font-size:.78rem;margin-left:.5rem;">| 货代健康目标：≥ 12%</span>
+    </div>
+  </div>
+
+  <div class="sl reveal">费用明细填报（输入金额后自动汇总）</div>
+
+  <div class="tpl-grid">
+    <div class="sections">
+
+      <!-- 营业收入 -->
+      <div class="sec-card rev reveal" data-cat="rev">
+        <div class="sec-header">
+          <div class="sec-icon">💰</div>
+          <div class="sec-title"><h3>营业收入</h3><div class="sub">Operating Revenue — 本月各业务线收入汇总</div></div>
+          <div class="sec-total" id="tot-rev">¥ 0</div>
+          <div class="sec-toggle">▾</div>
+        </div>
+        <div class="sec-body">
+          <div class="sec-body-inner">
+            <div style="margin-top:.9rem;">
+              <div class="item-row">
+                <div><div class="ir-name">海运运费收入</div><div class="ir-note">含 FCL / LCL 运费及附加费代收</div></div>
+                <span class="ir-badge badge-direct">主营</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">空运运费收入</div><div class="ir-note">含 FSC / SSC 等航空附加费代收</div></div>
+                <span class="ir-badge badge-direct">主营</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">铁路运费收入</div><div class="ir-note">中欧班列及国内铁运</div></div>
+                <span class="ir-badge badge-direct">主营</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">报关代理服务费</div><div class="ir-note">出口 / 进口报关手续费</div></div>
+                <span class="ir-badge badge-direct">主营</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">仓储服务费</div><div class="ir-note">仓储、装卸、分拣、打包作业</div></div>
+                <span class="ir-badge badge-direct">主营</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">保险代理费</div><div class="ir-note">货物运输险代理手续费</div></div>
+                <span class="ir-badge badge-indirect">辅助</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">单证服务费</div><div class="ir-note">CO / 产地证 / 证明文件代办</div></div>
+                <span class="ir-badge badge-indirect">辅助</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">其他收入</div><div class="ir-note">超重费追收、汇率差异收益等</div></div>
+                <span class="ir-badge badge-indirect">其他</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="rev" oninput="calc()" />
+              </div>
+            </div>
+            <div class="sec-note sn-teal"><strong>注意：</strong>跨境运输服务适用增值税零税率，上方金额为含税口径。增值税零税率申报需在税务系统单独处理，附提单、合同等合规证明。代垫费（如预付船公司运费后向客户回收）属于资金流水，不纳入本收入统计。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 直接成本 -->
+      <div class="sec-card dct reveal" data-cat="dct">
+        <div class="sec-header">
+          <div class="sec-icon">📦</div>
+          <div class="sec-title"><h3>直接成本（营业成本）</h3><div class="sub">Cost of Sales — 与具体票单直接挂钩的变动成本</div></div>
+          <div class="sec-total" id="tot-dct">¥ 0</div>
+          <div class="sec-toggle">▾</div>
+        </div>
+        <div class="sec-body">
+          <div class="sec-body-inner">
+            <div style="margin-top:.9rem;">
+              <div class="item-row">
+                <div><div class="ir-name">海运船公司运费</div><div class="ir-note">支付给承运人的 NET 运费（含 BAF / CAF）</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">目的港代理费</div><div class="ir-note">D/A (Destination Agent) 服务费</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">港口附加费</div><div class="ir-note">PSS / GRI / THC / 码头操作费</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">航空公司运费</div><div class="ir-note">支付航空公司的 NET 空运费</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">燃油附加费（FSC）</div><div class="ir-note">航空 FSC / 海运 BAF 实际支出</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">地面提送货运费</div><div class="ir-note">Trucking — 工厂提货、港口/机场送货</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">仓储操作成本</div><div class="ir-note">仓库租金分摊、装卸工费</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">报关服务成本</div><div class="ir-note">报关行费用、商检费、查验费</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">B/L & AWB 签发费</div><div class="ir-note">提单费、主单费、修改费</div></div>
+                <span class="ir-badge badge-direct">变动</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">预提成本（Accrual）</div><div class="ir-note">已确认收入但未收到发票，手工预提</div></div>
+                <span class="ir-badge badge-direct">预提</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="dct" oninput="calc()" />
+              </div>
+            </div>
+            <div class="sec-note sn-red"><strong>⚠ 重要：预提成本</strong>对于月末已出运但供应商尚未开票的项目，务必按预估金额手工预提，否则当月利润虚高。等发票到达后，冲回预提并换入实际成本入账。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 期间费用 -->
+      <div class="sec-card prd reveal" data-cat="prd">
+        <div class="sec-header">
+          <div class="sec-icon">🏢</div>
+          <div class="sec-title"><h3>期间费用（运营开支）</h3><div class="sub">Period Expenses — 与运营规模挂钩的固定/半固定费用</div></div>
+          <div class="sec-total" id="tot-prd">¥ 0</div>
+          <div class="sec-toggle">▾</div>
+        </div>
+        <div class="sec-body">
+          <div class="sec-body-inner">
+            <div style="margin-top:.9rem;">
+              <div class="item-row">
+                <div><div class="ir-name">员工工资及社保</div><div class="ir-note">基本工资 + 绩效 + 五险一金（企业部分）</div></div>
+                <span class="ir-badge badge-indirect">固定</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">办公室租金及物业</div><div class="ir-note">含水电费、网络、保安、清洁</div></div>
+                <span class="ir-badge badge-indirect">固定</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">差旅费</div><div class="ir-note">国内/海外出差交通住宿（全额扣除）</div></div>
+                <span class="ir-badge badge-indirect">半固定</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">业务招待费</div><div class="ir-note">税务限额：当年收入的 5‰，餐饮按 60% 扣除</div></div>
+                <span class="ir-badge badge-indirect">限额</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">系统与软件费</div><div class="ir-note">ERP / OA / 操作系统订阅费</div></div>
+                <span class="ir-badge badge-indirect">固定</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">通讯费</div><div class="ir-note">手机费、宽带、视频会议</div></div>
+                <span class="ir-badge badge-indirect">固定</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">折旧及摊销</div><div class="ir-note">办公设备、装修、软件许可摊销</div></div>
+                <span class="ir-badge badge-indirect">固定</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">其他管理费用</div><div class="ir-note">年检、认证、培训、印刷等</div></div>
+                <span class="ir-badge badge-indirect">其他</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="prd" oninput="calc()" />
+              </div>
+            </div>
+            <div class="sec-note sn-gold"><strong>招待费税务提示：</strong>全年业务招待费税前扣除限额 = min（实际发生额 × 60%，当年销售收入 × 5‰）。超出部分需在汇算清缴时纳税调增，建议月度实时监控已用额度。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 财务费用 -->
+      <div class="sec-card fin reveal" data-cat="fin">
+        <div class="sec-header">
+          <div class="sec-icon">💱</div>
+          <div class="sec-title"><h3>财务费用</h3><div class="sub">Financial Expenses — 资金运营相关费用及损益</div></div>
+          <div class="sec-total" id="tot-fin">¥ 0</div>
+          <div class="sec-toggle">▾</div>
+        </div>
+        <div class="sec-body">
+          <div class="sec-body-inner">
+            <div style="margin-top:.9rem;">
+              <div class="item-row">
+                <div><div class="ir-name">汇兑损失（净额）</div><div class="ir-note">期末按中行汇率重估外币账户，损失为正</div></div>
+                <span class="ir-badge badge-fin">外汇</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="fin" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">银行手续费</div><div class="ir-note">转账手续费、账户管理费、电汇费</div></div>
+                <span class="ir-badge badge-fin">银行</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="fin" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">利息支出</div><div class="ir-note">短期借款利息、信用证利息</div></div>
+                <span class="ir-badge badge-fin">融资</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="fin" oninput="calc()" />
+              </div>
+              <div class="item-row">
+                <div><div class="ir-name">坏账损失（计提）</div><div class="ir-note">按账龄计提坏账准备金（入财务费用科目）</div></div>
+                <span class="ir-badge badge-fin">风险</span>
+                <input class="ir-input" type="number" placeholder="0" data-cat="fin" oninput="calc()" />
+              </div>
+            </div>
+            <div class="sec-note sn-gold"><strong>汇率风险提示：</strong>月末须按人民币银行公布的期末汇率统一重估所有外币账户（USD、EUR、JPY 等）。汇兑损益直接计入当期损益，大幅波动时须在管理报告中单独说明，避免管理层对经营利润产生误判。</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sections -->
+
+    <!-- SUMMARY PANEL -->
+    <div class="summary-panel reveal">
+      <div class="sum-card">
+        <div class="sum-header"><h3>📊 实时利润汇总</h3></div>
+        <div class="sum-body">
+          <div class="sum-row"><span class="sr-label">营业收入合计</span><span class="sr-val green" id="s-rev">¥ 0</span></div>
+          <div class="sum-row"><span class="sr-label">直接成本合计</span><span class="sr-val red" id="s-dct">¥ 0</span></div>
+          <div class="sum-row subtotal"><span class="sr-label" style="font-weight:700;">毛利润</span><span class="sr-val gold" id="s-gp">¥ 0</span></div>
+          <div class="sum-row"><span class="sr-label">期间费用合计</span><span class="sr-val red" id="s-prd">¥ 0</span></div>
+          <div class="sum-row"><span class="sr-label">财务费用合计</span><span class="sr-val red" id="s-fin">¥ 0</span></div>
+          <div class="sum-row total"><span class="sr-label" style="font-weight:800;color:#e2e8f0;">税前净利润（EBIT）</span><span class="sr-val gold" id="s-ebit">¥ 0</span></div>
+          <div class="margin-bar">
+            <div class="mb-label"><span>毛利率</span><span id="s-gpm">0.0%</span></div>
+            <div class="mb-track"><div class="mb-fill" id="gpm-bar" style="width:0%"></div></div>
+          </div>
+          <div class="margin-bar">
+            <div class="mb-label"><span>净利率</span><span id="s-npm">0.0%</span></div>
+            <div class="mb-track"><div class="mb-fill" id="npm-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h4>费用结构占比（% of 收入）</h4>
+        <div class="bar-row">
+          <div class="br-head"><span>直接成本</span><span id="cb-dct">0%</span></div>
+          <div class="br-track"><div class="br-fill" id="cbf-dct" style="width:0%;background:linear-gradient(to right,#ef4444,#f87171)"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="br-head"><span>期间费用</span><span id="cb-prd">0%</span></div>
+          <div class="br-track"><div class="br-fill" id="cbf-prd" style="width:0%;background:linear-gradient(to right,#6366f1,#a5b4fc)"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="br-head"><span>财务费用</span><span id="cb-fin">0%</span></div>
+          <div class="br-track"><div class="br-fill" id="cbf-fin" style="width:0%;background:linear-gradient(to right,#f59e0b,#fcd34d)"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="br-head"><span>净利润</span><span id="cb-np">0%</span></div>
+          <div class="br-track"><div class="br-fill" id="cbf-np" style="width:0%;background:linear-gradient(to right,#10b981,#6ee7b7)"></div></div>
+        </div>
+        <div style="margin-top:.8rem;font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);padding-top:.7rem;">
+          健康基准：直接成本率 &lt; 78% · 期间费率 &lt; 10% · 净利率 &gt; 5%
+        </div>
+      </div>
+    </div>
+  </div><!-- /tpl-grid -->
+
+</main>
+<footer><strong>山东上星国际货运代理有限公司</strong> · 财务管理部 · 费用分类汇总标准模板 v2.0 · 每月结算期使用</footer>
+
+<script>
+  // Accordion
+  document.querySelectorAll('.sec-header').forEach(h => {
+    h.addEventListener('click', () => {
+      const card  = h.closest('.sec-card');
+      const body  = card.querySelector('.sec-body');
+      const inner = card.querySelector('.sec-body-inner');
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.sec-card.open').forEach(c => {
+        c.classList.remove('open');
+        c.querySelector('.sec-body').style.maxHeight = '0';
+      });
+      if (!isOpen) {
+        card.classList.add('open');
+        body.style.maxHeight = inner.scrollHeight + 40 + 'px';
+      }
+    });
+  });
+
+  // Open first by default
+  (() => {
+    const c = document.querySelector('.sec-card');
+    const b = c.querySelector('.sec-body');
+    const i = c.querySelector('.sec-body-inner');
+    c.classList.add('open');
+    b.style.maxHeight = i.scrollHeight + 40 + 'px';
+  })();
+
+  // Calculation
+  function getSum(cat) {
+    let s = 0;
+    document.querySelectorAll(`input[data-cat="${cat}"]`).forEach(el => {
+      s += parseFloat(el.value) || 0;
+    });
+    return s;
+  }
+  function fmt(n) {
+    if (n === 0) return '¥ 0';
+    return (n < 0 ? '－¥ ' : '¥ ') + Math.abs(n).toLocaleString('zh-CN', {minimumFractionDigits:0, maximumFractionDigits:0});
+  }
+  function pct(n) { return (n * 100).toFixed(1) + '%'; }
+
+  function calc() {
+    const rev = getSum('rev');
+    const dct = getSum('dct');
+    const prd = getSum('prd');
+    const fin = getSum('fin');
+    const gp  = rev - dct;
+    const ebit = gp - prd - fin;
+    const gpm  = rev > 0 ? gp / rev : 0;
+    const npm  = rev > 0 ? ebit / rev : 0;
+
+    document.getElementById('tot-rev').textContent = fmt(rev);
+    document.getElementById('tot-dct').textContent = fmt(dct);
+    document.getElementById('tot-prd').textContent = fmt(prd);
+    document.getElementById('tot-fin').textContent = fmt(fin);
+    document.getElementById('s-rev').textContent = fmt(rev);
+    document.getElementById('s-dct').textContent = fmt(dct);
+    document.getElementById('s-gp').textContent  = fmt(gp);
+    document.getElementById('s-prd').textContent = fmt(prd);
+    document.getElementById('s-fin').textContent = fmt(fin);
+    document.getElementById('s-ebit').textContent = fmt(ebit);
+    document.getElementById('s-ebit').className = 'sr-val ' + (ebit >= 0 ? 'gold' : 'red');
+    document.getElementById('s-gpm').textContent = pct(gpm);
+    document.getElementById('s-npm').textContent = pct(npm);
+
+    const gBar = document.getElementById('gpm-bar');
+    gBar.style.width = Math.max(0, Math.min(100, gpm * 100)) + '%';
+    gBar.className = 'mb-fill' + (gpm < 0.08 ? ' low' : gpm < 0.12 ? ' mid' : '');
+
+    const nBar = document.getElementById('npm-bar');
+    nBar.style.width = Math.max(0, Math.min(100, npm * 100)) + '%';
+    nBar.className = 'mb-fill' + (npm < 0.03 ? ' low' : npm < 0.06 ? ' mid' : '');
+
+    // Structure bars
+    const setBar = (id, fid, val) => {
+      const p = rev > 0 ? Math.max(0, val / rev * 100) : 0;
+      document.getElementById(id).textContent = p.toFixed(1) + '%';
+      document.getElementById(fid).style.width = Math.min(100, p) + '%';
+    };
+    setBar('cb-dct','cbf-dct', dct);
+    setBar('cb-prd','cbf-prd', prd);
+    setBar('cb-fin','cbf-fin', fin);
+    const npAbs = Math.max(0, ebit);
+    setBar('cb-np','cbf-np', npAbs);
+
+    // Refresh open accordion heights
+    document.querySelectorAll('.sec-card.open').forEach(c => {
+      const b = c.querySelector('.sec-body');
+      const i = c.querySelector('.sec-body-inner');
+      b.style.maxHeight = i.scrollHeight + 40 + 'px';
+    });
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

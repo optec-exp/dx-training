@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCR 不符合项应对流程 — 山东上星国际货运</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#07090f; --red:#ef4444; --red2:#fca5a5; --gold:#f59e0b; --gold2:#fbbf24;
+      --teal:#0d9488; --line:rgba(255,255,255,.07); --muted:rgba(255,255,255,.42); --r:12px;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; background:var(--bg); color:#e2e8f0; line-height:1.7; overflow-x:hidden; }
+
+    /* HERO */
+    .hero { position:relative; min-height:420px; display:flex; align-items:center; justify-content:center; text-align:center; padding:5rem 2rem 4rem; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80'); background-size:cover; background-position:center 30%; filter:blur(5px) brightness(.18) saturate(.4) hue-rotate(330deg); transform:scale(1.05); z-index:0; }
+    .hero::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 60%, rgba(239,68,68,.12) 0%, transparent 65%),linear-gradient(160deg,rgba(7,9,15,.6) 0%,rgba(239,68,68,.06) 50%,rgba(7,9,15,.9) 100%); z-index:1; }
+    .hero-content { position:relative; z-index:2; max-width:700px; }
+    .badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.3); color:var(--red2); font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; padding:.35rem 1rem; border-radius:20px; margin-bottom:1.2rem; animation:fD .8s ease both; }
+    .hero h1 { font-size:clamp(1.9rem,5vw,3rem); font-weight:900; letter-spacing:-.03em; line-height:1.1; margin-bottom:.8rem; animation:fD .8s .1s ease both; }
+    .hero h1 span { color:var(--red2); }
+    .hero p { font-size:.95rem; color:var(--muted); animation:fD .8s .2s ease both; }
+    .hero-def { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin-top:1.5rem; animation:fD .8s .3s ease both; }
+    .hd { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:.7rem .9rem; font-size:.78rem; }
+    .hd strong { color:var(--red2); display:block; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; margin-bottom:.2rem; }
+
+    @keyframes fD { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+    .reveal { opacity:0; transform:translateY(22px); transition:opacity .6s ease,transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    main { max-width:980px; margin:0 auto; padding:3rem 1.5rem 6rem; }
+    .sl { font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--red); margin-bottom:1.5rem; display:flex; align-items:center; gap:.7rem; }
+    .sl::after { content:''; flex:1; height:1px; background:var(--line); }
+
+    /* SEVERITY MATRIX */
+    .sev-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-bottom:3rem; }
+    .sev-card { border-radius:var(--r); padding:1.2rem 1rem; border:1px solid transparent; cursor:default; transition:transform .25s; }
+    .sev-card:hover { transform:translateY(-3px); }
+    .sev-card.s1 { background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); }
+    .sev-card.s2 { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.3); }
+    .sev-card.s3 { background:rgba(59,130,246,.1); border-color:rgba(59,130,246,.3); }
+    .sev-card.s4 { background:rgba(13,148,136,.1); border-color:rgba(13,148,136,.3); }
+    .sev-level { font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:.4rem; }
+    .s1 .sev-level { color:#fca5a5; } .s2 .sev-level { color:#fcd34d; }
+    .s3 .sev-level { color:#93c5fd; } .s4 .sev-level { color:#5eead4; }
+    .sev-name { font-size:.95rem; font-weight:800; margin-bottom:.6rem; }
+    .sev-items { list-style:none; display:flex; flex-direction:column; gap:.3rem; }
+    .sev-items li { font-size:.75rem; color:rgba(255,255,255,.65); display:flex; gap:.4rem; }
+    .sev-items li::before { content:'·'; flex-shrink:0; }
+    .sev-time { display:inline-block; margin-top:.7rem; font-size:.7rem; font-weight:700; padding:.2rem .6rem; border-radius:5px; }
+    .s1 .sev-time { background:rgba(239,68,68,.2); color:#fca5a5; }
+    .s2 .sev-time { background:rgba(245,158,11,.2); color:#fcd34d; }
+    .s3 .sev-time { background:rgba(59,130,246,.2); color:#93c5fd; }
+    .s4 .sev-time { background:rgba(13,148,136,.2); color:#5eead4; }
+
+    /* FLOW DIAGRAM */
+    .flow-wrap { position:relative; }
+    .flow-wrap::before { content:''; position:absolute; left:31px; top:40px; bottom:40px; width:2px; background:linear-gradient(to bottom,#ef4444,#f59e0b,#10b981); z-index:0; }
+
+    .flow-step { display:grid; grid-template-columns:64px 1fr; gap:0 1.5rem; margin-bottom:1.2rem; position:relative; z-index:1; }
+    .fs-dot { width:62px; height:62px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.95rem; font-weight:900; flex-shrink:0; margin-top:8px; }
+    .fs-dot small { font-size:.5rem; opacity:.75; }
+    .flow-step:nth-child(1) .fs-dot { background:linear-gradient(135deg,#991b1b,#ef4444); }
+    .flow-step:nth-child(2) .fs-dot { background:linear-gradient(135deg,#92400e,#f59e0b); }
+    .flow-step:nth-child(3) .fs-dot { background:linear-gradient(135deg,#1e3a8a,#3b82f6); }
+    .flow-step:nth-child(4) .fs-dot { background:linear-gradient(135deg,#4a1d96,#7c3aed); }
+    .flow-step:nth-child(5) .fs-dot { background:linear-gradient(135deg,#065f46,#10b981); }
+    .flow-step:nth-child(6) .fs-dot { background:linear-gradient(135deg,#0d6956,#0d9488); }
+    .flow-step:nth-child(7) .fs-dot { background:linear-gradient(135deg,#713f12,#d97706); }
+
+    .fs-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; transition:border-color .3s; }
+    .fs-card:hover { border-color:rgba(239,68,68,.2); }
+    .fs-card.open { border-color:rgba(239,68,68,.35); }
+    .fs-header { display:flex; align-items:center; justify-content:space-between; padding:1.1rem 1.4rem; cursor:pointer; user-select:none; }
+    .fs-header:hover { background:rgba(255,255,255,.02); }
+    .fs-title h3 { font-size:.97rem; font-weight:700; margin-bottom:.1rem; }
+    .fs-title .sub { font-size:.73rem; color:var(--muted); font-style:italic; }
+    .fs-meta { display:flex; align-items:center; gap:.7rem; flex-shrink:0; }
+    .time-tag { font-size:.68rem; font-weight:700; padding:.2rem .6rem; border-radius:5px; background:rgba(239,68,68,.12); color:#fca5a5; border:1px solid rgba(239,68,68,.2); white-space:nowrap; }
+    .fs-toggle { width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; font-size:.85rem; transition:transform .3s,background .3s; }
+    .fs-card.open .fs-toggle { transform:rotate(180deg); background:rgba(239,68,68,.2); }
+    .fs-body { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.4,0,.2,1); }
+    .fs-body-inner { padding:0 1.4rem 1.5rem; border-top:1px solid var(--line); }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:1.1rem; }
+    .detail-block h4 { font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--red); margin-bottom:.6rem; }
+    .detail-block ul { list-style:none; display:flex; flex-direction:column; gap:.4rem; }
+    .detail-block ul li { font-size:.82rem; color:rgba(255,255,255,.72); display:flex; align-items:flex-start; gap:.5rem; }
+    .detail-block ul li::before { content:'▸'; color:var(--teal); flex-shrink:0; margin-top:.07rem; }
+    .note-box { border-radius:8px; padding:.8rem 1rem; font-size:.82rem; margin-top:1rem; line-height:1.55; }
+    .nb-red  { background:rgba(239,68,68,.08); border-left:3px solid var(--red); color:#fca5a5; }
+    .nb-gold { background:rgba(245,158,11,.08); border-left:3px solid var(--gold); color:#fcd34d; }
+    .nb-teal { background:rgba(13,148,136,.08); border-left:3px solid var(--teal); color:#5eead4; }
+    .nb-blue { background:rgba(59,130,246,.08); border-left:3px solid #3b82f6; color:#93c5fd; }
+
+    /* RCA TOOLS */
+    .rca-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
+    .rca-card { background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:8px; padding:1rem 1.1rem; }
+    .rca-card h5 { font-size:.82rem; font-weight:700; color:var(--gold2); margin-bottom:.5rem; }
+    .rca-card p { font-size:.78rem; color:rgba(255,255,255,.6); line-height:1.55; }
+    .rca-card .rca-example { font-size:.74rem; background:rgba(255,255,255,.04); border-radius:5px; padding:.4rem .6rem; margin-top:.6rem; color:rgba(255,255,255,.5); font-style:italic; line-height:1.5; }
+
+    /* RESPONSIBILITY TABLE */
+    .resp-table { overflow-x:auto; border-radius:var(--r); border:1px solid var(--line); margin-top:2.5rem; }
+    table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    thead tr { background:rgba(239,68,68,.1); }
+    thead th { padding:.8rem 1rem; text-align:left; font-size:.7rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--red2); white-space:nowrap; }
+    tbody tr { border-top:1px solid var(--line); transition:background .2s; }
+    tbody tr:hover { background:rgba(255,255,255,.02); }
+    tbody td { padding:.75rem 1rem; vertical-align:top; color:rgba(255,255,255,.75); }
+    .dot-r { display:inline-block; width:9px; height:9px; border-radius:50%; background:#ef4444; }
+    .dot-y { display:inline-block; width:9px; height:9px; border-radius:50%; background:#f59e0b; }
+    .dot-g { display:inline-block; width:9px; height:9px; border-radius:50%; background:#10b981; }
+
+    /* NCR FORM */
+    .form-section { margin-top:3rem; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; }
+    .form-hd { background:rgba(239,68,68,.08); border-bottom:1px solid var(--line); padding:1.3rem 1.8rem; }
+    .form-hd h3 { font-size:1rem; font-weight:700; color:var(--red2); margin-bottom:.15rem; }
+    .form-hd p { font-size:.8rem; color:var(--muted); }
+    .form-body { padding:1.8rem; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+    .fg { display:flex; flex-direction:column; gap:.45rem; }
+    .fg.full { grid-column:1/-1; }
+    .fg label { font-size:.71rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .fg label span { color:#ef4444; margin-left:.15rem; }
+    .fc { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:.72rem 1rem; color:#e2e8f0; font-size:.87rem; font-family:inherit; outline:none; transition:border-color .25s,box-shadow .25s; width:100%; }
+    .fc::placeholder { color:rgba(255,255,255,.2); }
+    .fc:focus { border-color:var(--red); box-shadow:0 0 0 3px rgba(239,68,68,.1); }
+    select.fc option { background:#0d1320; }
+    textarea.fc { resize:vertical; min-height:90px; }
+    .sev-select { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; }
+    .ss-opt { border:1px solid var(--line); border-radius:7px; padding:.5rem; text-align:center; cursor:pointer; font-size:.73rem; font-weight:700; transition:border-color .2s,background .2s; }
+    .ss-opt.ss1:hover,.ss-opt.ss1.sel { background:rgba(239,68,68,.15); border-color:rgba(239,68,68,.4); color:#fca5a5; }
+    .ss-opt.ss2:hover,.ss-opt.ss2.sel { background:rgba(245,158,11,.15); border-color:rgba(245,158,11,.4); color:#fcd34d; }
+    .ss-opt.ss3:hover,.ss-opt.ss3.sel { background:rgba(59,130,246,.15); border-color:rgba(59,130,246,.4); color:#93c5fd; }
+    .ss-opt.ss4:hover,.ss-opt.ss4.sel { background:rgba(13,148,136,.15); border-color:rgba(13,148,136,.4); color:#5eead4; }
+    .form-row { display:flex; gap:.6rem; margin-top:1.5rem; justify-content:flex-end; }
+    .btn { padding:.72rem 1.7rem; border-radius:8px; font-size:.87rem; font-weight:700; font-family:inherit; cursor:pointer; border:none; transition:transform .2s,box-shadow .2s; }
+    .btn:active { transform:scale(.97); }
+    .btn-ol { background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--muted); }
+    .btn-ol:hover { border-color:rgba(255,255,255,.35); color:#e2e8f0; }
+    .btn-red { background:linear-gradient(135deg,#dc2626,#ef4444); color:#fff; box-shadow:0 4px 14px rgba(239,68,68,.3); }
+    .btn-red:hover { box-shadow:0 6px 22px rgba(239,68,68,.5); transform:translateY(-1px); }
+    .form-success { display:none; text-align:center; padding:2.5rem; }
+    .form-success .icon { font-size:2.5rem; margin-bottom:.8rem; }
+    .form-success h4 { font-size:1rem; font-weight:700; color:var(--red2); margin-bottom:.4rem; }
+    .form-success p { font-size:.84rem; color:var(--muted); }
+
+    footer { background:rgba(0,0,0,.5); border-top:1px solid var(--line); text-align:center; padding:1.8rem; font-size:.78rem; color:var(--muted); }
+    footer strong { color:var(--red2); }
+    @media(max-width:700px) { .sev-grid{grid-template-columns:1fr 1fr;} .two-col{grid-template-columns:1fr;} .rca-grid{grid-template-columns:1fr;} .form-grid{grid-template-columns:1fr;} .sev-select{grid-template-columns:1fr 1fr;} .flow-step{grid-template-columns:52px 1fr;gap:0 1rem;} .hero-def{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="badge">公司治理 · Day 4 · Work 07</div>
+    <h1>NCR <span>不符合项</span>应对流程</h1>
+    <p>Non-Conformance Report — 货代企业从问题发现到根因闭环的完整七步应对机制</p>
+    <div class="hero-def">
+      <div class="hd"><strong>什么是 NCR</strong>不符合已约定要求（合同/标准/法规）的事实或状态，包括货损、延误、单证错误、审核发现等。</div>
+      <div class="hd"><strong>为何需要闭环</strong>未闭环的 NCR 会在下次审核（ISO / 客户审核）中成为重复不符合，影响认证有效性和客户信任。</div>
+      <div class="hd"><strong>与 CAPA 的关系</strong>NCR 记录"发生了什么"；CAPA（纠正与预防措施）回答"为什么发生"和"如何防止再发"。</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- SEVERITY MATRIX -->
+  <div class="sl reveal">不符合项严重程度分级</div>
+  <div class="sev-grid reveal">
+    <div class="sev-card s1">
+      <div class="sev-level">Level 1 · Critical</div>
+      <div class="sev-name">严重不符合</div>
+      <ul class="sev-items">
+        <li>货物全损 / 严重货损</li>
+        <li>海关违规 / 被处罚</li>
+        <li>重大安全事故</li>
+        <li>ISO Major NC（认证风险）</li>
+        <li>客户提出法律索赔</li>
+      </ul>
+      <span class="sev-time">⚡ 响应：2 小时内</span>
+    </div>
+    <div class="sev-card s2">
+      <div class="sev-level">Level 2 · Major</div>
+      <div class="sev-name">重大不符合</div>
+      <ul class="sev-items">
+        <li>货物延误超 48 小时</li>
+        <li>错误装机 / 目的港错误</li>
+        <li>单证严重错误（AWB 收货人）</li>
+        <li>客户正式投诉</li>
+        <li>供应商重大违约</li>
+      </ul>
+      <span class="sev-time">⏱ 响应：4 小时内</span>
+    </div>
+    <div class="sev-card s3">
+      <div class="sev-level">Level 3 · Minor</div>
+      <div class="sev-name">一般不符合</div>
+      <ul class="sev-items">
+        <li>轻微延误（12–48h）</li>
+        <li>单证小错误（可更正）</li>
+        <li>操作流程偏差</li>
+        <li>内审发现轻微问题</li>
+        <li>客户口头投诉</li>
+      </ul>
+      <span class="sev-time">📋 响应：1 个工作日</span>
+    </div>
+    <div class="sev-card s4">
+      <div class="sev-level">Level 4 · OFI</div>
+      <div class="sev-name">改进机会</div>
+      <ul class="sev-items">
+        <li>流程可优化点</li>
+        <li>效率提升建议</li>
+        <li>风险预防性发现</li>
+        <li>最佳实践推广建议</li>
+      </ul>
+      <span class="sev-time">💡 响应：计划周期内</span>
+    </div>
+  </div>
+
+  <!-- FLOW DIAGRAM -->
+  <div class="sl reveal">NCR 应对七步流程（点击每步查看详细操作）</div>
+
+  <div class="flow-wrap">
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">01<small>发现</small></div>
+      <div class="fs-card" data-fs="1">
+        <div class="fs-header">
+          <div class="fs-title"><h3>发现与识别</h3><div class="sub">Discovery &amp; Identification — 不符合项触发条件</div></div>
+          <div class="fs-meta"><span class="time-tag">立即</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>主动发现渠道</h4>
+              <ul>
+                <li>OPS 日常操作中发现的货物状态异常</li>
+                <li>内部质量巡查 / 系统数据异常报警</li>
+                <li>月度结算时发现的账单与实际不符</li>
+                <li>ISO 内部审核（Internal Audit）发现</li>
+                <li>管理评审会议中识别的系统性问题</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>被动触发渠道</h4>
+              <ul>
+                <li>客户发送的投诉邮件（Complaint Email）</li>
+                <li>收货人 / 目的港代理的异常通知</li>
+                <li>航空公司 / 船公司的货损通知单</li>
+                <li>海关 / 检验检疫部门的处罚通知</li>
+                <li>供应商申报的不可抗力或异常情况</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-red"><strong>关键：第一发现人责任。</strong>不论通过何种渠道发现 NCR，第一发现人必须在 30 分钟内通知直属上级，不得隐瞒、拖延或私自处理。"发现即上报"是 NCR 管理体系的基础原则。</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">02<small>响应</small></div>
+      <div class="fs-card" data-fs="2">
+        <div class="fs-header">
+          <div class="fs-title"><h3>即时响应与遏制</h3><div class="sub">Immediate Containment — 防止损失扩大</div></div>
+          <div class="fs-meta"><span class="time-tag">2–4 小时</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>遏制行动（按场景）</h4>
+              <ul>
+                <li><strong>货物延误：</strong>立即联系航司协查货物位置，安排替代航班，向客户发出延误通知（含原因+新 ETA）</li>
+                <li><strong>货损：</strong>第一时间拍照留证，通知航司开具货损报告（Damage Report），同步告知客户及保险公司</li>
+                <li><strong>单证错误：</strong>评估是否影响清关；若已起飞立即联系目的港代理；若未起飞立即申请 Amendment</li>
+                <li><strong>海关查验：</strong>协调查验场，通知客户可能延误，提前评估替代方案</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>升级路径</h4>
+              <ul>
+                <li><strong>Level 1（严重）：</strong>立即报告总经理，财务评估损失，法务介入索赔准备</li>
+                <li><strong>Level 2（重大）：</strong>部门负责人主导，OPS + 财务协同处理，24h 内向客户出具书面说明</li>
+                <li><strong>Level 3（一般）：</strong>操作主管处理，业务员跟进客户，48h 内关闭</li>
+                <li>任何客户正式投诉须在 2 小时内回复确认收到，4 小时内给出初步处理方案</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-gold"><strong>遏制 ≠ 解决：</strong>遏制行动的目的是防止损失继续扩大（如：货物还能抢救则立即行动），而非等待根因分析后才采取行动。两者可以并行推进，不能以"等根因分析"为由延误遏制。</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">03<small>记录</small></div>
+      <div class="fs-card" data-fs="3">
+        <div class="fs-header">
+          <div class="fs-title"><h3>记录与分类</h3><div class="sub">Documentation &amp; Classification — NCR 表单填写</div></div>
+          <div class="fs-meta"><span class="time-tag">当日内</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>NCR 表单必填项</h4>
+              <ul>
+                <li>唯一编号（自动生成：NCR-YYYYMM-NNN）</li>
+                <li>发现日期、发现人、发现渠道</li>
+                <li>涉及案件号（HAWB/B/L No.）</li>
+                <li>客户名称、货物品名、目的港</li>
+                <li>事件详细描述（5W1H 格式）</li>
+                <li>严重程度分级（L1 / L2 / L3 / OFI）</li>
+                <li>责任部门 / 责任人</li>
+                <li>直接经济损失估算</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>分类维度</h4>
+              <ul>
+                <li><strong>按业务环节：</strong>订舱 / 提货 / 报关 / 仓储 / 文件 / 结算</li>
+                <li><strong>按责任主体：</strong>自身操作失误 / 供应商失误 / 客户原因 / 不可抗力</li>
+                <li><strong>按影响维度：</strong>货物安全 / 时效 / 合规 / 财务 / 客户满意度</li>
+                <li><strong>按 ISO 条款：</strong>关联 ISO 9001:2015 相关条款编号（用于审核统计）</li>
+                <li>分类准确是后续趋势分析的基础，切勿笼统归为"其他"</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-teal"><strong>5W1H 描述模板：</strong>What（发生了什么）— Where（在哪个环节）— When（何时发现/发生）— Who（涉及哪些人员）— Which（涉及哪票货/哪个客户）— How（经过描述）。遵循此格式可让后续处理人员快速了解全貌，避免反复追问。</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">04<small>分析</small></div>
+      <div class="fs-card" data-fs="4">
+        <div class="fs-header">
+          <div class="fs-title"><h3>根本原因分析</h3><div class="sub">Root Cause Analysis (RCA) — 找到真正的"为什么"</div></div>
+          <div class="fs-meta"><span class="time-tag">3–7 天</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="note-box nb-blue" style="margin-top:1rem;"><strong>RCA 核心原则：</strong>根本原因通常不是"人为失误"，而是导致人为失误的系统性原因（流程缺失、培训不足、工具不当、资源不够）。"操作员粗心"永远不是根本原因。</div>
+          <div class="rca-grid">
+            <div class="rca-card">
+              <h5>🔍 5-Why 分析法</h5>
+              <p>连续追问"为什么"5次，层层深入直至找到根本原因。适用于原因链条清晰的单一失效场景。</p>
+              <div class="rca-example">Why1: AWB 收货人填错？→ 操作员录入错误<br/>Why2: 为何录入错误？→ 未核对客户确认邮件<br/>Why3: 为何未核对？→ 没有强制核对的 SOP<br/>Why4: 为何没有 SOP？→ 流程文件未覆盖此场景<br/>→ 根因：SOP 文件缺失</div>
+            </div>
+            <div class="rca-card">
+              <h5>🐟 鱼骨图（石川图）</h5>
+              <p>从人（Man）、机（Machine）、料（Material）、法（Method）、环（Environment）五个维度识别所有潜在原因。适用于复杂多因素问题。</p>
+              <div class="rca-example">货损案例：<br/>人：操作员未确认包装规格<br/>机：叉车操作不当<br/>料：客户包装强度不足<br/>法：堆码规则未执行<br/>环：仓库湿度超标</div>
+            </div>
+            <div class="rca-card">
+              <h5>📊 数据趋势分析</h5>
+              <p>查阅过去 3–6 个月的 NCR 台账，分析是否为重复性问题，计算频率与损失金额，识别高风险环节。</p>
+              <div class="rca-example">如"延误"类 NCR 连续3月排第一，则说明根因在订舱或舱位管理环节，而非单次偶发。</div>
+            </div>
+            <div class="rca-card">
+              <h5>🗣️ 访谈与现场观察</h5>
+              <p>直接访谈一线操作人员，了解实际工作中的困难、习惯性做法和隐性障碍。现场观察实际操作流程。</p>
+              <div class="rca-example">通常会发现：书面 SOP 与实际操作之间存在差距，操作员有"非官方的应对方法"，往往才是根因的重要线索。</div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">05<small>措施</small></div>
+      <div class="fs-card" data-fs="5">
+        <div class="fs-header">
+          <div class="fs-title"><h3>制定纠正与预防措施</h3><div class="sub">Corrective &amp; Preventive Action (CAPA)</div></div>
+          <div class="fs-meta"><span class="time-tag">7–14 天制定</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>纠正措施（Corrective Action）</h4>
+              <ul>
+                <li>针对已发生的不符合项：消除其直接原因（治标）</li>
+                <li>修订相关 SOP / 作业指导书</li>
+                <li>对涉事人员开展专项培训</li>
+                <li>增加关键操作节点的双重核查（Four-eye Principle）</li>
+                <li>在系统中添加强制校验或提醒逻辑</li>
+                <li>调整供应商合同条款或更换供应商</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>预防措施（Preventive Action）</h4>
+              <ul>
+                <li>针对潜在风险：防止类似问题在其他场景发生（治本）</li>
+                <li>在风险评估（FMEA）中新增该风险点</li>
+                <li>将本次 NCR 案例纳入新员工培训教材</li>
+                <li>建立该类风险的预警指标和监控机制</li>
+                <li>向同类客户/同类航线主动排查潜在风险</li>
+                <li>与其他部门共享该 NCR 案例（横向推广）</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-gold"><strong>SMART 原则：</strong>每条 CAPA 措施须符合 SMART 原则——Specific（具体描述做什么）、Measurable（如何衡量是否有效）、Assignable（指定唯一责任人）、Realistic（现有资源可实现）、Time-bound（明确完成截止日期）。</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">06<small>验证</small></div>
+      <div class="fs-card" data-fs="6">
+        <div class="fs-header">
+          <div class="fs-title"><h3>实施与有效性验证</h3><div class="sub">Implementation &amp; Verification</div></div>
+          <div class="fs-meta"><span class="time-tag">措施后 30 天</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>实施跟踪</h4>
+              <ul>
+                <li>品质管理部每周检查 CAPA 实施进度</li>
+                <li>责任人在 NCR 台账中更新完成状态</li>
+                <li>文件类措施：确认新 SOP 已正式发布并培训到人</li>
+                <li>系统类措施：确认 IT 修改已上线并经过测试</li>
+                <li>人员类措施：确认培训记录已存档</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>有效性验证方法</h4>
+              <ul>
+                <li>同类操作抽样检查：随机抽取 10 票类似案件核查是否按新流程执行</li>
+                <li>数据对比：CAPA 实施后同类 NCR 发生频率是否下降</li>
+                <li>客户反馈：相关客户满意度是否改善</li>
+                <li>内审复查：下次内部审核时专项审查该措施的执行情况</li>
+                <li>若验证失败（问题复发），须重新进入 RCA 流程</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-teal"><strong>验证 ≠ 措施完成：</strong>许多企业把"措施实施完成"等同于"NCR 关闭"，这是最常见的误区。只有经过客观验证、确认措施有效、问题不再复发，NCR 才可以正式关闭。ISO 审核员会重点核查验证记录。</div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="flow-step reveal">
+      <div class="fs-dot">07<small>关闭</small></div>
+      <div class="fs-card" data-fs="7">
+        <div class="fs-header">
+          <div class="fs-title"><h3>关闭与经验沉淀</h3><div class="sub">Closure &amp; Lessons Learned — 从个案到制度</div></div>
+          <div class="fs-meta"><span class="time-tag">验证通过后</span><div class="fs-toggle">▾</div></div>
+        </div>
+        <div class="fs-body"><div class="fs-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>关闭条件</h4>
+              <ul>
+                <li>所有纠正措施已完成并有记录</li>
+                <li>有效性验证通过（数据或现场核查证明）</li>
+                <li>受影响客户已收到最终处理结果说明</li>
+                <li>如有财务赔偿，赔偿已完成并核销</li>
+                <li>品质管理部负责人正式签署关闭确认</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>经验沉淀输出</h4>
+              <ul>
+                <li>将典型 NCR 案例纳入内部知识库（脱敏处理）</li>
+                <li>月度 NCR 趋势分析报告（频率 / 类型 / 损失金额）</li>
+                <li>在管理评审会议上汇报月度 / 季度 NCR 统计</li>
+                <li>更新公司风险评估文件（FMEA）</li>
+                <li>高频或高损失 NCR 类型纳入下年度培训计划</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-red"><strong>重复 NCR = 体系缺陷：</strong>同一类型 NCR 在 12 个月内发生 3 次以上，即可认定为系统性缺陷而非个案。此时必须升级处理：由管理层主导专项改善项目，而非继续在个案层面处理。</div>
+        </div></div>
+      </div>
+    </div>
+
+  </div><!-- /flow-wrap -->
+
+  <!-- RESPONSIBILITY TABLE -->
+  <div class="sl reveal" style="margin-top:3rem;">各部门职责分工矩阵</div>
+  <div class="resp-table reveal">
+    <table>
+      <thead><tr>
+        <th>NCR 阶段</th><th>OPS 操作部</th><th>业务部（Sales）</th><th>财务部</th><th>品质管理部（QA）</th><th>管理层</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>发现与上报</td><td><span class="dot-r"></span> 主责</td><td><span class="dot-r"></span> 主责（客诉）</td><td><span class="dot-y"></span> 协助</td><td><span class="dot-y"></span> 接收</td><td><span class="dot-g"></span> 知悉（L1）</td></tr>
+        <tr><td>即时响应</td><td><span class="dot-r"></span> 主责（操作）</td><td><span class="dot-r"></span> 主责（客户）</td><td><span class="dot-y"></span> 评估损失</td><td><span class="dot-y"></span> 监督</td><td><span class="dot-r"></span> 主导（L1）</td></tr>
+        <tr><td>记录与分类</td><td><span class="dot-y"></span> 提供信息</td><td><span class="dot-y"></span> 提供信息</td><td><span class="dot-y"></span> 财务数据</td><td><span class="dot-r"></span> 主责</td><td>—</td></tr>
+        <tr><td>根因分析</td><td><span class="dot-y"></span> 参与</td><td><span class="dot-y"></span> 参与</td><td><span class="dot-y"></span> 参与（财务类）</td><td><span class="dot-r"></span> 主责</td><td><span class="dot-y"></span> 审查（L1/L2）</td></tr>
+        <tr><td>CAPA 制定</td><td><span class="dot-y"></span> 提交行动方案</td><td><span class="dot-y"></span> 提交行动方案</td><td><span class="dot-y"></span> 提交方案</td><td><span class="dot-r"></span> 审核与汇总</td><td><span class="dot-y"></span> 审批（L1）</td></tr>
+        <tr><td>验证与关闭</td><td><span class="dot-y"></span> 配合验证</td><td><span class="dot-y"></span> 配合验证</td><td><span class="dot-y"></span> 财务核销</td><td><span class="dot-r"></span> 主责</td><td><span class="dot-y"></span> 签署（L1/L2）</td></tr>
+      </tbody>
+    </table>
+    <div style="padding:.8rem 1rem;font-size:.73rem;color:var(--muted);border-top:1px solid var(--line);display:flex;gap:1.2rem;">
+      <span><span class="dot-r"></span> 主责</span>
+      <span><span class="dot-y"></span> 协作/参与</span>
+      <span><span class="dot-g"></span> 知悉</span>
+    </div>
+  </div>
+
+  <!-- NCR FORM -->
+  <div class="form-section reveal">
+    <div class="form-hd"><h3>📝 NCR 快速上报表单</h3><p>发现不符合项后立即填写，品质管理部将在 1 小时内确认接收并分配处理优先级</p></div>
+    <div class="form-body" id="ncrFB">
+      <div class="form-grid">
+        <div class="fg"><label>NCR 编号（系统自动）</label><input class="fc" id="ncrId" readonly /></div>
+        <div class="fg"><label>发现日期时间 <span>*</span></label><input class="fc" type="datetime-local" id="ncrDT" /></div>
+        <div class="fg"><label>涉及案件号（HAWB/B/L） <span>*</span></label><input class="fc" type="text" placeholder="例：PVG-20260422-001" id="ncrCase" /></div>
+        <div class="fg"><label>涉及客户名称 <span>*</span></label><input class="fc" type="text" placeholder="客户公司名称" id="ncrClient" /></div>
+        <div class="fg"><label>发现人 / 上报人 <span>*</span></label><input class="fc" type="text" placeholder="姓名" id="ncrReporter" /></div>
+        <div class="fg"><label>涉及部门 <span>*</span></label>
+          <select class="fc" id="ncrDept">
+            <option value="">— 选择 —</option>
+            <option>业务部（Operations）</option><option>财务部</option><option>仓储/提货</option>
+            <option>报关部</option><option>品质管理部</option><option>跨部门</option>
+          </select>
+        </div>
+        <div class="fg full"><label>严重程度分级 <span>*</span></label>
+          <div class="sev-select">
+            <div class="ss-opt ss1" onclick="selSev(this,'L1')">Level 1<br/><small>严重不符合</small></div>
+            <div class="ss-opt ss2" onclick="selSev(this,'L2')">Level 2<br/><small>重大不符合</small></div>
+            <div class="ss-opt ss3" onclick="selSev(this,'L3')">Level 3<br/><small>一般不符合</small></div>
+            <div class="ss-opt ss4" onclick="selSev(this,'OFI')">OFI<br/><small>改进机会</small></div>
+          </div>
+          <input type="hidden" id="ncrSev" />
+        </div>
+        <div class="fg full"><label>事件描述（5W1H） <span>*</span></label>
+          <textarea class="fc" placeholder="What（发生了什么）— Where（哪个环节）— When（何时）— Who（涉及人员）— Which（哪票货）— How（经过）……" id="ncrDesc"></textarea>
+        </div>
+        <div class="fg"><label>预计直接损失（元）</label><input class="fc" type="number" placeholder="如无法估算填 0" id="ncrLoss" /></div>
+        <div class="fg"><label>建议责任人</label><input class="fc" type="text" placeholder="初步判断的责任人" id="ncrOwner" /></div>
+        <div class="fg full"><label>初步处理说明 / 已采取的遏制措施</label>
+          <textarea class="fc" placeholder="已做了哪些即时处理动作，如：已通知客户 / 已联系航司协查 / 已暂停该操作……" id="ncrAction" style="min-height:75px;"></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="btn btn-ol" onclick="resetNCR()">清空</button>
+        <button class="btn btn-red" onclick="submitNCR()">提交 NCR ▶</button>
+      </div>
+    </div>
+    <div class="form-success" id="ncrSuc">
+      <div class="icon">🔴</div>
+      <h4>NCR 已提交 — 编号 <span id="sucId"></span></h4>
+      <p>品质管理部将在 1 小时内确认接收，并依据严重程度启动相应应对流程。如属 Level 1，总经理将同步收到通知。</p>
+    </div>
+  </div>
+
+</main>
+<footer><strong>山东上星国际货运代理有限公司</strong> · 品质管理部 · NCR 应对标准流程 v2.0</footer>
+
+<script>
+  // Auto NCR ID & datetime
+  const now = new Date();
+  const ncrNum = 'NCR-' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + '-' + String(Math.floor(Math.random()*900)+100);
+  document.getElementById('ncrId').value = ncrNum;
+  document.getElementById('ncrDT').value = now.toISOString().slice(0,16);
+
+  // Severity selector
+  function selSev(el, val) {
+    document.querySelectorAll('.ss-opt').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('ncrSev').value = val;
+  }
+
+  // Flow accordion
+  document.querySelectorAll('.fs-header').forEach(h => {
+    h.addEventListener('click', () => {
+      const card = h.closest('.fs-card');
+      const body = card.querySelector('.fs-body');
+      const inner = card.querySelector('.fs-body-inner');
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.fs-card.open').forEach(c => {
+        c.classList.remove('open');
+        c.querySelector('.fs-body').style.maxHeight = '0';
+      });
+      if (!isOpen) { card.classList.add('open'); body.style.maxHeight = inner.scrollHeight + 32 + 'px'; }
+    });
+  });
+  // Open step 1 by default
+  (() => {
+    const c = document.querySelector('[data-fs="1"]');
+    const b = c.querySelector('.fs-body'); const i = c.querySelector('.fs-body-inner');
+    c.classList.add('open'); b.style.maxHeight = i.scrollHeight + 32 + 'px';
+  })();
+
+  // Form
+  function submitNCR() {
+    const f = ['ncrCase','ncrClient','ncrReporter','ncrDept','ncrDesc'];
+    for (const id of f) { if (!document.getElementById(id).value.trim()) { alert('请填写所有带 * 的必填项。'); return; } }
+    if (!document.getElementById('ncrSev').value) { alert('请选择严重程度分级。'); return; }
+    document.getElementById('ncrFB').style.display = 'none';
+    document.getElementById('ncrSuc').style.display = 'block';
+    document.getElementById('sucId').textContent = ncrNum;
+  }
+  function resetNCR() {
+    ['ncrCase','ncrClient','ncrReporter','ncrLoss','ncrOwner','ncrDesc','ncrAction'].forEach(id => { const e = document.getElementById(id); if(e) e.value=''; });
+    document.getElementById('ncrDept').value = '';
+    document.querySelectorAll('.ss-opt').forEach(o => o.classList.remove('sel'));
+    document.getElementById('ncrSev').value = '';
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

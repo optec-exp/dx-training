@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>货物分类与温度管理要求 — 山东上星国际货运</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg:#06080e; --blue:#0ea5e9; --blue2:#38bdf8; --gold:#f59e0b; --gold2:#fbbf24;
+      --teal:#0d9488; --red:#ef4444; --green:#10b981;
+      --line:rgba(255,255,255,.07); --muted:rgba(255,255,255,.42); --r:12px;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Inter','PingFang SC','Microsoft YaHei',sans-serif; background:var(--bg); color:#e2e8f0; line-height:1.7; overflow-x:hidden; }
+
+    /* HERO */
+    .hero { position:relative; min-height:420px; display:flex; align-items:center; justify-content:center; text-align:center; padding:5rem 2rem 4rem; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80'); background-size:cover; background-position:center 65%; filter:blur(4px) brightness(.2) saturate(.7) hue-rotate(180deg); transform:scale(1.05); z-index:0; }
+    .hero::after { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 40% 50%, rgba(14,165,233,.12) 0%, transparent 60%),linear-gradient(160deg,rgba(6,8,14,.5) 0%,rgba(14,165,233,.06) 50%,rgba(6,8,14,.9) 100%); z-index:1; }
+    .hero-content { position:relative; z-index:2; max-width:720px; }
+    .badge { display:inline-flex; align-items:center; gap:.5rem; background:rgba(14,165,233,.15); border:1px solid rgba(14,165,233,.3); color:var(--blue2); font-size:.72rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; padding:.35rem 1rem; border-radius:20px; margin-bottom:1.2rem; animation:fD .8s ease both; }
+    .hero h1 { font-size:clamp(1.9rem,5vw,3rem); font-weight:900; letter-spacing:-.03em; line-height:1.1; margin-bottom:.8rem; animation:fD .8s .1s ease both; }
+    .hero h1 span { color:var(--blue2); }
+    .hero p { font-size:.95rem; color:var(--muted); animation:fD .8s .2s ease both; }
+
+    @keyframes fD { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+    .reveal { opacity:0; transform:translateY(22px); transition:opacity .6s ease,transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    main { max-width:1000px; margin:0 auto; padding:3rem 1.5rem 6rem; }
+    .sl { font-size:.68rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--blue); margin-bottom:1.5rem; display:flex; align-items:center; gap:.7rem; }
+    .sl::after { content:''; flex:1; height:1px; background:var(--line); }
+
+    /* TABS */
+    .tab-bar { display:flex; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:var(--r); padding:.3rem; gap:.3rem; margin-bottom:2rem; }
+    .tab-btn { flex:1; padding:.7rem 1rem; border-radius:9px; border:none; background:transparent; color:var(--muted); font-size:.85rem; font-weight:600; font-family:inherit; cursor:pointer; transition:background .25s,color .25s; text-align:center; }
+    .tab-btn.active { background:rgba(14,165,233,.15); color:var(--blue2); border:1px solid rgba(14,165,233,.25); }
+    .tab-btn:hover:not(.active) { background:rgba(255,255,255,.04); color:#e2e8f0; }
+    .tab-panel { display:none; animation:fD .35s ease both; }
+    .tab-panel.active { display:block; }
+
+    /* CARGO TYPE CARDS */
+    .cargo-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+    .cargo-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; transition:border-color .3s; }
+    .cargo-card:hover { border-color:rgba(14,165,233,.25); }
+    .cargo-card.open { border-color:rgba(14,165,233,.4); }
+    .cc-header { display:flex; align-items:center; gap:.9rem; padding:1.1rem 1.3rem; cursor:pointer; user-select:none; }
+    .cc-header:hover { background:rgba(255,255,255,.02); }
+    .cc-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+    .cc-info { flex:1; }
+    .cc-info h3 { font-size:.92rem; font-weight:700; margin-bottom:.1rem; }
+    .cc-info .iata { font-size:.68rem; font-weight:800; letter-spacing:.1em; padding:.15rem .5rem; border-radius:4px; display:inline-block; margin-bottom:.1rem; }
+    .cc-toggle { width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; font-size:.8rem; transition:transform .3s,background .3s; flex-shrink:0; }
+    .cargo-card.open .cc-toggle { transform:rotate(180deg); background:rgba(14,165,233,.2); }
+    .cc-body { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.4,0,.2,1); }
+    .cc-body-inner { padding:0 1.3rem 1.3rem; border-top:1px solid var(--line); }
+    .cc-body-inner h4 { font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--blue2); margin:.9rem 0 .5rem; }
+    .cc-body-inner ul { list-style:none; display:flex; flex-direction:column; gap:.35rem; }
+    .cc-body-inner ul li { font-size:.8rem; color:rgba(255,255,255,.68); display:flex; gap:.5rem; }
+    .cc-body-inner ul li::before { content:'▸'; color:var(--teal); flex-shrink:0; margin-top:.07rem; }
+    .nb { border-radius:7px; padding:.65rem .9rem; font-size:.79rem; margin-top:.7rem; line-height:1.5; }
+    .nb-blue { background:rgba(14,165,233,.08); border-left:3px solid var(--blue); color:#7dd3fc; }
+    .nb-red  { background:rgba(239,68,68,.08); border-left:3px solid var(--red); color:#fca5a5; }
+    .nb-gold { background:rgba(245,158,11,.08); border-left:3px solid var(--gold); color:#fcd34d; }
+    .nb-teal { background:rgba(13,148,136,.08); border-left:3px solid var(--teal); color:#5eead4; }
+
+    /* DG CLASSES */
+    .dg-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1rem; }
+    .dg-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); overflow:hidden; transition:border-color .3s; }
+    .dg-card.open { border-color:rgba(245,158,11,.35); }
+    .dg-header { display:flex; align-items:center; gap:.85rem; padding:1rem 1.3rem; cursor:pointer; user-select:none; }
+    .dg-header:hover { background:rgba(255,255,255,.02); }
+    .dg-class { width:48px; height:48px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.75rem; font-weight:900; flex-shrink:0; line-height:1.2; }
+    .dg-info { flex:1; }
+    .dg-info h3 { font-size:.88rem; font-weight:700; margin-bottom:.1rem; }
+    .dg-info .dg-sub { font-size:.72rem; color:var(--muted); }
+    .dg-toggle { width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; font-size:.8rem; transition:transform .3s,background .3s; flex-shrink:0; }
+    .dg-card.open .dg-toggle { transform:rotate(180deg); background:rgba(245,158,11,.2); }
+    .dg-body { max-height:0; overflow:hidden; transition:max-height .5s cubic-bezier(.4,0,.2,1); }
+    .dg-body-inner { padding:0 1.3rem 1.3rem; border-top:1px solid var(--line); }
+    .dg-body-inner h4 { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin:.9rem 0 .4rem; }
+    .dg-body-inner ul { list-style:none; display:flex; flex-direction:column; gap:.35rem; }
+    .dg-body-inner ul li { font-size:.79rem; color:rgba(255,255,255,.68); display:flex; gap:.5rem; }
+    .dg-body-inner ul li::before { content:'·'; color:var(--gold); flex-shrink:0; margin-top:.1rem; }
+    .airban { font-size:.68rem; font-weight:700; padding:.18rem .5rem; border-radius:4px; margin-top:.6rem; display:inline-block; }
+    .ban-yes { background:rgba(239,68,68,.15); color:#fca5a5; border:1px solid rgba(239,68,68,.25); }
+    .ban-cond { background:rgba(245,158,11,.15); color:#fcd34d; border:1px solid rgba(245,158,11,.25); }
+    .ban-ok { background:rgba(16,185,129,.15); color:#6ee7b7; border:1px solid rgba(16,185,129,.25); }
+
+    /* TEMP SECTION */
+    .temp-intro { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem; }
+    .ti-card { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:var(--r); padding:1.2rem 1.3rem; }
+    .ti-card h4 { font-size:.82rem; font-weight:700; color:var(--blue2); margin-bottom:.5rem; }
+    .ti-card p { font-size:.8rem; color:rgba(255,255,255,.6); line-height:1.55; }
+
+    /* TEMPERATURE VISUAL */
+    .temp-visual { margin-bottom:2rem; }
+    .tv-title { font-size:.72rem; font-weight:700; color:var(--muted); margin-bottom:.8rem; letter-spacing:.08em; text-transform:uppercase; }
+    .temp-bar { position:relative; height:52px; border-radius:8px; background:linear-gradient(to right,#1e3a8a 0%,#2563eb 15%,#0ea5e9 30%,#10b981 50%,#f59e0b 70%,#ef4444 100%); overflow:visible; margin-bottom:2.5rem; }
+    .temp-markers { position:relative; display:flex; justify-content:space-between; margin-top:.4rem; font-size:.7rem; color:var(--muted); padding:0 .2rem; }
+    .temp-zones { display:grid; grid-template-columns:repeat(5,1fr); gap:.8rem; margin-top:1.5rem; }
+    .tz-card { border-radius:var(--r); padding:1.1rem 1rem; border:1px solid transparent; }
+    .tz1 { background:rgba(30,58,138,.2); border-color:rgba(30,58,138,.4); }
+    .tz2 { background:rgba(37,99,235,.15); border-color:rgba(37,99,235,.35); }
+    .tz3 { background:rgba(14,165,233,.12); border-color:rgba(14,165,233,.3); }
+    .tz4 { background:rgba(16,185,129,.1); border-color:rgba(16,185,129,.25); }
+    .tz5 { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.25); }
+    .tz-temp { font-size:1.1rem; font-weight:900; margin-bottom:.2rem; }
+    .tz1 .tz-temp { color:#93c5fd; }
+    .tz2 .tz-temp { color:#60a5fa; }
+    .tz3 .tz-temp { color:var(--blue2); }
+    .tz4 .tz-temp { color:#6ee7b7; }
+    .tz5 .tz-temp { color:var(--gold2); }
+    .tz-name { font-size:.78rem; font-weight:700; margin-bottom:.4rem; }
+    .tz-goods { font-size:.72rem; color:rgba(255,255,255,.55); line-height:1.55; }
+
+    /* TEMP REQUIREMENTS TABLE */
+    .temp-table { overflow-x:auto; border-radius:var(--r); border:1px solid var(--line); margin-top:2rem; }
+    table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    thead tr { background:rgba(14,165,233,.1); }
+    thead th { padding:.8rem 1rem; text-align:left; font-size:.7rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--blue2); white-space:nowrap; }
+    tbody tr { border-top:1px solid var(--line); transition:background .2s; }
+    tbody tr:hover { background:rgba(255,255,255,.02); }
+    tbody td { padding:.75rem 1rem; color:rgba(255,255,255,.75); vertical-align:top; }
+    .temp-pill { display:inline-block; padding:.2rem .6rem; border-radius:5px; font-size:.72rem; font-weight:700; white-space:nowrap; }
+    .tp-deep  { background:rgba(30,58,138,.2); color:#93c5fd; border:1px solid rgba(30,58,138,.3); }
+    .tp-cold  { background:rgba(14,165,233,.15); color:var(--blue2); border:1px solid rgba(14,165,233,.3); }
+    .tp-ctrl  { background:rgba(16,185,129,.12); color:#6ee7b7; border:1px solid rgba(16,185,129,.25); }
+    .tp-amb   { background:rgba(245,158,11,.12); color:#fcd34d; border:1px solid rgba(245,158,11,.25); }
+
+    /* GDP / CEIV */
+    .cert-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:2rem; }
+    .cert-box { background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:var(--r); padding:1.2rem 1.3rem; }
+    .cert-box h4 { font-size:.85rem; font-weight:800; color:var(--blue2); margin-bottom:.5rem; }
+    .cert-box p { font-size:.79rem; color:rgba(255,255,255,.6); line-height:1.55; }
+    .cert-box ul { list-style:none; margin-top:.6rem; display:flex; flex-direction:column; gap:.3rem; }
+    .cert-box ul li { font-size:.78rem; color:rgba(255,255,255,.65); display:flex; gap:.5rem; }
+    .cert-box ul li::before { content:'▸'; color:var(--teal); flex-shrink:0; }
+
+    /* SEARCH */
+    .search-wrap { position:relative; margin-bottom:1.5rem; }
+    .search-input { width:100%; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:8px; padding:.75rem 1rem .75rem 2.8rem; color:#e2e8f0; font-size:.88rem; font-family:inherit; outline:none; transition:border-color .25s; }
+    .search-input:focus { border-color:var(--blue2); }
+    .search-input::placeholder { color:rgba(255,255,255,.25); }
+    .search-icon { position:absolute; left:.9rem; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.35); font-size:.95rem; pointer-events:none; }
+
+    footer { background:rgba(0,0,0,.5); border-top:1px solid var(--line); text-align:center; padding:1.8rem; font-size:.78rem; color:var(--muted); }
+    footer strong { color:var(--blue2); }
+
+    @media(max-width:720px) {
+      .tab-btn { font-size:.75rem; padding:.6rem .5rem; }
+      .cargo-grid,.dg-grid { grid-template-columns:1fr; }
+      .temp-zones { grid-template-columns:1fr 1fr; }
+      .temp-intro,.cert-row { grid-template-columns:1fr; }
+    }
+    @media(max-width:480px) { .temp-zones { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="badge">业务操作部 · Day 4 · Work 07</div>
+    <h1>货物分类与<span>温度管理</span>要求一览</h1>
+    <p>航空货运特种货物分类 · 危险品 IATA 九大类 · 全链路温控管理规范——操作人员必备参考手册</p>
+  </div>
+</div>
+
+<main>
+
+  <div class="tab-bar reveal">
+    <button class="tab-btn active" onclick="switchTab('cargo',this)">🏷️ 货物分类</button>
+    <button class="tab-btn" onclick="switchTab('dg',this)">⚠️ 危险品（DG）分类</button>
+    <button class="tab-btn" onclick="switchTab('temp',this)">🌡️ 温度管理要求</button>
+  </div>
+
+  <!-- ═══ TAB 1: CARGO CLASSIFICATION ═══ -->
+  <div class="tab-panel active" id="tab-cargo">
+
+    <div class="search-wrap reveal">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" placeholder="搜索货物类型、IATA 代码或处理要求……" oninput="searchCargo(this.value)" />
+    </div>
+
+    <div class="cargo-grid" id="cargoGrid">
+
+      <div class="cargo-card" data-keywords="普通货物 general gen 标准">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(16,185,129,.15);">📦</div>
+          <div class="cc-info">
+            <span class="iata" style="background:rgba(16,185,129,.15);color:#6ee7b7;">GEN</span>
+            <h3>普通货物</h3>
+          </div>
+          <div class="cc-toggle">▾</div>
+        </div>
+        <div class="cc-body"><div class="cc-body-inner">
+          <h4>定义</h4>
+          <ul><li>不需要特殊处理的标准货物，无危险、无温控、无特殊资质要求</li><li>占航空货运总量约 70%，是最基础的货物类型</li></ul>
+          <h4>常见货物举例</h4>
+          <ul><li>服装、鞋类、箱包、玩具、家居用品</li><li>电子配件（非锂电驱动）、零部件、模具</li><li>印刷品、样品、贸易展览品</li><li>一般工业机械零件（非危险化学品）</li></ul>
+          <h4>操作要求</h4>
+          <ul><li>按标准航空货运 SOP 操作，无额外特殊许可</li><li>申报内容须与实货相符，避免查验</li><li>重量/体积超过单箱 150kg 或单件超大尺寸须提前申报</li></ul>
+          <div class="nb nb-teal">IATA 编码 GEN 在系统录入时作为默认类型，若有任何特殊属性（含锂电、液体等）必须切换相应特种货物代码，不得保留 GEN。</div>
+        </div></div>
+      </div>
+
+      <div class="cargo-card" data-keywords="危险品 DGR dangerous goods 锂电 化学品">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(239,68,68,.15);">☢️</div>
+          <div class="cc-info">
+            <span class="iata" style="background:rgba(239,68,68,.15);color:#fca5a5;">DGR</span>
+            <h3>危险品</h3>
+          </div>
+          <div class="cc-toggle">▾</div>
+        </div>
+        <div class="cc-body"><div class="cc-body-inner">
+          <h4>定义</h4>
+          <ul><li>符合 IATA 危险品规则（DGR）定义的物品或物质，具有危险特性</li><li>必须严格按照 IATA 第 65 版（2024 年版）DGR 手册操作</li><li>九大类详见"危险品分类"标签页</li></ul>
+          <h4>前置条件（缺一不可）</h4>
+          <ul><li>托运人须提供正确填写的《危险品申报单》（DG Declaration / Shipper's Declaration）</li><li>货物须按 IATA 规定进行合规包装，贴附正确标签和标记</li><li>货代须持有 IATA DGR 培训证书（至少 2 年一次更新）</li><li>航空公司须事先接受（Prior Acceptance，PA），部分危险品不同航线接受条件不同</li></ul>
+          <h4>常见问题</h4>
+          <ul><li>UN 编号选择错误（如将锂离子电池混淆为锂金属电池）</li><li>包装规格不符合 PI（Packing Instructions）要求</li><li>申报数量超过限额（Q值）</li><li>未提前获得航空公司 Special Cargo Acceptance</li></ul>
+          <div class="nb nb-red"><strong>严禁：</strong>将危险品以"普通货物"名义申报（俗称"隐瞒危险品"）是重大违法行为，一经查获将面临航空公司拒载、海关处罚、货物扣押，情节严重可追究刑事责任。</div>
+        </div></div>
+      </div>
+
+      <div class="cargo-card" data-keywords="贵重品 VAL valuable 珠宝 黄金 现金 艺术品">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(245,158,11,.15);">💎</div>
+          <div class="cc-info">
+            <span class="iata" style="background:rgba(245,158,11,.15);color:#fcd34d;">VAL</span>
+            <h3>贵重品</h3>
+          </div>
+          <div class="cc-toggle">▾</div>
+        </div>
+        <div class="cc-body"><div class="cc-body-inner">
+          <h4>定义与范围</h4>
+          <ul><li>单件价值超过 USD 1,000/kg 或单票总价值超过 USD 100,000 的货物</li><li>包括：珠宝、黄金、铂金、钻石、名表、现金及有价证券</li><li>高价值电子产品（iPhone 整批）、奢侈品、艺术品、文物</li></ul>
+          <h4>特殊处理要求</h4>
+          <ul><li>须提前向航空公司申报贵重品，并获得 VAL 接受确认（VAL Acceptance）</li><li>须购买货物运输险（Marine Cargo Insurance），保额覆盖申报价值</li><li>在机场须走贵重品专用通道（Vault），不可普通货物装卸</li><li>转机时须特别跟踪，避免在中转机场遗失</li><li>文件须注明 AWB 上的 Declared Value for Carriage</li></ul>
+          <div class="nb nb-gold">AWB 申报价值（Declared Value for Carriage）直接影响航空公司的赔偿责任上限（华沙/蒙特利尔公约），建议真实申报，勿低报以节省保险费——一旦货损，低申报将导致大幅减少赔偿金额。</div>
+        </div></div>
+      </div>
+
+      <div class="cargo-card" data-keywords="易腐品 PER perishable 食品 鲜花 海鲜 蔬菜 水果 疫苗 药品">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(14,165,233,.15);">🥦</div>
+          <div class="cc-info">
+            <span class="iata" style="background:rgba(14,165,233,.15);color:var(--blue2);">PER</span>
+            <h3>易腐品</h3>
+          </div>
+          <div class="cc-toggle">▾</div>
+        </div>
+        <div class="cc-body"><div class="cc-body-inner">
+          <h4>定义与范围</h4>
+          <ul><li>在常温下易腐烂变质、需全程温控运输的货物</li><li>新鲜果蔬、鲜花（切花、盆栽）、活鱼苗</li><li>新鲜肉类、海鲜、乳制品</li><li>生物制品、疫苗、血液制品、医疗样本</li><li>部分高端化妆品、营养品</li></ul>
+          <h4>操作要求</h4>
+          <ul><li>须提交"易腐品声明"（Perishable Statement），注明品名、温度要求、预计运输时间</li><li>包装须具备足够绝热性能，内含足量蓄冷剂（冰袋/干冰）</li><li>航空公司须优先安排，缩短地面等待时间（Minimize Ground Time）</li><li>药品/疫苗类须符合 GDP（Good Distribution Practice）要求，全程记录温度</li><li>目的港清关须尽快提取，避免在仓库积压导致变质</li></ul>
+          <div class="nb nb-blue">干冰（Dry Ice / UN1845）属于危险品 Class 9，在用作易腐品保温介质时须同时满足 PER 和 DGR 要求：单件干冰用量 ≤ 2.5 kg 且须在 AWB 上注明干冰重量。</div>
+        </div></div>
+      </div>
+
+      <div class="cargo-card" data-keywords="活体动物 AVI live animal 宠物 猫狗 禽类">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(16,185,129,.15);">🐾</div>
+          <div class="cc-info">
+            <span class="iata" style="background:rgba(16,185,129,.15);color:#6ee7b7;">AVI</span>
+            <h3>活体动物</h3>
+          </div>
+          <div class="cc-toggle">▾</div>
+        </div>
+        <div class="cc-body"><div class="cc-body-inner">
+          <h4>适用范围</h4>
+          <ul><li>哺乳动物（猫、狗等宠物）、禽类、爬行类、鱼类、昆虫</li><li>实验室动物、濒危动物（须提供 CITES 许可证）</li></ul>
+          <h4>必备文件</h4>
+          <ul><li>兽医健康证明（Veterinary Health Certificate），出发前 10 天内开具</li><li>进出口许可证（目的国动物检疫许可）</li><li>CITES 证书（濒危物种须提供）</li><li>IATA 活体动物运输规则（LAR）符合性声明</li></ul>
+          <h4>操作要求</h4>
+          <ul><li>航空箱须符合 IATA 第 43 章活体动物容器标准</li><li>须控制货舱温度（通常 15–25°C），并通知机组</li><li>转机时须得到地面代理特殊照料，不可长时间停留在机坪暴晒</li></ul>
+          <div class="nb nb-teal">各航空公司对可运输动物种类有不同限制（如部分航司不接受宠物随机托运）。订舱前须逐一确认目标航班的 AVI 接受政策。</div>
+        </div></div>
+      </div>
+
+      <div class="cargo-card" data-keywords="超规格 OHG HEA 大件 超重 机器设备">
+        <div class="cc-header">
+          <div class="cc-icon" style="background:rgba(124,58,237,.15);">🏗️</div>
+          <div class="cc-info">
+            <span class="iata" style="background:rgba(124,58,237,.15);color:#c4b5fd;">OHG / HEA</span>
+            <h3>超规格 / 重型货物</h3>
+          </div>
+          <div class="cc-toggle">▾</div>
+        </div>
+        <div class="cc-body"><div class="cc-body-inner">
+          <h4>定义标准</h4>
+          <ul><li><strong>OHG（超尺寸）：</strong>单件超出标准 ULD 装载范围，需使用主甲板或特种集装器</li><li><strong>HEA（重型）：</strong>单件重量超过 150 kg</li><li>两者往往同时出现，需申请特种舱位（Charter 或宽体客机腹舱）</li></ul>
+          <h4>操作要点</h4>
+          <ul><li>须提供货物三维尺寸（精确到厘米）和精确毛重</li><li>航空公司评估后给出"舱位可行性确认"（Space &amp; Weight Feasibility）</li><li>地面操作须使用叉车或特种装卸设备，提前安排地勤</li><li>AWB 须注明单件重量及超规格标记</li></ul>
+          <div class="nb nb-gold">超规格货物的运费通常按"整板计费"而非按重量，且会产生额外的 OHG 附加费（Surcharge）。须在报价阶段明确告知客户，避免事后产生争议。</div>
+        </div></div>
+      </div>
+
+    </div><!-- /cargo-grid -->
+
+  </div><!-- /tab-cargo -->
+
+  <!-- ═══ TAB 2: DG CLASSES ═══ -->
+  <div class="tab-panel" id="tab-dg">
+
+    <div class="reveal" style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:1rem 1.3rem;font-size:.83rem;color:#fca5a5;margin-bottom:1.5rem;">
+      <strong>⚠️ 法规依据：</strong>以下分类依据 IATA 危险品规则（DGR）第 65 版（2024年）及《中国民用航空危险品运输管理规定》（CCAR-276）。货代人员须每 2 年完成一次 IATA DGR 培训并获得证书，方可处理危险品货物。
+    </div>
+
+    <div class="dg-grid reveal" id="dgGrid">
+
+      <div class="dg-card" data-keywords="class1 爆炸品 explosives 烟火 弹药">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#7f1d1d,#ef4444);color:#fff;">Class<br/>1</div>
+          <div class="dg-info"><h3>爆炸品（Explosives）</h3><div class="dg-sub">六个次要危险分类 · 烟花/弹药/引爆器</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <h4>次要分类</h4>
+          <ul><li>1.1 整体爆炸危险（炸药、雷管）</li><li>1.2 抛射危险但无整体爆炸危险（子弹）</li><li>1.3 火灾危险（烟火）</li><li>1.4 无重大危险（安全烟火）</li><li>1.5 不敏感的整体爆炸物</li><li>1.6 极不敏感爆炸物</li></ul>
+          <h4>货代常见货物</h4>
+          <ul><li>烟火产品（部分 1.3G / 1.4G）：须出口许可证</li><li>安全气囊模块（内含少量炸药）：Class 1.4</li><li>引爆装置、礼花炮</li></ul>
+          <span class="airban ban-yes">❌ 1.1 / 1.2 / 1.3 禁止客机运输</span>
+          <span class="airban ban-cond">⚠️ 1.4 / 特定例外 — 限货机</span>
+          <div class="nb nb-red">绝大多数 Class 1 货物禁止客机（Passenger Aircraft）运输，部分允许货机（Cargo Aircraft Only，CAO）运输。须逐一核查具体 UN 编号。</div>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class2 气体 gases 2.1 2.2 2.3 丁烷 压缩气体">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#065f46,#10b981);color:#fff;">Class<br/>2</div>
+          <div class="dg-info"><h3>气体（Gases）</h3><div class="dg-sub">2.1 易燃 · 2.2 非易燃非毒性 · 2.3 毒性</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <h4>三个子类</h4>
+          <ul><li>2.1 易燃气体：丁烷、丙烷、氢气、打火机充气罐</li><li>2.2 非易燃非毒性气体：液氮、氦气、CO₂（干冰气化）、压缩空气</li><li>2.3 毒性气体：氯气、光气（极少商业运输）</li></ul>
+          <h4>货代常见货物</h4>
+          <ul><li>灭火器（CO₂ 或干粉）：Class 2.2</li><li>医疗氧气瓶：Class 2.2，须医生处方</li><li>气体打火机/喷雾剂：Class 2.1 或 2.2</li><li>雪地摩托、汽车用气体发生器</li></ul>
+          <span class="airban ban-cond">⚠️ 2.1 限量或 CAO · 2.2 部分允许客机</span>
+          <span class="airban ban-yes">❌ 2.3 通常禁止商业航班</span>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class3 易燃液体 flammable liquids 酒精 香水 油漆">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#92400e,#f59e0b);color:#fff;">Class<br/>3</div>
+          <div class="dg-info"><h3>易燃液体（Flammable Liquids）</h3><div class="dg-sub">闪点 ≤ 60°C 的液体 · 最常见 DG 类别</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <h4>常见货物（货代最高频）</h4>
+          <ul><li>工业用酒精（乙醇）：≥70% 浓度属 Class 3</li><li>香水、古龙水（含酒精）：PI 970 / PI 971 限量规定</li><li>油漆、涂料、清漆、稀释剂</li><li>汽油、柴油、航空燃料</li><li>工业溶剂（丙酮、甲苯）</li><li>胶水、粘合剂（含有机溶剂）</li></ul>
+          <h4>包装要求</h4>
+          <ul><li>按包装等级（PG I / II / III）选择对应包装指令（PI）</li><li>PG I（高危）：如汽油，须使用 UN 认证钢桶</li><li>PG III（低危）：如香水，可使用 PI 970 例外限量</li></ul>
+          <span class="airban ban-cond">⚠️ PG I/II 通常 CAO · PG III 限量可客机</span>
+          <div class="nb nb-gold">香水等消费品通常按 PI 970（例外数量）或 PI 971 操作，单件不超过 1L 总计不超过 24 件时可走普通客机，但必须正确贴标。</div>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class4 易燃固体 flammable solid 硫磺 硫化钠 金属钠">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#78350f,#d97706);color:#fff;">Class<br/>4</div>
+          <div class="dg-info"><h3>易燃固体 / 自燃 / 遇水易燃</h3><div class="dg-sub">4.1 易燃固体 · 4.2 自燃 · 4.3 遇水</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <ul>
+            <li><strong>4.1 易燃固体：</strong>硫磺、赛璐珞、活化镁粉、安全火柴</li>
+            <li><strong>4.2 自燃物质：</strong>白磷、有机金属化合物（遇空气燃烧）</li>
+            <li><strong>4.3 遇水放出易燃气体：</strong>金属钠、钾、电石（CaC₂）</li>
+            <li>货代实际操作中相对少见，但一旦出现须格外谨慎</li>
+            <li>4.3 货物须防止包装破损进水，存储须绝对干燥环境</li>
+          </ul>
+          <span class="airban ban-cond">⚠️ 4.1 部分限量 · 4.2 / 4.3 通常 CAO</span>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class5 氧化剂 oxidizer 过氧化氢 漂白剂 有机过氧化物">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;">Class<br/>5</div>
+          <div class="dg-info"><h3>氧化剂 / 有机过氧化物</h3><div class="dg-sub">5.1 氧化剂 · 5.2 有机过氧化物</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <ul>
+            <li><strong>5.1 氧化剂：</strong>硝酸铵肥料、氯酸盐、过硼酸钠（洗衣粉原料）、漂白粉</li>
+            <li><strong>5.2 有机过氧化物：</strong>过氧化苯甲酰（塑料固化剂）、过氧化甲乙酮</li>
+            <li>5.1 本身不燃烧，但能助燃，与可燃物接触极危险</li>
+            <li>5.2 可能自加速分解，须严格控温（冷冻存储）</li>
+            <li>货代常见：含氧化剂的护肤品、过氧化氢（双氧水）消毒品</li>
+          </ul>
+          <span class="airban ban-cond">⚠️ 5.1 低危类限量客机 · 5.2 通常 CAO</span>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class6 毒性 toxic 感染性 病原体 传染性物质 医疗废物">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#3f0764,#7c3aed);color:#fff;">Class<br/>6</div>
+          <div class="dg-info"><h3>毒性 / 感染性物质</h3><div class="dg-sub">6.1 毒性 · 6.2 感染性物质（生物材料）</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <ul>
+            <li><strong>6.1 毒性物质：</strong>农药、杀虫剂、有机磷化合物（UN2783 等）</li>
+            <li><strong>6.2 感染性物质：</strong>A 类（UN2814/UN2900，能致命疾病）、B 类（UN3373，诊断样本）</li>
+            <li>医院诊断用血液样本通常为 UN3373（B 类），须使用 P650 三层包装</li>
+            <li>新冠、流感等病毒样本属 A 类，须专业机构处理，普通货代不接受</li>
+            <li>农化产品（农药）是 6.1 中货代最常遇到的货物</li>
+          </ul>
+          <span class="airban ban-cond">⚠️ 6.1 PG III 限量客机 · 6.2 A 类严格限制</span>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class7 放射性 radioactive 核材料 医用同位素">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#064e3b,#059669);color:#fff;">Class<br/>7</div>
+          <div class="dg-info"><h3>放射性物质（Radioactive）</h3><div class="dg-sub">UN2908–UN3332 · 需专业机构处理</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <ul>
+            <li>医疗放射性同位素（如碘-131、锝-99m）：常见于医疗设备货物</li>
+            <li>工业仪器中的放射源（如料位计、测厚仪）</li>
+            <li>须具备原子能管理部门颁发的运输许可证</li>
+            <li>包装须有 Class 7 标签（三叶草标志），按辐射水平分 I-White / II-Yellow / III-Yellow</li>
+            <li>与其他 DG 货物须保持安全隔离距离</li>
+            <li>通常须提前 72 小时向航空公司申报</li>
+          </ul>
+          <span class="airban ban-cond">⚠️ 极严格限制，普通货代几乎不处理</span>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class8 腐蚀品 corrosive 盐酸 硫酸 电池 酸碱">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#0d6956,#0d9488);color:#fff;">Class<br/>8</div>
+          <div class="dg-info"><h3>腐蚀品（Corrosives）</h3><div class="dg-sub">酸类 · 碱类 · 电解质液体</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <ul>
+            <li>强酸：盐酸、硫酸、硝酸（高浓度）</li>
+            <li>强碱：氢氧化钠溶液、氢氧化钾</li>
+            <li>湿电池（含酸电解液）：铅酸蓄电池（UN2794）</li>
+            <li>电镀化学品、工业清洁剂（次氯酸钠）</li>
+            <li>腐蚀品泄漏会损坏飞机蒙皮和其他货物，须严格内衬防漏包装</li>
+            <li>货代常见：铅酸电池（蓄电池）运输，须排液或满足 Spec 58 标准</li>
+          </ul>
+          <span class="airban ban-cond">⚠️ PG I / II 通常 CAO · PG III 限量客机</span>
+          <div class="nb nb-teal">湿电池（铅酸蓄电池）须按 PI 806 / PI 807 操作，须在包装上标注"电池含腐蚀性电解液"，且须与锂电池（Class 9）区分处理。</div>
+        </div></div>
+      </div>
+
+      <div class="dg-card" data-keywords="class9 杂项 miscellaneous 锂电池 干冰 磁性物质">
+        <div class="dg-header">
+          <div class="dg-class" style="background:linear-gradient(135deg,#1e3a8a,#6366f1);color:#fff;">Class<br/>9</div>
+          <div class="dg-info"><h3>杂项危险品（Miscellaneous）</h3><div class="dg-sub">锂电池 · 干冰 · 磁性物质 · 环保危害品</div></div>
+          <div class="dg-toggle">▾</div>
+        </div>
+        <div class="dg-body"><div class="dg-body-inner">
+          <h4>货代最高频！锂电池（最重要）</h4>
+          <ul>
+            <li><strong>锂离子电池（UN3480）：</strong>单独运输的锂离子电池，限货机，荷电状态（SOC）≤ 30%</li>
+            <li><strong>锂离子电池（UN3481）：</strong>随设备携带的锂离子电池（手机、笔记本），可客机，限量</li>
+            <li><strong>锂金属电池（UN3090/3091）：</strong>一次性电池，规定更严，多数航司限货机</li>
+            <li>Wh（瓦时数）是关键参数：≤100Wh 为小电池，100–160Wh 为中电池，&gt;160Wh 须特别许可</li>
+          </ul>
+          <h4>其他 Class 9 货物</h4>
+          <ul>
+            <li>干冰（UN1845）：单件 ≤ 2.5 kg 可客机，须标注重量</li>
+            <li>磁性物质：指南针偏转范围检测合规后方可装机</li>
+            <li>干冰类车辆：电动汽车整车运输（含锂电）</li>
+          </ul>
+          <span class="airban ban-cond">⚠️ 锂电池规则复杂，每年 IATA DGR 均有更新，须年度复训</span>
+          <div class="nb nb-red"><strong>重点！</strong>锂电池是目前货代最常遇到且最容易违规的 Class 9 货物。电商客户寄发的消费电子、充电宝几乎全部含锂电，必须在接单时核查是否满足相关 PI。</div>
+        </div></div>
+      </div>
+
+    </div><!-- /dg-grid -->
+  </div><!-- /tab-dg -->
+
+  <!-- ═══ TAB 3: TEMPERATURE ═══ -->
+  <div class="tab-panel" id="tab-temp">
+
+    <div class="temp-intro reveal">
+      <div class="ti-card">
+        <h4>为什么温控如此重要？</h4>
+        <p>温度偏差是造成医药品失效、食品变质、生物样品失活的首要原因。WHO 数据显示，全球约 25% 的疫苗因冷链断链而失效。货代作为运输链条的组织者，须确保从出发地到目的地的全程温度符合要求。</p>
+      </div>
+      <div class="ti-card">
+        <h4>货代的温控责任边界</h4>
+        <p>货代负责选择合适的运输方案（航班时效、中转港气候、地面操作时间）和协调温控容器（EPS 箱、VIP 箱、冷链车）；客户/托运人负责提供货物温度要求文件和正确包装。双方共同对全程温控合规负责。</p>
+      </div>
+    </div>
+
+    <div class="temp-visual reveal">
+      <div class="tv-title">温度范围可视化分布</div>
+      <div class="temp-bar"></div>
+      <div class="temp-markers">
+        <span>≤ -60°C</span><span>-20°C</span><span>2°C</span><span>8°C</span><span>15°C</span><span>25°C</span><span>30°C+</span>
+      </div>
+      <div class="temp-zones">
+        <div class="tz-card tz1">
+          <div class="tz-temp">≤ -60°C</div>
+          <div class="tz-name">超深冷冻</div>
+          <div class="tz-goods">干细胞、特定肿瘤样本、部分实验性疫苗</div>
+        </div>
+        <div class="tz-card tz2">
+          <div class="tz-temp">-20°C ± 5°C</div>
+          <div class="tz-name">深冷冻</div>
+          <div class="tz-goods">冰淇淋、冷冻肉类、部分 mRNA 疫苗（如 Moderna）</div>
+        </div>
+        <div class="tz-card tz3">
+          <div class="tz-temp">2°C – 8°C</div>
+          <div class="tz-name">冷藏（Refrigerated）</div>
+          <div class="tz-goods">大多数疫苗、胰岛素、血液制品、新鲜海鲜、乳制品</div>
+        </div>
+        <div class="tz-card tz4">
+          <div class="tz-temp">15°C – 25°C</div>
+          <div class="tz-name">受控室温（CRT）</div>
+          <div class="tz-goods">大多数口服药品、高端化妆品、巧克力、部分保健品</div>
+        </div>
+        <div class="tz-card tz5">
+          <div class="tz-temp">室温监控</div>
+          <div class="tz-name">常温监控</div>
+          <div class="tz-goods">精密电子元件（防高温）、部分化学品、出口工业品</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sl reveal">各类货物温控要求详表</div>
+    <div class="temp-table reveal">
+      <table>
+        <thead><tr><th>货物类型</th><th>温度要求</th><th>监控要求</th><th>包装方案</th><th>关键文件</th><th>货代注意事项</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>mRNA 疫苗</strong><br/><small>如 Pfizer/Moderna</small></td>
+            <td><span class="temp-pill tp-deep">-70°C ± 10°C</span></td>
+            <td>全程实时数据记录仪（±0.5°C 精度）</td>
+            <td>干冰保温箱（≥ 24h 自持）+ VIP 主动容器</td>
+            <td>GDP 合规声明、温度监控报告、冷链中断处理记录</td>
+            <td>优先直飞航班，不走中转；地面操作须在干冰作业区进行；中转港须事先确认有冷链仓</td>
+          </tr>
+          <tr>
+            <td><strong>普通疫苗 / 胰岛素</strong></td>
+            <td><span class="temp-pill tp-cold">2°C – 8°C</span></td>
+            <td>全程温度记录仪（ISTA/ASTM 认证）</td>
+            <td>EPS 冷链箱 + 冰排（Phase Change Material）</td>
+            <td>健康证明、批次检验报告、进出口许可</td>
+            <td>夏季地面停留时间须控制在 2h 内；若超时须存入冷链仓；目的港须提前安排冷藏提货</td>
+          </tr>
+          <tr>
+            <td><strong>新鲜海鲜 / 鱼苗</strong></td>
+            <td><span class="temp-pill tp-cold">0°C – 4°C</span></td>
+            <td>温度标签（可视化变色）</td>
+            <td>隔热泡沫箱 + 冰袋，活鱼须充氧袋</td>
+            <td>检疫证明、原产地证、进出境检验证书</td>
+            <td>须走 PER 快运通道；优先选择直飞；活鱼还需同时满足 AVI 要求</td>
+          </tr>
+          <tr>
+            <td><strong>鲜花 / 高档花卉</strong></td>
+            <td><span class="temp-pill tp-ctrl" style="background:rgba(16,185,129,.12);color:#6ee7b7;border-color:rgba(16,185,129,.25);">5°C – 12°C</span></td>
+            <td>标准温度记录仪即可</td>
+            <td>花卉专用纸箱 + 湿润包装</td>
+            <td>植物检疫证书（Phytosanitary Certificate）、原产地证</td>
+            <td>荷兰花卉 / 肯尼亚玫瑰对时效极敏感，须当日发、快速清关；注意目的国进口植物检疫规定</td>
+          </tr>
+          <tr>
+            <td><strong>高端护肤品 / 化妆品</strong></td>
+            <td><span class="temp-pill tp-amb">15°C – 25°C（CRT）</span></td>
+            <td>建议随附温度记录仪（高价值产品）</td>
+            <td>隔热内衬 + 缓冲材料</td>
+            <td>成分检测报告、进口许可（中国进口须注册）</td>
+            <td>夏季高温航线须注意货机舱温，避免客机腹舱高温损坏产品</td>
+          </tr>
+          <tr>
+            <td><strong>精密电子元件</strong></td>
+            <td><span class="temp-pill tp-amb">-20°C – +40°C（防高温）</span></td>
+            <td>可选温湿度双记录仪（防凝露）</td>
+            <td>防静电袋 + 硅胶干燥剂 + 防震包装</td>
+            <td>无特殊（注意出口管制货物许可证）</td>
+            <td>避免在高温地区机场长时间停留（中东转机夏季机坪温度可达 60°C 以上）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GDP / CEIV -->
+    <div class="sl reveal" style="margin-top:2rem;">行业认证：GDP 与 CEIV Pharma</div>
+    <div class="cert-row reveal">
+      <div class="cert-box">
+        <h4>🏥 GDP（Good Distribution Practice）</h4>
+        <p>药品经营质量管理规范，由 WHO 和各国药监局（中国：NMPA）制定，规定了药品在整个分销链中的质量保证要求。</p>
+        <ul>
+          <li>货代须建立 SOP 覆盖温控货物全程操作</li>
+          <li>须对温控设备（温度记录仪、冷藏车）定期校准</li>
+          <li>人员须完成 GDP 培训并留存记录</li>
+          <li>所有温度偏差须记录在案并进行影响评估</li>
+          <li>与药企客户签订"质量协议"（Quality Agreement）</li>
+        </ul>
+      </div>
+      <div class="cert-box">
+        <h4>✈️ IATA CEIV Pharma 认证</h4>
+        <p>IATA 推出的医疗/制药航空货运认证体系，评估货代、航空公司、机场地面服务商的冷链处理能力。</p>
+        <ul>
+          <li>持有 CEIV Pharma 认证是向制药企业客户展示专业能力的重要资质</li>
+          <li>认证涵盖：基础设施、流程 SOP、人员培训、设备、IT 系统</li>
+          <li>有效期 3 年，需年度监督审核</li>
+          <li>全球主要 Pharma Hub（法兰克福、阿姆斯特丹、芝加哥）均有 CEIV 认证要求</li>
+          <li>国内上海、北京等枢纽机场正在推进相关认证</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /tab-temp -->
+
+</main>
+<footer><strong>山东上星国际货运代理有限公司</strong> · 业务操作部 · 货物分类与温度管理标准参考手册 v2.0</footer>
+
+<script>
+  // Tab switching
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+    // Re-trigger reveal for newly shown items
+    document.querySelectorAll('#tab-' + tab + ' .reveal').forEach(el => {
+      if (!el.classList.contains('visible')) {
+        setTimeout(() => el.classList.add('visible'), 50);
+      }
+    });
+  }
+
+  // Cargo card accordion
+  function makeAccordion(selector, toggleClass) {
+    document.querySelectorAll(selector).forEach(header => {
+      header.addEventListener('click', () => {
+        const card  = header.closest('[data-keywords]') || header.closest('.dg-card');
+        const bodyClass = toggleClass === 'cc' ? '.cc-body' : '.dg-body';
+        const innerClass = toggleClass === 'cc' ? '.cc-body-inner' : '.dg-body-inner';
+        const body  = card.querySelector(bodyClass);
+        const inner = card.querySelector(innerClass);
+        const isOpen = card.classList.contains('open');
+        card.closest('.cargo-grid, .dg-grid').querySelectorAll('.open').forEach(c => {
+          c.classList.remove('open');
+          c.querySelector(bodyClass).style.maxHeight = '0';
+        });
+        if (!isOpen) { card.classList.add('open'); body.style.maxHeight = inner.scrollHeight + 32 + 'px'; }
+      });
+    });
+  }
+  makeAccordion('.cc-header', 'cc');
+  makeAccordion('.dg-header', 'dg');
+
+  // Search
+  function searchCargo(q) {
+    const term = q.toLowerCase();
+    document.querySelectorAll('#cargoGrid [data-keywords]').forEach(card => {
+      card.style.display = card.dataset.keywords.includes(term) || !term ? '' : 'none';
+    });
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
