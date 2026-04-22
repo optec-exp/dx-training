@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>月度财务结算流程 — 山东上星国际货运</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy:   #0a1628;
+      --navy2:  #111f3a;
+      --blue:   #1e40af;
+      --teal:   #0d9488;
+      --gold:   #f59e0b;
+      --gold2:  #fbbf24;
+      --line:   rgba(255,255,255,.08);
+      --muted:  rgba(255,255,255,.45);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--navy);
+      color: #e2e8f0;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      filter: blur(4px) brightness(.3) saturate(.8);
+      transform: scale(1.05);
+      z-index: 0;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(10,22,40,.6) 0%, rgba(30,64,175,.25) 50%, rgba(10,22,40,.8) 100%);
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 2; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(245,158,11,.15);
+      border: 1px solid rgba(245,158,11,.3);
+      color: var(--gold2);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: .35rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.2rem;
+      animation: fadeDown .8s ease both;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+      margin-bottom: .8rem;
+      animation: fadeDown .8s .1s ease both;
+    }
+    .hero h1 span { color: var(--gold2); }
+    .hero p {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 560px;
+      animation: fadeDown .8s .2s ease both;
+    }
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .6rem;
+      margin-top: 1.5rem;
+      animation: fadeDown .8s .3s ease both;
+    }
+    .hero-pill {
+      background: rgba(255,255,255,.07);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      padding: .4rem .9rem;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+    .hero-pill .dot { color: var(--gold2); margin-right: .3rem; }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(245,158,11,.4); }
+      70%  { box-shadow: 0 0 0 12px rgba(245,158,11,0); }
+      100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: scale(.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes lineGrow {
+      from { height: 0; opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── LAYOUT ─── */
+    main { max-width: 960px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+
+    .section-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+    /* ─── KPI STRIP ─── */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .kpi-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.4rem 1rem;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: border-color .3s, transform .3s;
+      cursor: default;
+    }
+    .kpi-card:hover {
+      border-color: rgba(245,158,11,.3);
+      transform: translateY(-3px);
+    }
+    .kpi-card .kv {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--gold2);
+      line-height: 1;
+      animation: countUp .6s ease both;
+    }
+    .kpi-card .ku {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin: .3rem 0;
+    }
+    .kpi-card .kl {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    /* ─── PHASE FLOW ─── */
+    .flow { display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .phase-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .3s;
+    }
+    .phase-card:hover { border-color: rgba(245,158,11,.2); }
+    .phase-card.open { border-color: rgba(245,158,11,.35); }
+
+    .phase-header {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.2rem 1.4rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .phase-header:hover { background: rgba(255,255,255,.03); }
+
+    .phase-num {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 900;
+      flex-shrink: 0;
+      animation: pulse-ring 3s ease infinite;
+    }
+    .phase-card:nth-child(1) .phase-num { background: linear-gradient(135deg, #1e3a8a, #1e40af); }
+    .phase-card:nth-child(2) .phase-num { background: linear-gradient(135deg, #0d6956, #0d9488); }
+    .phase-card:nth-child(3) .phase-num { background: linear-gradient(135deg, #065f46, #059669); }
+    .phase-card:nth-child(4) .phase-num { background: linear-gradient(135deg, #4a1d96, #7c3aed); }
+    .phase-card:nth-child(5) .phase-num { background: linear-gradient(135deg, #92400e, #d97706); }
+
+    .phase-num small {
+      font-size: .5rem;
+      font-weight: 600;
+      opacity: .75;
+      letter-spacing: .04em;
+    }
+    .phase-title h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .15rem;
+    }
+    .phase-title .en {
+      font-size: .75rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .phase-toggle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      transition: transform .3s, background .3s;
+      flex-shrink: 0;
+    }
+    .phase-card.open .phase-toggle { transform: rotate(180deg); background: rgba(245,158,11,.2); }
+
+    /* accordion body */
+    .phase-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .5s cubic-bezier(.4,0,.2,1);
+    }
+    .phase-body-inner {
+      padding: 0 1.4rem 1.5rem;
+      border-top: 1px solid var(--line);
+    }
+    .phase-body-inner .body-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 1.2rem;
+    }
+
+    .detail-block h4 {
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    .detail-block ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+    .detail-block ul li {
+      font-size: .83rem;
+      color: rgba(255,255,255,.75);
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+    .detail-block ul li::before {
+      content: '▸';
+      color: var(--teal);
+      flex-shrink: 0;
+      margin-top: .05rem;
+    }
+
+    .alert-box {
+      border-radius: 8px;
+      padding: .8rem 1rem;
+      font-size: .82rem;
+      margin-top: 1rem;
+      line-height: 1.55;
+    }
+    .alert-red  { background: rgba(239,68,68,.1); border-left: 3px solid #ef4444; color: #fca5a5; }
+    .alert-teal { background: rgba(13,148,136,.1); border-left: 3px solid var(--teal); color: #5eead4; }
+    .alert-gold { background: rgba(245,158,11,.1); border-left: 3px solid var(--gold); color: #fcd34d; }
+
+    /* tags */
+    .tag-list { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+    .tag {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 6px;
+      padding: .2rem .6rem;
+      font-size: .73rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.7);
+    }
+
+    /* ─── ANALYSIS TABLE ─── */
+    .table-section { margin-top: 3rem; }
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .84rem;
+    }
+    thead tr {
+      background: rgba(245,158,11,.12);
+    }
+    thead th {
+      padding: .85rem 1.1rem;
+      text-align: left;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold2);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-top: 1px solid var(--line);
+      transition: background .2s;
+    }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+    tbody td {
+      padding: .8rem 1.1rem;
+      vertical-align: top;
+      color: rgba(255,255,255,.8);
+    }
+    .pill {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 6px;
+      font-size: .71rem;
+      font-weight: 700;
+    }
+    .pill-r { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
+    .pill-y { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+    .pill-g { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+
+    /* ─── FORM SECTION ─── */
+    .form-section {
+      margin-top: 3.5rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .form-header {
+      background: rgba(245,158,11,.1);
+      border-bottom: 1px solid var(--line);
+      padding: 1.3rem 1.8rem;
+    }
+    .form-header h3 { font-size: 1rem; font-weight: 700; color: var(--gold2); margin-bottom: .2rem; }
+    .form-header p { font-size: .8rem; color: var(--muted); }
+    .form-body { padding: 1.8rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: .45rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: .73rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .form-group label span { color: #ef4444; margin-left: .2rem; }
+    .form-control {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      color: #e2e8f0;
+      font-size: .88rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      width: 100%;
+    }
+    .form-control::placeholder { color: rgba(255,255,255,.25); }
+    .form-control:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245,158,11,.15);
+    }
+    select.form-control option { background: #1a2a4a; color: #e2e8f0; }
+    textarea.form-control { resize: vertical; min-height: 100px; }
+
+    .form-submit {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    .btn {
+      padding: .75rem 1.8rem;
+      border-radius: 8px;
+      font-size: .88rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,.2);
+      color: var(--muted);
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,.4); color: #e2e8f0; }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: #0a1628;
+      box-shadow: 0 4px 14px rgba(245,158,11,.3);
+    }
+    .btn-gold:hover { box-shadow: 0 6px 20px rgba(245,158,11,.45); transform: translateY(-1px); }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: #6ee7b7;
+    }
+    .form-success .icon { font-size: 2.5rem; margin-bottom: .8rem; }
+    .form-success h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: .4rem; }
+    .form-success p { font-size: .85rem; color: var(--muted); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: rgba(0,0,0,.4);
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding: 1.8rem;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    footer strong { color: var(--gold2); font-weight: 700; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 680px) {
+      .phase-body-inner .body-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      .phase-header { grid-template-columns: 52px 1fr auto; }
+    }
+    @media (max-width: 420px) {
+      .kpi-strip { grid-template-columns: 1fr 1fr; }
+      .hero h1 { font-size: 1.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">财务管理部 · Day 3 · Work 06</div>
+    <h1>月度财务<span>结算流程</span></h1>
+    <p>货代企业从业务对账到管理报告的五大核心阶段——打通数据流、资金流与决策流</p>
+    <div class="hero-pills">
+      <div class="hero-pill"><span class="dot">◆</span>业务对账</div>
+      <div class="hero-pill"><span class="dot">◆</span>税务管理</div>
+      <div class="hero-pill"><span class="dot">◆</span>收付核销</div>
+      <div class="hero-pill"><span class="dot">◆</span>成本结转</div>
+      <div class="hero-pill"><span class="dot">◆</span>经营分析</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- KPI -->
+  <div class="kpi-strip reveal">
+    <div class="kpi-card">
+      <div class="kv">5</div>
+      <div class="ku">Phases</div>
+      <div class="kl">核心结算阶段</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kv">EOM</div>
+      <div class="ku">Cycle</div>
+      <div class="kl">月末结算周期</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kv">6%</div>
+      <div class="ku">VAT Rate</div>
+      <div class="kl">船公司进项税率</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kv">0%</div>
+      <div class="ku">Zero-Rate</div>
+      <div class="kl">跨境运输服务税率</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kv">DSO</div>
+      <div class="ku">Key KPI</div>
+      <div class="kl">应收账款周转天数</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kv">D+1</div>
+      <div class="ku">Reporting</div>
+      <div class="kl">月结后次日出报告</div>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="section-label reveal">月度结算五阶段流程</div>
+
+  <div class="flow" id="flow">
+
+    <!-- Phase 1 -->
+    <div class="phase-card reveal" data-phase="1">
+      <div class="phase-header">
+        <div class="phase-num">01<small>业务端</small></div>
+        <div class="phase-title">
+          <h3>截单与对账</h3>
+          <div class="en">Closing &amp; Reconciliation — 每月1–5日</div>
+        </div>
+        <div class="phase-toggle">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="body-grid">
+            <div class="detail-block">
+              <h4>OPS 操作层</h4>
+              <ul>
+                <li>确认所有提单（B/L）已在系统录入并关闭</li>
+                <li>核查报关单（Customs Declaration）状态，放行票全部归档</li>
+                <li>依据 ETD / ETA 判断业务收入归属月份</li>
+                <li>处理月末跨期票：开航在本月、到港在次月的业务如何归属需有规则</li>
+                <li>对遗漏订单进行补录，锁定当月数据范围</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>财务对账层</h4>
+              <ul>
+                <li>向所有客户发送本月对账单（Statement of Account）</li>
+                <li>逐笔核实退佣（Rebate）金额是否与合同约定吻合</li>
+                <li>核实代垫费（Advance Charge）金额，确认是否已回收</li>
+                <li>向主要供应商（船公司、车队、仓库）发送供应商对账单</li>
+                <li>完成对账确认回执收集，存档备查</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alert-box alert-red">
+            <strong>⚠ 核心痛点：</strong>货代行业普遍存在「退佣」与「代垫费」并行的情况。退佣通常以月为结算周期，但代垫费可能产生于任何时间点。若未在截单阶段逐票核实，后期调账将触发大量跨期凭证，既影响当期利润准确性，也极易引发客户纠纷。建议建立"代垫台账"实时跟踪。
+          </div>
+          <div class="tag-list">
+            <span class="tag">B/L 锁单</span>
+            <span class="tag">跨期判断</span>
+            <span class="tag">退佣核实</span>
+            <span class="tag">代垫回收</span>
+            <span class="tag">对账单发送</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-card reveal" data-phase="2">
+      <div class="phase-header">
+        <div class="phase-num">02<small>税务端</small></div>
+        <div class="phase-title">
+          <h3>发票开具与勾抵</h3>
+          <div class="en">Invoicing &amp; VAT Management — 每月5–12日</div>
+        </div>
+        <div class="phase-toggle">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="body-grid">
+            <div class="detail-block">
+              <h4>销项发票管理</h4>
+              <ul>
+                <li>财务根据已确认对账单开具增值税专用发票（专票）或普通发票（普票）</li>
+                <li>核查开票资质：客户提供的增值税登记信息是否有效</li>
+                <li>区分运费代收与服务费，分别适用不同税率开具</li>
+                <li>跨境货代服务申请适用零税率：需保留提单、运费结算单等凭证</li>
+                <li>月底前确保当月发票全部开具完毕，不跨月遗漏</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>进项发票抵扣</h4>
+              <ul>
+                <li>催收船公司 6% 增值税专用发票（按时抵扣至关重要）</li>
+                <li>整理码头费、仓储费、堆场费等小额票据</li>
+                <li>核查海外代理费：境外代理无法开具中国增值税发票，需确认税务处理方式</li>
+                <li>对未收到发票的供应商成本做预提处理（不允许进项抵扣）</li>
+                <li>月末进行进销项平衡测算，预估当月应纳税额</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alert-box alert-teal">
+            <strong>📋 零税率申报要点：</strong>国际运输服务适用增值税零税率，但需在纳税申报时单独填报，并留存以下凭证：①运输合同/委托协议 ②提单（B/L）或运单 ③运费结算单据 ④付款凭证。缺少任一凭证可能导致税务机关调整，改按 6% 或 9% 补缴税款。
+          </div>
+          <div class="tag-list">
+            <span class="tag">专票/普票</span>
+            <span class="tag">零税率申报</span>
+            <span class="tag">进项抵扣</span>
+            <span class="tag">跨境税务</span>
+            <span class="tag">预提成本</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-card reveal" data-phase="3">
+      <div class="phase-header">
+        <div class="phase-num">03<small>资金端</small></div>
+        <div class="phase-title">
+          <h3>收付款核销</h3>
+          <div class="en">Settlement &amp; Offsetting — 每月10–20日</div>
+        </div>
+        <div class="phase-toggle">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="body-grid">
+            <div class="detail-block">
+              <h4>收款核销 (A/R)</h4>
+              <ul>
+                <li>逐笔将银行入账流水与系统应收账单匹配（Knock-off）</li>
+                <li>处理同一主体"对冲核销"：如代理商 A 既是收货方又是供应商，可在余额内直接抵销</li>
+                <li>超期未收款项：标记为逾期，触发催收流程</li>
+                <li>部分收款：核销到期金额，余额挂账继续跟踪</li>
+                <li>更新 AR Aging（账龄分析表）：30/60/90/90+ 天分层管理</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>付款核销与汇率 (A/P)</h4>
+              <ul>
+                <li>按照付款指令完成向船公司、车队等供应商的付款，完成 A/P 核销</li>
+                <li>月末按中国人民银行公布的期末汇率对所有未结外币账户重估</li>
+                <li>汇兑损益（Exchange Gain/Loss）计入当期损益</li>
+                <li>美元采购与人民币收款之间的净头寸分析</li>
+                <li>记录汇率风险敞口，供管理层决策是否进行远期结汇</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alert-box alert-gold">
+            <strong>💡 坏账预警机制：</strong>对于逾期超过 60 天、金额超过 ¥5,000 的应收账款，须升级为"重点关注"。逾期超 90 天须财务负责人介入，联合业务部门共同催收，并评估是否需要计提坏账准备。对"票结"型小散客（开票即视为结款）须建立信用档案，货量累计达阈值后改为预收款结算方式。
+          </div>
+          <div class="tag-list">
+            <span class="tag">Knock-off 核销</span>
+            <span class="tag">对冲抵消</span>
+            <span class="tag">汇兑损益</span>
+            <span class="tag">AR Aging</span>
+            <span class="tag">坏账准备</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase-card reveal" data-phase="4">
+      <div class="phase-header">
+        <div class="phase-num">04<small>财务端</small></div>
+        <div class="phase-title">
+          <h3>成本结转与报表</h3>
+          <div class="en">Costing &amp; Reporting — 每月18–23日</div>
+        </div>
+        <div class="phase-toggle">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="body-grid">
+            <div class="detail-block">
+              <h4>成本核算</h4>
+              <ul>
+                <li><strong>预提成本（Accrual）：</strong>已确认收入但供应商未开票的项目，须手动预提，防止利润虚高</li>
+                <li>海运/空运/铁运按业务类型归集成本，区分直接成本与间接成本</li>
+                <li>销售招待费：按餐饮50%限额扣除；差旅费全额入账</li>
+                <li>海外代理费：区分是否产生劳务报酬，判断代扣代缴义务</li>
+                <li>单票毛利核算：收入 - 直接成本 = 毛利；毛利率 = 毛利 ÷ 收入</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>报表编制</h4>
+              <ul>
+                <li>利润表（P&L）：按收入类型（海运/空运/铁运）分板块展示</li>
+                <li>资产负债表（Balance Sheet）：重点关注应收/应付账款变动</li>
+                <li>现金流量表（Cash Flow）：经营活动现金净流量是否为正</li>
+                <li>识别亏损单（单票毛利为负），书面要求业务部门解释</li>
+                <li>与上月数据环比，关注异常波动项目</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alert-box alert-red">
+            <strong>🔑 关键操作——预提成本：</strong>预提成本是货代财务最重要的月末操作之一。对于"货已走、钱已收、票还没来"的业务，必须在月末估算成本入账，否则当月利润虚高，等发票到达时再冲回，会导致次月利润异常偏低，误导管理层决策。预提凭证建议采用系统自动化工具，减少人工错误。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase-card reveal" data-phase="5">
+      <div class="phase-header">
+        <div class="phase-num">05<small>管理端</small></div>
+        <div class="phase-title">
+          <h3>月度经营分析</h3>
+          <div class="en">Management Review — 每月25日前</div>
+        </div>
+        <div class="phase-toggle">▾</div>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="body-grid">
+            <div class="detail-block">
+              <h4>毛利分析维度</h4>
+              <ul>
+                <li>三大板块：海运 vs 空运 vs 铁运毛利率横向比较</li>
+                <li>航线维度：找出利润最高的航线与亏损航线</li>
+                <li>客户维度：TOP 10 客户贡献度分析（帕累托分析 80/20）</li>
+                <li>业务员维度：人均毛利产出，识别高效与低效人员</li>
+                <li>同期比较：当月 vs 去年同期（YoY）、上月（MoM）</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>资金与风险分析</h4>
+              <ul>
+                <li>DSO = 期末应收账款 ÷ 日均收入，目标 &lt; 35 天</li>
+                <li>现金缺口预测：下月需向船公司订舱预付款 vs 当前现金余额</li>
+                <li>海外代理 D/N - C/N 净余额核查（跨国坏账风险）</li>
+                <li>前5名逾期客户：金额、天数、催收状态</li>
+                <li>信用额度使用率：已占用信用额度 / 总授信额度</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alert-box alert-teal">
+            <strong>📊 管理报告核心三问：</strong>① 哪个板块/航线在赚钱？哪个在亏钱？（毛利来源分析）② 客户平均多少天付钱？现金流支撑下月运营吗？（DSO与现金流）③ 海外代理的欠款是否对齐？有没有跨国坏账风险？（D/N C/N对账）
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /flow -->
+
+  <!-- ANALYSIS TABLE -->
+  <div class="table-section reveal">
+    <div class="section-label" style="margin-top:2.5rem;">管理层监控指标体系</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>分析维度</th>
+            <th>核心指标</th>
+            <th>健康阈值</th>
+            <th>预警阈值</th>
+            <th>风险等级</th>
+            <th>负责人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>毛利贡献度</td>
+            <td>板块毛利率</td>
+            <td>&gt; 12%</td>
+            <td>&lt; 8%</td>
+            <td><span class="pill pill-r">高</span></td>
+            <td>财务负责人</td>
+          </tr>
+          <tr>
+            <td>单票利润</td>
+            <td>单票毛利（元）</td>
+            <td>&gt; ¥500</td>
+            <td>毛利为负</td>
+            <td><span class="pill pill-r">高</span></td>
+            <td>业务部+财务</td>
+          </tr>
+          <tr>
+            <td>应收账款</td>
+            <td>DSO（天）</td>
+            <td>&lt; 35 天</td>
+            <td>&gt; 45 天</td>
+            <td><span class="pill pill-y">中</span></td>
+            <td>财务部</td>
+          </tr>
+          <tr>
+            <td>坏账风险</td>
+            <td>逾期 AR / 总 AR</td>
+            <td>&lt; 3%</td>
+            <td>&gt; 5%</td>
+            <td><span class="pill pill-r">高</span></td>
+            <td>财务负责人</td>
+          </tr>
+          <tr>
+            <td>海外代理结算</td>
+            <td>D/N · C/N 未平衡差额</td>
+            <td>差额 &lt; USD 2,000</td>
+            <td>&gt; USD 5,000</td>
+            <td><span class="pill pill-r">高</span></td>
+            <td>财务+业务</td>
+          </tr>
+          <tr>
+            <td>外汇风险</td>
+            <td>未对冲 USD 净头寸</td>
+            <td>&lt; USD 30,000</td>
+            <td>&gt; USD 50,000</td>
+            <td><span class="pill pill-y">中</span></td>
+            <td>财务负责人</td>
+          </tr>
+          <tr>
+            <td>现金流</td>
+            <td>经营现金净流量</td>
+            <td>连续3月为正</td>
+            <td>当月为负</td>
+            <td><span class="pill pill-g">监控</span></td>
+            <td>财务负责人</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-section reveal">
+    <div class="form-header">
+      <h3>📝 月度结算数据提报表</h3>
+      <p>每月结算完成后由财务人员填写并提交，用于管理层月度经营分析</p>
+    </div>
+    <div class="form-body" id="formBody">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>结算月份 <span>*</span></label>
+          <select class="form-control" id="fMonth">
+            <option value="">— 选择月份 —</option>
+            <option>2026年04月</option>
+            <option>2026年03月</option>
+            <option>2026年02月</option>
+            <option>2026年01月</option>
+            <option>2025年12月</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>提报人姓名 <span>*</span></label>
+          <input class="form-control" type="text" placeholder="请输入姓名" id="fName" />
+        </div>
+        <div class="form-group">
+          <label>本月海运毛利（元）</label>
+          <input class="form-control" type="number" placeholder="例：128500" id="fSea" />
+        </div>
+        <div class="form-group">
+          <label>本月空运毛利（元）</label>
+          <input class="form-control" type="number" placeholder="例：67800" id="fAir" />
+        </div>
+        <div class="form-group">
+          <label>本月铁运毛利（元）</label>
+          <input class="form-control" type="number" placeholder="例：34200" id="fRail" />
+        </div>
+        <div class="form-group">
+          <label>期末 DSO（天）</label>
+          <input class="form-control" type="number" placeholder="例：32" id="fDSO" />
+        </div>
+        <div class="form-group">
+          <label>期末应收账款（元）</label>
+          <input class="form-control" type="number" placeholder="例：2350000" id="fAR" />
+        </div>
+        <div class="form-group">
+          <label>逾期AR占比（%）</label>
+          <input class="form-control" type="number" step="0.1" placeholder="例：3.2" id="fOverdue" />
+        </div>
+        <div class="form-group full">
+          <label>本月经营亮点与异常事项 <span>*</span></label>
+          <textarea class="form-control" placeholder="请描述本月经营情况、重要事项、异常原因分析等……" id="fHighlight"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>下月工作重点预判</label>
+          <textarea class="form-control" placeholder="请描述下月预计重点工作、需要关注的客户、资金安排计划等……" id="fPlan"></textarea>
+        </div>
+      </div>
+      <div class="form-submit">
+        <button class="btn btn-outline" onclick="resetForm()">清空</button>
+        <button class="btn btn-gold" onclick="submitForm()">提交月报 →</button>
+      </div>
+    </div>
+    <div class="form-success" id="formSuccess">
+      <div class="icon">✅</div>
+      <h4>月报提交成功</h4>
+      <p>本月结算数据已记录，管理层将在 24 小时内完成审阅。</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>山东上星国际货运代理有限公司</strong> · 财务管理部 · 月度结算标准作业规程 v2.0
+</footer>
+
+<script>
+  // Accordion
+  document.querySelectorAll('.phase-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const card = header.closest('.phase-card');
+      const body = card.querySelector('.phase-body');
+      const inner = card.querySelector('.phase-body-inner');
+      const isOpen = card.classList.contains('open');
+
+      // close all
+      document.querySelectorAll('.phase-card.open').forEach(c => {
+        c.classList.remove('open');
+        c.querySelector('.phase-body').style.maxHeight = '0';
+      });
+
+      if (!isOpen) {
+        card.classList.add('open');
+        body.style.maxHeight = inner.scrollHeight + 32 + 'px';
+      }
+    });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Form
+  function submitForm() {
+    const month = document.getElementById('fMonth').value;
+    const name  = document.getElementById('fName').value.trim();
+    const hl    = document.getElementById('fHighlight').value.trim();
+    if (!month || !name || !hl) {
+      alert('请填写带 * 的必填项后再提交。');
+      return;
+    }
+    document.getElementById('formBody').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  }
+  function resetForm() {
+    ['fMonth','fName','fSea','fAir','fRail','fDSO','fAR','fOverdue','fHighlight','fPlan']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+  }
+
+  // Open first phase by default
+  const firstCard = document.querySelector('.phase-card');
+  if (firstCard) {
+    const body  = firstCard.querySelector('.phase-body');
+    const inner = firstCard.querySelector('.phase-body-inner');
+    firstCard.classList.add('open');
+    body.style.maxHeight = inner.scrollHeight + 32 + 'px';
+  }
+</script>
+
+</body>
+</html>

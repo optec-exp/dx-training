@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>月度锁账流程 — SOP-AC-005</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Noto Sans SC', sans-serif; background: #F2EFE9; color: #1C1917; min-height: 100vh; }
+
+  /* ─── TOP BAR ─── */
+  .topbar {
+    background: #1C1917; border-bottom: 1px solid #292524;
+    padding: 0 48px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 20px; }
+  .topbar-logo { font-size: 13px; font-weight: 700; letter-spacing: 3px; color: #D6A96A; }
+  .topbar-divider { width: 1px; height: 18px; background: #44403C; }
+  .topbar-title { font-size: 13px; color: #A8A29E; }
+  .topbar-right { display: flex; gap: 24px; }
+  .topbar-meta { font-size: 11px; color: #57534E; }
+  .topbar-meta span { color: #A8A29E; margin-left: 4px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 56px 48px 48px;
+    background: #FAFAF8;
+    border-bottom: 1px solid #E7E1D8;
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px; }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: #9B6E3F; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: #9B6E3F; }
+  .hero-h1 { font-size: clamp(36px, 5vw, 60px); font-weight: 300; line-height: 1.1; color: #1C1917; }
+  .hero-h1 strong { color: #1C1917; font-weight: 700; }
+  .hero-desc { font-size: 14px; color: #78716C; line-height: 1.8; margin-top: 16px; max-width: 520px; }
+  .hero-stats { display: flex; flex-direction: column; gap: 16px; align-items: flex-end; }
+  .hero-stat { text-align: right; }
+  .hero-stat-num { font-size: 32px; font-weight: 300; color: #9B6E3F; line-height: 1; }
+  .hero-stat-label { font-size: 10px; color: #A8A29E; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ─── LEGEND ─── */
+  .legend {
+    padding: 16px 48px; background: #F2EFE9;
+    border-bottom: 1px solid #E7E1D8;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .legend-label { font-size: 11px; color: #A8A29E; letter-spacing: 2px; text-transform: uppercase; margin-right: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+  .pill-a { background: #FEF2F2; color: #B91C1C; border: 1px solid #B91C1C25; }
+  .pill-b { background: #EFF6FF; color: #1D4ED8; border: 1px solid #1D4ED825; }
+  .pill-ab { background: #F0FDF4; color: #166534; border: 1px solid #16653425; }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .dot-a { background: #B91C1C; }
+  .dot-b { background: #1D4ED8; }
+  .dot-ab { background: #166534; }
+
+  /* ─── MAIN ─── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 48px 48px 80px; }
+
+  /* ─── PHASE BLOCK ─── */
+  .phase-block { margin-bottom: 48px; }
+
+  /* ─── PHASE LABEL ─── */
+  .phase-label {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+  }
+  .phase-badge {
+    background: #1C1917; border: 1px solid #1C1917;
+    padding: 6px 16px; font-size: 11px; color: #A8A29E;
+    letter-spacing: 3px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .phase-badge-num { font-size: 16px; font-weight: 700; color: #D6A96A; }
+  .phase-name { font-size: 20px; font-weight: 500; color: #1C1917; }
+  .phase-note { font-size: 12px; color: #A8A29E; margin-left: 4px; }
+
+  /* ─── PREP ROW ─── */
+  .prep-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #E7E1D8; }
+  .prep-card {
+    background: #FAFAF8; padding: 28px 32px;
+    display: flex; align-items: flex-start; gap: 20px;
+  }
+  .prep-icon-box {
+    width: 40px; height: 40px; border: 1px solid #E7E1D8;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    background: #ffffff;
+  }
+  .prep-icon-box svg { width: 18px; height: 18px; stroke: #9B6E3F; fill: none; stroke-width: 1.5; }
+  .prep-card-title { font-size: 14px; font-weight: 600; color: #1C1917; margin-bottom: 6px; }
+  .prep-card-desc { font-size: 12px; color: #78716C; line-height: 1.7; }
+
+  /* ─── FLOW ARROW ─── */
+  .flow-arrow { padding: 20px 0; display: flex; justify-content: flex-start; padding-left: 24px; }
+  .arrow-wrap { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .arrow-line { width: 1px; height: 32px; background: #C7BEAF; }
+  .arrow-head { width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid #C7BEAF; }
+
+  /* ─── DEADLINE STRIP ─── */
+  .deadline-strip {
+    background: #FFFBEB; border: 1px solid #FCD34D50;
+    padding: 12px 20px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px; font-size: 12px; color: #78716C;
+  }
+  .deadline-strip svg { width: 14px; height: 14px; stroke: #92400E; fill: none; stroke-width: 2; flex-shrink: 0; }
+  .deadline-strip strong { color: #92400E; }
+
+  /* ─── SWIMLANE ─── */
+  .swimlane { display: flex; flex-direction: column; gap: 1px; background: #E7E1D8; }
+  .lane { display: flex; }
+  .lane-header {
+    width: 100px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 16px 10px; gap: 10px;
+    border-right: 1px solid #E7E1D8; background: #FAFAF8;
+  }
+  .lane-name { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-align: center; line-height: 1.4; }
+  .lane-a .lane-name { color: #B91C1C; }
+  .lane-b .lane-name { color: #1D4ED8; }
+  .lane-ab .lane-name { color: #166534; }
+  .lane-bar { width: 28px; height: 3px; border-radius: 2px; }
+  .lane-a .lane-bar { background: #B91C1C; }
+  .lane-b .lane-bar { background: #1D4ED8; }
+  .lane-ab .lane-bar { background: #166534; }
+  .lane-cards { display: flex; gap: 1px; flex: 1; background: #E7E1D8; }
+  .lane-card {
+    background: #FAFAF8; flex: 1; padding: 24px 24px 20px;
+    position: relative;
+  }
+  .lane-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .lane-card-num { font-size: 10px; color: #D4CBBF; font-weight: 700; letter-spacing: 2px; }
+  .lane-card-name { font-size: 14px; font-weight: 600; color: #1C1917; line-height: 1.4; margin-bottom: 8px; }
+  .lane-card-desc { font-size: 12px; color: #78716C; line-height: 1.7; margin-bottom: 16px; }
+  .lane-card-output {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #78716C;
+    background: #F2EFE9; border: 1px solid #E7E1D8;
+    padding: 3px 8px;
+  }
+  .lane-card-output svg { width: 11px; height: 11px; stroke: #A8A29E; fill: none; stroke-width: 2; }
+  .lane-empty {
+    flex: 1; background: #F2EFE9;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lane-empty-text { font-size: 11px; color: #DDD8D0; letter-spacing: 1px; }
+
+  /* ─── FINAL BLOCK ─── */
+  .final-block {
+    background: #FAFAF8; border: 1px solid #E7E1D8;
+    display: grid; grid-template-columns: 280px 1fr; min-height: 200px;
+  }
+  .final-left {
+    background: #1C1917; padding: 40px 36px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .final-step-label { font-size: 11px; color: #57534E; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+  .final-phase-num { font-size: 72px; font-weight: 300; color: #292524; line-height: 1; }
+  .final-phase-text { font-size: 18px; font-weight: 600; color: #D6A96A; margin-top: -16px; }
+  .final-deadline { margin-top: 24px; }
+  .final-deadline-label { font-size: 10px; color: #57534E; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .final-deadline-val { font-size: 13px; color: #D6A96A; font-weight: 600; line-height: 1.6; }
+  .final-right { padding: 36px 40px; }
+  .final-title { font-size: 20px; font-weight: 600; color: #1C1917; margin-bottom: 12px; }
+  .final-desc { font-size: 13px; color: #78716C; line-height: 1.8; margin-bottom: 24px; }
+  .final-checklist { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .check-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #78716C; }
+  .check-box { width: 16px; height: 16px; border: 1px solid #E7E1D8; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; background: #ffffff; }
+  .check-box svg { width: 10px; height: 10px; stroke: #166534; fill: none; stroke-width: 2.5; }
+  .alert-row {
+    display: flex; align-items: center; gap: 8px;
+    background: #FFFBEB; border: 1px solid #FCD34D50;
+    padding: 10px 14px; font-size: 12px; color: #92400E;
+  }
+  .alert-row svg { width: 14px; height: 14px; stroke: #92400E; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+  /* ─── NOTES ─── */
+  .notes-strip {
+    margin-top: 48px; background: #FAFAF8; border: 1px solid #E7E1D8;
+    padding: 24px 32px;
+  }
+  .notes-head { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #A8A29E; margin-bottom: 16px; }
+  .notes-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .note { display: flex; gap: 10px; }
+  .note-icon { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+  .note-icon svg { width: 100%; height: 100%; stroke: #9B6E3F; fill: none; stroke-width: 1.5; }
+  .note-title { font-size: 12px; font-weight: 600; color: #1C1917; margin-bottom: 4px; }
+  .note-desc { font-size: 12px; color: #78716C; line-height: 1.6; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid #E7E1D8; padding: 24px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #FAFAF8;
+  }
+  .footer-l { font-size: 11px; color: #A8A29E; }
+  .footer-r { font-size: 11px; color: #D4CBBF; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .topbar { padding: 0 20px; }
+    .topbar-right { display: none; }
+    .hero { padding: 40px 20px 32px; }
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-stats { flex-direction: row; align-items: flex-start; }
+    .legend { padding: 14px 20px; flex-wrap: wrap; }
+    .main { padding: 32px 20px 60px; }
+    .prep-row { grid-template-columns: 1fr; }
+    .swimlane .lane { flex-direction: column; }
+    .lane-header { width: 100%; flex-direction: row; writing-mode: horizontal-tb; padding: 12px 16px; border-right: none; border-bottom: 1px solid #21262d; }
+    .lane-name { writing-mode: horizontal-tb; transform: none; }
+    .lane-bar { width: 40px; height: 3px; }
+    .lane-cards { flex-direction: column; }
+    .final-block { grid-template-columns: 1fr; }
+    .final-left { border-right: none; border-bottom: 1px solid #21262d; padding: 24px; }
+    .notes-grid { grid-template-columns: 1fr; }
+    footer { padding: 20px; flex-direction: column; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">OPTEC EXPRESS</div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-title">月度锁账 SOP</div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-meta">文件编号 <span>SOP-AC-005</span></div>
+    <div class="topbar-meta">版本 <span>Ver.1.0</span></div>
+    <div class="topbar-meta">生效日 <span>2026-04-01</span></div>
+    <div class="topbar-meta">制定人 <span>王莹</span></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Finance · Standard Operating Procedure</div>
+      <h1 class="hero-h1">月度<strong>锁账</strong>流程</h1>
+      <p class="hero-desc">规范月度缔结日前各项财务结账工作，确保每月在固定截止日准时、准确完成上月案件的财务闭合，保证数据的及时性与一致性。</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">7</div>
+        <div class="hero-stat-label">并行工作项</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">执行阶段</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-label">负责人</div>
+  <div class="pill pill-a"><div class="pill-dot dot-a"></div>员工 A（工作 1 · 4 · 7）</div>
+  <div class="pill pill-b"><div class="pill-dot dot-b"></div>员工 B（工作 2 · 3）</div>
+  <div class="pill pill-ab"><div class="pill-dot dot-ab"></div>员工 A + B（工作 5 · 6）</div>
+</div>
+
+<div class="main">
+
+  <!-- PHASE 1 -->
+  <div class="phase-block">
+    <div class="phase-label">
+      <div class="phase-badge"><span class="phase-badge-num">01</span></div>
+      <div>
+        <div class="phase-name">锁账前准备</div>
+        <div class="phase-note">确认缔结日，通知业务部门</div>
+      </div>
+    </div>
+    <div class="prep-row">
+      <div class="prep-card">
+        <div class="prep-icon-box">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 4v5M16 4v5"/></svg>
+        </div>
+        <div>
+          <div class="prep-card-title">确认缔结日</div>
+          <div class="prep-card-desc">确认 IATA 账单出具日，将其次一工作日定为本月"缔结日"，并正式对内外通知。</div>
+        </div>
+      </div>
+      <div class="prep-card">
+        <div class="prep-icon-box">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <div>
+          <div class="prep-card-title">提醒业务人员</div>
+          <div class="prep-card-desc">通知所有业务人员，须在缔结日前完成上月全部案件的"请求确定"与"费用确定"操作。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">
+    <div class="arrow-wrap">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-block" style="transition-delay:0.1s">
+    <div class="phase-label">
+      <div class="phase-badge"><span class="phase-badge-num">02</span></div>
+      <div>
+        <div class="phase-name">锁账前各项工作</div>
+        <div class="phase-note">七项工作无先后顺序，可并行执行</div>
+      </div>
+    </div>
+    <div class="deadline-strip">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      截止时间：<strong>缔结日 下班前</strong>（IATA 账单次一工作日）— 所有工作须在此时间节点前全部完成
+    </div>
+    <div class="swimlane">
+
+      <!-- Lane A -->
+      <div class="lane lane-a">
+        <div class="lane-header">
+          <div class="lane-bar"></div>
+          <div class="lane-name">员工 A</div>
+        </div>
+        <div class="lane-cards">
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 01</div>
+            </div>
+            <div class="lane-card-name">更新银行残高</div>
+            <div class="lane-card-desc">登录银行残高管理 APP，查询所有相关账户在上月末最后一个自然日的最新余额，下载残高证明文件并完成登录与上传。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              残高证明文件 · 系统余额录入
+            </div>
+          </div>
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 04</div>
+            </div>
+            <div class="lane-card-name">贩管费录入</div>
+            <div class="lane-card-desc">登录贩管费管理 APP，确认所有"取引日、支付日"为上月的贩管费明细已准确录入，校验币种、金额、日期、费用项目及负担部门无误。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              贩管费明细录入完成
+            </div>
+          </div>
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 07</div>
+            </div>
+            <div class="lane-card-name">更新财务报告书及数据同步</div>
+            <div class="lane-card-desc">在财务报告书 APP 中按提示执行数据抓取，手动录入理财收益与齐磊人工成本，将最终数据推送至 Looker Studio，确认仪表板实时更新。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              财务报告书 · Looker Studio 更新
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane B -->
+      <div class="lane lane-b">
+        <div class="lane-header">
+          <div class="lane-bar"></div>
+          <div class="lane-name">员工 B</div>
+        </div>
+        <div class="lane-cards">
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 02</div>
+            </div>
+            <div class="lane-card-name">核对代理总账单</div>
+            <div class="lane-card-desc">获取代理出具的上月费用总账单，核查单票账单是否齐全，将总账单金额与 kintone 支付管理 APP 中对应代理上月应付总额进行逐笔核对，确保完全一致。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              账单核对记录
+            </div>
+          </div>
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 03</div>
+            </div>
+            <div class="lane-card-name">业务突合</div>
+            <div class="lane-card-desc">使用突合 APP 执行两组交叉核对：① 请求突合——案件管理 APP vs 请求入金管理 APP；② 支付突合——案件管理 APP vs 支付管理 APP。两组数据须完全一致。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              突合 APP 比对结果
+            </div>
+          </div>
+          <div class="lane-empty">
+            <div class="lane-empty-text">— — —</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane A+B -->
+      <div class="lane lane-ab">
+        <div class="lane-header">
+          <div class="lane-bar"></div>
+          <div class="lane-name">A + B</div>
+        </div>
+        <div class="lane-cards">
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 05</div>
+            </div>
+            <div class="lane-card-name">决算突合</div>
+            <div class="lane-card-desc">将上月所有账户入金/出金与银行流水及 kintone 突合 APP 比对。对流水收支分类（业务 / 贩管费 / 资金移动），填写"入出金（外貨）"表格后与系统数据核对。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              入出金（外貨）表格
+            </div>
+          </div>
+          <div class="lane-card">
+            <div class="lane-card-top">
+              <div class="lane-card-num">工作 06</div>
+            </div>
+            <div class="lane-card-name">核算部门粗利益</div>
+            <div class="lane-card-desc">按"チーム案件判断和 business scope"对各部门粗利益（売上合計 − 費用合計）分类统计，准确填入《月度锁账利润汇总表格》并报告管理群。</div>
+            <div class="lane-card-output">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              月度锁账利润汇总表格
+            </div>
+          </div>
+          <div class="lane-empty">
+            <div class="lane-empty-text">— — —</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flow-arrow">
+    <div class="arrow-wrap">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-block" style="transition-delay:0.1s">
+    <div class="phase-label">
+      <div class="phase-badge"><span class="phase-badge-num">03</span></div>
+      <div>
+        <div class="phase-name">锁账确认</div>
+        <div class="phase-note">系统自动锁定 + 财务负责人最终审核</div>
+      </div>
+    </div>
+    <div class="final-block">
+      <div class="final-left">
+        <div>
+          <div class="final-step-label">Phase</div>
+          <div class="final-phase-num">03</div>
+          <div class="final-phase-text">锁账确认</div>
+        </div>
+        <div class="final-deadline">
+          <div class="final-deadline-label">截止时间</div>
+          <div class="final-deadline-val">缔结日次月<br>第一工作日</div>
+        </div>
+      </div>
+      <div class="final-right">
+        <div class="final-title">案件锁定确认 &amp; 财务 KPI 勾选</div>
+        <div class="final-desc">缔结日次月第一工作日，由财务负责人（王莹）完成以下确认操作：</div>
+        <div class="final-checklist">
+          <div class="check-item">
+            <div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            在案件管理 APP 中确认所有上月案件的【ロック状況】已显示为"ロック"
+          </div>
+          <div class="check-item">
+            <div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            在【财务 KPI】APP 中勾选"每月案件锁定"确认项
+          </div>
+        </div>
+        <div class="alert-row">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          发现任何未锁定案件时，立即通知 DX 室排查原因
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="notes-strip" style="transition-delay:0.05s">
+    <div class="notes-head">注意事项</div>
+    <div class="notes-grid">
+      <div class="note">
+        <div class="note-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div>
+          <div class="note-title">时间刚性</div>
+          <div class="note-desc">所有工作须在缔结日下班前完成。如有特殊情况，需提前说明原因并申请延期。</div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="note-icon"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <div>
+          <div class="note-title">准确性优先</div>
+          <div class="note-desc">任何环节发现差异，必须立即暂停并查明原因，不得在问题未解决情况下强行锁账。</div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="note-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div>
+          <div class="note-title">及时沟通</div>
+          <div class="note-desc">与业务部门、上级保持及时沟通。遇到无法解决的问题立即上报，不拖延处理。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-l">SOP-AC-005 · Ver.1.0 · 生效日 2026-04-01 · 制定人 王莹</div>
+  <div class="footer-r">© 2026 OPTEC EXPRESS 财务室</div>
+</footer>
+
+</body>
+</html>

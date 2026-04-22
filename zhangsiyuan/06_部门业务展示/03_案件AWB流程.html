@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>案件处理与AWB出具流程 — 山东上星国际货运</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:     #07090f;
+      --navy:   #0d1320;
+      --blue:   #1e40af;
+      --gold:   #f59e0b;
+      --gold2:  #fbbf24;
+      --purple: #7c3aed;
+      --teal:   #0d9488;
+      --line:   rgba(255,255,255,.07);
+      --muted:  rgba(255,255,255,.42);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: #e2e8f0;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 460px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center 55%;
+      filter: blur(3px) brightness(.22) saturate(.7);
+      transform: scale(1.06);
+      z-index: 0;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(124,58,237,.12) 0%, transparent 60%),
+                  linear-gradient(160deg, rgba(7,9,15,.4) 0%, rgba(30,64,175,.1) 50%, rgba(7,9,15,.9) 100%);
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 720px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(124,58,237,.18);
+      border: 1px solid rgba(124,58,237,.35);
+      color: #c4b5fd;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: .35rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.2rem;
+      animation: fadeDown .8s ease both;
+    }
+    .hero h1 {
+      font-size: clamp(1.9rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+      margin-bottom: .8rem;
+      animation: fadeDown .8s .1s ease both;
+    }
+    .hero h1 span { color: var(--gold2); }
+    .hero p {
+      font-size: .95rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin: 0 auto 1.5rem;
+      animation: fadeDown .8s .2s ease both;
+    }
+    .hero-steps {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      animation: fadeDown .8s .3s ease both;
+      flex-wrap: wrap;
+    }
+    .hero-step {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    .hs-label {
+      background: rgba(255,255,255,.07);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      padding: .4rem .85rem;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+    .hs-arrow {
+      color: rgba(255,255,255,.3);
+      margin: 0 .3rem;
+      font-size: .8rem;
+    }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes glow-gold {
+      0%,100% { box-shadow: 0 0 10px rgba(245,158,11,.2); }
+      50%      { box-shadow: 0 0 22px rgba(245,158,11,.5); }
+    }
+    @keyframes pop {
+      0%   { transform: scale(.95); opacity: 0; }
+      60%  { transform: scale(1.02); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-l { opacity: 0; transform: translateX(-20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal-l.visible { opacity: 1; transform: translateX(0); }
+
+    /* ─── LAYOUT ─── */
+    main { max-width: 980px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+
+    .section-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+    /* ─── FLOW OVERVIEW BAR ─── */
+    .flow-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      margin-bottom: 2.5rem;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .fb-step {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      padding: 1rem .8rem;
+      text-align: center;
+      cursor: pointer;
+      transition: background .25s, border-color .25s;
+    }
+    .fb-step:hover, .fb-step.active {
+      background: rgba(245,158,11,.1);
+      border-color: rgba(245,158,11,.3);
+    }
+    .fb-step .fb-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 900;
+      margin: 0 auto .5rem;
+    }
+    .fb-step:nth-child(1) .fb-num { background: linear-gradient(135deg,#1e3a8a,#3b82f6); }
+    .fb-step:nth-child(2) .fb-num { background: linear-gradient(135deg,#065f46,#10b981); }
+    .fb-step:nth-child(3) .fb-num { background: linear-gradient(135deg,#4a1d96,#7c3aed); }
+    .fb-step:nth-child(4) .fb-num { background: linear-gradient(135deg,#92400e,#f59e0b); }
+    .fb-step:nth-child(5) .fb-num { background: linear-gradient(135deg,#0d6956,#0d9488); }
+    .fb-step .fb-label { font-size: .73rem; font-weight: 700; line-height: 1.3; }
+    .fb-step .fb-en { font-size: .62rem; color: var(--muted); margin-top: .2rem; }
+
+    /* ─── CASE STEPS ─── */
+    .case-panel { display: none; }
+    .case-panel.active { display: block; animation: pop .35s ease both; }
+
+    .case-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .case-card-header {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.15rem 1.4rem;
+      cursor: pointer;
+    }
+    .case-card-header:hover { background: rgba(255,255,255,.02); }
+    .case-card.open { border-color: rgba(245,158,11,.3); }
+    .cc-num {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 900;
+    }
+    .case-card:nth-child(1) .cc-num { background: linear-gradient(135deg,#1e3a8a,#3b82f6); }
+    .case-card:nth-child(2) .cc-num { background: linear-gradient(135deg,#065f46,#10b981); }
+    .case-card:nth-child(3) .cc-num { background: linear-gradient(135deg,#4a1d96,#7c3aed); }
+    .case-card:nth-child(4) .cc-num { background: linear-gradient(135deg,#92400e,#f59e0b); }
+    .case-card:nth-child(5) .cc-num { background: linear-gradient(135deg,#0d6956,#0d9488); }
+    .cc-title h3 { font-size: .97rem; font-weight: 700; margin-bottom: .15rem; }
+    .cc-title .sub { font-size: .75rem; color: var(--muted); font-style: italic; }
+    .cc-toggle {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+      transition: transform .3s, background .3s;
+      flex-shrink: 0;
+    }
+    .case-card.open .cc-toggle { transform: rotate(180deg); background: rgba(245,158,11,.2); }
+
+    .cc-body { max-height: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.4,0,.2,1); }
+    .cc-body-inner {
+      padding: 0 1.4rem 1.5rem;
+      border-top: 1px solid var(--line);
+    }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.2rem; }
+    .detail-block h4 {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: .6rem;
+    }
+    .detail-block ul { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
+    .detail-block ul li {
+      font-size: .82rem;
+      color: rgba(255,255,255,.72);
+      display: flex; align-items: flex-start; gap: .5rem;
+    }
+    .detail-block ul li::before { content: '▸'; color: var(--teal); flex-shrink: 0; margin-top: .07rem; }
+
+    .note-box {
+      border-radius: 8px; padding: .8rem 1rem;
+      font-size: .82rem; margin-top: 1rem; line-height: 1.55;
+    }
+    .nb-gold  { background: rgba(245,158,11,.1); border-left: 3px solid var(--gold); color: #fcd34d; }
+    .nb-red   { background: rgba(239,68,68,.1);  border-left: 3px solid #ef4444; color: #fca5a5; }
+    .nb-teal  { background: rgba(13,148,136,.1); border-left: 3px solid var(--teal); color: #5eead4; }
+    .nb-blue  { background: rgba(59,130,246,.1); border-left: 3px solid #3b82f6; color: #93c5fd; }
+
+    /* ─── AWB FLOW ─── */
+    .awb-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .awb-type-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.3rem;
+      transition: border-color .3s;
+    }
+    .awb-type-card:hover { border-color: rgba(245,158,11,.25); }
+    .awb-type-card .awb-badge {
+      display: inline-block;
+      background: rgba(245,158,11,.15);
+      border: 1px solid rgba(245,158,11,.3);
+      color: var(--gold2);
+      font-size: .66rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      padding: .2rem .6rem;
+      border-radius: 5px;
+      margin-bottom: .6rem;
+      text-transform: uppercase;
+    }
+    .awb-type-card h4 { font-size: .95rem; font-weight: 800; margin-bottom: .4rem; }
+    .awb-type-card p { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+
+    .awb-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+    }
+    .awbs-row {
+      display: flex;
+      align-items: flex-start;
+      gap: .85rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: .85rem 1.1rem;
+      transition: border-color .25s;
+    }
+    .awbs-row:hover { border-color: rgba(245,158,11,.2); }
+    .awbs-n {
+      background: linear-gradient(135deg, #92400e, #f59e0b);
+      color: #fff;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      font-size: .72rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: .08rem;
+    }
+    .awbs-row strong { display: block; font-size: .86rem; font-weight: 700; margin-bottom: .2rem; }
+    .awbs-row span { font-size: .79rem; color: var(--muted); line-height: 1.5; }
+
+    /* ─── ACCOUNTING TABLE ─── */
+    .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+    thead tr { background: rgba(245,158,11,.1); }
+    thead th {
+      padding: .85rem 1.1rem; text-align: left;
+      font-size: .71rem; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase;
+      color: var(--gold2); white-space: nowrap;
+    }
+    tbody tr { border-top: 1px solid var(--line); transition: background .2s; }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+    tbody td { padding: .8rem 1.1rem; color: rgba(255,255,255,.78); vertical-align: top; }
+    .pill {
+      display: inline-block; padding: .2rem .6rem;
+      border-radius: 5px; font-size: .7rem; font-weight: 700;
+    }
+    .pill-r { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
+    .pill-y { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+    .pill-g { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+
+    /* ─── DUE DATE CALCULATOR ─── */
+    .calc-box {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .calc-box h4 { font-size: .9rem; font-weight: 700; color: var(--gold2); margin-bottom: 1rem; }
+    .calc-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+    .calc-group { display: flex; flex-direction: column; gap: .4rem; }
+    .calc-group label { font-size: .7rem; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+    .calc-control {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: .7rem .9rem;
+      color: #e2e8f0;
+      font-size: .87rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .25s;
+      width: 100%;
+    }
+    .calc-control:focus { border-color: var(--gold); }
+    select.calc-control option { background: #0d1320; }
+    .calc-btn {
+      padding: .72rem 1.2rem; background: linear-gradient(135deg,var(--gold),var(--gold2));
+      color: #07090f; border: none; border-radius: 8px; font-weight: 700;
+      font-family: inherit; cursor: pointer; font-size: .87rem; white-space: nowrap;
+      transition: opacity .2s;
+    }
+    .calc-btn:hover { opacity: .9; }
+    .calc-result {
+      margin-top: 1rem;
+      padding: .9rem 1.1rem;
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.25);
+      border-radius: 8px;
+      font-size: .88rem;
+      display: none;
+    }
+    .calc-result .cr-date { color: var(--gold2); font-size: 1.2rem; font-weight: 800; }
+
+    /* ─── TIPS ─── */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .tip-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.3rem;
+      transition: transform .25s, border-top-color .25s;
+    }
+    .tip-card:hover { transform: translateY(-3px); border-top-color: var(--gold2); }
+    .tip-card .tip-icon { font-size: 1.5rem; margin-bottom: .6rem; }
+    .tip-card h4 { font-size: .9rem; font-weight: 700; margin-bottom: .5rem; }
+    .tip-card p { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+    .mono-pill {
+      display: inline-block;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: .78rem;
+      padding: .2rem .6rem;
+      color: var(--gold2);
+      margin-top: .5rem;
+    }
+
+    /* ─── AWB FORM ─── */
+    .form-section {
+      margin-top: 3rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .form-header {
+      background: rgba(245,158,11,.08);
+      border-bottom: 1px solid var(--line);
+      padding: 1.3rem 1.8rem;
+    }
+    .form-header h3 { font-size: 1rem; font-weight: 700; color: var(--gold2); margin-bottom: .2rem; }
+    .form-header p { font-size: .8rem; color: var(--muted); }
+    .form-body { padding: 1.8rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: .45rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group.third { grid-column: span 1; }
+    .form-group label { font-size: .71rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .form-group label span { color: #ef4444; margin-left: .15rem; }
+    .form-control {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      color: #e2e8f0;
+      font-size: .87rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      width: 100%;
+    }
+    .form-control::placeholder { color: rgba(255,255,255,.22); }
+    .form-control:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(245,158,11,.12); }
+    select.form-control option { background: #0d1320; }
+    textarea.form-control { resize: vertical; min-height: 85px; }
+    .radio-group { display: flex; gap: 1.2rem; padding-top: .2rem; }
+    .radio-item { display: flex; align-items: center; gap: .5rem; cursor: pointer; }
+    .radio-item input { accent-color: var(--gold); cursor: pointer; }
+    .radio-item label { font-size: .85rem; font-weight: 600; cursor: pointer; }
+    .chargeable-result {
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.2);
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      font-size: .85rem;
+      margin-top: .5rem;
+      display: none;
+    }
+    .form-row { display: flex; gap: .6rem; margin-top: 1.5rem; justify-content: flex-end; }
+    .btn {
+      padding: .72rem 1.7rem; border-radius: 8px; font-size: .87rem; font-weight: 700;
+      font-family: inherit; cursor: pointer; border: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,.18); color: var(--muted); }
+    .btn-outline:hover { border-color: rgba(255,255,255,.35); color: #e2e8f0; }
+    .btn-gold { background: linear-gradient(135deg,var(--gold),var(--gold2)); color: #07090f; box-shadow: 0 4px 14px rgba(245,158,11,.3); }
+    .btn-gold:hover { box-shadow: 0 6px 22px rgba(245,158,11,.5); transform: translateY(-1px); }
+    .form-success { display: none; text-align: center; padding: 2rem; }
+    .form-success .icon { font-size: 2.5rem; margin-bottom: .8rem; }
+    .form-success h4 { font-size: 1.05rem; font-weight: 700; color: var(--gold2); margin-bottom: .4rem; }
+    .form-success p { font-size: .84rem; color: var(--muted); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: rgba(0,0,0,.5);
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding: 1.8rem;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    footer strong { color: var(--gold2); }
+
+    @media (max-width: 700px) {
+      .flow-bar { grid-template-columns: repeat(3, 1fr); }
+      .flow-bar .fb-step:nth-child(4),
+      .flow-bar .fb-step:nth-child(5) { display: none; }
+      .two-col { grid-template-columns: 1fr; }
+      .awb-compare { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .calc-row { grid-template-columns: 1fr 1fr; }
+      .calc-row .calc-btn { grid-column: 1 / -1; }
+      .case-card-header { grid-template-columns: 44px 1fr auto; }
+    }
+    @media (max-width: 480px) {
+      .hero-steps { gap: .3rem; }
+      .hs-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">业务运营部 · Day 3 · Work 06</div>
+    <h1>案件处理全流程与<span> AWB 出具手续</span></h1>
+    <p>航空货运代理核心作业规范——从接受委托到账期催收的端到端操作指南</p>
+    <div class="hero-steps">
+      <div class="hero-step"><span class="hs-label">订舱</span><span class="hs-arrow">→</span></div>
+      <div class="hero-step"><span class="hs-label">入仓</span><span class="hs-arrow">→</span></div>
+      <div class="hero-step"><span class="hs-label">报关</span><span class="hs-arrow">→</span></div>
+      <div class="hero-step"><span class="hs-label">AWB</span><span class="hs-arrow">→</span></div>
+      <div class="hero-step"><span class="hs-label">监控</span></div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════ SECTION 1: CASE FLOW ══════ -->
+  <div class="section-label reveal">一、案件处理全流程（点击步骤查看详情）</div>
+
+  <div class="flow-bar reveal" id="flowBar">
+    <div class="fb-step active" onclick="showPanel(0,this)">
+      <div class="fb-num">1</div>
+      <div class="fb-label">接单订舱</div>
+      <div class="fb-en">Booking</div>
+    </div>
+    <div class="fb-step" onclick="showPanel(1,this)">
+      <div class="fb-num">2</div>
+      <div class="fb-label">提货入仓</div>
+      <div class="fb-en">Pick-up</div>
+    </div>
+    <div class="fb-step" onclick="showPanel(2,this)">
+      <div class="fb-num">3</div>
+      <div class="fb-label">报关操作</div>
+      <div class="fb-en">Customs</div>
+    </div>
+    <div class="fb-step" onclick="showPanel(3,this)">
+      <div class="fb-num">4</div>
+      <div class="fb-label">AWB 出具</div>
+      <div class="fb-en">Docs</div>
+    </div>
+    <div class="fb-step" onclick="showPanel(4,this)">
+      <div class="fb-num">5</div>
+      <div class="fb-label">运输监控</div>
+      <div class="fb-en">Tracking</div>
+    </div>
+  </div>
+
+  <!-- Panel 0: Booking -->
+  <div class="case-panel active reveal" id="panel-0">
+    <div class="case-card" data-cc="0">
+      <div class="case-card-header">
+        <div class="cc-num">1</div>
+        <div class="cc-title">
+          <h3>接受委托与订舱</h3>
+          <div class="sub">Booking &amp; Space Confirmation</div>
+        </div>
+        <div class="cc-toggle">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>委托书审核要点</h4>
+              <ul>
+                <li>发货人（Shipper）全称、地址及联系方式</li>
+                <li>收货人（Consignee）信息——进口商清关资质</li>
+                <li>通知方（Notify Party）——与收货人不同时须单独确认</li>
+                <li>货物品名（Commodity）— 核查 HS Code 是否受管制</li>
+                <li>贸易条款（Incoterms 2020）— EXW / FOB / CIF 等，影响费用分配</li>
+                <li>特殊要求：温控（Temp-controlled）、危险品（DG）、贵重品（VAL）</li>
+                <li>确认目的港代理（Destination Agent）及其联系方式</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>订舱操作流程</h4>
+              <ul>
+                <li>依货物时效需求（紧急 vs 普通）选择航空公司或 IATA 一级代理</li>
+                <li>提交订舱申请（Booking Request），注明：品名、件数、预估重量、目的港</li>
+                <li>获取 SO（Shipping Order）后立即回传客户，确认航班号与 ETD</li>
+                <li>预配舱位确认（Space Confirmation），获取预分配 MAWB No.（主单号）</li>
+                <li>将 MAWB No. 录入操作系统，开立案件（Case File）</li>
+                <li>危险品类货物须额外提交 DG Declaration，并等待航空公司审批</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-gold">
+            <strong>⚠ 订舱审核红线：</strong>锂电池、粉末状化学品、液体类货物（即便非危品）须在接单时要求客户提供非危鉴定报告（Non-DG Declaration），否则到仓后航空公司拒绝收货将导致误机，客户索赔风险极高。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 1: Pick-up -->
+  <div class="case-panel reveal" id="panel-1">
+    <div class="case-card" data-cc="1">
+      <div class="case-card-header">
+        <div class="cc-num">2</div>
+        <div class="cc-title">
+          <h3>提货与入仓</h3>
+          <div class="sub">Pick-up &amp; Warehousing</div>
+        </div>
+        <div class="cc-toggle">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>提货调度</h4>
+              <ul>
+                <li>安排拖车（Truck）到发货工厂提货，或确认客户自送时间窗</li>
+                <li>提前告知客户：仓库截单时间（Warehouse Cut-off），通常为起飞前 4–6 小时</li>
+                <li>多票拼箱（Consolidation）须合理安排提货顺序</li>
+                <li>入仓时须提交：委托书复印件 + 发票 + 装箱单（仓库留档）</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>入仓量测（二测）</h4>
+              <ul>
+                <li>仓库人员逐箱测量：长（cm）× 宽（cm）× 高（cm）</li>
+                <li>地秤称重：实际毛重（Gross Weight，精确到 0.1 kg）</li>
+                <li>体积重换算：L×W×H（cm³）÷ 6000 = 体积重（kg）</li>
+                <li>计费重（Chargeable Weight）= max（实重, 体积重）</li>
+                <li>与客户预报数据出入 ±5% 以上须立即沟通确认，避免账单争议</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-blue">
+            <strong>💡 计费重实例：</strong>
+            一票货物实重 180 kg，尺寸 80cm × 60cm × 50cm（共 4 箱）。<br/>
+            体积重 = (80×60×50×4) ÷ 6000 = 160 kg。计费重 = max(180, 160) = <strong>180 kg</strong>（取实重）。<br/>
+            账单必须注明此换算过程，客户可清晰核查，减少争议。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 2: Customs -->
+  <div class="case-panel reveal" id="panel-2">
+    <div class="case-card" data-cc="2">
+      <div class="case-card-header">
+        <div class="cc-num">3</div>
+        <div class="cc-title">
+          <h3>报关操作</h3>
+          <div class="sub">Export Customs Clearance</div>
+        </div>
+        <div class="cc-toggle">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>报关资料清单</h4>
+              <ul>
+                <li>商业发票（Commercial Invoice）— 含单价、总价、贸易条款</li>
+                <li>装箱单（Packing List）— 件数、毛重、净重、尺寸</li>
+                <li>报关委托书（Customs Power of Attorney）</li>
+                <li>贸易合同（Contract）— 部分海关会要求</li>
+                <li>非危鉴定报告（Non-DG Letter）— 航空化工品必须</li>
+                <li>原产地证（CO / Form A / EUR.1）— 部分航线享受优惠税率</li>
+                <li>许可证 / 出口资质文件（出口管制品类）</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>申报与查验流程</h4>
+              <ul>
+                <li>审核资料无误后，向海关系统（EDEC）发送电子申报数据</li>
+                <li>系统自动分流：放行（绿通）/ 查验（需配合开箱）</li>
+                <li>查验配合：协调机场海关查验场，提前告知客户可能延误</li>
+                <li>查验完毕后重新封箱、补录货物状态，并通知仓库重新安排空运计划</li>
+                <li>获取电子放行（E-Release）或打印放行条，交仓库作为出货凭证</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-red">
+            <strong>⚠ 高风险：</strong>若因申报数据与实货不符被海关查验，将产生：① 查验费（300–800元/票）② 延误风险（可能误机，须重新订舱）③ 严重不符情况下面临罚款或扣货。提前做好资料审核是预防查验的最有效手段。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 3: AWB -->
+  <div class="case-panel reveal" id="panel-3">
+    <div class="case-card" data-cc="3">
+      <div class="case-card-header">
+        <div class="cc-num">4</div>
+        <div class="cc-title">
+          <h3>AWB 出具与文件交接</h3>
+          <div class="sub">Documentation &amp; AWB Issuance</div>
+        </div>
+        <div class="cc-toggle">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>HAWB 草案制作要点</h4>
+              <ul>
+                <li>按 SLI 逐字录入发货人（Shipper）信息，不得简写</li>
+                <li>收货人（Consignee）信息须与客户提供的原始资料完全一致</li>
+                <li>品名描述（Commodity Description）须与报关品名保持一致，航空公司与海关双重核查</li>
+                <li>运费付款方式（Prepaid / Collect）须按合同约定选择</li>
+                <li>特殊说明（Special Handling Code）：如 ICE（干冰）、EAP（易腐）等</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>舱单申报时限要求</h4>
+              <ul>
+                <li><strong>美国（AMS）：</strong>起飞前至少 4 小时提交，晚报罚款 $5,000+</li>
+                <li><strong>欧洲（ENS）：</strong>起飞前至少 3.5 小时提交（ICS2 标准）</li>
+                <li><strong>加拿大（ACI）：</strong>起飞前至少 2 小时提交</li>
+                <li><strong>日本（AFR）：</strong>起飞前至少 3 小时提交（e-AFR 格式）</li>
+                <li>超时将导致航空公司拒绝装机，须重新安排下一班次</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-teal">
+            <strong>📌 AWB 更单注意：</strong>正式打印后如需修改任何字段（收货人、品名、重量等），须申请「Amendment」并支付更单费（通常 USD 30–80/次）。起飞后，收货人信息、品名等核心字段原则上无法更改。务必在 Draft 阶段让客户书面确认后方可出单。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 4: Tracking -->
+  <div class="case-panel reveal" id="panel-4">
+    <div class="case-card" data-cc="4">
+      <div class="case-card-header">
+        <div class="cc-num">5</div>
+        <div class="cc-title">
+          <h3>运输监控与汇报</h3>
+          <div class="sub">Status Reporting &amp; Exception Management</div>
+        </div>
+        <div class="cc-toggle">▾</div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-body-inner">
+          <div class="two-col">
+            <div class="detail-block">
+              <h4>状态节点汇报</h4>
+              <ul>
+                <li><strong>ATD（离港）：</strong>起飞后 30 分钟内发送离港通知，含航班号、实际起飞时间、预计到达时间</li>
+                <li><strong>中转更新：</strong>二程转运航班每日至少更新一次状态，附中转港最新动态</li>
+                <li><strong>ATA（到港）：</strong>货物到达目的港后立即通知收货人或目的港代理，提醒清关准备</li>
+                <li><strong>异常处理：</strong>发现延误后 2 小时内告知客户原因+替代方案+预计新时间</li>
+              </ul>
+            </div>
+            <div class="detail-block">
+              <h4>常见异常处理预案</h4>
+              <ul>
+                <li><strong>降级（Downgrade）：</strong>航班满舱，货物被迫改签下一班次，须立即重新订舱</li>
+                <li><strong>查验延误：</strong>目的港海关查验，协调目的港代理全程跟进并保持客户更新</li>
+                <li><strong>货损（Damage）：</strong>第一时间拍照留证，向航空公司提起索赔（Claims），24小时内向客户报告</li>
+                <li><strong>货物遗失（Missing）：</strong>立即向航空公司开具 Tracer，同步评估保险覆盖情况</li>
+                <li><strong>证件不足：</strong>预判并在起飞前告知，避免目的港清关受阻</li>
+              </ul>
+            </div>
+          </div>
+          <div class="note-box nb-gold">
+            <strong>📧 留痕原则：</strong>所有异常汇报必须通过 Email 发出（不可仅口头），邮件中必须包含：① 事件描述 ② 原因说明 ③ 当前处理进展 ④ 预计解决时间 ⑤ 替代方案。即便通过电话沟通过，事后必须补发邮件确认，这是处理后续客户索赔的核心证据链。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ SECTION 2: AWB ══════ -->
+  <div class="section-label reveal" style="margin-top:3rem;">二、AWB 出具手续详细流程</div>
+
+  <div class="awb-compare reveal">
+    <div class="awb-type-card">
+      <div class="awb-badge">MAWB 主单</div>
+      <h4>Master Air Waybill</h4>
+      <p>货代与航空公司之间签订的运输合同。记载航空公司实际承运的货物总体信息。一票 MAWB 下可包含多票 HAWB（整合至同一航班）。</p>
+    </div>
+    <div class="awb-type-card">
+      <div class="awb-badge">HAWB 分单</div>
+      <h4>House Air Waybill</h4>
+      <p>货代与发货人（托运人）之间的运输合同。包含具体收发货方信息、品名及特殊指令。每票货对应一张 HAWB，是客户的运输凭证。</p>
+    </div>
+  </div>
+
+  <div class="awb-steps-list reveal">
+    <div class="awbs-row">
+      <div class="awbs-n">1</div>
+      <div>
+        <strong>Draft 草案制作</strong>
+        <span>根据 SLI 缮制 HAWB 草案（发货人/收货人/品名/运费条款）；根据航司预配信息缮制 MAWB 草案（航班号/主单号/总重量）。双单对照检查，确保数据一致。</span>
+      </div>
+    </div>
+    <div class="awbs-row">
+      <div class="awbs-n">2</div>
+      <div>
+        <strong>客户书面确认（Draft Confirmation）</strong>
+        <span>以 Email 发送 HAWB 草案给客户，明确要求：收货人信息、品名、件重尺、贸易条款是否无误。<strong style="color:#fcd34d;">必须收到书面回复</strong>，不接受口头确认。AWB 一旦正式打印，更改将产生更单费。</span>
+      </div>
+    </div>
+    <div class="awbs-row">
+      <div class="awbs-n">3</div>
+      <div>
+        <strong>舱单申报系统录入（AMS / ENS / ACI）</strong>
+        <span>按目的国要求在截止时限前录入电子舱单。录入后系统将返回 CBP/EC 响应码，操作人员须核实响应状态，确认无错误后方视为申报完成。</span>
+      </div>
+    </div>
+    <div class="awbs-row">
+      <div class="awbs-n">4</div>
+      <div>
+        <strong>正式签发 AWB（Issue）</strong>
+        <span>正本 AWB 含 3 份正本：① 航空公司留存 ② 承运人留存 ③ 发货人留存（随货或快递）。电放（Telex Release）适用时，在系统做 T/R 处理，目的港代理凭电放单提货，无需等正本快递到达。</span>
+      </div>
+    </div>
+    <div class="awbs-row">
+      <div class="awbs-n">5</div>
+      <div>
+        <strong>随机文件交接</strong>
+        <span>将商业发票、装箱单、危险品申报书（如适用）、原产地证等随机文件按航司规定打包，贴标后交地面代理，随机飞行至目的港，供收货人清关使用。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ SECTION 3: ACCOUNTING ══════ -->
+  <div class="section-label reveal" style="margin-top:3rem;">三、财务结算与账期管理</div>
+
+  <div class="table-wrap reveal">
+    <table>
+      <thead>
+        <tr>
+          <th>客户类型</th>
+          <th>账期约定</th>
+          <th>基准日</th>
+          <th>Due Date 示例（4月22日完工）</th>
+          <th>催收策略</th>
+          <th>风险</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>A类</strong> 预付型</td>
+          <td>票清（Cash on Delivery）</td>
+          <td>起飞日前</td>
+          <td>起飞前到账，否则暂停出单</td>
+          <td>起飞 -24h 再次确认到账</td>
+          <td><span class="pill pill-g">低</span></td>
+        </tr>
+        <tr>
+          <td><strong>B类</strong> 月结型</td>
+          <td>月结 30 天（EOM+30）</td>
+          <td>月末</td>
+          <td>4月30日 + 30天 = <strong>5月30日</strong></td>
+          <td>5月23日（提前7天）发催款函</td>
+          <td><span class="pill pill-y">中</span></td>
+        </tr>
+        <tr>
+          <td><strong>C类</strong> 滚动型</td>
+          <td>起飞后 14 天</td>
+          <td>离港日（ATD）</td>
+          <td>4月22日起飞 → <strong>5月6日</strong></td>
+          <td>4月29日发催款邮件</td>
+          <td><span class="pill pill-y">中</span></td>
+        </tr>
+        <tr>
+          <td><strong>D类</strong> 高风险型</td>
+          <td>&gt; 45 天 / 新客户</td>
+          <td>到港日</td>
+          <td>依合同，须在 Credit Limit 内管理</td>
+          <td>超 Limit 立即冻结新单</td>
+          <td><span class="pill pill-r">高</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Due Date Calculator -->
+  <div class="calc-box reveal">
+    <h4>⚡ 支付期日（Due Date）计算器</h4>
+    <div class="calc-row">
+      <div class="calc-group">
+        <label>起飞日 / 开票日</label>
+        <input class="calc-control" type="date" id="calcBase" />
+      </div>
+      <div class="calc-group">
+        <label>账期类型</label>
+        <select class="calc-control" id="calcType">
+          <option value="0">预付型（起飞前）</option>
+          <option value="14">起飞后 14 天</option>
+          <option value="30">起飞后 30 天</option>
+          <option value="eom30">月结 EOM + 30 天</option>
+          <option value="eom60">月结 EOM + 60 天</option>
+        </select>
+      </div>
+      <button class="calc-btn" onclick="calcDueDate()">计算</button>
+    </div>
+    <div class="calc-result" id="calcResult"></div>
+  </div>
+
+  <!-- ══════ SECTION 4: TIPS ══════ -->
+  <div class="section-label reveal" style="margin-top:3rem;">四、专家提示（Expert Tips）</div>
+
+  <div class="tips-grid reveal">
+    <div class="tip-card">
+      <div class="tip-icon">📧</div>
+      <h4>异常处理留痕原则</h4>
+      <p>所有情况汇报必须通过 Email 留下书面记录，包括延误、查验、货损等。口头通知在索赔纠纷中无法作为证据。发现异常后，<strong>2 小时内</strong>发送第一封通知邮件。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">⚖️</div>
+      <h4>计费重换算规则</h4>
+      <p>取实际毛重与体积重中的较大值作为计费重，账单中必须注明换算过程。</p>
+      <div class="mono-pill">体积重 = L×W×H(cm) ÷ 6000</div><br/>
+      <div class="mono-pill">计费重 = max(毛重, 体积重)</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🔐</div>
+      <h4>新客户信用风险防控</h4>
+      <p>对新客户或账期 &gt; 30 天的客户，须在系统设定信用额度（Credit Limit）。临近额度时启动预警；超过额度后新单须财务审批，防止坏账积累。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">⏰</div>
+      <h4>舱单申报时效管控</h4>
+      <p>AMS/ENS/ACI 等安全申报有严格截止时间，晚报将导致无法装机并产生罚款。建议在截止时间前 <strong>2 小时</strong> 完成系统录入，留出足够容错时间。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📋</div>
+      <h4>AWB Draft 必须书面确认</h4>
+      <p>客户对 AWB 草案的确认必须是书面形式（Email 回复即可），不接受口头确认。一旦出单后更改需付更单费，且部分信息起飞后不可修改，书面确认是保护双方的最低要求。</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🏷️</div>
+      <h4>特种货物前置申报</h4>
+      <p>危险品（DG）、活体动物（AVI）、贵重品（VAL）须在 Booking 阶段即向航空公司申报资质文件（MSDS、UN 编号等），切勿等到出单阶段才发现资质缺失。</p>
+    </div>
+  </div>
+
+  <!-- ══════ AWB DRAFT FORM ══════ -->
+  <div class="form-section reveal" style="margin-top:3rem;">
+    <div class="form-header">
+      <h3>✈️ AWB 草案确认单（客户填写）</h3>
+      <p>请客户核对以下信息，确认无误后提交，操作人员将据此正式出具 AWB</p>
+    </div>
+    <div class="form-body" id="awbFormBody">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>航班号 <span>*</span></label>
+          <input class="form-control" type="text" placeholder="例：CX 311 / PVG-HKG" id="fFlight" />
+        </div>
+        <div class="form-group">
+          <label>预计起飞日（ETD） <span>*</span></label>
+          <input class="form-control" type="date" id="fETD" />
+        </div>
+        <div class="form-group">
+          <label>HAWB No.（分单号）</label>
+          <input class="form-control" type="text" placeholder="例：PVG-20260422-001" id="fHAWB" />
+        </div>
+        <div class="form-group">
+          <label>贸易条款（Incoterms）</label>
+          <select class="form-control" id="fIncoterms">
+            <option value="">— 选择贸易条款 —</option>
+            <option>EXW — 工厂交货</option>
+            <option>FOB — 离岸价</option>
+            <option>CIF — 到岸价</option>
+            <option>DAP — 目的地交货</option>
+            <option>DDP — 完税后交货</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>发货人（Shipper） <span>*</span></label>
+          <input class="form-control" type="text" placeholder="公司全称" id="fShipper" />
+        </div>
+        <div class="form-group">
+          <label>收货人（Consignee） <span>*</span></label>
+          <input class="form-control" type="text" placeholder="公司全称" id="fConsignee" />
+        </div>
+        <div class="form-group full">
+          <label>通知方（Notify Party）</label>
+          <input class="form-control" type="text" placeholder="如与收货人相同请填写 SAME AS CONSIGNEE" id="fNotify" />
+        </div>
+        <div class="form-group">
+          <label>件数（Pieces） <span>*</span></label>
+          <input class="form-control" type="number" placeholder="例：5" id="fPcs" oninput="calcChargeable()" />
+        </div>
+        <div class="form-group">
+          <label>实际毛重（kg） <span>*</span></label>
+          <input class="form-control" type="number" step="0.1" placeholder="例：85.5" id="fGW" oninput="calcChargeable()" />
+        </div>
+        <div class="form-group">
+          <label>长 × 宽 × 高（cm，单箱）</label>
+          <input class="form-control" type="text" placeholder="例：60×40×50" id="fDims" oninput="calcChargeable()" />
+        </div>
+        <div class="form-group">
+          <label>运费支付方式 <span>*</span></label>
+          <select class="form-control" id="fFreight">
+            <option value="">— 选择 —</option>
+            <option>Prepaid — 预付（出口方付）</option>
+            <option>Collect — 到付（进口方付）</option>
+          </select>
+        </div>
+        <div id="chargeableResult" class="chargeable-result full" style="grid-column:1/-1;">
+          计算结果将在此显示
+        </div>
+        <div class="form-group full">
+          <label>货物描述（Commodity） <span>*</span></label>
+          <textarea class="form-control" placeholder="请填写货物准确英文描述，需与报关品名一致，例如：Mechanical Parts for Industrial Equipment" id="fCommodity"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>特殊要求备注</label>
+          <textarea class="form-control" placeholder="如有危险品、温控、贵重品或目的港特殊清关要求，请在此说明……" id="fSpecial"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>草案确认状态 <span>*</span></label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" name="confirm" id="confOK" value="ok" />
+              <label for="confOK">✅ 以上信息确认无误，请正式出单</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="confirm" id="confEdit" value="edit" />
+              <label for="confEdit">✏️ 需要修改，请联系我</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="btn btn-outline" onclick="resetAWB()">清空</button>
+        <button class="btn btn-gold" onclick="submitAWB()">提交确认单 →</button>
+      </div>
+    </div>
+    <div class="form-success" id="awbSuccess">
+      <div class="icon">✈️</div>
+      <h4>AWB 草案确认提交成功</h4>
+      <p>操作人员已收到您的确认，将在 30 分钟内完成正式出单，并将 AWB 扫描件发送至您的邮箱。</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>山东上星国际货运代理有限公司</strong> · 业务运营部 · 案件处理与 AWB 出具标准作业规程 v2.0
+</footer>
+
+<script>
+  // ─── Tab panel switcher ───
+  function showPanel(idx, btn) {
+    document.querySelectorAll('.case-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.fb-step').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + idx).classList.add('active');
+    btn.classList.add('active');
+    // auto-open the first card in panel
+    const card = document.querySelector('#panel-' + idx + ' .case-card');
+    if (card && !card.classList.contains('open')) openCard(card);
+  }
+
+  // ─── Case card accordion ───
+  function openCard(card) {
+    const body = card.querySelector('.cc-body');
+    const inner = card.querySelector('.cc-body-inner');
+    card.classList.add('open');
+    body.style.maxHeight = inner.scrollHeight + 32 + 'px';
+  }
+  document.querySelectorAll('.case-card-header').forEach(h => {
+    h.addEventListener('click', () => {
+      const card = h.closest('.case-card');
+      const body = card.querySelector('.cc-body');
+      const inner = card.querySelector('.cc-body-inner');
+      if (card.classList.contains('open')) {
+        card.classList.remove('open');
+        body.style.maxHeight = '0';
+      } else {
+        openCard(card);
+      }
+    });
+  });
+
+  // Open panel-0 card by default
+  const p0 = document.querySelector('#panel-0 .case-card');
+  if (p0) openCard(p0);
+
+  // ─── Scroll reveal ───
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal, .reveal-l').forEach(el => obs.observe(el));
+
+  // ─── Chargeable weight calc ───
+  function calcChargeable() {
+    const gw = parseFloat(document.getElementById('fGW').value) || 0;
+    const pcs = parseInt(document.getElementById('fPcs').value) || 1;
+    const dims = document.getElementById('fDims').value;
+    const match = dims.match(/(\d+\.?\d*)\s*[×x*]\s*(\d+\.?\d*)\s*[×x*]\s*(\d+\.?\d*)/);
+    const res = document.getElementById('chargeableResult');
+    if (!match || !gw) { res.style.display = 'none'; return; }
+    const vol = parseFloat(match[1]) * parseFloat(match[2]) * parseFloat(match[3]) * pcs / 6000;
+    const cw = Math.max(gw, vol);
+    res.style.display = 'block';
+    res.innerHTML = `
+      体积重 = ${match[1]}×${match[2]}×${match[3]}×${pcs}件 ÷ 6000 = <strong style="color:#fcd34d">${vol.toFixed(1)} kg</strong> &nbsp;|&nbsp;
+      实际毛重 = <strong style="color:#fcd34d">${gw} kg</strong> &nbsp;|&nbsp;
+      <span style="color:#6ee7b7">计费重 = max(${gw}, ${vol.toFixed(1)}) = <strong>${cw.toFixed(1)} kg</strong></span>
+    `;
+  }
+
+  // ─── Due date calculator ───
+  document.getElementById('calcBase').value = new Date().toISOString().split('T')[0];
+  function calcDueDate() {
+    const base = document.getElementById('calcBase').value;
+    const type = document.getElementById('calcType').value;
+    const res  = document.getElementById('calcResult');
+    if (!base) { alert('请选择起飞日/开票日'); return; }
+    const d = new Date(base);
+    let dueDate, note;
+    if (type === '0') {
+      note = '预付型：付款期日为起飞日当天或之前，建议在起飞前 24 小时确认到账。';
+      dueDate = d;
+    } else if (type === 'eom30') {
+      const eom = new Date(d.getFullYear(), d.getMonth()+1, 0);
+      eom.setDate(eom.getDate() + 30);
+      dueDate = eom;
+      note = `月结 EOM+30：本月末为 ${new Date(d.getFullYear(), d.getMonth()+1, 0).toLocaleDateString('zh-CN')}，加 30 天后为付款期日。`;
+    } else if (type === 'eom60') {
+      const eom = new Date(d.getFullYear(), d.getMonth()+1, 0);
+      eom.setDate(eom.getDate() + 60);
+      dueDate = eom;
+      note = `月结 EOM+60：本月末加 60 天为付款期日。`;
+    } else {
+      d.setDate(d.getDate() + parseInt(type));
+      dueDate = d;
+      note = `起飞后 ${type} 天为付款期日。`;
+    }
+    const remind = new Date(dueDate);
+    remind.setDate(remind.getDate() - 7);
+    res.style.display = 'block';
+    res.innerHTML = `
+      支付期日（Due Date）：<span class="cr-date">${dueDate.toLocaleDateString('zh-CN')}</span><br/>
+      <span style="font-size:.78rem;color:var(--muted);">${note}<br/>建议催款提醒日：${remind.toLocaleDateString('zh-CN')}（提前 7 天）</span>
+    `;
+  }
+
+  // ─── AWB form ───
+  function submitAWB() {
+    const flight    = document.getElementById('fFlight').value.trim();
+    const etd       = document.getElementById('fETD').value;
+    const shipper   = document.getElementById('fShipper').value.trim();
+    const consignee = document.getElementById('fConsignee').value.trim();
+    const pcs       = document.getElementById('fPcs').value;
+    const gw        = document.getElementById('fGW').value;
+    const commodity = document.getElementById('fCommodity').value.trim();
+    const freight   = document.getElementById('fFreight').value;
+    const confirm   = document.querySelector('input[name="confirm"]:checked');
+    if (!flight || !etd || !shipper || !consignee || !pcs || !gw || !commodity || !freight || !confirm) {
+      alert('请填写所有带 * 的必填项并选择草案确认状态后提交。');
+      return;
+    }
+    document.getElementById('awbFormBody').style.display = 'none';
+    document.getElementById('awbSuccess').style.display = 'block';
+  }
+  function resetAWB() {
+    ['fFlight','fETD','fHAWB','fShipper','fConsignee','fNotify','fPcs','fGW','fDims',
+     'fCommodity','fSpecial'].forEach(id => {
+       const el = document.getElementById(id);
+       if (el) el.value = '';
+     });
+    document.getElementById('fIncoterms').value = '';
+    document.getElementById('fFreight').value = '';
+    document.querySelectorAll('input[name="confirm"]').forEach(r => r.checked = false);
+    document.getElementById('chargeableResult').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>

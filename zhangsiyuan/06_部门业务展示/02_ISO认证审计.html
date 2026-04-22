@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISO认证一览与审计流程 — 山东上星国际货运</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:     #060f14;
+      --navy:   #0a1f28;
+      --teal:   #0d9488;
+      --teal2:  #14b8a6;
+      --gold:   #f59e0b;
+      --green:  #059669;
+      --line:   rgba(255,255,255,.07);
+      --muted:  rgba(255,255,255,.45);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: #e2e8f0;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center 40%;
+      filter: blur(5px) brightness(.25) saturate(.6) hue-rotate(140deg);
+      transform: scale(1.06);
+      z-index: 0;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(6,15,20,.5) 0%, rgba(13,148,136,.15) 50%, rgba(6,15,20,.85) 100%);
+      z-index: 1;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 700px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: rgba(13,148,136,.2);
+      border: 1px solid rgba(13,148,136,.4);
+      color: var(--teal2);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: .35rem 1rem;
+      border-radius: 20px;
+      margin-bottom: 1.2rem;
+      animation: fadeDown .8s ease both;
+    }
+    .hero h1 {
+      font-size: clamp(1.9rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+      margin-bottom: .8rem;
+      animation: fadeDown .8s .1s ease both;
+    }
+    .hero h1 span { color: var(--teal2); }
+    .hero p {
+      font-size: .95rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin: 0 auto;
+      animation: fadeDown .8s .2s ease both;
+    }
+
+    /* ─── KEYFRAMES ─── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes lineDraw {
+      from { transform: scaleY(0); }
+      to   { transform: scaleY(1); }
+    }
+    @keyframes cardPop {
+      from { opacity: 0; transform: scale(.96) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 12px rgba(13,148,136,.3); }
+      50%       { box-shadow: 0 0 24px rgba(13,148,136,.6); }
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes borderSpin {
+      from { background-position: 0% 50%; }
+      to   { background-position: 100% 50%; }
+    }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── LAYOUT ─── */
+    main { max-width: 960px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+
+    .section-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--teal2);
+      margin-bottom: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+    /* ─── CERT SHOWCASE ─── */
+    .cert-showcase {
+      position: relative;
+      background: linear-gradient(135deg, #0a1f28 0%, #0f2d3a 100%);
+      border: 1px solid rgba(13,148,136,.3);
+      border-radius: 16px;
+      padding: 2.4rem;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      animation: glow 4s ease infinite;
+    }
+    .cert-showcase::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(13,148,136,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cert-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+    .cert-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--teal2);
+      margin-bottom: .3rem;
+    }
+    .cert-sub {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 1.6rem;
+    }
+    .cert-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .8rem 2rem;
+    }
+    .cf-item dt {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      margin-bottom: .2rem;
+    }
+    .cf-item dd {
+      font-size: .88rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .code-pill {
+      background: rgba(13,148,136,.2);
+      border: 1px solid rgba(13,148,136,.4);
+      color: var(--teal2);
+      font-family: monospace;
+      font-size: .8rem;
+      padding: .15rem .5rem;
+      border-radius: 5px;
+      font-weight: 700;
+    }
+    /* cert badge right col */
+    .cert-badge-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .iso-ring {
+      position: relative;
+      width: 110px;
+      height: 110px;
+    }
+    .iso-ring::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: conic-gradient(var(--teal2), var(--gold), var(--teal2));
+      animation: rotate 6s linear infinite;
+    }
+    .iso-inner {
+      position: absolute;
+      inset: 4px;
+      background: #0a1f28;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .iso-inner .iso-txt {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--teal2);
+      line-height: 1.1;
+    }
+    .iso-inner .iso-num {
+      font-size: .62rem;
+      color: var(--muted);
+    }
+    .trust-marks {
+      display: flex;
+      gap: .4rem;
+    }
+    .trust-mark {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 5px;
+      padding: .25rem .55rem;
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: rgba(255,255,255,.7);
+    }
+
+    /* ─── VERIFY BOX ─── */
+    .verify-box {
+      background: rgba(245,158,11,.07);
+      border: 1px solid rgba(245,158,11,.2);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.3rem;
+      font-size: .83rem;
+      color: rgba(255,255,255,.75);
+      margin-bottom: 2.5rem;
+      display: flex;
+      gap: .9rem;
+    }
+    .verify-box .vi { font-size: 1.3rem; flex-shrink: 0; margin-top: .05rem; }
+
+    /* ─── CYCLE STRIP ─── */
+    .cycle-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .cycle-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.3rem;
+      text-align: center;
+      transition: border-color .3s, transform .3s;
+    }
+    .cycle-card:hover { border-color: rgba(13,148,136,.3); transform: translateY(-3px); }
+    .cycle-card .cv { font-size: 1.7rem; font-weight: 900; color: var(--teal2); line-height: 1; margin-bottom: .3rem; }
+    .cycle-card .cl { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .2rem; }
+    .cycle-card .cn { font-size: .78rem; color: rgba(255,255,255,.5); }
+
+    /* ─── TIMELINE ─── */
+    .timeline { position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 27px;
+      top: 30px;
+      bottom: 30px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--teal), var(--green));
+      transform-origin: top;
+      animation: lineDraw 1.5s .5s ease both;
+    }
+
+    .tl-item {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 0 1.5rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .tl-dot {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+    }
+    .tl-dot small { font-size: .5rem; opacity: .75; }
+    .tl-item:nth-child(1) .tl-dot { background: linear-gradient(135deg, #1e3a8a, #1e40af); }
+    .tl-item:nth-child(2) .tl-dot { background: linear-gradient(135deg, #0d6956, #0d9488); }
+    .tl-item:nth-child(3) .tl-dot { background: linear-gradient(135deg, #065f46, #059669); }
+
+    .tl-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color .3s;
+    }
+    .tl-card:hover { border-color: rgba(13,148,136,.25); }
+    .tl-card.open { border-color: rgba(13,148,136,.4); }
+
+    .tl-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 1.4rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tl-card-header:hover { background: rgba(255,255,255,.02); }
+    .tl-card-title h3 { font-size: 1rem; font-weight: 700; margin-bottom: .2rem; }
+    .tl-card-title .sub { font-size: .77rem; color: var(--muted); font-style: italic; }
+    .tl-toggle {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      transition: transform .3s, background .3s;
+      flex-shrink: 0;
+    }
+    .tl-card.open .tl-toggle { transform: rotate(180deg); background: rgba(13,148,136,.2); }
+
+    .tl-body { max-height: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.4,0,.2,1); }
+    .tl-body-inner { padding: 0 1.4rem 1.5rem; border-top: 1px solid var(--line); }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: .8rem;
+      margin-top: 1.2rem;
+    }
+    .step-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: .9rem 1rem;
+      transition: border-color .25s, transform .25s;
+    }
+    .step-card:hover { border-color: rgba(13,148,136,.3); transform: translateY(-2px); }
+    .step-num {
+      font-size: .65rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--teal2);
+      margin-bottom: .4rem;
+    }
+    .step-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: .4rem; }
+    .step-card p { font-size: .78rem; color: rgba(255,255,255,.6); line-height: 1.55; }
+
+    .info-box {
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      font-size: .82rem;
+      margin-top: 1rem;
+      line-height: 1.55;
+    }
+    .info-teal  { background: rgba(13,148,136,.1); border-left: 3px solid var(--teal); color: #5eead4; }
+    .info-gold  { background: rgba(245,158,11,.1); border-left: 3px solid var(--gold); color: #fcd34d; }
+    .info-green { background: rgba(5,150,105,.1);  border-left: 3px solid var(--green); color: #6ee7b7; }
+
+    /* ─── CHECKLIST ─── */
+    .checklist-section { margin-top: 3rem; }
+    .checklist-wrapper {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .checklist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 1.5rem;
+      cursor: pointer;
+      background: rgba(13,148,136,.08);
+      border-bottom: 1px solid var(--line);
+    }
+    .checklist-header h3 { font-size: .95rem; font-weight: 700; color: var(--teal2); }
+    .checklist-header .cl-toggle {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+      transition: transform .3s;
+    }
+    .checklist-wrapper.open .cl-toggle { transform: rotate(180deg); }
+    .checklist-body { max-height: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.4,0,.2,1); }
+    .checklist-body-inner { padding: 1.4rem 1.5rem; }
+
+    .checklist-group { margin-bottom: 1.4rem; }
+    .checklist-group h4 { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--teal); margin-bottom: .7rem; }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .5rem .6rem;
+      border-radius: 6px;
+      margin-bottom: .35rem;
+      transition: background .2s;
+      cursor: pointer;
+    }
+    .check-item:hover { background: rgba(255,255,255,.04); }
+    .check-item input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--teal2);
+      flex-shrink: 0;
+      margin-top: .18rem;
+      cursor: pointer;
+    }
+    .check-item label {
+      font-size: .83rem;
+      color: rgba(255,255,255,.75);
+      cursor: pointer;
+      line-height: 1.5;
+    }
+    .check-item.checked label {
+      text-decoration: line-through;
+      color: rgba(255,255,255,.35);
+    }
+    .progress-bar-wrap { margin: 1.2rem 0 .3rem; }
+    .progress-label { font-size: .75rem; color: var(--muted); margin-bottom: .4rem; display: flex; justify-content: space-between; }
+    .progress-track {
+      height: 6px;
+      background: rgba(255,255,255,.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--teal), var(--teal2));
+      border-radius: 10px;
+      transition: width .4s ease;
+      width: 0%;
+    }
+
+    /* ─── FORM ─── */
+    .form-section {
+      margin-top: 3rem;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .form-header {
+      background: rgba(13,148,136,.1);
+      border-bottom: 1px solid var(--line);
+      padding: 1.3rem 1.8rem;
+    }
+    .form-header h3 { font-size: 1rem; font-weight: 700; color: var(--teal2); margin-bottom: .2rem; }
+    .form-header p { font-size: .8rem; color: var(--muted); }
+    .form-body { padding: 1.8rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: .45rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .form-group label span { color: #ef4444; margin-left: .2rem; }
+    .form-control {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      color: #e2e8f0;
+      font-size: .87rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .25s, box-shadow .25s;
+      width: 100%;
+    }
+    .form-control::placeholder { color: rgba(255,255,255,.22); }
+    .form-control:focus { border-color: var(--teal2); box-shadow: 0 0 0 3px rgba(13,148,136,.15); }
+    select.form-control option { background: #0a1f28; color: #e2e8f0; }
+    textarea.form-control { resize: vertical; min-height: 90px; }
+    .form-row { display: flex; gap: .6rem; margin-top: 1.5rem; justify-content: flex-end; }
+    .btn {
+      padding: .72rem 1.7rem; border-radius: 8px; font-size: .87rem; font-weight: 700;
+      font-family: inherit; cursor: pointer; border: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,.18); color: var(--muted); }
+    .btn-outline:hover { border-color: rgba(255,255,255,.35); color: #e2e8f0; }
+    .btn-teal { background: linear-gradient(135deg, var(--teal), var(--teal2)); color: #fff; box-shadow: 0 4px 14px rgba(13,148,136,.3); }
+    .btn-teal:hover { box-shadow: 0 6px 20px rgba(13,148,136,.5); transform: translateY(-1px); }
+    .form-success { display: none; text-align: center; padding: 2rem; color: #5eead4; }
+    .form-success .icon { font-size: 2.5rem; margin-bottom: .8rem; }
+    .form-success h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: .4rem; }
+    .form-success p { font-size: .84rem; color: var(--muted); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: rgba(0,0,0,.5);
+      border-top: 1px solid var(--line);
+      text-align: center;
+      padding: 1.8rem;
+      font-size: .78rem;
+      color: var(--muted);
+    }
+    footer strong { color: var(--teal2); }
+
+    @media (max-width: 680px) {
+      .cert-grid { grid-template-columns: 1fr; }
+      .cert-badge-col { flex-direction: row; }
+      .cycle-strip { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .tl-item { grid-template-columns: 48px 1fr; gap: 0 1rem; }
+    }
+    @media (max-width: 420px) {
+      .cert-fields { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">品质管理部 · Day 3 · Work 06</div>
+    <h1>ISO <span>认证一览</span>与审计流程</h1>
+    <p>山东上星国际货运代理有限公司 ISO 9001:2015 质量管理体系认证全景解析——从体系建立到持续改进</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- CERT SHOWCASE -->
+  <div class="section-label reveal">现行有效认证证书</div>
+
+  <div class="cert-showcase reveal">
+    <div class="cert-grid">
+      <div>
+        <div class="cert-title">ISO 9001:2015 质量管理体系认证</div>
+        <div class="cert-sub">Quality Management System · 认证范围：货运代理服务（Freight Forwarding Services）</div>
+        <dl class="cert-fields">
+          <div class="cf-item">
+            <dt>持证单位</dt>
+            <dd>山东上星国际货运代理有限公司</dd>
+          </div>
+          <div class="cf-item">
+            <dt>认证机构</dt>
+            <dd>SGS（瑞士通用公证行）</dd>
+          </div>
+          <div class="cf-item">
+            <dt>证书有效期</dt>
+            <dd>2025年10月19日 — 2028年10月18日</dd>
+          </div>
+          <div class="cf-item">
+            <dt>统一社会信用代码</dt>
+            <dd><span class="code-pill">91370613MA3MFM6A4Y</span></dd>
+          </div>
+          <div class="cf-item">
+            <dt>注册地址</dt>
+            <dd>烟台市莱山区迎春大街 170 号</dd>
+          </div>
+          <div class="cf-item">
+            <dt>授权签发人</dt>
+            <dd>Liz Moran（SGS 授权代表）</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="cert-badge-col">
+        <div class="iso-ring">
+          <div class="iso-inner">
+            <div class="iso-txt">ISO<br/>9001</div>
+            <div class="iso-num">:2015</div>
+          </div>
+        </div>
+        <div class="trust-marks">
+          <span class="trust-mark">UKAS</span>
+          <span class="trust-mark">IAF</span>
+          <span class="trust-mark">CNAS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFY -->
+  <div class="verify-box reveal">
+    <div class="vi">🔍</div>
+    <div>
+      <strong style="color:#fcd34d;">如何验证证书真实性：</strong>登录「国家认证认可监督管理委员会（CNCA）」官网，输入统一社会信用代码
+      <span class="code-pill">91370613MA3MFM6A4Y</span> 或证书编号进行查询，可确认证书受法律保护且非伪造。
+      UKAS ＋ IAF 双认可标志意味着该证书在全球超过 90 个国家和地区具有互认效力，适用于国际供应链客户审核。
+    </div>
+  </div>
+
+  <!-- CYCLE -->
+  <div class="cycle-strip reveal">
+    <div class="cycle-card">
+      <div class="cv">3 年</div>
+      <div class="cl">认证周期</div>
+      <div class="cn">每个周期完整有效期</div>
+    </div>
+    <div class="cycle-card">
+      <div class="cv">≥ 1次/年</div>
+      <div class="cl">监督审核</div>
+      <div class="cn">维持证书持续有效</div>
+    </div>
+    <div class="cycle-card">
+      <div class="cv">2028.10</div>
+      <div class="cl">再认证节点</div>
+      <div class="cn">到期前完成再认证</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section-label reveal">认证审计三阶段流程</div>
+
+  <div class="timeline">
+
+    <!-- Stage 1 -->
+    <div class="tl-item reveal">
+      <div class="tl-dot">Ⅰ<small>阶段</small></div>
+      <div class="tl-card" data-tl="1">
+        <div class="tl-card-header">
+          <div class="tl-card-title">
+            <h3>体系建立与内部准备</h3>
+            <div class="sub">获得证书前的企业内部工作 · 预计周期：3–6 个月</div>
+          </div>
+          <div class="tl-toggle">▾</div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <div class="steps-grid">
+              <div class="step-card">
+                <div class="step-num">Step 01</div>
+                <h4>现状调研与差距分析</h4>
+                <p>对标 ISO 9001:2015 标准逐条梳理，识别现有业务流程中不符合标准要求的差距，形成"差距清单"作为整改依据。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 02</div>
+                <h4>全员标准培训</h4>
+                <p>包括质量管理八大原则（顾客导向、领导作用、全员参与、过程方法、改进、循证决策、关系管理）的理解与应用，重点培训中高层管理者。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 03</div>
+                <h4>四级文件体系编写</h4>
+                <p>① 质量手册（框架级）② 程序文件（6 个强制程序）③ 作业指导书（操作级）④ 质量记录表格。文件须经批准后正式发布。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 04</div>
+                <h4>运行与内部审核</h4>
+                <p>体系运行至少 3 个月，由经培训的内审员开展覆盖全部过程的内部审核（Internal Audit），识别不符合项并完成整改。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 05</div>
+                <h4>管理评审</h4>
+                <p>由最高管理层主持，评审质量目标达成情况、内审结果、客户反馈、资源需求等，确认体系具备向外部审核机构申请认证的条件。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Step 06</div>
+                <h4>选择认证机构</h4>
+                <p>选择经 CNAS 或 CNCA 认可的第三方认证机构（如 SGS、Bureau Veritas、TÜV 等），提交认证申请，签订认证协议，确定审核日期。</p>
+              </div>
+            </div>
+            <div class="info-box info-teal">
+              <strong>货代企业内审重点：</strong>内审员通常重点抽查报价单与实际收费的一致性、提单操作记录的完整性、客户投诉处理记录、供应商（船公司/车队/仓库）评估档案，以及操作人员对标准作业程序（SOP）的执行情况。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 2 -->
+    <div class="tl-item reveal">
+      <div class="tl-dot">Ⅱ<small>阶段</small></div>
+      <div class="tl-card" data-tl="2">
+        <div class="tl-card-header">
+          <div class="tl-card-title">
+            <h3>正式外部认证审计</h3>
+            <div class="sub">由第三方认证机构（SGS）执行 · 分两阶段进行</div>
+          </div>
+          <div class="tl-toggle">▾</div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <div class="steps-grid">
+              <div class="step-card">
+                <div class="step-num">第一阶段审核</div>
+                <h4>文件审核（Stage 1）</h4>
+                <p>审核员核查质量手册、程序文件、组织架构、注册信息及法规合规性，确认体系是否准备就绪。输出：第一阶段审核报告 + 第二阶段审核日期确认。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">第二阶段审核</div>
+                <h4>现场审核（Stage 2）</h4>
+                <p>审核员通过访谈员工、查阅运营记录（提单、委托书、投诉记录等）、现场观察，验证体系运行的实际有效性，确认公司"真的在按标准提供服务"。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">不符合项分类</div>
+                <h4>整改与关闭</h4>
+                <p>一般不符合：30 天内完成整改并提交证据。严重不符合（Major NC）：须立即整改，可能需要再次现场验证后方可颁证。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">颁证</div>
+                <h4>证书正式颁发</h4>
+                <p>全部不符合项关闭且审核通过后，SGS 颁发含 UKAS ＋ IAF 标志的证书，同步录入 CNCA 国家认证认可数据库，具备全球互认效力。</p>
+              </div>
+            </div>
+            <div class="info-box info-gold">
+              <strong>货代行业现场审核常见抽查点：</strong>① 客户报价单 vs 实际账单一致性 ② 提单（B/L）操作全程留档 ③ 客户投诉台账及处理结果 ④ 供应商年度评估记录（船公司、车队、仓储） ⑤ 员工操作规程培训记录 ⑥ 设备/软件维护记录（操作系统）
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage 3 -->
+    <div class="tl-item reveal">
+      <div class="tl-dot">Ⅲ<small>阶段</small></div>
+      <div class="tl-card" data-tl="3">
+        <div class="tl-card-header">
+          <div class="tl-card-title">
+            <h3>证书维护与持续改进</h3>
+            <div class="sub">3 年有效期内须持续保持合规 · PDCA 循环驱动</div>
+          </div>
+          <div class="tl-toggle">▾</div>
+        </div>
+        <div class="tl-body">
+          <div class="tl-body-inner">
+            <div class="steps-grid">
+              <div class="step-card">
+                <div class="step-num">Year 1 &amp; 2</div>
+                <h4>年度监督审核</h4>
+                <p>每年至少一次，审核范围通常为全部过程的 1/3 或已识别的重点领域，验证体系持续有效运行，确保证书不失效。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">Year 3</div>
+                <h4>再认证审核</h4>
+                <p>证书到期前（2028年10月）进行完整再认证审核，相当于新一轮 Stage 2 审核，通过后颁发新一个 3 年周期的证书。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">持续</div>
+                <h4>PDCA 持续改进</h4>
+                <p>P（计划）→ D（执行）→ C（检查：内审+管理评审）→ A（改进：纠正措施闭环），驱动质量体系不断优化升级。</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">实时</div>
+                <h4>不符合项（NCR）管理</h4>
+                <p>建立 NCR 台账，对每一条不符合项追踪：发现日期→根本原因分析→纠正措施→验证有效性→关闭日期，防止重复发生。</p>
+              </div>
+            </div>
+            <div class="info-box info-green">
+              <strong>审计专家关注：区分"真认证"与"表演型认证"的核心差异</strong>在于日常记录的完整性与真实性。"只在审核前突击整理台账"是最常见的问题。认证专家更关注日常运营中的记录连续性、纠正措施实际落地率、管理层对质量目标的持续追踪，而非仅仅在审核时展示漂亮的文件夹。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+  <!-- CHECKLIST -->
+  <div class="checklist-section reveal">
+    <div class="section-label">内审自查清单</div>
+    <div class="checklist-wrapper" id="checklistWrapper">
+      <div class="checklist-header" onclick="toggleChecklist()">
+        <h3>点击展开 · ISO 9001:2015 货代企业内审自查清单</h3>
+        <div class="cl-toggle">▾</div>
+      </div>
+      <div class="checklist-body" id="checklistBody">
+        <div class="checklist-body-inner">
+          <div class="progress-bar-wrap">
+            <div class="progress-label">
+              <span>完成进度</span>
+              <span id="progressText">0 / 15</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+          <div class="checklist-group">
+            <h4>领导与策划</h4>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>最高管理者是否明确签署并发布质量方针（Quality Policy）？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>质量目标是否具体、可测量，并在各层级有效沟通？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>本年度管理评审是否已召开并留存会议记录与决议？</label>
+            </div>
+          </div>
+          <div class="checklist-group">
+            <h4>运营过程控制</h4>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>报价与投标流程是否有标准化作业指导书并实际执行？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>订舱、提货、报关、出单各节点是否有操作记录留档？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>客户投诉台账是否完整，每条投诉是否有处理结果记录？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>供应商（船公司/车队/仓储）是否每年进行正式评估并保留记录？</label>
+            </div>
+          </div>
+          <div class="checklist-group">
+            <h4>人员与能力</h4>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>关键岗位人员是否有岗位说明书，能力要求是否明确？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>本年度员工培训计划是否执行，培训记录是否留档？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>新员工入职是否完成质量管理体系相关培训？</label>
+            </div>
+          </div>
+          <div class="checklist-group">
+            <h4>绩效评价与改进</h4>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>客户满意度调查是否按计划开展，结果是否分析并用于改进？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>内部审核计划是否覆盖所有过程，审核员是否独立于被审核区域？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>所有不符合项是否有根本原因分析，纠正措施是否有效关闭？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>过去 12 个月是否有可证明的改进案例（PDCA 循环成果）？</label>
+            </div>
+            <div class="check-item" onclick="toggleCheck(this)">
+              <input type="checkbox" />
+              <label>关键质量指标（KPI）是否定期监控，偏差是否及时响应？</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-section reveal" style="margin-top:3rem;">
+    <div class="form-header">
+      <h3>📋 不符合项（NCR）申报表</h3>
+      <p>内部审核或日常运营中发现问题时填写，由品质管理部统一追踪与闭环</p>
+    </div>
+    <div class="form-body" id="ncrFormBody">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>NCR 编号（自动生成）</label>
+          <input class="form-control" type="text" id="ncrId" readonly />
+        </div>
+        <div class="form-group">
+          <label>发现日期 <span>*</span></label>
+          <input class="form-control" type="date" id="ncrDate" />
+        </div>
+        <div class="form-group">
+          <label>涉及部门 <span>*</span></label>
+          <select class="form-control" id="ncrDept">
+            <option value="">— 选择部门 —</option>
+            <option>业务部（Operations）</option>
+            <option>财务部（Finance）</option>
+            <option>品质管理部（QA）</option>
+            <option>仓储/提货（Warehouse）</option>
+            <option>报关部（Customs）</option>
+            <option>管理层（Management）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>问题类别 <span>*</span></label>
+          <select class="form-control" id="ncrType">
+            <option value="">— 选择类别 —</option>
+            <option>文件/记录不符合</option>
+            <option>过程执行不符合</option>
+            <option>人员能力不足</option>
+            <option>供应商/外部问题</option>
+            <option>客户投诉引发</option>
+            <option>设施/设备问题</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>严重程度 <span>*</span></label>
+          <select class="form-control" id="ncrSeverity">
+            <option value="">— 选择严重程度 —</option>
+            <option>一般不符合（Minor NC）</option>
+            <option>严重不符合（Major NC）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>责任人 <span>*</span></label>
+          <input class="form-control" type="text" placeholder="请输入责任人姓名" id="ncrOwner" />
+        </div>
+        <div class="form-group">
+          <label>计划完成日期 <span>*</span></label>
+          <input class="form-control" type="date" id="ncrDeadline" />
+        </div>
+        <div class="form-group">
+          <label>关联 ISO 条款</label>
+          <input class="form-control" type="text" placeholder="例：8.4.1 外部提供过程控制" id="ncrClause" />
+        </div>
+        <div class="form-group full">
+          <label>不符合项描述 <span>*</span></label>
+          <textarea class="form-control" placeholder="请详细描述发现的不符合项，包括：什么地方、什么情况、不符合哪条标准要求……" id="ncrDesc"></textarea>
+        </div>
+        <div class="form-group full">
+          <label>建议纠正措施</label>
+          <textarea class="form-control" placeholder="请描述建议的根本原因分析方向及具体纠正措施……" id="ncrAction"></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <button class="btn btn-outline" onclick="resetNCR()">清空</button>
+        <button class="btn btn-teal" onclick="submitNCR()">提交 NCR →</button>
+      </div>
+    </div>
+    <div class="form-success" id="ncrSuccess">
+      <div class="icon">✅</div>
+      <h4>NCR 提交成功</h4>
+      <p>不符合项已记录，品质管理部将在 2 个工作日内确认责任分配与跟踪计划。</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>山东上星国际货运代理有限公司</strong> · 品质管理部 · ISO 9001:2015 认证与审计管理规程 v2.0
+</footer>
+
+<script>
+  // Auto-generate NCR ID
+  const today = new Date();
+  document.getElementById('ncrId').value =
+    'NCR-' + today.getFullYear() + String(today.getMonth()+1).padStart(2,'0') +
+    '-' + String(Math.floor(Math.random()*900)+100);
+  document.getElementById('ncrDate').value = today.toISOString().split('T')[0];
+
+  // Timeline accordion
+  document.querySelectorAll('.tl-card-header').forEach(h => {
+    h.addEventListener('click', () => {
+      const card = h.closest('.tl-card');
+      const body = card.querySelector('.tl-body');
+      const inner = card.querySelector('.tl-body-inner');
+      const isOpen = card.classList.contains('open');
+      document.querySelectorAll('.tl-card.open').forEach(c => {
+        c.classList.remove('open');
+        c.querySelector('.tl-body').style.maxHeight = '0';
+      });
+      if (!isOpen) {
+        card.classList.add('open');
+        body.style.maxHeight = inner.scrollHeight + 32 + 'px';
+      }
+    });
+  });
+
+  // Checklist
+  function toggleChecklist() {
+    const w = document.getElementById('checklistWrapper');
+    const b = document.getElementById('checklistBody');
+    const bi = b.querySelector('.checklist-body-inner');
+    w.classList.toggle('open');
+    b.style.maxHeight = w.classList.contains('open') ? bi.scrollHeight + 'px' : '0';
+  }
+
+  function toggleCheck(item) {
+    item.classList.toggle('checked');
+    item.querySelector('input').checked = item.classList.contains('checked');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const items = document.querySelectorAll('.check-item');
+    const checked = document.querySelectorAll('.check-item.checked').length;
+    const pct = Math.round(checked / items.length * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = checked + ' / ' + items.length;
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Open stage 2 by default
+  const s2 = document.querySelector('[data-tl="2"]');
+  if (s2) {
+    const body = s2.querySelector('.tl-body');
+    const inner = s2.querySelector('.tl-body-inner');
+    s2.classList.add('open');
+    body.style.maxHeight = inner.scrollHeight + 32 + 'px';
+  }
+
+  // Form submit
+  function submitNCR() {
+    const dept = document.getElementById('ncrDept').value;
+    const type = document.getElementById('ncrType').value;
+    const sev  = document.getElementById('ncrSeverity').value;
+    const own  = document.getElementById('ncrOwner').value.trim();
+    const dl   = document.getElementById('ncrDeadline').value;
+    const desc = document.getElementById('ncrDesc').value.trim();
+    if (!dept || !type || !sev || !own || !dl || !desc) {
+      alert('请填写所有带 * 的必填项后再提交。');
+      return;
+    }
+    document.getElementById('ncrFormBody').style.display = 'none';
+    document.getElementById('ncrSuccess').style.display = 'block';
+  }
+  function resetNCR() {
+    ['ncrDept','ncrType','ncrSeverity','ncrOwner','ncrDeadline','ncrClause','ncrDesc','ncrAction']
+      .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const today = new Date();
+    document.getElementById('ncrDate').value = today.toISOString().split('T')[0];
+  }
+</script>
+
+</body>
+</html>
