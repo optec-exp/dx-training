@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #c9a96e;
+  --dark: #08080f;
+  --dark-2: #0e0e1a;
+  --dark-3: #141424;
+  --dark-4: #1a1a30;
+  --muted: rgba(232, 232, 240, 0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--dark);
+  color: #e8e8f0;
+  font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: rgba(201, 169, 110, 0.5) !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  opacity: 1;
+}
