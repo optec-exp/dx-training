@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TALA Network — Global Coverage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0f2557;
+      --blue:    #1a56db;
+      --sky:     #e8f0fe;
+      --accent:  #f59e0b;
+      --bg:      #f8fafc;
+      --white:   #ffffff;
+      --border:  #e2e8f0;
+      --text-hi: #0f172a;
+      --text-md: #475569;
+      --text-lo: #94a3b8;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-hi);
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── 顶部标题栏 ── */
+    .topbar {
+      background: var(--navy);
+      padding: 0 32px;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .topbar-brand {
+      font-size: 15px; font-weight: 700;
+      color: #fff; letter-spacing: 1px;
+    }
+    .topbar-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+    .topbar-sub { font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 2px; }
+    .topbar-stats { display: flex; gap: 28px; }
+    .topbar-stat { text-align: right; }
+    .topbar-num { font-size: 16px; font-weight: 700; color: var(--accent); line-height: 1; }
+    .topbar-label { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+
+    /* ── 主体布局：左边栏 + 右侧地图 ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── 左侧边栏 ── */
+    .sidebar {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sidebar-title {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--text-lo); margin-bottom: 14px;
+    }
+
+    /* 地区筛选 Tab */
+    .region-tabs {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .region-tab {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 500;
+      padding: 5px 12px; border-radius: 4px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-md);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .region-tab .tab-count {
+      font-size: 10px; color: var(--text-lo);
+    }
+    .region-tab:hover { border-color: var(--blue); color: var(--blue); background: var(--sky); }
+    .region-tab.active {
+      background: var(--blue); color: #fff;
+      border-color: var(--blue);
+    }
+    .region-tab.active .tab-count { color: rgba(255,255,255,0.7); }
+
+    /* 搜索框 */
+    .search-wrap {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .search-input {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text-hi);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--blue); }
+    .search-input::placeholder { color: var(--text-lo); }
+
+    /* 国家列表 */
+    .country-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .country-list::-webkit-scrollbar { width: 4px; }
+    .country-list::-webkit-scrollbar-track { background: transparent; }
+    .country-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .country-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      cursor: default;
+    }
+    .country-item:hover { background: var(--sky); }
+    .country-item-name { font-size: 13px; font-weight: 500; color: var(--text-hi); }
+    .country-item-city { font-size: 11px; color: var(--text-lo); }
+
+    .sidebar-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--text-lo);
+      flex-shrink: 0;
+    }
+    .sidebar-footer span { color: var(--blue); font-weight: 600; }
+
+    /* ── 地图区域 ── */
+    .map-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .map-frame {
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ── 响应式 ── */
+    @media (max-width: 768px) {
+      body { overflow: auto; height: auto; }
+      .main { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; }
+      .map-area { height: 360px; }
+      .country-list { max-height: 400px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部标题栏 -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-brand">TALA Network</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-sub">Global Logistics Coverage</div>
+    </div>
+    <div class="topbar-stats">
+      <div class="topbar-stat">
+        <div class="topbar-num">96</div>
+        <div class="topbar-label">Countries</div>
+      </div>
+      <div class="topbar-stat">
+        <div class="topbar-num">135</div>
+        <div class="topbar-label">Airports</div>
+      </div>
+      <div class="topbar-stat">
+        <div class="topbar-num">80+</div>
+        <div class="topbar-label">Members</div>
+      </div>
+      <div class="topbar-stat">
+        <div class="topbar-num">24/7</div>
+        <div class="topbar-label">Service</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主体 -->
+  <div class="main">
+
+    <!-- 左侧边栏 -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">按地区筛选</div>
+        <div class="region-tabs">
+          <button class="region-tab active" data-region="all">全部 <span class="tab-count">96</span></button>
+          <button class="region-tab" data-region="asia">亚洲 <span class="tab-count">20</span></button>
+          <button class="region-tab" data-region="europe">欧洲 <span class="tab-count">26</span></button>
+          <button class="region-tab" data-region="americas">美洲 <span class="tab-count">20</span></button>
+          <button class="region-tab" data-region="mideast-africa">中东&非洲 <span class="tab-count">20</span></button>
+          <button class="region-tab" data-region="oceania">大洋洲 <span class="tab-count">5</span></button>
+          <button class="region-tab" data-region="cis">东欧/中亚 <span class="tab-count">5</span></button>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <input class="search-input" type="text" id="search" placeholder="搜索国家名称…">
+      </div>
+      <div class="country-list" id="list"></div>
+      <div class="sidebar-footer">共 <span id="count">96</span> 个国家</div>
+    </div>
+
+    <!-- 地图 -->
+    <div class="map-area">
+      <iframe class="map-frame"
+        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d29221757!2d10!3d20!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1szh-CN!2sjp!4v1700000000000!5m2!1szh-CN!2sjp"
+        allowfullscreen loading="lazy">
+      </iframe>
+    </div>
+
+  </div>
+
+  <script>
+    const countries = [
+      { name: "日本", city: "东京", region: "asia" },
+      { name: "中国", city: "上海", region: "asia" },
+      { name: "韩国", city: "首尔", region: "asia" },
+      { name: "新加坡", city: "新加坡", region: "asia" },
+      { name: "马来西亚", city: "吉隆坡", region: "asia" },
+      { name: "泰国", city: "曼谷", region: "asia" },
+      { name: "印度尼西亚", city: "雅加达", region: "asia" },
+      { name: "印度", city: "孟买", region: "asia" },
+      { name: "菲律宾", city: "马尼拉", region: "asia" },
+      { name: "越南", city: "河内", region: "asia" },
+      { name: "台湾", city: "台北", region: "asia" },
+      { name: "香港", city: "香港", region: "asia" },
+      { name: "孟加拉国", city: "达卡", region: "asia" },
+      { name: "斯里兰卡", city: "科伦坡", region: "asia" },
+      { name: "巴基斯坦", city: "卡拉奇", region: "asia" },
+      { name: "缅甸", city: "仰光", region: "asia" },
+      { name: "柬埔寨", city: "金边", region: "asia" },
+      { name: "尼泊尔", city: "加德满都", region: "asia" },
+      { name: "哈萨克斯坦", city: "阿拉木图", region: "asia" },
+      { name: "乌兹别克斯坦", city: "塔什干", region: "asia" },
+      { name: "法国", city: "巴黎 CDG", region: "europe" },
+      { name: "德国", city: "法兰克福", region: "europe" },
+      { name: "英国", city: "伦敦希斯罗", region: "europe" },
+      { name: "荷兰", city: "阿姆斯特丹", region: "europe" },
+      { name: "比利时", city: "布鲁塞尔", region: "europe" },
+      { name: "西班牙", city: "马德里", region: "europe" },
+      { name: "意大利", city: "米兰", region: "europe" },
+      { name: "葡萄牙", city: "里斯本", region: "europe" },
+      { name: "瑞士", city: "苏黎世", region: "europe" },
+      { name: "奥地利", city: "维也纳", region: "europe" },
+      { name: "瑞典", city: "斯德哥尔摩", region: "europe" },
+      { name: "挪威", city: "奥斯陆", region: "europe" },
+      { name: "丹麦", city: "哥本哈根", region: "europe" },
+      { name: "芬兰", city: "赫尔辛基", region: "europe" },
+      { name: "波兰", city: "华沙", region: "europe" },
+      { name: "捷克", city: "布拉格", region: "europe" },
+      { name: "匈牙利", city: "布达佩斯", region: "europe" },
+      { name: "罗马尼亚", city: "布加勒斯特", region: "europe" },
+      { name: "希腊", city: "雅典", region: "europe" },
+      { name: "爱尔兰", city: "都柏林", region: "europe" },
+      { name: "卢森堡", city: "卢森堡", region: "europe" },
+      { name: "土耳其", city: "伊斯坦布尔", region: "europe" },
+      { name: "克罗地亚", city: "萨格勒布", region: "europe" },
+      { name: "斯洛伐克", city: "布拉迪斯拉发", region: "europe" },
+      { name: "保加利亚", city: "索菲亚", region: "europe" },
+      { name: "塞尔维亚", city: "贝尔格莱德", region: "europe" },
+      { name: "美国", city: "达拉斯", region: "americas" },
+      { name: "加拿大", city: "多伦多", region: "americas" },
+      { name: "巴西", city: "圣保罗", region: "americas" },
+      { name: "墨西哥", city: "墨西哥城", region: "americas" },
+      { name: "阿根廷", city: "布宜诺斯艾利斯", region: "americas" },
+      { name: "智利", city: "圣地亚哥", region: "americas" },
+      { name: "哥伦比亚", city: "波哥大", region: "americas" },
+      { name: "秘鲁", city: "利马", region: "americas" },
+      { name: "委内瑞拉", city: "加拉加斯", region: "americas" },
+      { name: "厄瓜多尔", city: "基多", region: "americas" },
+      { name: "玻利维亚", city: "拉巴斯", region: "americas" },
+      { name: "巴拉圭", city: "亚松森", region: "americas" },
+      { name: "乌拉圭", city: "蒙得维的亚", region: "americas" },
+      { name: "巴拿马", city: "巴拿马城", region: "americas" },
+      { name: "哥斯达黎加", city: "圣何塞", region: "americas" },
+      { name: "危地马拉", city: "危地马拉城", region: "americas" },
+      { name: "多米尼加", city: "圣多明各", region: "americas" },
+      { name: "牙买加", city: "金斯敦", region: "americas" },
+      { name: "特立尼达和多巴哥", city: "西班牙港", region: "americas" },
+      { name: "巴哈马", city: "拿骚", region: "americas" },
+      { name: "阿联酋", city: "迪拜", region: "mideast-africa" },
+      { name: "沙特阿拉伯", city: "利雅得", region: "mideast-africa" },
+      { name: "卡塔尔", city: "多哈", region: "mideast-africa" },
+      { name: "科威特", city: "科威特城", region: "mideast-africa" },
+      { name: "巴林", city: "麦纳麦", region: "mideast-africa" },
+      { name: "阿曼", city: "马斯喀特", region: "mideast-africa" },
+      { name: "约旦", city: "安曼", region: "mideast-africa" },
+      { name: "以色列", city: "特拉维夫", region: "mideast-africa" },
+      { name: "埃及", city: "开罗", region: "mideast-africa" },
+      { name: "摩洛哥", city: "卡萨布兰卡", region: "mideast-africa" },
+      { name: "南非", city: "约翰内斯堡", region: "mideast-africa" },
+      { name: "肯尼亚", city: "内罗毕", region: "mideast-africa" },
+      { name: "尼日利亚", city: "拉各斯", region: "mideast-africa" },
+      { name: "埃塞俄比亚", city: "亚的斯亚贝巴", region: "mideast-africa" },
+      { name: "加纳", city: "阿克拉", region: "mideast-africa" },
+      { name: "坦桑尼亚", city: "达累斯萨拉姆", region: "mideast-africa" },
+      { name: "科特迪瓦", city: "阿比让", region: "mideast-africa" },
+      { name: "喀麦隆", city: "杜阿拉", region: "mideast-africa" },
+      { name: "塞内加尔", city: "达喀尔", region: "mideast-africa" },
+      { name: "突尼斯", city: "突尼斯", region: "mideast-africa" },
+      { name: "澳大利亚", city: "悉尼", region: "oceania" },
+      { name: "新西兰", city: "奥克兰", region: "oceania" },
+      { name: "巴布亚新几内亚", city: "莫尔兹比港", region: "oceania" },
+      { name: "斐济", city: "苏瓦", region: "oceania" },
+      { name: "关岛", city: "阿加尼亚", region: "oceania" },
+      { name: "俄罗斯", city: "莫斯科", region: "cis" },
+      { name: "乌克兰", city: "基辅", region: "cis" },
+      { name: "格鲁吉亚", city: "第比利斯", region: "cis" },
+      { name: "阿塞拜疆", city: "巴库", region: "cis" },
+      { name: "白俄罗斯", city: "明斯克", region: "cis" },
+    ];
+
+    let currentRegion = 'all';
+
+    function render() {
+      const keyword = document.getElementById('search').value.trim().toLowerCase();
+      const filtered = countries.filter(c => {
+        const regionMatch = currentRegion === 'all' || c.region === currentRegion;
+        const keywordMatch = !keyword || c.name.includes(keyword) || c.city.includes(keyword);
+        return regionMatch && keywordMatch;
+      });
+      document.getElementById('count').textContent = filtered.length;
+      document.getElementById('list').innerHTML = filtered.map(c => `
+        <div class="country-item">
+          <div class="country-item-name">${c.name}</div>
+          <div class="country-item-city">${c.city}</div>
+        </div>
+      `).join('') || '<div style="padding:20px;color:#94a3b8;font-size:13px;">无匹配结果</div>';
+    }
+
+    render();
+
+    document.querySelectorAll('.region-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentRegion = tab.dataset.region;
+        render();
+      });
+    });
+
+    document.getElementById('search').addEventListener('input', render);
+  </script>
+
+</body>
+</html>
