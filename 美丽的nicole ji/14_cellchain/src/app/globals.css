@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+:root {
+  --bg:     #030e0a;
+  --bg-2:   #061408;
+  --bg-3:   #0a1d10;
+  --bg-4:   #0f251a;
+  --green:  #10b981;
+  --green-2:#34d399;
+  --teal:   #2dd4bf;
+  --muted:  rgba(187, 218, 200, 0.45);
+  --text:   #d4ede0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+}
