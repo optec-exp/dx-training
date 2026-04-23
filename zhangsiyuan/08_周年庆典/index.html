@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>10th Anniversary | オプテックエクスプレス株式会社 | OPTEC EXPRESS CO.,LTD</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cormorant+Garamond:wght@300;400;600&family=Noto+Sans+JP:wght@200;300;400;700&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── ROOT ── */
+:root{
+  --bg:#06080f;--bg-2:#0b0e1a;--bg-card:rgba(255,255,255,.04);
+  --gold:#c9a84c;--gold-lt:#f0d070;--gold-dk:#7a5e18;
+  --crimson:#b31c2e;--crimson-lt:#e0253b;
+  --fg:#e8dfc8;--fg-dim:rgba(232,223,200,.55);
+  --border:rgba(201,168,76,.18);--border-hover:rgba(201,168,76,.5);
+  --glass:rgba(201,168,76,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Noto Sans JP',sans-serif;overflow-x:hidden;line-height:1.7}
+
+/* ── CANVAS ── */
+#bg-cv,#cf-cv{position:fixed;inset:0;pointer-events:none}
+#bg-cv{z-index:0}
+#cf-cv{z-index:200}
+
+/* ── GLOBAL ── */
+section{position:relative;z-index:1}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+
+/* ── KEYFRAMES ── */
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes glowP{0%,100%{box-shadow:0 0 14px rgba(201,168,76,.4)}50%{box-shadow:0 0 36px rgba(201,168,76,.8),0 0 60px rgba(201,168,76,.25)}}
+@keyframes rippleOut{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes scrollDrop{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(18px)}}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .75s ease,transform .75s ease}
+.reveal.on{opacity:1;transform:none}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 70px;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 30%,rgba(179,28,46,.1) 0%,transparent 65%),radial-gradient(ellipse 60% 50% at 70% 80%,rgba(201,168,76,.07) 0%,transparent 60%);pointer-events:none}
+.hero-kicker{font-size:.68rem;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp .7s .2s forwards}
+.hero-num{font-family:'Playfair Display',serif;font-size:clamp(8rem,22vw,17rem);font-weight:900;line-height:.82;color:transparent;background:linear-gradient(125deg,var(--gold-dk) 0%,var(--gold) 35%,var(--gold-lt) 55%,var(--gold) 75%,var(--gold-dk) 100%);background-size:600px 100%;-webkit-background-clip:text;background-clip:text;animation:shimmer 5s linear infinite,fadeUp .8s .35s both;filter:drop-shadow(0 0 60px rgba(201,168,76,.3))}
+.hero-th{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,5vw,4.2rem);font-weight:300;color:var(--gold-lt);letter-spacing:.12em;opacity:0;animation:fadeUp .8s .55s forwards}
+.hero-year{font-size:.72rem;letter-spacing:.3em;color:var(--fg-dim);margin:18px 0 8px;opacity:0;animation:fadeUp .7s .75s forwards}
+.hero-jp{font-family:'Noto Serif JP',serif;font-size:clamp(.95rem,2.5vw,1.4rem);font-weight:600;letter-spacing:.18em;margin-bottom:4px;opacity:0;animation:fadeUp .7s .9s forwards}
+.hero-en{font-size:clamp(.7rem,1.6vw,.9rem);letter-spacing:.3em;color:var(--fg-dim);text-transform:uppercase;opacity:0;animation:fadeUp .7s 1.0s forwards}
+.hero-rule{width:1px;height:56px;background:linear-gradient(to bottom,transparent,var(--gold),transparent);margin:28px auto;opacity:0;animation:fadeIn .8s 1.2s forwards}
+.hero-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(.95rem,2.2vw,1.25rem);font-weight:300;font-style:italic;color:var(--fg);line-height:1.9;max-width:580px;opacity:0;animation:fadeUp .8s 1.4s forwards}
+.hero-tagline em{color:var(--gold);font-style:normal}
+.hero-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:32px;opacity:0;animation:fadeUp .7s 1.7s forwards}
+.h-pill{padding:5px 16px;border:1px solid var(--border);border-radius:20px;font-size:.68rem;letter-spacing:.12em;color:var(--fg-dim);transition:all .3s;cursor:default}
+.h-pill:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
+.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0;animation:fadeIn 1s 2.2s forwards}
+.hero-scroll span{font-size:.6rem;letter-spacing:.22em;color:var(--fg-dim);text-transform:uppercase}
+.scroll-arrow{font-size:.8rem;color:var(--gold);animation:scrollDrop 1.6s ease-in-out infinite}
+.orn{position:absolute;font-size:1.8rem;opacity:.28;animation:floatY 6s ease-in-out infinite;pointer-events:none}
+
+/* ── SECTION HEADER ── */
+.sec-head{text-align:center;padding:96px 0 56px}
+.sec-label{font-size:.65rem;letter-spacing:.38em;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3.5vw,2.6rem);font-weight:700;line-height:1.2}
+.sec-title em{color:var(--gold);font-style:italic}
+.sec-rule{width:48px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:16px auto 0}
+
+/* ── TIMELINE ── */
+#history{padding-bottom:80px}
+.tl-outer{position:relative;padding:0 0 40px}
+.tl-axis{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--border) 4%,var(--border) 96%,transparent);transform:translateX(-50%)}
+/* event row */
+.tl-row{display:grid;grid-template-columns:1fr 100px 1fr;align-items:start;margin-bottom:48px}
+.tl-row:last-child{margin-bottom:0}
+/* odd = card on left */
+.tl-row:nth-child(odd) .tl-card{grid-column:1;grid-row:1;text-align:right;padding-right:28px}
+.tl-row:nth-child(odd) .tl-node{grid-column:2;grid-row:1}
+.tl-row:nth-child(odd) .tl-blank{grid-column:3;grid-row:1}
+/* even = card on right */
+.tl-row:nth-child(even) .tl-blank{grid-column:1;grid-row:1}
+.tl-row:nth-child(even) .tl-node{grid-column:2;grid-row:1}
+.tl-row:nth-child(even) .tl-card{grid-column:3;grid-row:1;text-align:left;padding-left:28px}
+/* detail always full width */
+.tl-detail{grid-column:1/-1;grid-row:2;max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
+
+/* node */
+.tl-node{display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:6px}
+.tl-dot{border-radius:50%;border:2px solid;cursor:pointer;position:relative;transition:transform .25s,box-shadow .3s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.tl-dot:hover{transform:scale(1.12)}
+.d-xl{width:66px;height:66px;font-size:1.5rem;border-color:var(--gold);background:radial-gradient(circle,rgba(201,168,76,.2),rgba(201,168,76,.05));box-shadow:0 0 18px rgba(201,168,76,.4);animation:glowP 3s ease-in-out infinite}
+.d-lg{width:50px;height:50px;font-size:1.15rem;border-color:var(--gold);background:rgba(201,168,76,.1)}
+.d-md{width:38px;height:38px;font-size:.95rem;border-color:var(--crimson-lt);background:rgba(179,28,46,.12)}
+.d-sm{width:28px;height:28px;font-size:.72rem;border-color:rgba(201,168,76,.5);background:rgba(201,168,76,.06)}
+.ripple{position:absolute;inset:-8px;border-radius:50%;border:1.5px solid var(--gold);opacity:0}
+.d-xl .ripple{animation:rippleOut 2.4s ease-in-out infinite}
+.tl-yr{font-size:.6rem;letter-spacing:.12em;color:var(--gold);white-space:nowrap;font-weight:400}
+
+/* card */
+.tl-card{cursor:pointer}
+.tc-inner{background:var(--bg-card);border:1px solid var(--border);border-radius:3px;padding:14px 18px;transition:all .3s;backdrop-filter:blur(6px)}
+.tc-inner:hover,.tl-row.open .tc-inner{border-color:var(--border-hover);background:rgba(201,168,76,.08)}
+.tc-tag{display:inline-block;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-bottom:8px;font-weight:700}
+.tag-found{background:rgba(201,168,76,.18);color:var(--gold)}
+.tag-branch{background:rgba(179,28,46,.2);color:#f47a87}
+.tag-cert{background:rgba(45,150,200,.18);color:#7dd3f5}
+.tag-mile{background:rgba(120,80,220,.2);color:#c4b5fd}
+.tc-title{font-size:.88rem;font-weight:700;color:var(--fg);line-height:1.4;margin-bottom:4px}
+.tc-brief{font-size:.72rem;color:var(--fg-dim);line-height:1.5}
+
+/* detail panel */
+.tl-detail-in{background:rgba(201,168,76,.04);border:1px solid var(--border);border-radius:3px;margin:0 48px;padding:18px 24px;font-size:.78rem;color:var(--fg-dim);line-height:1.85}
+.tl-detail-in h4{font-size:.82rem;font-weight:700;color:var(--gold-lt);margin-bottom:10px}
+.tl-detail-in ul{list-style:none;display:flex;flex-direction:column;gap:5px;padding-left:4px}
+.tl-detail-in li::before{content:'◆  ';color:var(--gold);font-size:.5rem;vertical-align:middle}
+
+/* ── COUNTDOWN ── */
+#countdown{padding-bottom:96px}
+.cd-wrap{max-width:640px;margin:0 auto;text-align:center}
+/* trigger button */
+.cd-btn{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--crimson),var(--crimson-lt));border:2px solid rgba(201,168,76,.35);font-size:1.35rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(179,28,46,.5);transition:transform .25s,box-shadow .25s;animation:glowP 3s ease-in-out infinite}
+.cd-btn:hover{transform:scale(1.1)}
+/* input row */
+.cd-input-box{display:none;flex-direction:column;align-items:center;gap:12px;margin-top:24px;animation:fadeIn .4s ease both}
+.cd-input-box.show{display:flex}
+.cd-hint-lbl{font-size:.7rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase}
+.cd-row{display:flex;align-items:center;gap:8px}
+.cd-dt{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:9px 14px;color:var(--fg);font-family:inherit;font-size:.88rem;outline:none;color-scheme:dark;transition:border-color .25s}
+.cd-dt:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.12)}
+.cd-ok{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;color:var(--bg);font-size:.95rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;flex-shrink:0}
+.cd-ok:hover{transform:scale(1.1);box-shadow:0 4px 14px rgba(201,168,76,.4)}
+.cd-sub{font-size:.68rem;color:var(--fg-dim)}
+/* idle text */
+.cd-idle-text{margin-top:28px;font-size:.85rem;color:var(--fg-dim);line-height:1.9}
+.cd-idle-text strong{color:var(--gold)}
+/* display */
+.cd-display{display:none;margin-top:36px;animation:fadeIn .6s ease both}
+.cd-display.show{display:block}
+.cd-target-lbl{font-size:.7rem;letter-spacing:.15em;color:var(--fg-dim);margin-bottom:6px}
+.cd-target-val{font-size:.88rem;color:var(--gold);font-weight:700;margin-bottom:28px}
+.cd-units{display:flex;justify-content:center;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cd-unit{text-align:center;min-width:72px}
+.cd-num{font-family:'Playfair Display',serif;font-size:clamp(3.2rem,9vw,6rem);font-weight:900;line-height:1;display:block;color:transparent;background:linear-gradient(135deg,var(--gold-dk),var(--gold),var(--gold-lt),var(--gold));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;animation:shimmer 4s linear infinite;animation:pulse .6s ease}
+.cd-num-lbl{font-size:.6rem;letter-spacing:.18em;color:var(--fg-dim);text-transform:uppercase;margin-top:4px}
+.cd-sep{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,7vw,4.5rem);color:rgba(201,168,76,.4);line-height:1;padding-top:.05em;align-self:flex-start;margin-top:2px}
+.cd-reset-btn{margin-top:24px;background:none;border:1px solid var(--border);border-radius:6px;padding:6px 18px;color:var(--fg-dim);font-size:.72rem;font-family:inherit;cursor:pointer;transition:all .3s}
+.cd-reset-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── MESSAGE CARDS ── */
+#messages{padding-bottom:96px}
+.msg-wrap{display:grid;grid-template-columns:1fr 240px;gap:32px;align-items:start;max-width:960px;margin:0 auto;padding:0 24px}
+/* stage */
+.card-stage{position:relative;height:320px;margin-bottom:10px}
+.m-card{position:absolute;inset:0;border-radius:16px;padding:32px 28px 24px;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:scale(.97) translateY(6px);transition:opacity .65s ease,transform .65s ease;pointer-events:none;overflow:hidden}
+.m-card.active{opacity:1;transform:none;pointer-events:auto}
+.m-card.exit{opacity:0;transform:scale(.97) translateY(-6px)}
+/* 8 style variants */
+.s0{background:linear-gradient(135deg,#150828,#2e0f52);border:1px solid rgba(167,139,250,.3)}
+.s1{background:linear-gradient(135deg,#071826,#0e2d4a);border:1px solid rgba(96,165,250,.3)}
+.s2{background:linear-gradient(135deg,#1c0a0d,#4a1018);border:1px solid rgba(251,113,133,.3)}
+.s3{background:linear-gradient(135deg,#091a0e,#0f3a1c);border:1px solid rgba(52,211,153,.3)}
+.s4{background:linear-gradient(135deg,#1a1208,#3d2c08);border:1px solid rgba(251,191,36,.3)}
+.s5{background:linear-gradient(135deg,#1a0814,#3e0f30);border:1px solid rgba(232,121,249,.3)}
+.s6{background:linear-gradient(135deg,#08181a,#0d3535);border:1px solid rgba(45,212,191,.3)}
+.s7{background:linear-gradient(135deg,#120814,#2d0e3c);border:1px solid rgba(179,28,46,.3)}
+.mc-glow{position:absolute;top:-24px;right:-24px;width:130px;height:130px;border-radius:50%;opacity:.1;pointer-events:none}
+.s0 .mc-glow{background:radial-gradient(#a78bfa,transparent 70%)}
+.s1 .mc-glow{background:radial-gradient(#60a5fa,transparent 70%)}
+.s2 .mc-glow{background:radial-gradient(#fb7185,transparent 70%)}
+.s3 .mc-glow{background:radial-gradient(#34d399,transparent 70%)}
+.s4 .mc-glow{background:radial-gradient(#fbbf24,transparent 70%)}
+.s5 .mc-glow{background:radial-gradient(#e879f9,transparent 70%)}
+.s6 .mc-glow{background:radial-gradient(#2dd4bf,transparent 70%)}
+.s7 .mc-glow{background:radial-gradient(#f43f5e,transparent 70%)}
+.mc-quote{font-family:'Playfair Display',serif;font-size:3.2rem;line-height:1;opacity:.15;position:relative;z-index:1}
+.s0 .mc-quote{color:#a78bfa}.s1 .mc-quote{color:#60a5fa}.s2 .mc-quote{color:#fb7185}
+.s3 .mc-quote{color:#34d399}.s4 .mc-quote{color:#fbbf24}.s5 .mc-quote{color:#e879f9}
+.s6 .mc-quote{color:#2dd4bf}.s7 .mc-quote{color:#f43f5e}
+.mc-text{font-size:.88rem;line-height:1.8;flex:1;padding:.25rem 0 .8rem;color:rgba(255,255,255,.88);font-style:italic;position:relative;z-index:1}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.mc-name{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55)}
+.mc-icon{font-size:1.25rem;opacity:.55}
+/* progress */
+.card-prog{height:2px;background:rgba(201,168,76,.1);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(to right,var(--gold),var(--gold-lt));width:0%;transition:width .1s linear}
+/* nav */
+.card-nav{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px}
+.nav-btn{width:34px;height:34px;border-radius:50%;background:var(--glass);border:1px solid var(--border);color:var(--gold);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.nav-btn:hover{background:rgba(201,168,76,.15)}
+.nav-dots{display:flex;gap:5px;align-items:center}
+.n-dot{width:6px;height:6px;border-radius:50%;background:rgba(201,168,76,.2);transition:all .3s;cursor:pointer}
+.n-dot.on{background:var(--gold);transform:scale(1.4)}
+/* card action buttons */
+.card-actions{position:absolute;top:10px;right:10px;display:flex;gap:6px;opacity:0;transition:opacity .2s;z-index:2}
+.m-card:hover .card-actions,.m-card.active .card-actions{opacity:1}
+.ca-btn{width:28px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.5);backdrop-filter:blur(6px);color:#fff;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;line-height:1}
+.ca-btn:hover{transform:scale(1.12)}
+.ca-edit:hover{background:rgba(201,168,76,.55);border-color:rgba(201,168,76,.7)}
+.ca-del:hover{background:rgba(179,28,46,.6);border-color:rgba(179,28,46,.8)}
+/* panel */
+.msg-panel{background:var(--bg-card);border:1px solid var(--border);padding:24px 20px;border-radius:4px;position:sticky;top:24px}
+.mp-h{font-size:.82rem;font-weight:700;color:var(--gold-lt);margin-bottom:8px}
+.mp-p{font-size:.73rem;color:var(--fg-dim);line-height:1.7;margin-bottom:16px}
+.qr-box{background:#fff;border-radius:6px;padding:8px;width:100px;margin:0 auto 16px;display:block}
+.qr-box svg{width:100%;height:auto;display:block}
+.mp-add{width:100%;padding:10px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;color:var(--bg);font-size:.82rem;font-weight:800;font-family:inherit;cursor:pointer;transition:opacity .2s,transform .2s}
+.mp-add:hover{opacity:.9;transform:translateY(-1px)}
+.mp-count{text-align:center;font-size:.68rem;color:var(--fg-dim);margin-top:10px}
+.mp-count strong{color:var(--gold)}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#0e1120;border:1px solid rgba(201,168,76,.25);border-radius:16px;padding:28px;width:100%;max-width:420px;animation:fadeIn .35s ease both}
+.modal h3{font-size:1rem;font-weight:800;color:var(--gold-lt);margin-bottom:4px}
+.modal .modal-sub{font-size:.75rem;color:var(--fg-dim);margin-bottom:20px}
+.mf-lbl{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-dim);display:block;margin-bottom:5px}
+.mf-grp{margin-bottom:14px}
+.mf-input{width:100%;background:var(--glass);border:1px solid var(--border);border-radius:7px;padding:9px 13px;color:var(--fg);font-family:inherit;font-size:.85rem;outline:none;transition:border-color .25s}
+.mf-input:focus{border-color:var(--gold)}
+.mf-input::placeholder{color:rgba(232,223,200,.2)}
+textarea.mf-input{resize:vertical;min-height:80px}
+.modal-btns{display:flex;gap:10px;margin-top:18px}
+.m-cancel{flex:1;padding:10px;background:none;border:1px solid rgba(255,255,255,.12);border-radius:7px;color:var(--fg-dim);font-family:inherit;font-size:.83rem;cursor:pointer;transition:border-color .2s}
+.m-cancel:hover{border-color:rgba(255,255,255,.28)}
+.m-submit{flex:2;padding:10px;background:linear-gradient(135deg,var(--gold),var(--gold-lt));border:none;border-radius:7px;color:var(--bg);font-size:.83rem;font-weight:800;font-family:inherit;cursor:pointer}
+.m-submit:hover{opacity:.9}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;border-top:1px solid rgba(201,168,76,.1);padding:48px 24px 36px;text-align:center}
+.ft-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--gold);letter-spacing:.06em}
+.ft-sub{font-size:.7rem;color:var(--fg-dim);letter-spacing:.15em;margin:4px 0 20px}
+.ft-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:24px}
+.ft-tag{font-size:.68rem;color:var(--fg-dim);border:1px solid var(--border);padding:3px 10px;border-radius:3px}
+.ft-copy{font-size:.65rem;color:rgba(232,223,200,.25);letter-spacing:.08em}
+
+/* ── RESPONSIVE ── */
+@media(max-width:720px){
+  .tl-axis{left:24px}
+  .tl-row{grid-template-columns:52px 1fr}
+  .tl-row:nth-child(odd) .tl-card,
+  .tl-row:nth-child(even) .tl-card{grid-column:2;grid-row:1;text-align:left;padding:0}
+  .tl-row:nth-child(odd) .tl-node,
+  .tl-row:nth-child(even) .tl-node{grid-column:1;grid-row:1}
+  .tl-row:nth-child(odd) .tl-blank,
+  .tl-row:nth-child(even) .tl-blank{display:none}
+  .tl-detail-in{margin:0 0 0 52px}
+  .msg-wrap{grid-template-columns:1fr}
+  .msg-panel{position:static}
+  .cd-units{gap:6px}
+}
+@media(max-width:480px){
+  .cd-dt{font-size:.78rem;padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-cv"></canvas>
+<canvas id="cf-cv"></canvas>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <span class="orn" style="top:9%;left:7%;animation-delay:0s">✨</span>
+  <span class="orn" style="top:14%;right:9%;animation-delay:1.3s">🎊</span>
+  <span class="orn" style="bottom:22%;left:5%;animation-delay:.8s">🥂</span>
+  <span class="orn" style="bottom:18%;right:7%;animation-delay:2.1s">🎉</span>
+  <span class="orn" style="top:42%;left:2.5%;animation-delay:1.7s;font-size:1.2rem">⭐</span>
+  <span class="orn" style="top:58%;right:3%;animation-delay:.4s;font-size:1.2rem">⭐</span>
+
+  <div class="hero-kicker">創立十周年記念 · 10th Anniversary Special</div>
+  <div class="hero-num">10</div>
+  <div class="hero-th">th Anniversary</div>
+  <div class="hero-year">2016.12.08 — 2026</div>
+  <div class="hero-jp">オプテックエクスプレス株式会社</div>
+  <div class="hero-en">OPTEC EXPRESS CO., LTD</div>
+  <div class="hero-rule"></div>
+  <p class="hero-tagline">
+    <em>時間</em>の価値を証明し、物流における機会損失を消し去る。<br>
+    グローバル貿易の最後の砦として、速度は私たちの約束だ。
+  </p>
+  <div class="hero-pills">
+    <span class="h-pill">✈️ 緊急空輸 NFO</span>
+    <span class="h-pill">🧳 手提服務 OBC</span>
+    <span class="h-pill">❄️ 冷链物流</span>
+    <span class="h-pill">🔧 AOG Support</span>
+    <span class="h-pill">🏛️ 展会物流</span>
+    <span class="h-pill">⚠️ DG 运输</span>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scroll-arrow">↓</div></div>
+</section>
+
+<!-- ══ TIMELINE ══ -->
+<section id="history">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-label">Company Milestones</div>
+      <h2 class="sec-title">十年の<em>歩み</em></h2>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="tl-outer">
+      <div class="tl-axis"></div>
+
+      <!-- 2016 FOUNDING -->
+      <div class="tl-row reveal">
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-found">創業</span>
+          <div class="tc-title">オプテックエクスプレス株式会社 創立</div>
+          <div class="tc-brief">東京新橋 · 2016年12月8日</div>
+        </div></div>
+        <div class="tl-node">
+          <div class="tl-dot d-xl">🌟<div class="ripple"></div></div>
+          <div class="tl-yr">2016</div>
+        </div>
+        <div class="tl-blank"></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>オプテックエクスプレス株式会社 正式創立</h4>
+          <ul>
+            <li>2016年12月8日、東京都港区新橋にて代表取締役・木村勇輝が創業</li>
+            <li>日本における緊急航空貨物輸送の空白を埋めるべく、木村代表が香港系物流会社での勤務経験を活かし設立</li>
+            <li>資本金5,000万円（グループ全体1億4,100万円）、24時間365日対応体制を初日より確立</li>
+            <li>創業ミッション：「時間の価値を証明する」——物流における最後の砦として機能する</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2017 NARITA + NFO -->
+      <div class="tl-row reveal">
+        <div class="tl-blank"></div>
+        <div class="tl-node">
+          <div class="tl-dot d-md">🛫</div>
+          <div class="tl-yr">2017</div>
+        </div>
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-branch">拠点開設</span>
+          <div class="tc-title">成田事業所開設 · NFO/OBC本格始動</div>
+          <div class="tc-brief">空港直結オペレーション体制確立</div>
+        </div></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>成田国際空港至近に事業所を開設、緊急輸送の専門化を加速</h4>
+          <ul>
+            <li>NFO（Next Flight Out）サービスを本格展開、次便確保を核心業務として確立</li>
+            <li>OBC（On Board Courier）手持ち輸送サービス開始——人が直接機内に搭乗して貨物を届ける究極の速達</li>
+            <li>全スタッフにIATA危険品取扱い研修を義務付け、高品質な専門チームを構築</li>
+            <li>30分以内の見積回答体制を確立し、製造業・自動車業界からの信頼を獲得</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2018 上星物流 -->
+      <div class="tl-row reveal">
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-found">子会社設立</span>
+          <div class="tc-title">上星物流（中国・山東煙台）設立</div>
+          <div class="tc-brief">中国現地法人 · オプテックグループ参画</div>
+        </div></div>
+        <div class="tl-node">
+          <div class="tl-dot d-lg">🇨🇳</div>
+          <div class="tl-yr">2018</div>
+        </div>
+        <div class="tl-blank"></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>上星物流（OPTEC EXPRESS CO.,LTD）が山東省煙台市に設立</h4>
+          <ul>
+            <li>東京本社の子会社として設立、日中間の緊急貨物輸送を専門に担うアジア拠点</li>
+            <li>日系製造業の中国工場から日本への緊急部品調達をワンストップでカバー</li>
+            <li>中国スタッフ38名を擁する本格的なオペレーションセンターとして機能</li>
+            <li>上海事務所との連携により、中国全土のカバレッジを確保</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2019 HK + Vietnam -->
+      <div class="tl-row reveal">
+        <div class="tl-blank"></div>
+        <div class="tl-node">
+          <div class="tl-dot d-lg">🌏</div>
+          <div class="tl-yr">2019</div>
+        </div>
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-branch">拠点開設</span>
+          <div class="tc-title">香港 · ベトナム（ハノイ）事務所開設</div>
+          <div class="tc-brief">東南アジアネットワーク確立</div>
+        </div></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>香港・ハノイへの同時展開、東南アジア戦略を本格始動</h4>
+          <ul>
+            <li>香港国際空港至近に事務所を開設、アジア域内乗継コーディネートのハブ機能を担う</li>
+            <li>ベトナム・ハノイ事務所開設、急速に成長する製造業拠点への対応を強化</li>
+            <li>日系・韓系・台系工場からの緊急零部件輸送需要を即日対応</li>
+            <li>東南アジア全域への186都市ネットワーク展開の基盤を整備</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2021 UK -->
+      <div class="tl-row reveal">
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-branch">拠点開設</span>
+          <div class="tc-title">英国事務所開設 — 欧州展開</div>
+          <div class="tc-brief">ロンドン · ヒースロー空港圏</div>
+        </div></div>
+        <div class="tl-node">
+          <div class="tl-dot d-md">🇬🇧</div>
+          <div class="tl-yr">2021</div>
+        </div>
+        <div class="tl-blank"></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>英国事務所設立、欧州全域への緊急輸送カバレッジを確保</h4>
+          <ul>
+            <li>ロンドン・ヒースロー空港エリアに事務所を開設、欧州の玄関口を確保</li>
+            <li>日欧間の緊急貨物輸送をリアルタイムでコーディネート</li>
+            <li>冷蔵物流（Cold Chain）・医薬品輸送の欧州展開を本格始動</li>
+            <li>展会物流サービス（Exhibition Logistics）の欧州会場対応を開始</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2022 USA + Mexico -->
+      <div class="tl-row reveal">
+        <div class="tl-blank"></div>
+        <div class="tl-node">
+          <div class="tl-dot d-lg">🌎</div>
+          <div class="tl-yr">2022</div>
+        </div>
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-branch">拠点開設</span>
+          <div class="tc-title">米国 · メキシコ事務所開設</div>
+          <div class="tc-brief">北米 · 中南米ネットワーク完成</div>
+        </div></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>米国・メキシコへの同時展開、グローバルネットワーク三大陸制覇</h4>
+          <ul>
+            <li>米国事務所設立、日米間航空貨物の本地化対応とCargo Port直連を実現</li>
+            <li>メキシコ事務所設立、モンテレイ・メキシコシティ等の日系製造業拠点をカバー</li>
+            <li>AOG（Aircraft on Ground）緊急航材輸送サービスを北米向けに正式展開</li>
+            <li>アジア・欧州・北米の三大陸をカバーするグローバルネットワーク完成</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2022 IATA -->
+      <div class="tl-row reveal">
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-cert">認定取得</span>
+          <div class="tc-title">IATA公認貨物代理店 認定</div>
+          <div class="tc-brief">国際航空輸送協会 正式公認</div>
+        </div></div>
+        <div class="tl-node">
+          <div class="tl-dot d-sm">🏅</div>
+          <div class="tl-yr">2022</div>
+        </div>
+        <div class="tl-blank"></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>IATA（国際航空輸送協会）公認貨物代理店として正式認定</h4>
+          <ul>
+            <li>国際航空輸送の最高水準の資格。世界中の航空会社と公式に連携可能となる</li>
+            <li>東京税関許可 #737 の税関業者ライセンスも同時期に強化</li>
+            <li>危険品（DG）取扱いのIATA DGR準拠認定スタッフを全拠点に配置</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2023 RA + Revenue -->
+      <div class="tl-row reveal">
+        <div class="tl-blank"></div>
+        <div class="tl-node">
+          <div class="tl-dot d-sm">📈</div>
+          <div class="tl-yr">2023</div>
+        </div>
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-mile">事業マイルストーン</span>
+          <div class="tc-title">RA認定取得 · 年間売上30億円突破</div>
+          <div class="tc-brief">特定航空貨物取扱業者として認定</div>
+        </div></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>特定航空貨物取扱業者（RA）認定取得、年間30億円を達成</h4>
+          <ul>
+            <li>2023年、特定航空貨物取扱業者（Regulated Agent）として正式認定取得</li>
+            <li>年間緊急輸送件数2,428件、輸送重量574万kg、年間売上高30億円を達成</li>
+            <li>対応貨物品目数800種以上、186都市・700以上のパートナー都市ネットワーク確立</li>
+            <li>日本16名・中国38名のプロフェッショナルチームが24時間多言語（日中英）対応</li>
+          </ul>
+        </div></div>
+      </div>
+
+      <!-- 2026 10TH ANNIVERSARY -->
+      <div class="tl-row reveal">
+        <div class="tl-card"><div class="tc-inner">
+          <span class="tc-tag tag-mile">創立10周年</span>
+          <div class="tc-title">10th Anniversary — 次の十年へ</div>
+          <div class="tc-brief">OPTEC EXPRESS · 2016 → 2026</div>
+        </div></div>
+        <div class="tl-node">
+          <div class="tl-dot d-xl">🎊<div class="ripple"></div></div>
+          <div class="tl-yr">2026</div>
+        </div>
+        <div class="tl-blank"></div>
+        <div class="tl-detail"><div class="tl-detail-in">
+          <h4>🎉 創立10周年——時間の価値を証明し続けた10年</h4>
+          <ul>
+            <li>東京・成田・香港・ハノイ・上海・ロンドン・米国・メキシコ 全8拠点確立</li>
+            <li>NFO / OBC / 冷链 / AOG / 展会物流 / DG運輸 ——6大コアサービス全線成熟</li>
+            <li>「時間の価値」を証明し続けた10年に感謝し、次の10年の挑戦を誓う</li>
+            <li>引き続き世界中のお荷主様の「最後の砦」として、速度を約束し続けます</li>
+          </ul>
+        </div></div>
+      </div>
+
+    </div><!-- /tl-outer -->
+  </div>
+</section>
+
+<!-- ══ COUNTDOWN ══ -->
+<section id="countdown">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-label">Countdown Timer</div>
+      <h2 class="sec-title"><em>時</em>を刻む</h2>
+      <div class="sec-rule"></div>
+    </div>
+    <div class="cd-wrap reveal">
+      <button class="cd-btn" id="cdBtn" title="目標時刻を設定">⏳</button>
+
+      <div class="cd-input-box" id="cdBox">
+        <div class="cd-hint-lbl">目標時刻を入力 / 设置目标时间</div>
+        <div class="cd-row">
+          <input type="datetime-local" class="cd-dt" id="cdInput">
+          <button class="cd-ok" id="cdOk" title="確認">✓</button>
+        </div>
+        <div class="cd-sub">Enter キーまたは ✓ で開始</div>
+      </div>
+
+      <div class="cd-idle-text" id="cdIdle">
+        <strong>時間は最も希少な資源。</strong><br>
+        目標の瞬間を設定して、カウントダウンをはじめよう。<br>
+        次の周年記念日・重要な出荷・大切な約束まで——
+      </div>
+
+      <div class="cd-display" id="cdDisplay">
+        <div class="cd-target-lbl">距离目标 / カウントダウン</div>
+        <div class="cd-target-val" id="cdTargetVal">——</div>
+        <div class="cd-units">
+          <div class="cd-unit"><span class="cd-num" id="cdD">00</span><div class="cd-num-lbl">日 Days</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cdH">00</span><div class="cd-num-lbl">時 Hours</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cdM">00</span><div class="cd-num-lbl">分 Min</div></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cdS">00</span><div class="cd-num-lbl">秒 Sec</div></div>
+        </div>
+        <button class="cd-reset-btn" id="cdReset">やり直す / 重新设置</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MESSAGES ══ -->
+<section id="messages">
+  <div class="sec-head reveal">
+    <div class="sec-label">Employee Messages</div>
+    <h2 class="sec-title">同仁 <em>祝福贺卡</em></h2>
+    <div class="sec-rule"></div>
+  </div>
+  <div class="msg-wrap">
+    <div>
+      <div class="card-stage" id="cardStage"></div>
+      <div class="card-prog"><div class="prog-fill" id="progFill"></div></div>
+      <div class="card-nav">
+        <button class="nav-btn" id="prevBtn">‹</button>
+        <div class="nav-dots" id="navDots"></div>
+        <button class="nav-btn" id="nextBtn">›</button>
+      </div>
+    </div>
+    <div class="msg-panel">
+      <div class="mp-h">✉️ 留言管理</div>
+      <p class="mp-p">点击添加按钮新增留言；将鼠标移到贺卡上，可对该条留言进行编辑或删除。</p>
+      <button class="mp-add" id="addBtn">✍️ 添加留言</button>
+      <div class="mp-count">現在 <strong id="msgNum">8</strong> 件のメッセージ</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="ft-logo">OPTEC EXPRESS CO., LTD</div>
+  <div class="ft-sub">オプテックエクスプレス株式会社 · 創立10周年 2016–2026</div>
+  <div class="ft-tags">
+    <span class="ft-tag">🗼 東京 HQ</span>
+    <span class="ft-tag">✈️ 成田</span>
+    <span class="ft-tag">🇨🇳 煙台 上星物流</span>
+    <span class="ft-tag">🇨🇳 上海</span>
+    <span class="ft-tag">🇭🇰 香港</span>
+    <span class="ft-tag">🇻🇳 ハノイ</span>
+    <span class="ft-tag">🇬🇧 ロンドン</span>
+    <span class="ft-tag">🇺🇸 USA</span>
+    <span class="ft-tag">🇲🇽 メキシコ</span>
+  </div>
+  <div class="ft-copy">© 2016–2026 OPTEC EXPRESS CO.,LTD · All Rights Reserved · 十周年快乐 🎉</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="modalTitle">✍️ 添加留言</h3>
+    <p class="modal-sub" id="modalSub">填写姓名和祝福语，提交后将出现在贺卡轮播中。</p>
+    <div class="mf-grp"><label class="mf-lbl">お名前 / 部署</label>
+      <input class="mf-input" id="mfName" type="text" placeholder="例: 田中 / 東京営業部" maxlength="30"></div>
+    <div class="mf-grp"><label class="mf-lbl">メッセージ</label>
+      <textarea class="mf-input" id="mfText" placeholder="十周年へのお祝いメッセージをどうぞ……" maxlength="120"></textarea></div>
+    <div class="modal-btns">
+      <button class="m-cancel" id="mCancel">キャンセル</button>
+      <button class="m-submit" id="mSubmit">🎉 提交</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══ STARS CANVAS ═══ */
+(()=>{
+  const cv=document.getElementById('bg-cv'),ctx=cv.getContext('2d');
+  let W,H,st=[];
+  const resize=()=>{
+    W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;
+    st=Array.from({length:180},()=>({
+      x:Math.random()*W,y:Math.random()*H,
+      r:.15+Math.random()*1.1,
+      o:.05+Math.random()*.55,
+      s:.15+Math.random()*.4,
+      d:Math.random()>.5?1:-1
+    }));
+  };
+  resize();window.addEventListener('resize',resize);
+  const draw=()=>{
+    ctx.clearRect(0,0,W,H);
+    st.forEach(s=>{
+      s.o+=.004*s.s*s.d;
+      if(s.o>.65||s.o<.04)s.d*=-1;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(201,168,76,${s.o})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  };
+  draw();
+})();
+
+/* ═══ CONFETTI ═══ */
+const COLORS=['#c9a84c','#f0d070','#b31c2e','#e0253b','#ffffff','#ff8fa3','#c4b5fd'];
+function launchConfetti(n=120){
+  const cv=document.getElementById('cf-cv'),ctx=cv.getContext('2d');
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const ps=Array.from({length:n},()=>({
+    x:Math.random()*cv.width,y:-20-Math.random()*350,
+    w:5+Math.random()*8,h:3+Math.random()*5,
+    c:COLORS[Math.floor(Math.random()*COLORS.length)],
+    rot:Math.random()*Math.PI*2,
+    vx:(Math.random()-.5)*2.5,vy:1.5+Math.random()*2.8,
+    vr:(Math.random()-.5)*.14,op:1
+  }));
+  let f=0;
+  const go=()=>{
+    f++;ctx.clearRect(0,0,cv.width,cv.height);
+    let alive=false;
+    ps.forEach(p=>{
+      if(p.y>cv.height+20)return;alive=true;
+      if(f>90)p.op-=.006;
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+      ctx.save();ctx.globalAlpha=Math.max(0,p.op);
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    alive?requestAnimationFrame(go):ctx.clearRect(0,0,cv.width,cv.height);
+  };
+  go();
+}
+launchConfetti();
+
+/* ═══ SCROLL REVEAL ═══ */
+const ro=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');ro.unobserve(e.target)}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+/* ═══ TIMELINE ═══ */
+document.querySelectorAll('.tl-row').forEach(row=>{
+  const dot=row.querySelector('.tl-dot');
+  const card=row.querySelector('.tl-card');
+  const detail=row.querySelector('.tl-detail');
+  const inner=detail.querySelector('.tl-detail-in');
+  const toggle=()=>{
+    const open=row.classList.contains('open');
+    document.querySelectorAll('.tl-row.open').forEach(r=>{
+      r.classList.remove('open');
+      r.querySelector('.tl-detail').style.maxHeight='0';
+    });
+    if(!open){
+      row.classList.add('open');
+      detail.style.maxHeight=(inner.scrollHeight+24)+'px';
+    }
+  };
+  dot.addEventListener('click',toggle);
+  card.addEventListener('click',toggle);
+});
+
+/* ═══ COUNTDOWN ═══ */
+const cdBtn=document.getElementById('cdBtn');
+const cdBox=document.getElementById('cdBox');
+const cdInput=document.getElementById('cdInput');
+const cdOk=document.getElementById('cdOk');
+const cdIdle=document.getElementById('cdIdle');
+const cdDisplay=document.getElementById('cdDisplay');
+const cdTargetVal=document.getElementById('cdTargetVal');
+const cdReset=document.getElementById('cdReset');
+const cdD=document.getElementById('cdD'),cdH=document.getElementById('cdH');
+const cdM=document.getElementById('cdM'),cdS=document.getElementById('cdS');
+
+// default to now
+const resetDefault=()=>{const n=new Date();n.setSeconds(0,0);cdInput.value=n.toISOString().slice(0,16)};
+resetDefault();
+
+let cdTimer=null;
+cdBtn.addEventListener('click',()=>{
+  const vis=cdBox.classList.contains('show');
+  if(vis){cdBox.classList.remove('show')}
+  else{resetDefault();cdBox.classList.add('show');setTimeout(()=>cdInput.focus(),60)}
+});
+
+function startCD(){
+  const v=cdInput.value;if(!v)return;
+  const t=new Date(v);if(isNaN(t))return;
+  cdBox.classList.remove('show');
+  cdIdle.style.display='none';
+  cdDisplay.classList.add('show');
+  cdTargetVal.textContent=t.toLocaleString('zh-CN',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  if(cdTimer)clearInterval(cdTimer);
+  const tick=()=>{
+    const diff=t-new Date();
+    if(diff<=0){
+      cdD.textContent=cdH.textContent=cdM.textContent=cdS.textContent='00';
+      clearInterval(cdTimer);launchConfetti(80);return;
+    }
+    const pad=n=>String(n).padStart(2,'0');
+    cdD.textContent=pad(Math.floor(diff/86400000));
+    cdH.textContent=pad(Math.floor(diff%86400000/3600000));
+    cdM.textContent=pad(Math.floor(diff%3600000/60000));
+    cdS.textContent=pad(Math.floor(diff%60000/1000));
+    // shimmer re-trigger
+    [cdD,cdH,cdM,cdS].forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation=''});
+  };
+  tick();cdTimer=setInterval(tick,1000);
+}
+cdOk.addEventListener('click',startCD);
+cdInput.addEventListener('keydown',e=>{if(e.key==='Enter')startCD()});
+cdReset.addEventListener('click',()=>{
+  clearInterval(cdTimer);
+  cdDisplay.classList.remove('show');
+  cdIdle.style.display='';
+  resetDefault();cdBox.classList.add('show');
+  setTimeout(()=>cdInput.focus(),60);
+});
+
+/* ═══ MESSAGE CARDS ═══ */
+let msgs=[
+  {name:'木村 勇輝 / 代表取締役',text:'十年前の夢が、世界8拠点のネットワークになりました。ここまで支えてくれた全スタッフ・お取引先様に心より感謝します。これからの十年も、「時間の価値」を証明し続けます！',style:0,icon:'🌟'},
+  {name:'田中 / 東京営業部',text:'創立から十年、あっという間でした。緊急便の手配で深夜に電話が鳴るたびに、この仕事の意味を感じます。お客様の「間に合った！」の一言が全ての原動力です。10周年おめでとうございます！',style:1,icon:'✈️'},
+  {name:'Emily / UK Office',text:"Happy 10th Anniversary, OPTEC! A decade of proving that time truly is the most valuable resource. I'm incredibly proud to be part of this global family. Here's to the next ten years of speed and excellence! 🚀",style:2,icon:'🇬🇧'},
+  {name:'Sarah / 香港辦事處',text:'十年了！看著公司從東京一個小辦公室成長為全球八個據點，每一票緊急件背後都是我們對客戶承諾的兌現。十周年快樂，繼續向前！',style:3,icon:'🏙️'},
+  {name:'Nguyen Minh / Hà Nội',text:'10 năm - một hành trình đáng tự hào! OPTEC EXPRESS đã chứng minh rằng tốc độ và sự đáng tin cậy có thể thay đổi cả ngành logistics. Chúc mừng 10 năm thành lập! 🎊',style:4,icon:'🌿'},
+  {name:'张经理 / 上星物流 烟台',text:'从2018年上星成立到现在，见证了集团蓬勃发展的每一步。十周年是新的起点，愿上星和集团在未来的十年里继续乘风破浪，让速度成为我们永恒的承诺！🛫',style:5,icon:'🇨🇳'},
+  {name:'Carlos / Mexico Office',text:'¡Feliz 10° Aniversario, OPTEC EXPRESS! México está orgulloso de ser parte de esta familia global. Diez años de velocidad, confianza y excelencia. ¡El mejor está por venir! 🎉',style:6,icon:'🇲🇽'},
+  {name:'Kevin / US Operations',text:"From a single office in Shinbashi to a global powerhouse spanning 8 locations — that's the OPTEC story. Ten years of never missing a deadline. Proud to be part of this incredible team! 🌏",style:7,icon:'🗽'},
+];
+const INTERVAL=8000;
+let cur=0,progRaf=null,autoTmr=null,progStart=null;
+const stage=document.getElementById('cardStage');
+const progFill=document.getElementById('progFill');
+const navDots=document.getElementById('navDots');
+const msgNum=document.getElementById('msgNum');
+
+function buildCards(){
+  stage.innerHTML='';navDots.innerHTML='';
+  msgs.forEach((m,i)=>{
+    const c=document.createElement('div');
+    c.className=`m-card s${m.style}`;
+    c.innerHTML=`<div class="mc-glow"></div>`
+      +`<div class="card-actions">`
+      +`<button class="ca-btn ca-edit" title="编辑" data-idx="${i}">✎</button>`
+      +`<button class="ca-btn ca-del" title="删除" data-idx="${i}">✕</button>`
+      +`</div>`
+      +`<div class="mc-quote">"</div><p class="mc-text">${m.text}</p>`
+      +`<div class="mc-foot"><span class="mc-name">${m.name}</span><span class="mc-icon">${m.icon}</span></div>`;
+    if(i===cur)c.classList.add('active');
+    stage.appendChild(c);
+    const d=document.createElement('div');
+    d.className='n-dot'+(i===cur?' on':'');
+    d.onclick=()=>goTo(i);
+    navDots.appendChild(d);
+  });
+  msgNum.textContent=msgs.length;
+  /* delegate edit/delete clicks */
+  stage.querySelectorAll('.ca-edit').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();openEdit(+btn.dataset.idx);});
+  });
+  stage.querySelectorAll('.ca-del').forEach(btn=>{
+    btn.addEventListener('click',e=>{e.stopPropagation();deleteMsg(+btn.dataset.idx);});
+  });
+}
+function goTo(idx){
+  const cards=stage.querySelectorAll('.m-card');
+  const dots=navDots.querySelectorAll('.n-dot');
+  if(cards[cur]){cards[cur].classList.remove('active');cards[cur].classList.add('exit');setTimeout(()=>cards[cur]?.classList.remove('exit'),650);}
+  cur=(idx+msgs.length)%msgs.length;
+  if(cards[cur])cards[cur].classList.add('active');
+  dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+  startProg();restartAuto();
+}
+function startProg(){
+  if(progRaf)cancelAnimationFrame(progRaf);
+  progFill.style.transition='none';progFill.style.width='0%';
+  progStart=performance.now();
+  const step=ts=>{
+    const p=Math.min(100,(ts-progStart)/INTERVAL*100);
+    progFill.style.width=p+'%';
+    if(p<100)progRaf=requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function restartAuto(){
+  if(autoTmr)clearTimeout(autoTmr);
+  autoTmr=setTimeout(()=>goTo(cur+1),INTERVAL);
+}
+document.getElementById('prevBtn').onclick=()=>goTo(cur-1);
+document.getElementById('nextBtn').onclick=()=>goTo(cur+1);
+buildCards();startProg();restartAuto();
+
+/* Modal */
+const modalBg=document.getElementById('modalBg');
+const mfName=document.getElementById('mfName');
+const mfText=document.getElementById('mfText');
+const modalTitle=document.getElementById('modalTitle');
+const modalSub=document.getElementById('modalSub');
+const mSubmit=document.getElementById('mSubmit');
+let editIdx=-1;
+
+function openModal(mode,idx){
+  editIdx=(mode==='edit')?idx:-1;
+  if(mode==='edit'){
+    const m=msgs[idx];
+    mfName.value=m.name;mfText.value=m.text;
+    modalTitle.textContent='✏️ 编辑留言';
+    modalSub.textContent='修改后点击保存，内容将立即更新。';
+    mSubmit.textContent='💾 保存修改';
+  }else{
+    mfName.value='';mfText.value='';
+    modalTitle.textContent='✍️ 添加留言';
+    modalSub.textContent='填写姓名和祝福语，提交后将出现在贺卡轮播中。';
+    mSubmit.textContent='🎉 提交';
+  }
+  modalBg.classList.add('show');
+  setTimeout(()=>mfName.focus(),60);
+}
+function openEdit(idx){openModal('edit',idx);}
+function deleteMsg(idx){
+  if(!confirm(`确认删除「${msgs[idx].name}」的留言吗？`))return;
+  msgs.splice(idx,1);
+  if(msgs.length===0){buildCards();return;}
+  cur=Math.min(cur,msgs.length-1);
+  buildCards();
+  goTo(cur);
+}
+
+document.getElementById('addBtn').onclick=()=>openModal('add');
+document.getElementById('mCancel').onclick=()=>modalBg.classList.remove('show');
+modalBg.addEventListener('click',e=>{if(e.target===modalBg)modalBg.classList.remove('show')});
+mSubmit.addEventListener('click',()=>{
+  const name=mfName.value.trim(),text=mfText.value.trim();
+  if(!name||!text){alert('请填写姓名和留言内容');return;}
+  if(editIdx>=0){
+    msgs[editIdx]={...msgs[editIdx],name,text};
+    const prev=cur;buildCards();cur=prev;
+    modalBg.classList.remove('show');
+    goTo(prev);
+  }else{
+    msgs.push({name,text,style:msgs.length%8,icon:['✨','🎉','❤️','🌟','🥂','🎊','💫','🌸'][msgs.length%8]});
+    const prev=cur;buildCards();cur=prev;
+    modalBg.classList.remove('show');
+    goTo(msgs.length-1);
+  }
+});
+</script>
+</body>
+</html>

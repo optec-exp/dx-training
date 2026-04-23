@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TALA Network | 96 Countries | The Aerospace Logistics Alliance</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── ROOT ── */
+:root{
+  --bg:#060d1f;--bg2:#0a1628;--bg3:#0d1f3c;
+  --blue:#1e7cf8;--blue-lt:#60a5fa;--blue-dk:#1251b3;
+  --cyan:#00d2ff;--gold:#f0a500;
+  --eu:#3b82f6;--am:#f59e0b;--ap:#10b981;--me:#f97316;--af:#a855f7;
+  --fg:#e2e8f0;--fg-dim:rgba(226,232,240,.5);
+  --border:rgba(59,130,246,.18);--border-h:rgba(59,130,246,.48);
+  --glass:rgba(59,130,246,.05);
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;overflow-x:hidden;line-height:1.6}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--blue-dk);border-radius:3px}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(6,13,31,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 32px;height:58px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:11px}
+.nav-mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--blue-dk),var(--blue));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:1rem;color:#fff;letter-spacing:-.02em;flex-shrink:0}
+.nav-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:.03em}
+.nav-name small{color:var(--fg-dim);font-weight:400;font-size:.7rem;display:block;letter-spacing:.1em}
+.nav-pill{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--blue-lt);border:1px solid rgba(96,165,250,.28);border-radius:20px;padding:3px 11px}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 56px;position:relative;overflow:hidden}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 65% 55% at 50% 45%,rgba(30,124,248,.13) 0%,transparent 65%),radial-gradient(ellipse 45% 35% at 75% 75%,rgba(0,210,255,.05) 0%,transparent 55%);pointer-events:none}
+.hero-eyebrow{font-size:.62rem;letter-spacing:.38em;text-transform:uppercase;color:var(--blue-lt);margin-bottom:22px;opacity:0;animation:fadeUp .6s .2s forwards}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.6rem,7vw,5.5rem);font-weight:700;line-height:1.06;letter-spacing:-.025em;opacity:0;animation:fadeUp .8s .35s forwards}
+.hero-title .tala{color:transparent;background:linear-gradient(110deg,var(--blue) 0%,var(--cyan) 45%,var(--blue-lt) 90%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;animation:fadeUp .8s .35s forwards,shimmer 6s linear 1s infinite}
+.hero-title .accent{color:var(--fg-dim)}
+.hero-sub{max-width:500px;font-size:clamp(.85rem,1.8vw,1rem);color:var(--fg-dim);margin:22px auto 0;line-height:1.8;opacity:0;animation:fadeUp .8s .55s forwards}
+.hero-pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:34px;opacity:0;animation:fadeUp .7s .75s forwards}
+.h-pill{display:flex;align-items:center;gap:6px;padding:6px 15px;border:1px solid var(--border);border-radius:20px;font-size:.7rem;letter-spacing:.05em;color:var(--fg-dim);transition:all .25s;cursor:default}
+.h-pill:hover{border-color:var(--border-h);color:var(--fg);background:var(--glass)}
+.h-pill .rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hero-scroll{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px;opacity:0;animation:fadeIn 1s 1.6s forwards}
+.hero-scroll span{font-size:.58rem;letter-spacing:.22em;color:var(--fg-dim);text-transform:uppercase}
+.scroll-bar{width:1px;height:38px;background:linear-gradient(to bottom,transparent,var(--blue-lt));animation:scrollBar 2s ease-in-out infinite}
+
+/* ── STATS ── */
+#stats{padding:0 24px 72px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:960px;margin:0 auto}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px 18px;text-align:center;transition:border-color .3s,transform .3s}
+.stat-box:hover{border-color:var(--border-h);transform:translateY(-3px)}
+.stat-icon{font-size:1.5rem;display:block;margin-bottom:10px}
+.stat-num{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;color:var(--blue-lt);line-height:1;display:block}
+.stat-lbl{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);margin-top:6px}
+
+/* ── SECTION HEADER ── */
+.sec-head{text-align:center;padding:72px 0 44px}
+.sec-label{font-size:.6rem;letter-spacing:.36em;text-transform:uppercase;color:var(--blue-lt);margin-bottom:12px}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,3.2vw,2.3rem);font-weight:700;letter-spacing:-.015em;line-height:1.2}
+.sec-title em{color:var(--blue-lt);font-style:normal}
+.sec-rule{width:44px;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));margin:14px auto 0;border-radius:1px}
+
+/* ── MAP ── */
+#map-section{padding:0 0 72px}
+.map-wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.filter-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.filter-lbl{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);margin-right:3px;flex-shrink:0}
+.f-btn{padding:5px 15px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--fg-dim);font-size:.7rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;letter-spacing:.05em}
+.f-btn:hover{border-color:var(--border-h);color:var(--fg)}
+.f-btn.on{color:var(--fg);background:rgba(59,130,246,.12);border-color:var(--blue)}
+.f-btn[data-r="EU"].on{border-color:var(--eu);color:var(--eu);background:rgba(59,130,246,.1)}
+.f-btn[data-r="AM"].on{border-color:var(--am);color:var(--am);background:rgba(245,158,11,.1)}
+.f-btn[data-r="AP"].on{border-color:var(--ap);color:var(--ap);background:rgba(16,185,129,.1)}
+.f-btn[data-r="ME"].on{border-color:var(--me);color:var(--me);background:rgba(249,115,22,.1)}
+.f-btn[data-r="AF"].on{border-color:var(--af);color:var(--af);background:rgba(168,85,247,.1)}
+#map{width:100%;height:520px;border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;padding:0 2px}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--fg-dim)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Leaflet overrides */
+.leaflet-container{background:#060d1f!important}
+.leaflet-control-zoom{border:1px solid var(--border)!important;border-radius:8px!important;overflow:hidden}
+.leaflet-control-zoom a{background:var(--bg2)!important;color:var(--fg)!important;border:none!important;border-bottom:1px solid var(--border)!important;width:28px!important;height:28px!important;line-height:28px!important}
+.leaflet-control-zoom a:hover{background:var(--bg3)!important;color:var(--blue-lt)!important}
+.leaflet-control-zoom-out{border-bottom:none!important}
+.leaflet-control-attribution{background:rgba(6,13,31,.75)!important;color:rgba(226,232,240,.3)!important;font-size:.55rem!important}
+.leaflet-control-attribution a{color:rgba(96,165,250,.5)!important}
+.tala-popup .leaflet-popup-content-wrapper{background:var(--bg3);border:1px solid var(--border-h);border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.75),0 0 0 1px rgba(59,130,246,.1);padding:0}
+.tala-popup .leaflet-popup-content{margin:0;padding:14px 16px;min-width:148px}
+.tala-popup .leaflet-popup-tip{background:var(--bg3)}
+.tala-popup .leaflet-popup-close-button{color:rgba(226,232,240,.45)!important;top:6px!important;right:8px!important;font-size:1.1rem!important}
+.tala-popup .leaflet-popup-close-button:hover{color:var(--fg)!important}
+.popup-flag{font-size:1.5rem;margin-bottom:5px}
+.popup-country{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.93rem;color:var(--fg)}
+.popup-city{font-size:.76rem;color:var(--fg-dim);margin-top:3px}
+.popup-iata{display:inline-flex;align-items:center;gap:4px;font-size:.63rem;font-weight:700;letter-spacing:.1em;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue-lt);padding:2px 7px;border-radius:4px;margin-top:7px}
+
+/* map dots */
+.map-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);position:relative;cursor:pointer;transition:transform .18s}
+.map-dot:hover{transform:scale(1.8)}
+.map-dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;animation:dotPulse 2.6s ease-out infinite}
+
+/* ── COUNTRIES ── */
+#countries{padding:0 0 72px}
+.countries-wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.search-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.search-input{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 16px;color:var(--fg);font-family:'Inter',sans-serif;font-size:.84rem;outline:none;transition:border-color .25s}
+.search-input:focus{border-color:var(--border-h);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.search-input::placeholder{color:var(--fg-dim)}
+.c-count{font-size:.7rem;color:var(--fg-dim);white-space:nowrap}
+.c-count strong{color:var(--blue-lt);font-weight:600}
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px}
+.c-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 13px;display:flex;align-items:center;gap:10px;transition:all .22s;cursor:pointer}
+.c-card:hover{border-color:var(--border-h);background:rgba(30,124,248,.07);transform:translateY(-2px)}
+.c-flag{font-size:1.4rem;flex-shrink:0;line-height:1}
+.c-name{font-size:.8rem;font-weight:600;color:var(--fg)}
+.c-sub{font-size:.68rem;color:var(--fg-dim);margin-top:1px}
+.c-badge{display:inline-block;font-size:.56rem;font-weight:700;letter-spacing:.07em;padding:1px 6px;border-radius:3px;margin-top:4px;text-transform:uppercase}
+.badge-EU{background:rgba(59,130,246,.18);color:var(--eu)}
+.badge-AM{background:rgba(245,158,11,.18);color:var(--am)}
+.badge-AP{background:rgba(16,185,129,.18);color:var(--ap)}
+.badge-ME{background:rgba(249,115,22,.18);color:var(--me)}
+.badge-AF{background:rgba(168,85,247,.18);color:var(--af)}
+.c-card.hidden{display:none}
+
+/* ── ABOUT ── */
+#about{padding:0 24px 72px}
+.about-inner{max-width:960px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.about-text .a-label{font-size:.6rem;letter-spacing:.36em;text-transform:uppercase;color:var(--blue-lt);margin-bottom:12px}
+.about-text h3{font-family:'Space Grotesk',sans-serif;font-size:1.55rem;font-weight:700;letter-spacing:-.015em;line-height:1.25;margin-bottom:16px}
+.about-text p{color:var(--fg-dim);font-size:.86rem;line-height:1.82;margin-bottom:10px}
+.svc-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.svc-list li{display:flex;align-items:flex-start;gap:10px;font-size:.82rem;color:var(--fg-dim);line-height:1.5}
+.svc-list li::before{content:'✈';color:var(--blue-lt);flex-shrink:0;margin-top:1px}
+.svc-list li strong{color:var(--fg);font-weight:600}
+
+/* ── FOOTER ── */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:32px 24px;text-align:center}
+.ft-logo{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.05em}
+.ft-logo span{color:var(--blue-lt)}
+.ft-sub{font-size:.7rem;color:var(--fg-dim);letter-spacing:.1em;margin-top:5px}
+.ft-note{font-size:.62rem;color:rgba(226,232,240,.22);margin-top:16px}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes scrollBar{0%,100%{opacity:.2;transform:scaleY(.3) translateY(-50%)}50%{opacity:1;transform:scaleY(1) translateY(0)}}
+@keyframes dotPulse{0%{transform:scale(.7);opacity:.5}100%{transform:scale(2.6);opacity:0}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.on{opacity:1;transform:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  #map{height:380px}
+  .about-inner{grid-template-columns:1fr;gap:28px;padding:28px 22px}
+}
+@media(max-width:520px){
+  nav{padding:0 16px}
+  .nav-name small{display:none}
+  .stats-grid{gap:10px}
+  .stat-box{padding:18px 12px}
+  .country-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-mark">T</div>
+    <div class="nav-name">TALA Network<small>The Aerospace Logistics Alliance</small></div>
+  </div>
+  <div class="nav-pill">96 Countries</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">Global Aerospace Network · Est. 2012</div>
+  <h1 class="hero-title">
+    The <span class="tala">TALA</span><br>
+    <span class="accent">Network</span>
+  </h1>
+  <p class="hero-sub">An international alliance of independent freight forwarders exclusively dedicated to aerospace logistics — AOG, critical freight, OBC, and beyond. Glocal coverage across 96 countries.</p>
+  <div class="hero-pills">
+    <div class="h-pill"><div class="rdot" style="background:var(--eu)"></div>Europe · 26</div>
+    <div class="h-pill"><div class="rdot" style="background:var(--am)"></div>Americas · 18</div>
+    <div class="h-pill"><div class="rdot" style="background:var(--ap)"></div>Asia-Pacific · 27</div>
+    <div class="h-pill"><div class="rdot" style="background:var(--me)"></div>Middle East · 11</div>
+    <div class="h-pill"><div class="rdot" style="background:var(--af)"></div>Africa · 14</div>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scroll-bar"></div></div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid reveal">
+    <div class="stat-box">
+      <span class="stat-icon">🌍</span>
+      <span class="stat-num" data-target="96" data-suffix="">0</span>
+      <div class="stat-lbl">Countries</div>
+    </div>
+    <div class="stat-box">
+      <span class="stat-icon">✈️</span>
+      <span class="stat-num" data-target="135" data-suffix="+">0</span>
+      <div class="stat-lbl">Airports</div>
+    </div>
+    <div class="stat-box">
+      <span class="stat-icon">🤝</span>
+      <span class="stat-num" data-target="80" data-suffix="+">0</span>
+      <div class="stat-lbl">Partners</div>
+    </div>
+    <div class="stat-box">
+      <span class="stat-icon">📅</span>
+      <span class="stat-num" data-target="2012" data-suffix="">0</span>
+      <div class="stat-lbl">Founded</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section id="map-section">
+  <div class="sec-head reveal">
+    <div class="sec-label">Interactive Map</div>
+    <h2 class="sec-title">Global <em>Network Coverage</em></h2>
+    <div class="sec-rule"></div>
+  </div>
+  <div class="map-wrap">
+    <div class="filter-bar">
+      <span class="filter-lbl">Region:</span>
+      <button class="f-btn on" data-r="ALL">All</button>
+      <button class="f-btn" data-r="EU">Europe</button>
+      <button class="f-btn" data-r="AM">Americas</button>
+      <button class="f-btn" data-r="AP">Asia-Pacific</button>
+      <button class="f-btn" data-r="ME">Middle East</button>
+      <button class="f-btn" data-r="AF">Africa</button>
+    </div>
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--eu)"></div>Europe</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--am)"></div>Americas</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--ap)"></div>Asia-Pacific</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--me)"></div>Middle East</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--af)"></div>Africa</div>
+    </div>
+  </div>
+</section>
+
+<!-- COUNTRIES -->
+<section id="countries">
+  <div class="sec-head reveal">
+    <div class="sec-label">Member Destinations</div>
+    <h2 class="sec-title">All <em>96 Countries</em></h2>
+    <div class="sec-rule"></div>
+  </div>
+  <div class="countries-wrap">
+    <div class="search-row">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search country, city or airport code…">
+      <div class="c-count">Showing <strong id="countNum">96</strong> of 96</div>
+    </div>
+    <div class="country-grid" id="countryGrid"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner reveal">
+    <div class="about-text">
+      <div class="a-label">About TALA</div>
+      <h3>The Only Alliance Dedicated to Aerospace Logistics</h3>
+      <p>Founded in 2012 by QUALITAIR&SEA France, TALA — The Aerospace Logistics Alliance — is the only international network of independent freight forwarders exclusively focused on aerospace logistics and air cargo services.</p>
+      <p>TALA operates on a glocal model: locally-owned and operated affiliates with global coordination, ensuring true on-the-ground expertise at every station. Members share common standards, real-time communication, and collective know-how to handle the most time-critical cargo situations.</p>
+    </div>
+    <div>
+      <ul class="svc-list">
+        <li><strong>AOG (Aircraft on Ground)</strong> — 24/7 Emergency Desk</li>
+        <li><strong>Critical Air Freight</strong> — Time-sensitive shipments</li>
+        <li><strong>On-Board Courier (OBC)</strong> — Hand-carry solutions</li>
+        <li><strong>COMAT & Rotables</strong> — Company materials</li>
+        <li><strong>Charter Services</strong> — Dedicated aircraft</li>
+        <li><strong>DG / Hazmat</strong> — Dangerous goods expertise</li>
+        <li><strong>Customs Clearance</strong> — End-to-end brokerage</li>
+        <li><strong>Ocean & Road</strong> — Multi-modal solutions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">TALA <span>Network</span></div>
+  <div class="ft-sub">The Aerospace Logistics Alliance · Global · Est. 2012 · tala.aero</div>
+  <div class="ft-note">Created as part of OPTEC AI Academy 60-Day Training Program · Work #09</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ═══ DATA: 96 countries ═══ */
+const RC={'EU':'#3b82f6','AM':'#f59e0b','AP':'#10b981','ME':'#f97316','AF':'#a855f7'};
+const RN={'EU':'Europe','AM':'Americas','AP':'Asia-Pacific','ME':'Middle East','AF':'Africa'};
+
+const DATA=[
+  /* ── EUROPE 26 ── */
+  {n:'France',c:'Paris',a:'CDG',lat:49.009,lng:2.548,r:'EU',f:'🇫🇷'},
+  {n:'Germany',c:'Frankfurt',a:'FRA',lat:50.037,lng:8.562,r:'EU',f:'🇩🇪'},
+  {n:'United Kingdom',c:'London',a:'LHR',lat:51.470,lng:-0.454,r:'EU',f:'🇬🇧'},
+  {n:'Netherlands',c:'Amsterdam',a:'AMS',lat:52.310,lng:4.768,r:'EU',f:'🇳🇱'},
+  {n:'Belgium',c:'Brussels',a:'BRU',lat:50.901,lng:4.484,r:'EU',f:'🇧🇪'},
+  {n:'Spain',c:'Madrid',a:'MAD',lat:40.498,lng:-3.568,r:'EU',f:'🇪🇸'},
+  {n:'Italy',c:'Milan',a:'MXP',lat:45.630,lng:8.728,r:'EU',f:'🇮🇹'},
+  {n:'Switzerland',c:'Zurich',a:'ZRH',lat:47.465,lng:8.549,r:'EU',f:'🇨🇭'},
+  {n:'Austria',c:'Vienna',a:'VIE',lat:48.110,lng:16.570,r:'EU',f:'🇦🇹'},
+  {n:'Sweden',c:'Stockholm',a:'ARN',lat:59.652,lng:17.919,r:'EU',f:'🇸🇪'},
+  {n:'Norway',c:'Oslo',a:'OSL',lat:60.198,lng:11.100,r:'EU',f:'🇳🇴'},
+  {n:'Denmark',c:'Copenhagen',a:'CPH',lat:55.618,lng:12.656,r:'EU',f:'🇩🇰'},
+  {n:'Finland',c:'Helsinki',a:'HEL',lat:60.317,lng:24.963,r:'EU',f:'🇫🇮'},
+  {n:'Portugal',c:'Lisbon',a:'LIS',lat:38.776,lng:-9.135,r:'EU',f:'🇵🇹'},
+  {n:'Poland',c:'Warsaw',a:'WAW',lat:52.166,lng:20.967,r:'EU',f:'🇵🇱'},
+  {n:'Czech Republic',c:'Prague',a:'PRG',lat:50.101,lng:14.260,r:'EU',f:'🇨🇿'},
+  {n:'Hungary',c:'Budapest',a:'BUD',lat:47.437,lng:19.256,r:'EU',f:'🇭🇺'},
+  {n:'Romania',c:'Bucharest',a:'OTP',lat:44.571,lng:26.085,r:'EU',f:'🇷🇴'},
+  {n:'Turkey',c:'Istanbul',a:'IST',lat:41.275,lng:28.752,r:'EU',f:'🇹🇷'},
+  {n:'Russia',c:'Moscow',a:'SVO',lat:55.974,lng:37.413,r:'EU',f:'🇷🇺'},
+  {n:'Greece',c:'Athens',a:'ATH',lat:37.936,lng:23.945,r:'EU',f:'🇬🇷'},
+  {n:'Ireland',c:'Dublin',a:'DUB',lat:53.427,lng:-6.244,r:'EU',f:'🇮🇪'},
+  {n:'Luxembourg',c:'Luxembourg',a:'LUX',lat:49.623,lng:6.204,r:'EU',f:'🇱🇺'},
+  {n:'Ukraine',c:'Kyiv',a:'KBP',lat:50.345,lng:30.895,r:'EU',f:'🇺🇦'},
+  {n:'Croatia',c:'Zagreb',a:'ZAG',lat:45.743,lng:16.069,r:'EU',f:'🇭🇷'},
+  {n:'Serbia',c:'Belgrade',a:'BEG',lat:44.818,lng:20.309,r:'EU',f:'🇷🇸'},
+  /* ── AMERICAS 18 ── */
+  {n:'USA',c:'Chicago',a:'ORD',lat:41.974,lng:-87.907,r:'AM',f:'🇺🇸'},
+  {n:'Canada',c:'Toronto',a:'YYZ',lat:43.677,lng:-79.631,r:'AM',f:'🇨🇦'},
+  {n:'Brazil',c:'São Paulo',a:'GRU',lat:-23.432,lng:-46.469,r:'AM',f:'🇧🇷'},
+  {n:'Mexico',c:'Mexico City',a:'MEX',lat:19.436,lng:-99.072,r:'AM',f:'🇲🇽'},
+  {n:'Argentina',c:'Buenos Aires',a:'EZE',lat:-34.822,lng:-58.536,r:'AM',f:'🇦🇷'},
+  {n:'Chile',c:'Santiago',a:'SCL',lat:-33.393,lng:-70.786,r:'AM',f:'🇨🇱'},
+  {n:'Colombia',c:'Bogotá',a:'BOG',lat:4.702,lng:-74.147,r:'AM',f:'🇨🇴'},
+  {n:'Peru',c:'Lima',a:'LIM',lat:-12.022,lng:-77.114,r:'AM',f:'🇵🇪'},
+  {n:'Venezuela',c:'Caracas',a:'CCS',lat:10.601,lng:-66.991,r:'AM',f:'🇻🇪'},
+  {n:'Ecuador',c:'Quito',a:'UIO',lat:-0.129,lng:-78.358,r:'AM',f:'🇪🇨'},
+  {n:'Uruguay',c:'Montevideo',a:'MVD',lat:-34.838,lng:-56.031,r:'AM',f:'🇺🇾'},
+  {n:'Bolivia',c:'Santa Cruz',a:'VVI',lat:-17.644,lng:-63.135,r:'AM',f:'🇧🇴'},
+  {n:'Paraguay',c:'Asunción',a:'ASU',lat:-25.240,lng:-57.520,r:'AM',f:'🇵🇾'},
+  {n:'Guatemala',c:'Guatemala City',a:'GUA',lat:14.583,lng:-90.527,r:'AM',f:'🇬🇹'},
+  {n:'Panama',c:'Panama City',a:'PTY',lat:9.071,lng:-79.383,r:'AM',f:'🇵🇦'},
+  {n:'Dominican Rep.',c:'Santo Domingo',a:'SDQ',lat:18.430,lng:-69.669,r:'AM',f:'🇩🇴'},
+  {n:'Costa Rica',c:'San José',a:'SJO',lat:9.994,lng:-84.208,r:'AM',f:'🇨🇷'},
+  {n:'Jamaica',c:'Kingston',a:'KIN',lat:17.935,lng:-76.788,r:'AM',f:'🇯🇲'},
+  /* ── ASIA-PACIFIC 27 ── */
+  {n:'Japan',c:'Tokyo',a:'NRT',lat:35.765,lng:140.386,r:'AP',f:'🇯🇵'},
+  {n:'China',c:'Shanghai',a:'PVG',lat:31.198,lng:121.805,r:'AP',f:'🇨🇳'},
+  {n:'South Korea',c:'Seoul',a:'ICN',lat:37.469,lng:126.451,r:'AP',f:'🇰🇷'},
+  {n:'India',c:'Mumbai',a:'BOM',lat:19.089,lng:72.868,r:'AP',f:'🇮🇳'},
+  {n:'Australia',c:'Sydney',a:'SYD',lat:-33.947,lng:151.177,r:'AP',f:'🇦🇺'},
+  {n:'New Zealand',c:'Auckland',a:'AKL',lat:-37.008,lng:174.791,r:'AP',f:'🇳🇿'},
+  {n:'Singapore',c:'Singapore',a:'SIN',lat:1.359,lng:103.989,r:'AP',f:'🇸🇬'},
+  {n:'Malaysia',c:'Kuala Lumpur',a:'KUL',lat:2.746,lng:101.710,r:'AP',f:'🇲🇾'},
+  {n:'Thailand',c:'Bangkok',a:'BKK',lat:13.681,lng:100.747,r:'AP',f:'🇹🇭'},
+  {n:'Vietnam',c:'Ho Chi Minh City',a:'SGN',lat:10.818,lng:106.652,r:'AP',f:'🇻🇳'},
+  {n:'Indonesia',c:'Jakarta',a:'CGK',lat:-6.126,lng:106.656,r:'AP',f:'🇮🇩'},
+  {n:'Philippines',c:'Manila',a:'MNL',lat:14.509,lng:121.020,r:'AP',f:'🇵🇭'},
+  {n:'Hong Kong',c:'Hong Kong',a:'HKG',lat:22.308,lng:113.918,r:'AP',f:'🇭🇰'},
+  {n:'Taiwan',c:'Taipei',a:'TPE',lat:25.077,lng:121.233,r:'AP',f:'🇹🇼'},
+  {n:'Bangladesh',c:'Dhaka',a:'DAC',lat:23.843,lng:90.398,r:'AP',f:'🇧🇩'},
+  {n:'Sri Lanka',c:'Colombo',a:'CMB',lat:7.180,lng:79.884,r:'AP',f:'🇱🇰'},
+  {n:'Pakistan',c:'Karachi',a:'KHI',lat:24.906,lng:67.161,r:'AP',f:'🇵🇰'},
+  {n:'Nepal',c:'Kathmandu',a:'KTM',lat:27.697,lng:85.360,r:'AP',f:'🇳🇵'},
+  {n:'Myanmar',c:'Yangon',a:'RGN',lat:16.907,lng:96.133,r:'AP',f:'🇲🇲'},
+  {n:'Cambodia',c:'Phnom Penh',a:'PNH',lat:11.547,lng:104.844,r:'AP',f:'🇰🇭'},
+  {n:'Mongolia',c:'Ulaanbaatar',a:'ULN',lat:47.843,lng:106.766,r:'AP',f:'🇲🇳'},
+  {n:'Kazakhstan',c:'Almaty',a:'ALA',lat:43.352,lng:77.040,r:'AP',f:'🇰🇿'},
+  {n:'Uzbekistan',c:'Tashkent',a:'TAS',lat:41.258,lng:69.282,r:'AP',f:'🇺🇿'},
+  {n:'Georgia',c:'Tbilisi',a:'TBS',lat:41.669,lng:44.954,r:'AP',f:'🇬🇪'},
+  {n:'Azerbaijan',c:'Baku',a:'GYD',lat:40.467,lng:50.047,r:'AP',f:'🇦🇿'},
+  {n:'Armenia',c:'Yerevan',a:'EVN',lat:40.147,lng:44.396,r:'AP',f:'🇦🇲'},
+  {n:'Laos',c:'Vientiane',a:'VTE',lat:17.988,lng:102.563,r:'AP',f:'🇱🇦'},
+  /* ── MIDDLE EAST 11 ── */
+  {n:'UAE',c:'Dubai',a:'DXB',lat:25.253,lng:55.364,r:'ME',f:'🇦🇪'},
+  {n:'Saudi Arabia',c:'Riyadh',a:'RUH',lat:24.958,lng:46.699,r:'ME',f:'🇸🇦'},
+  {n:'Qatar',c:'Doha',a:'DOH',lat:25.273,lng:51.608,r:'ME',f:'🇶🇦'},
+  {n:'Kuwait',c:'Kuwait City',a:'KWI',lat:29.227,lng:47.969,r:'ME',f:'🇰🇼'},
+  {n:'Bahrain',c:'Manama',a:'BAH',lat:26.271,lng:50.634,r:'ME',f:'🇧🇭'},
+  {n:'Oman',c:'Muscat',a:'MCT',lat:23.594,lng:58.285,r:'ME',f:'🇴🇲'},
+  {n:'Jordan',c:'Amman',a:'AMM',lat:31.722,lng:35.993,r:'ME',f:'🇯🇴'},
+  {n:'Israel',c:'Tel Aviv',a:'TLV',lat:32.011,lng:34.887,r:'ME',f:'🇮🇱'},
+  {n:'Lebanon',c:'Beirut',a:'BEY',lat:33.821,lng:35.488,r:'ME',f:'🇱🇧'},
+  {n:'Iraq',c:'Baghdad',a:'BGW',lat:33.262,lng:44.234,r:'ME',f:'🇮🇶'},
+  {n:'Iran',c:'Tehran',a:'IKA',lat:35.416,lng:51.152,r:'ME',f:'🇮🇷'},
+  /* ── AFRICA 14 ── */
+  {n:'South Africa',c:'Johannesburg',a:'JNB',lat:-26.134,lng:28.242,r:'AF',f:'🇿🇦'},
+  {n:'Egypt',c:'Cairo',a:'CAI',lat:30.121,lng:31.405,r:'AF',f:'🇪🇬'},
+  {n:'Morocco',c:'Casablanca',a:'CMN',lat:33.368,lng:-7.590,r:'AF',f:'🇲🇦'},
+  {n:'Nigeria',c:'Lagos',a:'LOS',lat:6.577,lng:3.321,r:'AF',f:'🇳🇬'},
+  {n:'Kenya',c:'Nairobi',a:'NBO',lat:-1.319,lng:36.925,r:'AF',f:'🇰🇪'},
+  {n:'Ethiopia',c:'Addis Ababa',a:'ADD',lat:8.978,lng:38.799,r:'AF',f:'🇪🇹'},
+  {n:'Tanzania',c:'Dar es Salaam',a:'DAR',lat:-6.878,lng:39.202,r:'AF',f:'🇹🇿'},
+  {n:'Ghana',c:'Accra',a:'ACC',lat:5.605,lng:-0.167,r:'AF',f:'🇬🇭'},
+  {n:'Ivory Coast',c:'Abidjan',a:'ABJ',lat:5.262,lng:-3.926,r:'AF',f:'🇨🇮'},
+  {n:'Tunisia',c:'Tunis',a:'TUN',lat:36.851,lng:10.227,r:'AF',f:'🇹🇳'},
+  {n:'Algeria',c:'Algiers',a:'ALG',lat:36.691,lng:3.215,r:'AF',f:'🇩🇿'},
+  {n:'Senegal',c:'Dakar',a:'DKR',lat:14.741,lng:-17.490,r:'AF',f:'🇸🇳'},
+  {n:'Angola',c:'Luanda',a:'LAD',lat:-8.858,lng:13.231,r:'AF',f:'🇦🇴'},
+  {n:'Mozambique',c:'Maputo',a:'MPM',lat:-25.921,lng:32.573,r:'AF',f:'🇲🇿'},
+];
+
+/* ═══ MAP INIT ═══ */
+const map = L.map('map', {zoomControl:true, minZoom:2, maxZoom:12}).setView([20, 15], 2);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution:'© <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+/* ═══ MARKERS ═══ */
+const markers = [];
+DATA.forEach(d => {
+  const col = RC[d.r];
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="map-dot" style="background:${col};box-shadow:0 0 8px ${col}99;--c:${col}40"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10]
+  });
+  const m = L.marker([d.lat, d.lng], {icon})
+    .addTo(map)
+    .bindPopup(
+      `<div class="popup-flag">${d.f}</div>` +
+      `<div class="popup-country">${d.n}</div>` +
+      `<div class="popup-city">✈ ${d.c}</div>` +
+      `<div class="popup-iata">✈ ${d.a}</div>`,
+      {className: 'tala-popup', maxWidth: 220}
+    )
+    .bindTooltip(d.n, {direction: 'top', offset: [0, -8]});
+  m._r = d.r;
+  m._lat = d.lat;
+  m._lng = d.lng;
+  markers.push(m);
+});
+
+/* fix dot pulse color via CSS custom property */
+document.querySelectorAll('.map-dot').forEach((el, i) => {
+  el.style.setProperty('--c', RC[DATA[i].r] + '40');
+  el.style.borderColor = RC[DATA[i].r] + 'aa';
+});
+
+/* pulse uses the after pseudo-element; set border color via inline style on ::after via parent */
+const styleEl = document.createElement('style');
+let dotStyles = '';
+DATA.forEach((d, i) => {
+  dotStyles += `.map-dot:nth-child(${i+1})::after{border:1.5px solid ${RC[d.r]};}`;
+});
+styleEl.textContent = dotStyles;
+document.head.appendChild(styleEl);
+
+/* ═══ REGION FILTER ═══ */
+let activeR = 'ALL';
+document.querySelectorAll('.f-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    activeR = btn.dataset.r;
+    markers.forEach(m => {
+      const show = activeR === 'ALL' || m._r === activeR;
+      if (show && !map.hasLayer(m)) map.addLayer(m);
+      if (!show && map.hasLayer(m)) map.removeLayer(m);
+    });
+    if (activeR !== 'ALL') {
+      const pts = DATA.filter(d => d.r === activeR);
+      if (pts.length) {
+        const lats = pts.map(d => d.lat), lngs = pts.map(d => d.lng);
+        map.fitBounds([
+          [Math.min(...lats)-5, Math.min(...lngs)-10],
+          [Math.max(...lats)+5, Math.max(...lngs)+10]
+        ], {padding:[30,30]});
+      }
+    } else {
+      map.setView([20,15], 2);
+    }
+    filterGrid();
+  });
+});
+
+/* ═══ COUNTRY GRID ═══ */
+const grid = document.getElementById('countryGrid');
+const countNum = document.getElementById('countNum');
+
+function buildGrid() {
+  grid.innerHTML = '';
+  DATA.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'c-card';
+    el.dataset.region = d.r;
+    el.dataset.search = (d.n + ' ' + d.c + ' ' + d.a).toLowerCase();
+    el.innerHTML =
+      `<div class="c-flag">${d.f}</div>` +
+      `<div class="c-info">` +
+        `<div class="c-name">${d.n}</div>` +
+        `<div class="c-sub">${d.c} · ${d.a}</div>` +
+        `<div class="c-badge badge-${d.r}">${RN[d.r]}</div>` +
+      `</div>`;
+    el.addEventListener('click', () => {
+      map.setView([d.lat, d.lng], 6, {animate: true, duration: 1});
+      const mk = markers.find(m => m._lat === d.lat && m._lng === d.lng);
+      if (mk) setTimeout(() => mk.openPopup(), 800);
+      document.getElementById('map-section').scrollIntoView({behavior: 'smooth'});
+    });
+    grid.appendChild(el);
+  });
+}
+buildGrid();
+
+function filterGrid() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let vis = 0;
+  grid.querySelectorAll('.c-card').forEach(el => {
+    const okSearch = !q || el.dataset.search.includes(q);
+    const okRegion = activeR === 'ALL' || el.dataset.region === activeR;
+    if (okSearch && okRegion) { el.classList.remove('hidden'); vis++; }
+    else el.classList.add('hidden');
+  });
+  countNum.textContent = vis;
+}
+document.getElementById('searchInput').addEventListener('input', filterGrid);
+
+/* ═══ COUNTER ANIMATION ═══ */
+function animCounter(el) {
+  const target = +el.dataset.target;
+  const suffix = el.dataset.suffix || '';
+  const dur = 2000;
+  const start = performance.now();
+  const step = ts => {
+    const p = Math.min(1, (ts - start) / dur);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(ease * target) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target + suffix;
+  };
+  requestAnimationFrame(step);
+}
+const statObs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat-num').forEach(animCounter);
+      statObs.unobserve(e.target);
+    }
+  });
+}, {threshold: 0.3});
+document.querySelectorAll('.stats-grid').forEach(el => statObs.observe(el));
+
+/* ═══ SCROLL REVEAL ═══ */
+const ro = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); ro.unobserve(e.target); }});
+}, {threshold: 0.12});
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+</script>
+</body>
+</html>
