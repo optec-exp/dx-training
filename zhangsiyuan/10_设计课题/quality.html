@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quality Policy | OPTEC EXPRESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,600;0,700;0,800;0,900;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080808;
+  --s1:#101010;
+  --gold:#c5a55a;
+  --gold-lt:#e0c278;
+  --fg:#f0f0f0;
+  --fg-mid:rgba(240,240,240,.72);
+  --fg-dim:rgba(240,240,240,.4);
+  --line:rgba(240,240,240,.07);
+  --line-strong:rgba(240,240,240,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+
+/* ── HEADER ── */
+.site-head{padding:26px 52px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.logo{font-size:.72rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.logo em{color:var(--gold);font-style:normal}
+.head-tag{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--fg-dim)}
+
+/* ── HERO ── */
+.hero{padding:80px 52px 68px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero::before{content:'品質';position:absolute;right:-20px;top:-30px;font-size:28vw;font-weight:900;color:rgba(197,165,90,.03);pointer-events:none;line-height:1;white-space:nowrap}
+.hero-kicker{font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:12px}
+.hero-kicker::before{content:'';flex:0 0 24px;height:1px;background:var(--gold)}
+.hero-jp{font-size:clamp(2.8rem,7vw,6.5rem);font-weight:900;letter-spacing:-.04em;line-height:.95;color:var(--fg);margin-bottom:0}
+.hero-en{font-size:clamp(.78rem,1.8vw,1rem);font-weight:300;letter-spacing:.28em;text-transform:uppercase;color:var(--fg-dim);margin-top:16px;display:block}
+.hero-body{max-width:600px;font-size:clamp(.86rem,1.7vw,1rem);color:var(--fg-mid);line-height:1.82;margin-top:28px;font-weight:300}
+
+/* ── SECTION ── */
+.sec{padding:56px 52px;border-bottom:1px solid var(--line)}
+.sec-kicker{font-size:.58rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sec-kicker::before{content:'';flex:0 0 16px;height:1px;background:var(--gold)}
+
+/* ── MISSION ── */
+.mission-text{font-size:clamp(1rem,2.4vw,1.55rem);font-weight:300;line-height:1.75;color:var(--fg);max-width:820px}
+.mission-text strong{font-weight:800;color:var(--fg)}
+
+/* ── VISION ── */
+.vision-text{font-size:clamp(.92rem,2vw,1.25rem);font-style:italic;font-weight:300;line-height:1.85;color:var(--fg-mid);max-width:720px;padding-left:24px;border-left:2px solid var(--gold)}
+
+/* ── VALUES ── */
+.values-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);margin-top:6px}
+.val{background:var(--bg);padding:28px 16px 24px;text-align:center;transition:background .22s}
+.val:hover{background:var(--s1)}
+.val-n{font-size:.56rem;letter-spacing:.18em;color:var(--gold);margin-bottom:10px;display:block}
+.val-word{font-size:clamp(.88rem,1.5vw,1.05rem);font-weight:800;letter-spacing:-.01em;color:var(--fg);display:block;margin-bottom:5px}
+.val-jp{font-size:.68rem;color:var(--fg-dim);font-weight:300}
+
+/* ── 5 ACTIONS ── */
+.actions{margin-top:6px}
+.action{display:flex;gap:28px;align-items:flex-start;padding:22px 0;border-bottom:1px solid var(--line)}
+.action:last-child{border-bottom:none}
+.action-n{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-.04em;line-height:1;color:rgba(197,165,90,.18);flex:0 0 60px;text-align:right;padding-top:3px}
+.action-body{}
+.action-title{font-size:.9rem;font-weight:700;color:var(--fg);margin-bottom:5px;line-height:1.35}
+.action-desc{font-size:.78rem;color:var(--fg-dim);line-height:1.7;font-weight:300}
+
+/* ── FOOTER ── */
+footer{padding:26px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.ft-co{font-size:.7rem;font-weight:600;letter-spacing:.08em;color:var(--fg-dim)}
+.ft-rev{font-size:.62rem;letter-spacing:.14em;color:rgba(240,240,240,.18)}
+
+@media(max-width:760px){
+  .site-head,.hero,.sec,footer{padding-left:24px;padding-right:24px}
+  .values-row{grid-template-columns:repeat(3,1fr)}
+  .values-row .val:nth-child(4),.values-row .val:nth-child(5){grid-column:span 1}
+  .action-n{flex:0 0 44px;font-size:2rem}
+}
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="logo">OPTEC <em>EXPRESS</em></div>
+  <div class="head-tag">Quality Policy · 品質方針</div>
+</header>
+
+<section class="hero">
+  <div class="hero-kicker">品質方針 · 2025</div>
+  <h1 class="hero-jp">時間の価値を、<br>守り続ける。</h1>
+  <span class="hero-en">We Protect the Value of Time — Always.</span>
+  <p class="hero-body">私たちはすべての貨物に、緊急性と誠実さで向き合います。時間という不可逆の価値を守ることが、私たちの存在意義です。すべての意思決定はこの方針に基づきます。</p>
+</section>
+
+<section class="sec">
+  <div class="sec-kicker">Mission</div>
+  <p class="mission-text">
+    航空緊急貨物の専門家として、<strong>お客様の「間に合った」を最大化する。</strong><br>
+    チャンスロスをゼロに近づけ、グローバルサプライチェーンの守護者となる。
+  </p>
+</section>
+
+<section class="sec">
+  <div class="sec-kicker">Vision</div>
+  <p class="vision-text">
+    "To be the most trusted network of time-critical air cargo specialists in Asia — recognized globally for speed, precision, and human expertise."
+  </p>
+</section>
+
+<section class="sec">
+  <div class="sec-kicker">Values</div>
+  <div class="values-row">
+    <div class="val">
+      <span class="val-n">01</span>
+      <span class="val-word">Speed</span>
+      <span class="val-jp">時間は命</span>
+    </div>
+    <div class="val">
+      <span class="val-n">02</span>
+      <span class="val-word">Reliability</span>
+      <span class="val-jp">約束を守る</span>
+    </div>
+    <div class="val">
+      <span class="val-n">03</span>
+      <span class="val-word">Transparency</span>
+      <span class="val-jp">情報を開く</span>
+    </div>
+    <div class="val">
+      <span class="val-n">04</span>
+      <span class="val-word">Precision</span>
+      <span class="val-jp">誤差をなくす</span>
+    </div>
+    <div class="val">
+      <span class="val-n">05</span>
+      <span class="val-word">Partnership</span>
+      <span class="val-jp">共に成長する</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-kicker">5 Quality Actions</div>
+  <div class="actions">
+    <div class="action">
+      <div class="action-n">01</div>
+      <div class="action-body">
+        <div class="action-title">受注後 1 時間以内に対応方針を提示する</div>
+        <div class="action-desc">フライトオプション・料金・リスクを含む具体的な対応方針を、受注後1時間以内にお客様へ提示します。初動の速さが信頼の起点です。</div>
+      </div>
+    </div>
+    <div class="action">
+      <div class="action-n">02</div>
+      <div class="action-body">
+        <div class="action-title">全工程をリアルタイムで可視化し、主動的に報告する</div>
+        <div class="action-desc">AWB 発行から目的地到着まで、すべてのマイルストーンを能動的に報告します。「待たせない」情報管理が私たちの基準です。</div>
+      </div>
+    </div>
+    <div class="action">
+      <div class="action-n">03</div>
+      <div class="action-body">
+        <div class="action-title">書類ミスゼロ体制を維持する</div>
+        <div class="action-desc">AWB・インボイス・税関書類の全件ダブルチェックを実施し、書類起因の遅延および追加費用を根絶します。</div>
+      </div>
+    </div>
+    <div class="action">
+      <div class="action-n">04</div>
+      <div class="action-body">
+        <div class="action-title">四半期ごとに業務フローを改善する</div>
+        <div class="action-desc">不適合報告（NCR）を収集・分析し、四半期に一度の改善サイクルで根本原因に対処。同じ問題を二度繰り返しません。</div>
+      </div>
+    </div>
+    <div class="action">
+      <div class="action-n">05</div>
+      <div class="action-body">
+        <div class="action-title">顧客満足度 NPS 80 以上を維持する</div>
+        <div class="action-desc">全案件完了後にフィードバックを収集し、純推奨者スコア（NPS）80 以上を品質基準として継続維持します。数字が私たちの約束です。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-co">OPTEC EXPRESS CO., LTD. · オプテックエクスプレス株式会社</div>
+  <div class="ft-rev">Rev. 2025.04 · Approved by Management</div>
+</footer>
+
+</body>
+</html>

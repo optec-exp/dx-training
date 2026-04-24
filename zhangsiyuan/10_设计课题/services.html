@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Air Cargo Services | OPTEC EXPRESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060c18;
+  --s1:#0c1525;
+  --s2:#111d30;
+  --blue:#2a6cf5;
+  --blue-lt:#6695f8;
+  --fg:#f0f0f0;
+  --fg-mid:rgba(240,240,240,.72);
+  --fg-dim:rgba(240,240,240,.4);
+  --line:rgba(255,255,255,.06);
+  --line-strong:rgba(255,255,255,.12);
+  /* service colors */
+  --aog:#ef4444;
+  --obc:#f97316;
+  --nfo:#2a6cf5;
+  --cold:#06b6d4;
+  --dg:#d97706;
+  --expo:#a855f7;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden;min-height:100vh}
+
+/* ── NAV ── */
+nav{padding:18px 52px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(6,12,24,.92);backdrop-filter:blur(14px);z-index:100}
+.nav-co{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.nav-co em{color:var(--blue-lt);font-style:normal}
+.nav-tag{font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-dim)}
+
+/* ── HERO ── */
+.hero{padding:72px 52px 56px;border-bottom:1px solid var(--line)}
+.hero-kicker{font-size:.6rem;letter-spacing:.38em;text-transform:uppercase;color:var(--blue-lt);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.hero-kicker::before{content:'';flex:0 0 20px;height:1px;background:var(--blue-lt)}
+.hero-h1{font-size:clamp(2.2rem,6vw,5rem);font-weight:900;letter-spacing:-.035em;line-height:1;color:var(--fg)}
+.hero-h1 em{color:var(--blue-lt);font-style:normal}
+.hero-body{max-width:580px;font-size:clamp(.84rem,1.7vw,.98rem);color:var(--fg-dim);margin-top:22px;line-height:1.82;font-weight:300}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.h-tag{font-size:.68rem;color:var(--fg-mid);display:flex;align-items:center;gap:7px;letter-spacing:.04em}
+.h-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--blue-lt);flex-shrink:0}
+
+/* ── FILTER ── */
+.filter-bar{padding:20px 52px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.f-lbl{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-dim);margin-right:4px;flex-shrink:0}
+.f-btn{padding:5px 16px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:none;color:var(--fg-dim);font-size:.7rem;font-family:'Inter',sans-serif;cursor:pointer;transition:all .18s;letter-spacing:.04em}
+.f-btn:hover{border-color:rgba(255,255,255,.24);color:var(--fg)}
+.f-btn.on{border-color:var(--blue-lt);color:var(--blue-lt);background:rgba(42,108,245,.1)}
+
+/* ── GRID ── */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+.card{background:var(--bg);padding:36px 32px 32px;position:relative;overflow:hidden;transition:background .22s}
+.card:hover{background:var(--s1)}
+.card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+.card[data-s="AOG"]::before{background:var(--aog)}
+.card[data-s="OBC"]::before{background:var(--obc)}
+.card[data-s="NFO"]::before{background:var(--nfo)}
+.card[data-s="COLD"]::before{background:var(--cold)}
+.card[data-s="DG"]::before{background:var(--dg)}
+.card[data-s="EXPO"]::before{background:var(--expo)}
+.card.hidden{display:none}
+
+/* tier badge */
+.tier{display:inline-block;font-size:.56rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-bottom:16px;border:1px solid}
+.t-critical{color:var(--aog);background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.28)}
+.t-emergency{color:var(--obc);background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.28)}
+.t-standard{color:var(--blue-lt);background:rgba(42,108,245,.12);border-color:rgba(42,108,245,.28)}
+.t-cold{color:var(--cold);background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.28)}
+.t-hazmat{color:var(--dg);background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.28)}
+.t-special{color:var(--expo);background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.28)}
+
+.svc-code{font-size:clamp(2.2rem,4vw,3.4rem);font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--fg);margin-bottom:4px}
+.svc-name{font-size:.76rem;font-weight:500;color:var(--fg-dim);letter-spacing:.05em;margin-bottom:20px}
+.svc-desc{font-size:.8rem;color:var(--fg-mid);line-height:1.75;margin-bottom:22px;font-weight:300}
+
+/* specs */
+.specs{display:flex;flex-direction:column;gap:0;margin-bottom:20px}
+.spec{display:flex;justify-content:space-between;align-items:baseline;font-size:.71rem;padding:8px 0;border-bottom:1px solid var(--line)}
+.spec:last-child{border-bottom:none;padding-bottom:0}
+.sk{color:var(--fg-dim)}
+.sv{color:var(--fg);font-weight:600;text-align:right;max-width:55%}
+
+.use{font-size:.7rem;color:var(--fg-dim);line-height:1.65}
+.use strong{color:var(--fg-mid);font-weight:600}
+
+/* ── BOTTOM ── */
+.bottom{padding:26px 52px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+.bt-text{font-size:.72rem;color:var(--fg-dim)}
+.bt-cta{display:inline-flex;align-items:center;gap:8px;padding:9px 22px;border:1px solid rgba(42,108,245,.4);border-radius:6px;font-size:.72rem;font-weight:700;color:var(--blue-lt);background:none;cursor:pointer;letter-spacing:.07em;transition:all .2s;font-family:'Inter',sans-serif}
+.bt-cta:hover{background:rgba(42,108,245,.1);border-color:var(--blue-lt)}
+
+@media(max-width:900px){.svc-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){
+  nav,.hero,.filter-bar,.bottom{padding-left:20px;padding-right:20px}
+  .svc-grid{grid-template-columns:1fr}
+  .card{padding:28px 20px}
+  .hero-h1{font-size:2.2rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-co">OPTEC <em>EXPRESS</em></div>
+  <div class="nav-tag">Air Cargo Services</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-kicker">Service Catalog · 航空运输服务</div>
+  <h1 class="hero-h1">Air Cargo<br><em>Services</em></h1>
+  <p class="hero-body">From standard next-flight-out shipments to mission-critical AOG responses — we operate across every tier of air cargo urgency. Select the service level that fits your timeline and commodity.</p>
+  <div class="hero-tags">
+    <div class="h-tag">24 / 7 Operations</div>
+    <div class="h-tag">186 Destinations</div>
+    <div class="h-tag">IATA Approved Agent</div>
+    <div class="h-tag">RA Certified · Tokyo Customs #737</div>
+  </div>
+</section>
+
+<div class="filter-bar">
+  <span class="f-lbl">Filter:</span>
+  <button class="f-btn on" data-f="all">All</button>
+  <button class="f-btn" data-f="critical">Critical</button>
+  <button class="f-btn" data-f="standard">Standard</button>
+  <button class="f-btn" data-f="special">Specialized</button>
+</div>
+
+<div class="svc-grid" id="grid">
+
+  <!-- AOG -->
+  <div class="card" data-s="AOG" data-cat="critical">
+    <div class="tier t-critical">Critical</div>
+    <div class="svc-code">AOG</div>
+    <div class="svc-name">Aircraft on Ground</div>
+    <p class="svc-desc">航空機の整備・修理部品を最優先で手配。フライトへの影響を最小化するため、24時間対応の専任チームが発注から到着まで全工程を管理します。</p>
+    <div class="specs">
+      <div class="spec"><span class="sk">Response time</span><span class="sv">≤ 1 hour</span></div>
+      <div class="spec"><span class="sk">Transit time</span><span class="sv">4 – 24 hrs</span></div>
+      <div class="spec"><span class="sk">Availability</span><span class="sv">24 / 7 / 365</span></div>
+      <div class="spec"><span class="sk">Priority level</span><span class="sv">Highest</span></div>
+    </div>
+    <p class="use"><strong>Suitable for:</strong> MRO parts, avionics, engine spares, line-maintenance tooling</p>
+  </div>
+
+  <!-- OBC -->
+  <div class="card" data-s="OBC" data-cat="critical">
+    <div class="tier t-emergency">Emergency</div>
+    <div class="svc-code">OBC</div>
+    <div class="svc-name">On-Board Courier</div>
+    <p class="svc-desc">専任クーリエが貨物を手荷物として直接携帯し、世界中どこへでも最速で届けます。通関から最終配達まで、クーリエが一気通貫で対応します。</p>
+    <div class="specs">
+      <div class="spec"><span class="sk">Response time</span><span class="sv">≤ 2 hours</span></div>
+      <div class="spec"><span class="sk">Transit time</span><span class="sv">Same day / Next day</span></div>
+      <div class="spec"><span class="sk">Weight limit</span><span class="sv">Up to 32 kg / courier</span></div>
+      <div class="spec"><span class="sk">Tracking</span><span class="sv">Real-time GPS</span></div>
+    </div>
+    <p class="use"><strong>Suitable for:</strong> Pharmaceuticals, semiconductor samples, critical documents, high-value goods</p>
+  </div>
+
+  <!-- NFO -->
+  <div class="card" data-s="NFO" data-cat="standard">
+    <div class="tier t-standard">Standard</div>
+    <div class="svc-code">NFO</div>
+    <div class="svc-name">Next Flight Out</div>
+    <p class="svc-desc">利用可能な最早フライトを使用する標準的な航空緊急便。スペース確保から出荷手配まで迅速に対応し、信頼性の高いトランジットタイムを提供します。</p>
+    <div class="specs">
+      <div class="spec"><span class="sk">Transit time</span><span class="sv">24 – 72 hrs</span></div>
+      <div class="spec"><span class="sk">Weight</span><span class="sv">No upper limit</span></div>
+      <div class="spec"><span class="sk">Coverage</span><span class="sv">186 destinations</span></div>
+      <div class="spec"><span class="sk">Docs support</span><span class="sv">Full customs service</span></div>
+    </div>
+    <p class="use"><strong>Suitable for:</strong> Industrial parts, trade samples, time-sensitive B2B shipments</p>
+  </div>
+
+  <!-- Cold Chain -->
+  <div class="card" data-s="COLD" data-cat="special">
+    <div class="tier t-cold">Cold Chain</div>
+    <div class="svc-code">COLD</div>
+    <div class="svc-name">Cold Chain Logistics</div>
+    <p class="svc-desc">医薬品・食品・化学品に対応した全工程温度管理輸送。出荷から到着まで、データロガーによる継続モニタリングで温度逸脱ゼロを目指します。</p>
+    <div class="specs">
+      <div class="spec"><span class="sk">Temperature ranges</span><span class="sv">−20°C / 2–8°C / 15–25°C</span></div>
+      <div class="spec"><span class="sk">Monitoring</span><span class="sv">Real-time data logger</span></div>
+      <div class="spec"><span class="sk">Compliance</span><span class="sv">GDP / WHO PQ guidelines</span></div>
+      <div class="spec"><span class="sk">Packaging</span><span class="sv">Validated containers</span></div>
+    </div>
+    <p class="use"><strong>Suitable for:</strong> Pharmaceuticals, vaccines, biologics, perishable foods, specialty chemicals</p>
+  </div>
+
+  <!-- DG -->
+  <div class="card" data-s="DG" data-cat="special">
+    <div class="tier t-hazmat">Hazmat</div>
+    <div class="svc-code">DG</div>
+    <div class="svc-name">Dangerous Goods</div>
+    <p class="svc-desc">IATA DGR 基準に準拠した危険品航空輸送。分類・梱包・申告書類の作成から航空会社承認まで、IATA 認定取扱者が全工程を担当します。</p>
+    <div class="specs">
+      <div class="spec"><span class="sk">Certification</span><span class="sv">IATA DGR Certified</span></div>
+      <div class="spec"><span class="sk">Classes handled</span><span class="sv">Class 1–9 (select)</span></div>
+      <div class="spec"><span class="sk">UN numbers</span><span class="sv">800+ on record</span></div>
+      <div class="spec"><span class="sk">Documentation</span><span class="sv">Full DG declaration</span></div>
+    </div>
+    <p class="use"><strong>Suitable for:</strong> Lithium batteries (UN3480 / 3481), flammables, chemicals, pressurized gases</p>
+  </div>
+
+  <!-- Exhibition -->
+  <div class="card" data-s="EXPO" data-cat="special">
+    <div class="tier t-special">Specialized</div>
+    <div class="svc-code">EXPO</div>
+    <div class="svc-name">Exhibition Logistics</div>
+    <p class="svc-desc">展示会への搬入から撤収まで一貫してサポート。現地通関・会場搬入・設置・撤収・返送まで、展示物の安全な輸送と確実な納期を実現します。</p>
+    <div class="specs">
+      <div class="spec"><span class="sk">Scope</span><span class="sv">Door-to-stand</span></div>
+      <div class="spec"><span class="sk">Customs regime</span><span class="sv">ATA Carnet / TIB</span></div>
+      <div class="spec"><span class="sk">On-site support</span><span class="sv">Available</span></div>
+      <div class="spec"><span class="sk">Return logistics</span><span class="sv">Full cycle managed</span></div>
+    </div>
+    <p class="use"><strong>Suitable for:</strong> Trade show exhibits, product demos, precision machinery, artwork, high-value displays</p>
+  </div>
+
+</div>
+
+<div class="bottom">
+  <div class="bt-text">All services available 24 / 7 · 全サービス対応中 · 所有服务全天候可用</div>
+  <button class="bt-cta">Get a Quote →</button>
+</div>
+
+<script>
+document.querySelectorAll('.f-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const f = btn.dataset.f;
+    document.querySelectorAll('.card').forEach(c => {
+      if (f === 'all' || c.dataset.cat === f) c.classList.remove('hidden');
+      else c.classList.add('hidden');
+    });
+  });
+});
+</script>
+</body>
+</html>
