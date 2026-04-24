@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>体积重量计算工具 — OPTEC Express</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red:   #c0392b;
+  --red-lt:#fef5f4;
+  --ink:   #1a1a2e;
+  --ink-2: #3d4460;
+  --muted: #8892a4;
+  --bg:    #f5f6f8;
+  --bg-2:  #ffffff;
+  --border:#e4e8ef;
+  --green: #16a34a;
+  --green-lt:#f0fdf4;
+  --amber: #d97706;
+  --amber-lt:#fffbeb;
+}
+body {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ── HEADER ── */
+.hd {
+  background: var(--ink);
+  padding: 0 32px; height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 15px; letter-spacing: 1px; }
+.lm { width: 30px; height: 30px; background: var(--red); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
+.hd-badge { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── WRAP ── */
+.wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 60px; }
+.page-hd { margin-bottom: 28px; }
+.page-hd h1 { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+.page-hd p  { font-size: 13px; color: var(--muted); }
+
+/* ── UNIT TOGGLE ── */
+.unit-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 20px;
+}
+.unit-row .ul { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; }
+.ut { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 3px; }
+.ub {
+  padding: 8px 20px; border: none; background: transparent; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted);
+  transition: all 0.2s; font-family: inherit;
+}
+.ub.on { background: var(--red); color: #fff; box-shadow: 0 2px 8px rgba(192,57,43,0.25); }
+.unit-hint { font-size: 12px; color: var(--muted); margin-left: auto; }
+.unit-hint span { color: var(--red); font-weight: 600; }
+
+/* ── MAIN GRID ── */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+
+/* ── CARD ── */
+.card { background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+.card-hd { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-hd .ico { width: 32px; height: 32px; background: var(--red-lt); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.card-hd h2 { font-size: 14px; font-weight: 700; }
+
+/* ── INPUTS ── */
+.inp-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+/* 3D dimension visualizer */
+.dim-viz {
+  background: linear-gradient(135deg, #f8f9ff 0%, #eff1f8 100%);
+  border: 1px solid #e0e4f0; border-radius: 10px;
+  padding: 18px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+}
+.box3d {
+  position: relative; width: 120px; height: 90px;
+}
+.box3d svg { width: 100%; height: 100%; }
+
+.dim-fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.df { display: flex; flex-direction: column; gap: 5px; }
+.df label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.df label span { font-size: 10px; color: var(--red); }
+
+.df-gw { display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+.df-gw label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+.df-gw label span { font-size: 10px; color: var(--green); }
+
+.fi {
+  position: relative;
+}
+.fi input {
+  width: 100%; padding: 10px 36px 10px 12px;
+  border: 1.5px solid var(--border); border-radius: 7px;
+  font-size: 14px; font-family: inherit; color: var(--ink);
+  background: #fff; outline: none; transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+.fi input::-webkit-outer-spin-button,
+.fi input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.fi input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+.fi input.gw-in:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+.fi .u { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 700; color: var(--muted); pointer-events: none; }
+
+.divider { border: none; border-top: 1px dashed var(--border); margin: 2px 0; }
+
+/* ── RESULTS ── */
+.res-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+/* Two weight cards */
+.wt-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wc {
+  border-radius: 10px; padding: 16px;
+  border: 2px solid var(--border);
+  transition: all 0.3s;
+  display: flex; flex-direction: column; gap: 6px;
+  position: relative; overflow: hidden;
+}
+.wc.winner {
+  border-color: var(--green);
+  background: var(--green-lt);
+}
+.wc.loser {
+  border-color: var(--border);
+  background: var(--bg);
+  opacity: 0.7;
+}
+.wc-lbl { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.wc.winner .wc-lbl { color: var(--green); }
+.wc-val { font-size: 34px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -1px; }
+.wc.winner .wc-val { color: var(--green); }
+.wc-unit { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+.wc-note { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.wc.winner .wc-note { color: #166534; }
+.wc-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--green); color: #fff;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+  padding: 2px 8px; border-radius: 10px; text-transform: uppercase;
+}
+
+/* Formula card */
+.formula-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d3561 100%);
+  border-radius: 10px; padding: 18px 20px; color: #fff;
+}
+.formula-card .fl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px; }
+.formula { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px; font-family: 'Courier New', monospace; }
+.formula .eq { color: #00b4d8; }
+.formula .div { color: rgba(255,255,255,0.5); }
+.formula-sub { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+
+/* Charge result */
+.charge-box {
+  border-radius: 10px; padding: 16px 20px;
+  background: var(--red-lt); border: 1px solid rgba(192,57,43,0.15);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.charge-box .cl { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+.charge-box .cv { font-size: 22px; font-weight: 700; color: var(--ink); }
+.charge-box .cn { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.charge-icon { font-size: 32px; flex-shrink: 0; }
+
+/* Empty state */
+.empty { padding: 48px 22px; text-align: center; color: var(--muted); }
+.empty .ei { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+.empty p { font-size: 13px; line-height: 1.8; }
+.hidden { display: none; }
+
+/* Tips */
+.tips { background: var(--bg); border-radius: 8px; border: 1px solid var(--border); padding: 14px 16px; }
+.tips p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+.tips p strong { color: var(--ink-2); }
+
+@media (max-width: 680px) {
+  .grid { grid-template-columns: 1fr; }
+  .dim-fields { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="logo"><div class="lm">OP</div>OPTEC EXPRESS</div>
+  <div class="hd-badge">作品16 · 体积重量计算工具</div>
+</header>
+
+<div class="wrap">
+  <div class="page-hd">
+    <h1>📦 体积重量计算工具</h1>
+    <p>输入货物三边尺寸 + 实际重量，自动计算体积重量并对比，取大值计费</p>
+  </div>
+
+  <!-- Unit toggle -->
+  <div class="unit-row">
+    <span class="ul">单位制</span>
+    <div class="ut">
+      <button class="ub on" data-u="cm" onclick="setUnit('cm')">cm / kg</button>
+      <button class="ub"    data-u="in" onclick="setUnit('in')">inch / lb</button>
+    </div>
+    <span class="unit-hint" id="unitHint">体积重量公式：<span>L × W × H ÷ 6000</span></span>
+  </div>
+
+  <div class="grid">
+
+    <!-- ── LEFT: INPUT ── -->
+    <div class="card">
+      <div class="card-hd"><div class="ico">📐</div><h2>货物尺寸 &amp; 重量输入</h2></div>
+      <div class="inp-body">
+
+        <!-- 3D box SVG hint -->
+        <div class="dim-viz">
+          <svg viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- back faces -->
+            <polygon points="40,20 120,20 120,80 40,80" fill="#e8ecf4" stroke="#c8d0e0" stroke-width="1.5"/>
+            <polygon points="120,20 148,6 148,66 120,80" fill="#d4daea" stroke="#c8d0e0" stroke-width="1.5"/>
+            <polygon points="40,20 68,6 148,6 120,20" fill="#dce3ee" stroke="#c8d0e0" stroke-width="1.5"/>
+            <!-- arrows / labels -->
+            <line x1="40" y1="94" x2="120" y2="94" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="80" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#c0392b" font-weight="600">L（长）</text>
+            <line x1="130" y1="80" x2="155" y2="66" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="153" y="82" text-anchor="start" font-family="Inter,sans-serif" font-size="10" fill="#2563eb" font-weight="600">W</text>
+            <line x1="132" y1="20" x2="132" y2="80" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="3 2"/>
+            <text x="138" y="54" text-anchor="start" font-family="Inter,sans-serif" font-size="10" fill="#16a34a" font-weight="600">H</text>
+          </svg>
+        </div>
+
+        <!-- Dimensions -->
+        <div class="dim-fields">
+          <div class="df">
+            <label style="color:#c0392b;">L 长 <span id="uL">cm</span></label>
+            <div class="fi">
+              <input type="number" id="inL" min="0" step="0.1" placeholder="0" oninput="recalc()">
+              <span class="u" id="uLi">cm</span>
+            </div>
+          </div>
+          <div class="df">
+            <label style="color:#2563eb;">W 宽 <span id="uW">cm</span></label>
+            <div class="fi">
+              <input type="number" id="inW" min="0" step="0.1" placeholder="0" oninput="recalc()">
+              <span class="u" id="uWi">cm</span>
+            </div>
+          </div>
+          <div class="df">
+            <label style="color:#16a34a;">H 高 <span id="uH">cm</span></label>
+            <div class="fi">
+              <input type="number" id="inH" min="0" step="0.1" placeholder="0" oninput="recalc()">
+              <span class="u" id="uHi">cm</span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- GW -->
+        <div class="df-gw">
+          <label style="color:#16a34a;">实际重量（GW）<span id="uGW">kg</span></label>
+          <div class="fi">
+            <input type="number" id="inGW" class="gw-in" min="0" step="0.01" placeholder="0.00" oninput="recalc()">
+            <span class="u" id="uGWi">kg</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── RIGHT: RESULTS ── -->
+    <div class="card">
+      <div class="card-hd"><div class="ico">⚖️</div><h2>计算结果</h2></div>
+
+      <!-- Empty -->
+      <div id="emp" class="empty">
+        <div class="ei">⚖️</div>
+        <p>请在左侧输入<br>货物尺寸和重量</p>
+      </div>
+
+      <!-- Result -->
+      <div id="res" class="res-body hidden">
+
+        <!-- VW vs GW pair -->
+        <div class="wt-pair">
+          <div class="wc" id="cardVW">
+            <div class="wc-lbl">体积重量 VW</div>
+            <div class="wc-val"><span id="valVW">—</span><span class="wc-unit" id="unitVW">kg</span></div>
+            <div class="wc-note" id="noteVW">L × W × H ÷ 6000</div>
+          </div>
+          <div class="wc" id="cardGW">
+            <div class="wc-lbl">实际重量 GW</div>
+            <div class="wc-val"><span id="valGW">—</span><span class="wc-unit" id="unitGW">kg</span></div>
+            <div class="wc-note" id="noteGW">货物实际称量重量</div>
+          </div>
+        </div>
+
+        <!-- Formula -->
+        <div class="formula-card">
+          <div class="fl">计算公式</div>
+          <div class="formula" id="formulaLine">VW = <span class="eq">L × W × H</span> <span class="div">÷ 6000</span></div>
+          <div class="formula-sub" id="formulaDetail">（适用单位：cm → kg）</div>
+        </div>
+
+        <!-- Charge weight -->
+        <div class="charge-box">
+          <div>
+            <div class="cl">计费重量（取大值）</div>
+            <div class="cv"><span id="chargeVal">—</span> <span id="chargeUnit">kg</span></div>
+            <div class="cn" id="chargeNote">—</div>
+          </div>
+          <div class="charge-icon" id="chargeIcon">📦</div>
+        </div>
+
+        <!-- Tips -->
+        <div class="tips">
+          <p>
+            <strong>说明：</strong>体积重量超过实际重量时，按体积重量计费（轻泡货）；
+            实际重量较重时，按实际重量计费。取两者中的较大值作为计费重量。
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let unit = 'cm'; // 'cm' | 'in'
+
+function setUnit(u) {
+  unit = u;
+  document.querySelectorAll('[data-u]').forEach(b => b.classList.toggle('on', b.dataset.u === u));
+  const isCm = u === 'cm';
+  const du = isCm ? 'cm' : 'in';
+  const wu = isCm ? 'kg' : 'lb';
+  ['L','W','H'].forEach(d => {
+    document.getElementById('u'+d).textContent = du;
+    document.getElementById('u'+d+'i').textContent = du;
+  });
+  document.getElementById('uGW').textContent  = wu;
+  document.getElementById('uGWi').textContent = wu;
+  document.getElementById('unitHint').innerHTML =
+    isCm
+      ? '体积重量公式：<span>L × W × H ÷ 6000</span>'
+      : '体积重量公式：<span>L × W × H ÷ 366</span>';
+  recalc();
+}
+
+function recalc() {
+  const L  = parseFloat(document.getElementById('inL').value)  || 0;
+  const W  = parseFloat(document.getElementById('inW').value)  || 0;
+  const H  = parseFloat(document.getElementById('inH').value)  || 0;
+  const GW = parseFloat(document.getElementById('inGW').value) || 0;
+
+  if (L <= 0 || W <= 0 || H <= 0 || GW <= 0) {
+    document.getElementById('emp').style.display = 'block';
+    document.getElementById('res').classList.add('hidden');
+    return;
+  }
+
+  const isCm   = unit === 'cm';
+  const divisor = isCm ? 6000 : 366;
+  const wu      = isCm ? 'kg' : 'lb';
+  const du      = isCm ? 'cm' : 'in';
+
+  const VW = L * W * H / divisor;
+  const chargeWt = Math.max(VW, GW);
+  const vwWins   = VW >= GW;
+
+  document.getElementById('emp').style.display = 'none';
+  document.getElementById('res').classList.remove('hidden');
+
+  // Values
+  document.getElementById('valVW').textContent  = VW.toFixed(2);
+  document.getElementById('unitVW').textContent = ' ' + wu;
+  document.getElementById('valGW').textContent  = GW.toFixed(2);
+  document.getElementById('unitGW').textContent = ' ' + wu;
+
+  // Winner highlight
+  const cardVW = document.getElementById('cardVW');
+  const cardGW = document.getElementById('cardGW');
+  cardVW.className = 'wc ' + (vwWins ? 'winner' : 'loser');
+  cardGW.className = 'wc ' + (!vwWins ? 'winner' : 'loser');
+
+  // Badges
+  document.querySelectorAll('.wc-badge').forEach(b => b.remove());
+  const winner = vwWins ? cardVW : cardGW;
+  const badge = document.createElement('div');
+  badge.className = 'wc-badge';
+  badge.textContent = '计费';
+  winner.appendChild(badge);
+
+  // Notes
+  document.getElementById('noteVW').textContent =
+    `${L} × ${W} × ${H} ÷ ${divisor} = ${VW.toFixed(2)} ${wu}`;
+  document.getElementById('noteGW').textContent = `实际称量：${GW.toFixed(2)} ${wu}`;
+
+  // Formula
+  document.getElementById('formulaLine').innerHTML =
+    `VW = <span class="eq">${L} × ${W} × ${H}</span> <span class="div">÷ ${divisor}</span>`;
+  document.getElementById('formulaDetail').textContent =
+    `= ${(L*W*H).toLocaleString()} ÷ ${divisor} = ${VW.toFixed(2)} ${wu}（适用单位：${du} → ${wu}）`;
+
+  // Charge
+  document.getElementById('chargeVal').textContent  = chargeWt.toFixed(2);
+  document.getElementById('chargeUnit').textContent = wu;
+  document.getElementById('chargeNote').textContent = vwWins
+    ? `体积重量（${VW.toFixed(2)}）> 实际重量（${GW.toFixed(2)}），按体积重量计费`
+    : `实际重量（${GW.toFixed(2)}）≥ 体积重量（${VW.toFixed(2)}），按实际重量计费`;
+  document.getElementById('chargeIcon').textContent = vwWins ? '🫧' : '🏋️';
+}
+</script>
+</body>
+</html>

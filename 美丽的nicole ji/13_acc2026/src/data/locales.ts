@@ -15,6 +15,7 @@ export const locales = {
       ctaSub: 'お問合せ',
     },
     info: {
+      label: '展示会情報',
       title: '展示会概要',
       items: [
         { label: '展示会名', value: 'Air Cargo China 2026' },
@@ -26,6 +27,7 @@ export const locales = {
       ],
     },
     services: {
+      label: 'サービス内容',
       title: '展示サービス',
       sub: 'OPTEC Express が今回展示する緊急物流ソリューション',
       items: [
@@ -44,6 +46,7 @@ export const locales = {
       { num: '10+', label: '年の実績' },
     ],
     contact: {
+      label: 'お問合せ',
       title: 'ブースでお会いしましょう',
       sub: '商談のご予約・お問合せはこちらから。\n担当者より24時間以内にご連絡します。',
       name: 'お名前',
@@ -72,6 +75,7 @@ export const locales = {
       ctaSub: 'Contact Us',
     },
     info: {
+      label: 'Exhibition Info',
       title: 'Exhibition Overview',
       items: [
         { label: 'Event', value: 'Air Cargo China 2026' },
@@ -83,6 +87,7 @@ export const locales = {
       ],
     },
     services: {
+      label: 'Our Services',
       title: 'Services on Display',
       sub: 'Urgent logistics solutions OPTEC Express will showcase',
       items: [
@@ -101,6 +106,7 @@ export const locales = {
       { num: '10+', label: 'Years' },
     ],
     contact: {
+      label: 'Contact',
       title: 'Meet Us at the Booth',
       sub: 'Book a meeting or send an inquiry.\nOur team will respond within 24 hours.',
       name: 'Your Name',
@@ -129,6 +135,7 @@ export const locales = {
       ctaSub: '联系我们',
     },
     info: {
+      label: '展会信息',
       title: '展会概要',
       items: [
         { label: '展会名称', value: 'Air Cargo China 2026' },
@@ -140,6 +147,7 @@ export const locales = {
       ],
     },
     services: {
+      label: '服务内容',
       title: '展示服务内容',
       sub: 'OPTEC Express 本次展会重点展示的紧急物流解决方案',
       items: [
@@ -158,6 +166,7 @@ export const locales = {
       { num: '10+', label: '年行业经验' },
     ],
     contact: {
+      label: '联系我们',
       title: '期待与您在展位相见',
       sub: '预约商务会谈或发送询盘，\n我们将在24小时内与您联系。',
       name: '您的姓名',

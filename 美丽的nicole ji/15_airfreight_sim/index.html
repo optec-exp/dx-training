@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>航空货运费用模拟器 — OPTEC Express</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #c0392b;
+  --red-lt: #fef5f4;
+  --red-border: rgba(192,57,43,0.2);
+  --ink: #1a1a2e;
+  --ink-2: #3d4460;
+  --muted: #8892a4;
+  --bg: #f5f6f8;
+  --bg-2: #ffffff;
+  --border: #e4e8ef;
+  --green: #16a34a;
+  --amber: #d97706;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+body {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ── HEADER ── */
+.hd {
+  background: var(--ink);
+  padding: 0 32px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.logo { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; font-size: 15px; letter-spacing: 1px; }
+.lm { width: 30px; height: 30px; background: var(--red); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; color: #fff; }
+.hd-badge { font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── MAIN ── */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 36px 24px 60px; }
+.page-hd { margin-bottom: 28px; }
+.page-hd h1 { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+.page-hd p  { font-size: 13px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: 460px 1fr; gap: 22px; align-items: start; }
+
+/* ── CARD ── */
+.card { background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }
+.card-hd { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-hd .ico { width: 32px; height: 32px; background: var(--red-lt); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.card-hd h2 { font-size: 14px; font-weight: 700; color: var(--ink); }
+.card-body { padding: 22px; }
+
+/* ── FORM ── */
+.fg { margin-bottom: 20px; }
+.fl { display: block; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; }
+
+.tog { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 3px; }
+.tb {
+  flex: 1; padding: 9px 8px; border: none; background: transparent; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted);
+  transition: all 0.2s; font-family: inherit; white-space: nowrap;
+}
+.tb.on { background: var(--red); color: #fff; box-shadow: 0 2px 8px rgba(192,57,43,0.25); }
+
+.svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.sc {
+  border: 2px solid var(--border); border-radius: 8px; padding: 12px 8px;
+  text-align: center; cursor: pointer; transition: all 0.18s; background: #fff;
+}
+.sc:hover { border-color: var(--red); }
+.sc.on { border-color: var(--red); background: var(--red-lt); }
+.sc .sn { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.sc.on .sn { color: var(--red); }
+.sc .sd { font-size: 10px; color: var(--muted); line-height: 1.45; }
+
+select, input[type="number"] {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; font-family: inherit; color: var(--ink); background: #fff;
+  outline: none; transition: border-color 0.2s; appearance: none;
+}
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238892a4' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+select:focus, input[type="number"]:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+
+.wi-wrap { position: relative; }
+.wi-wrap input { padding-right: 44px; }
+.wu { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 600; color: var(--muted); pointer-events: none; }
+
+.calc-btn {
+  width: 100%; padding: 13px; background: var(--red); color: #fff; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; font-family: inherit;
+  transition: background 0.2s, transform 0.1s; margin-top: 4px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.calc-btn:hover { background: #a93226; }
+.calc-btn:active { transform: scale(0.99); }
+
+/* ── RESULTS ── */
+.empty {
+  padding: 64px 24px; text-align: center; color: var(--muted);
+}
+.empty .ei { font-size: 52px; margin-bottom: 14px; opacity: 0.35; }
+.empty p { font-size: 13px; line-height: 1.8; }
+
+.rc { display: none; }
+.rc.show { display: block; }
+
+.cur-bar {
+  padding: 14px 22px; background: var(--bg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.cur-bar .cl { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-right: 4px; }
+.cb {
+  padding: 5px 14px; border: 1px solid var(--border); border-radius: 20px;
+  background: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
+  color: var(--muted); font-family: inherit; transition: all 0.2s;
+}
+.cb.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.rbody { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+
+/* Tags row */
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+.t-org { background: #e0e7ff; color: #3730a3; }
+.t-svc { background: var(--red-lt); color: var(--red); border: 1px solid var(--red-border); }
+.t-tc  { background: #d1fae5; color: #065f46; }
+.t-al  { background: #f3f4f6; color: #374151; }
+
+/* Total box */
+.tot-box {
+  background: linear-gradient(135deg, var(--ink) 0%, #2d3561 100%);
+  border-radius: 10px; padding: 24px; text-align: center; color: #fff;
+}
+.tot-lbl { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+.tot-amt { font-size: 46px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
+.tot-sym { font-size: 22px; font-weight: 400; vertical-align: top; margin-top: 6px; display: inline-block; }
+.tot-cur { font-size: 13px; color: rgba(255,255,255,0.4); margin-left: 4px; }
+.tot-note { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 8px; }
+
+/* Warning */
+.warn {
+  display: none; background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px;
+  padding: 11px 14px; font-size: 12px; color: #78350f; gap: 7px; align-items: center;
+}
+.warn.show { display: flex; }
+
+/* Breakdown */
+.bk { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.br {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.br:last-child { border-bottom: none; }
+.br .bn { color: var(--ink-2); }
+.br .bv { font-weight: 600; color: var(--ink); }
+.br.btot { background: var(--red-lt); }
+.br.btot .bn { color: var(--red); font-weight: 700; }
+.br.btot .bv { color: var(--red); font-size: 14px; }
+
+/* Disclaimer */
+.disc {
+  font-size: 11px; color: var(--muted); line-height: 1.8;
+  padding: 13px 15px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border);
+}
+
+@media (max-width: 880px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="logo"><div class="lm">OP</div>OPTEC EXPRESS</div>
+  <div class="hd-badge">作品15 · 航空货运费用模拟器</div>
+</header>
+
+<div class="wrap">
+  <div class="page-hd">
+    <h1>✈ 航空货运费用模拟器</h1>
+    <p>选择出发地 · 服务类型 · 目的地区域，快速估算运费报价</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- ── LEFT: FORM ── -->
+    <div class="card">
+      <div class="card-hd"><div class="ico">📋</div><h2>货物 &amp; 服务信息</h2></div>
+      <div class="card-body">
+
+        <!-- Origin -->
+        <div class="fg">
+          <label class="fl">出发地</label>
+          <div class="tog">
+            <button class="tb on" data-o="JP" onclick="setOrigin('JP')">🇯🇵 日本出发</button>
+            <button class="tb"    data-o="CN" onclick="setOrigin('CN')">🇨🇳 中国出发</button>
+          </div>
+        </div>
+
+        <!-- Service -->
+        <div class="fg">
+          <label class="fl">服务类型</label>
+          <div class="svc-grid">
+            <div class="sc on" data-s="ECO" onclick="setSvc('ECO')">
+              <div class="sn">ECO</div>
+              <div class="sd">经济航班<br>成本 × 135%</div>
+            </div>
+            <div class="sc" data-s="NFO" onclick="setSvc('NFO')">
+              <div class="sn">NFO</div>
+              <div class="sd">最速航班<br>成本 + ¥600/kg</div>
+            </div>
+            <div class="sc" data-s="OBC" onclick="setSvc('OBC')">
+              <div class="sn">OBC</div>
+              <div class="sd">随身携带<br>固定报价</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TC Zone -->
+        <div class="fg" id="tcFg">
+          <label class="fl">目的地区域（IATA）</label>
+          <div class="tog" style="gap:2px;">
+            <button class="tb on" data-tc="TC1" onclick="setTC('TC1')" style="font-size:11px;">TC1<br><span style="font-weight:400;font-size:10px;">美洲</span></button>
+            <button class="tb"    data-tc="TC2" onclick="setTC('TC2')" style="font-size:11px;">TC2<br><span style="font-weight:400;font-size:10px;">欧洲/非洲/中东</span></button>
+            <button class="tb"    data-tc="TC3" onclick="setTC('TC3')" style="font-size:11px;">TC3<br><span style="font-weight:400;font-size:10px;">亚太</span></button>
+          </div>
+        </div>
+
+        <!-- Weight -->
+        <div class="fg" id="wtFg">
+          <label class="fl">货物重量（实际重量 GW）</label>
+          <div class="wi-wrap">
+            <input type="number" id="wtIn" min="0.1" step="0.1" placeholder="例：125">
+            <span class="wu">kg</span>
+          </div>
+        </div>
+
+        <!-- Airline -->
+        <div class="fg" id="alFg">
+          <label class="fl">航司（影响附加费）</label>
+          <select id="alSel">
+            <option value="">— 请选择航司 —</option>
+            <option value="JAL">JAL — 日本航空</option>
+            <option value="ANA">ANA — 全日空</option>
+            <option value="CX">CX — 国泰航空</option>
+            <option value="EK">EK — 阿联酋航空</option>
+            <option value="LH">LH — 汉莎航空</option>
+          </select>
+        </div>
+
+        <!-- Customer type (OBC only) -->
+        <div class="fg" id="ctFg" style="display:none;">
+          <label class="fl">客户类型</label>
+          <div class="tog">
+            <button class="tb on" data-ct="agent"  onclick="setCT('agent')">代理&nbsp;&nbsp;USD 800</button>
+            <button class="tb"    data-ct="direct" onclick="setCT('direct')">直客&nbsp;&nbsp;USD 1,000</button>
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calc()">
+          <span>计算估算运费</span><span>→</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ── RIGHT: RESULTS ── -->
+    <div class="card">
+      <div class="card-hd"><div class="ico">💰</div><h2>运费估算结果</h2></div>
+
+      <div id="emp" class="empty">
+        <div class="ei">✈️</div>
+        <p>填写左侧货物信息<br>点击「计算估算运费」</p>
+      </div>
+
+      <div id="rc" class="rc">
+        <!-- Currency bar -->
+        <div class="cur-bar">
+          <span class="cl">显示货币</span>
+          <button class="cb on" data-c="JPY" onclick="setCur('JPY')">¥ JPY</button>
+          <button class="cb"    data-c="USD" onclick="setCur('USD')">$ USD</button>
+          <button class="cb"    data-c="CNY" onclick="setCur('CNY')">¥ CNY</button>
+        </div>
+
+        <div class="rbody">
+
+          <!-- Tags -->
+          <div class="tags">
+            <span class="tag t-org" id="tOrg"></span>
+            <span class="tag t-svc" id="tSvc"></span>
+            <span class="tag t-tc"  id="tTC"></span>
+            <span class="tag t-al"  id="tAl"></span>
+          </div>
+
+          <!-- Min warn -->
+          <div class="warn" id="warn">
+            <span>⚠️</span><span id="warnTxt"></span>
+          </div>
+
+          <!-- Total -->
+          <div class="tot-box">
+            <div class="tot-lbl">估算总运费（税前）</div>
+            <div class="tot-amt">
+              <span class="tot-sym" id="totSym">¥</span><span id="totNum">—</span><span class="tot-cur" id="totCurLbl"></span>
+            </div>
+            <div class="tot-note" id="totNote"></div>
+          </div>
+
+          <!-- Breakdown -->
+          <div class="bk">
+            <div class="br">
+              <span class="bn">重量 / 档位</span>
+              <span class="bv" id="brWt">—</span>
+            </div>
+            <div class="br">
+              <span class="bn" id="brBaseLbl">基础运费</span>
+              <span class="bv" id="brBase">—</span>
+            </div>
+            <div class="br">
+              <span class="bn" id="brScLbl">附加费</span>
+              <span class="bv" id="brSc">—</span>
+            </div>
+            <div class="br btot">
+              <span class="bn">合计（税前估算）</span>
+              <span class="bv" id="brTot">—</span>
+            </div>
+          </div>
+
+          <!-- Disclaimer -->
+          <div class="disc">
+            ⚠ 本工具为模拟估算，仅供参考。费率为示例价格，实际报价以正式确认为准。<br>
+            汇率来源：ECB 参考汇率，实时获取（失败时使用备用汇率）。
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+const S = { origin:'JP', svc:'ECO', tc:'TC1', ct:'agent', cur:'JPY' };
+let lastR = null;
+
+/* ══════════════════════════════
+   EXCHANGE RATES
+══════════════════════════════ */
+let XR = { JPY_USD: 149.5, CNY_USD: 7.20 };
+
+(async function fetchRates() {
+  try {
+    const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=JPY,CNY');
+    const d = await r.json();
+    XR.JPY_USD = d.rates.JPY;
+    XR.CNY_USD = d.rates.CNY;
+  } catch(e) {}
+})();
+
+function toJPY(v, from) {
+  if (from === 'JPY') return v;
+  if (from === 'USD') return v * XR.JPY_USD;
+  if (from === 'CNY') return v / XR.CNY_USD * XR.JPY_USD;
+}
+function fromJPY(jpy, to) {
+  if (to === 'JPY') return jpy;
+  if (to === 'USD') return jpy / XR.JPY_USD;
+  if (to === 'CNY') return jpy / XR.JPY_USD * XR.CNY_USD;
+}
+function fmtAmt(jpy, cur) {
+  const v = fromJPY(jpy, cur);
+  if (cur === 'JPY') return { sym:'¥', num: Math.round(v).toLocaleString(), lbl:'JPY' };
+  if (cur === 'USD') return { sym:'$', num: v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','), lbl:'USD' };
+  if (cur === 'CNY') return { sym:'¥', num: v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','), lbl:'CNY' };
+}
+function fmtStr(jpy, cur) {
+  const f = fmtAmt(jpy, cur);
+  return f.sym + f.num + ' ' + f.lbl;
+}
+
+/* ══════════════════════════════
+   RATE TABLES (示例价格)
+══════════════════════════════ */
+// Japan origin — cost JPY/kg
+const RJ = {
+  TC1: {'-45':1200,'+45':980,'+100':850,'+300':720,'+500':620},
+  TC2: {'-45':1100,'+45':900,'+100':780,'+300':660,'+500':570},
+  TC3: {'-45':850, '+45':700,'+100':600,'+300':510,'+500':440},
+};
+// China origin — cost USD/kg
+const RC = {
+  TC1: {'-45':8.5,'+45':7.2,'+100':6.1,'+300':5.2,'+500':4.5},
+  TC2: {'-45':7.8,'+45':6.6,'+100':5.6,'+300':4.8,'+500':4.1},
+  TC3: {'-45':6.2,'+45':5.3,'+100':4.5,'+300':3.8,'+500':3.3},
+};
+// Surcharge JPY/kg per airline
+const SC = {JAL:65,ANA:62,CX:70,EK:55,LH:68};
+// OBC fixed USD
+const OBC = {agent:800,direct:1000};
+
+function bracket(w) {
+  if (w <  45)  return '-45';
+  if (w < 100)  return '+45';
+  if (w < 300)  return '+100';
+  if (w < 500)  return '+300';
+  return '+500';
+}
+
+/* ══════════════════════════════
+   UI SETTERS
+══════════════════════════════ */
+function setOrigin(v) {
+  S.origin = v;
+  document.querySelectorAll('[data-o]').forEach(b => b.classList.toggle('on', b.dataset.o === v));
+}
+function setSvc(v) {
+  S.svc = v;
+  document.querySelectorAll('[data-s]').forEach(b => b.classList.toggle('on', b.dataset.s === v));
+  const obc = v === 'OBC';
+  document.getElementById('wtFg').style.display  = obc ? 'none' : 'block';
+  document.getElementById('alFg').style.display  = obc ? 'none' : 'block';
+  document.getElementById('ctFg').style.display  = obc ? 'block' : 'none';
+}
+function setTC(v) {
+  S.tc = v;
+  document.querySelectorAll('[data-tc]').forEach(b => b.classList.toggle('on', b.dataset.tc === v));
+}
+function setCT(v) {
+  S.ct = v;
+  document.querySelectorAll('[data-ct]').forEach(b => b.classList.toggle('on', b.dataset.ct === v));
+}
+function setCur(v) {
+  S.cur = v;
+  document.querySelectorAll('[data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === v));
+  if (lastR) renderResult(lastR);
+}
+
+/* ══════════════════════════════
+   CALCULATE
+══════════════════════════════ */
+function calc() {
+  const w   = parseFloat(document.getElementById('wtIn').value);
+  const al  = document.getElementById('alSel').value;
+  const obc = S.svc === 'OBC';
+
+  if (!obc) {
+    if (!w || w <= 0) { alert('请输入有效的货物重量'); return; }
+    if (!al)          { alert('请选择航司'); return; }
+  }
+
+  let baseJPY = 0, scJPY = 0, totalJPY = 0;
+  let minApplied = false;
+
+  if (obc) {
+    baseJPY  = OBC[S.ct] * XR.JPY_USD;
+    scJPY    = 0;
+    totalJPY = baseJPY;
+  } else {
+    const brk   = bracket(w);
+    const rates = S.origin === 'JP' ? RJ : RC;
+    const oCur  = S.origin === 'JP' ? 'JPY' : 'USD';
+    const costJPY = toJPY(rates[S.tc][brk] * w, oCur);
+
+    baseJPY = S.svc === 'ECO' ? costJPY * 1.35 : costJPY + 600 * w;
+    scJPY   = (SC[al] || 60) * w;
+    totalJPY = baseJPY + scJPY;
+
+    const minJPY = S.origin === 'JP' ? 30000 : 300 * XR.JPY_USD;
+    if (totalJPY < minJPY) { totalJPY = minJPY; minApplied = true; }
+  }
+
+  lastR = { baseJPY, scJPY, totalJPY, minApplied, w, al, obc };
+  renderResult(lastR);
+}
+
+/* ══════════════════════════════
+   RENDER RESULT
+══════════════════════════════ */
+function renderResult(r) {
+  const cur = S.cur;
+  document.getElementById('emp').style.display = 'none';
+  document.getElementById('rc').classList.add('show');
+
+  // Tags
+  document.getElementById('tOrg').textContent = S.origin === 'JP' ? '🇯🇵 日本出发' : '🇨🇳 中国出发';
+  document.getElementById('tSvc').textContent = S.svc;
+  document.getElementById('tTC').textContent  = S.tc;
+  document.getElementById('tAl').textContent  = r.obc ? 'OBC 随身' : (r.al || '—');
+
+  // Min warn
+  const warn = document.getElementById('warn');
+  if (r.minApplied) {
+    warn.classList.add('show');
+    document.getElementById('warnTxt').textContent =
+      `已应用最低运费：${S.origin === 'JP' ? 'JPY 30,000' : 'USD 300'}`;
+  } else { warn.classList.remove('show'); }
+
+  // Total
+  const f = fmtAmt(r.totalJPY, cur);
+  document.getElementById('totSym').textContent    = f.sym;
+  document.getElementById('totNum').textContent    = f.num;
+  document.getElementById('totCurLbl').textContent = f.lbl;
+  document.getElementById('totNote').textContent   =
+    `参考汇率：1 USD = ${XR.JPY_USD.toFixed(1)} JPY ／ 1 USD = ${XR.CNY_USD.toFixed(2)} CNY`;
+
+  // Breakdown
+  if (r.obc) {
+    document.getElementById('brWt').textContent     = '— 固定报价';
+    document.getElementById('brBaseLbl').textContent = 'OBC 服务费';
+    document.getElementById('brBase').textContent   = `USD ${OBC[S.ct].toLocaleString()} （${S.ct === 'agent' ? '代理价' : '直客价'}）`;
+    document.getElementById('brScLbl').textContent  = '附加费';
+    document.getElementById('brSc').textContent     = '—';
+  } else {
+    const brk  = bracket(r.w);
+    const scPk = SC[r.al] || 60;
+    document.getElementById('brWt').textContent     = `${r.w} kg（${brk} kg 档）`;
+    document.getElementById('brBaseLbl').textContent =
+      S.svc === 'ECO' ? '基础运费（成本×135%）' : '基础运费（成本+¥600/kg）';
+    document.getElementById('brBase').textContent   = fmtStr(r.baseJPY, cur);
+    document.getElementById('brScLbl').textContent  = `附加费（${r.al}・¥${scPk}/kg）`;
+    document.getElementById('brSc').textContent     = fmtStr(r.scJPY, cur);
+  }
+  document.getElementById('brTot').textContent = fmtStr(r.totalJPY, cur);
+}
+</script>
+</body>
+</html>

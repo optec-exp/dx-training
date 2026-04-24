@@ -17,3 +17,10 @@
 !Jenny/**
 !美丽的nicole ji/
 !美丽的nicole ji/**
+
+# Next.js 生成文件（不需要跟踪）
+美丽的nicole ji/**/node_modules/
+美丽的nicole ji/**/.next/
+美丽的nicole ji/**/out/
+美丽的nicole ji/**/next-env.d.ts
+美丽的nicole ji/**/package-lock.json
