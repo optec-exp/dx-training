@@ -14,28 +14,20 @@
       color: #1a1a1a;
     }
 
-    /* 语言切换按钮 */
-    .lang-bar {
+    .toolbar {
       width: 210mm;
       margin: 16px auto 0;
       display: flex;
       justify-content: flex-end;
-      gap: 6px;
     }
-    .lang-btn {
-      font-family: 'Arial', sans-serif;
+    .print-btn {
       font-size: 12px;
       padding: 5px 14px;
       border-radius: 4px;
-      border: 1px solid #0f2557;
-      background: transparent;
-      color: #0f2557;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .lang-btn.active {
+      border: none;
       background: #0f2557;
       color: #fff;
+      cursor: pointer;
     }
 
     .page {
@@ -43,64 +35,66 @@
       min-height: 297mm;
       background: #fff;
       margin: 10px auto 20px;
-      padding: 20mm 18mm;
+      padding: 14mm 18mm;
+      display: flex;
+      flex-direction: column;
     }
+    .page-body { flex: 1; }
 
-    /* 页眉 */
+    /* ── 页眉 ── */
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
+      align-items: center;
+      padding-bottom: 10px;
       border-bottom: 2px solid #0f2557;
+      margin-bottom: 16px;
     }
-    .company-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .company-info div { line-height: 1.8; color: #444; }
+    .company-name { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: #0f2557; }
+    .company-info div { line-height: 2.2; color: #555; font-size: 13px; }
+    .invoice-header-right { text-align: right; }
+    .invoice-meta {
+      font-size: 11px;
+      color: #666;
+      margin-top: 6px;
+      line-height: 1.9;
+      text-align: right;
+    }
+    .invoice-meta span { color: #888; margin-right: 2px; }
     .invoice-title {
-      font-size: 36px;
+      font-size: 38px;
       font-weight: 700;
       color: #0f2557;
-      letter-spacing: 4px;
+      letter-spacing: 6px;
+      line-height: 1;
     }
 
-    /* 客户 + 编号 */
-    .meta {
+    /* ── 客户 + 货物 ── */
+    .info-row {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
+      gap: 40px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e2e8f0;
     }
-    .client-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .client-sub { color: #444; line-height: 1.9; }
-    .invoice-info div { line-height: 2; text-align: left; }
-
-    /* 货物信息栏 */
-    .cargo-section {
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-    }
-    .cargo-section-title {
+    .info-block { flex: 1; }
+    .info-block-title {
+      font-size: 11px;
       font-weight: 700;
-      color: #0f2557;
-      margin-bottom: 10px;
-      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
     }
-    .cargo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px 20px;
-    }
-    .cargo-item { display: flex; gap: 6px; line-height: 1.9; }
-    .cargo-label { color: #666; white-space: nowrap; }
-    .cargo-value { font-weight: 500; }
+    .client-name { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .info-line { line-height: 1.9; color: #444; }
+    .info-label { color: #888; margin-right: 4px; }
 
-    /* 明细表 */
+    /* ── 明细表 ── */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     th {
       background: #0f2557;
@@ -108,103 +102,114 @@
       padding: 9px 10px;
       text-align: center;
       font-weight: 600;
+      font-size: 12px;
     }
     td {
       padding: 9px 10px;
       border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
     }
     td:not(:first-child) { text-align: center; }
-    tr:hover td { background: #f8fafc; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f8fafc; }
 
-    /* 合计 */
+    /* ── 合计 ── */
     .totals {
-      width: 300px;
-      margin-left: auto;
-      margin-bottom: 32px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
     }
+    .totals-inner { width: 280px; }
     .total-row {
       display: flex;
       justify-content: space-between;
-      padding: 6px 0;
+      padding: 5px 0;
       border-bottom: 1px solid #e2e8f0;
-      color: #444;
+      color: #555;
+      font-size: 13px;
     }
     .total-row.grand {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: #0f2557;
+      border-top: 2px solid #0f2557;
       border-bottom: 2px solid #0f2557;
-      padding-top: 10px;
+      padding: 8px 0;
+      margin-top: 2px;
     }
 
-    /* 账户信息 */
+    /* ── 账户信息 ── */
     .notes {
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      padding: 14px 16px;
+      background: #f8fafc;
+      border-left: 3px solid #0f2557;
+      padding: 12px 16px;
     }
     .notes-title {
+      font-size: 11px;
       font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #94a3b8;
       margin-bottom: 8px;
-      color: #0f2557;
     }
-    .notes div { line-height: 2; color: #555; }
+    .notes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 20px;
+    }
+    .notes-grid div { line-height: 1.9; color: #444; }
 
-    /* 打印样式 */
     @media print {
       body { background: none; }
-      .lang-bar { display: none; }
-      .page { margin: 0; padding: 15mm 18mm; box-shadow: none; }
+      .toolbar { display: none; }
+      .page { margin: 0; padding: 12mm 18mm; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 语言切换 -->
-  <div class="lang-bar">
-    <button class="lang-btn active" onclick="setLang('zh')">中文</button>
-    <button class="lang-btn" onclick="setLang('en')">English</button>
+  <div class="toolbar">
+    <button class="print-btn" onclick="window.print()">🖨 打印</button>
   </div>
 
   <div class="page">
 
-    <!-- 页眉：公司信息 -->
+    <div class="page-body">
+    <!-- 页眉 -->
     <div class="header">
       <div class="company-info">
-        <div class="company-name" data-zh="山东上星国际货运代理有限公司" data-en="OPTEC EXPRESS CO., LTD."></div>
-        <div data-zh="地址：山东省烟台市XX区XX路123号" data-en="Address: XX Road 123, Yantai, Shandong, China"></div>
-        <div data-zh="电话：0535-0000-0000　传真：0535-0000-0001" data-en="Tel: 0535-0000-0000　Fax: 0535-0000-0001"></div>
+        <div class="company-name">山东上星国际货运代理有限公司</div>
+        <div>税号：91370000XXXXXXXXXX</div>
+        <div>地址：山东省烟台市XX区XX路123号</div>
+        <div>电话：0535-0000-0000</div>
       </div>
-      <div class="invoice-title" data-zh="请　求　书" data-en="INVOICE"></div>
-    </div>
-
-    <!-- 客户信息 + 请求书信息 -->
-    <div class="meta">
-      <div class="client">
-        <div class="client-name" data-zh="○○有限公司　收" data-en="○○ Co., Ltd."></div>
-        <div class="client-sub">
-          <div data-zh="地址：上海市浦东新区○○路123号" data-en="Address: XX Road 123, Pudong, Shanghai"></div>
-          <div data-zh="电话：021-0000-0000" data-en="Tel: 021-0000-0000"></div>
-          <div data-zh="邮箱：contact@example.com" data-en="Email: contact@example.com"></div>
+      <div class="invoice-header-right">
+        <div class="invoice-title">请　求　书</div>
+        <div class="invoice-meta">
+          <div><span>案件编号：</span>INV-2024-001</div>
+          <div><span>发行日期：</span>2024年4月24日</div>
+          <div><span>付款期限：</span>2024年5月31日</div>
+          <div><span>付款方式：</span>电汇</div>
         </div>
       </div>
-      <div class="invoice-info">
-        <div data-zh="案件编号：INV-2024-001" data-en="Invoice No.: INV-2024-001"></div>
-        <div data-zh="发行日期：2024年4月24日" data-en="Issue Date: April 24, 2024"></div>
-        <div data-zh="付款期限：2024年5月31日" data-en="Due Date: May 31, 2024"></div>
-      </div>
     </div>
 
-    <!-- 货物信息栏 -->
-    <div class="cargo-section">
-      <div class="cargo-section-title" data-zh="货物信息" data-en="Cargo Details"></div>
-      <div class="cargo-grid">
-        <div class="cargo-item"><span class="cargo-label" data-zh="品名：" data-en="Description:"></span><span class="cargo-value" data-zh="电子零部件" data-en="Electronic Components"></span></div>
-        <div class="cargo-item"><span class="cargo-label" data-zh="重量：" data-en="Weight:"></span><span class="cargo-value">500 kg</span></div>
-        <div class="cargo-item"><span class="cargo-label" data-zh="体积：" data-en="Volume:"></span><span class="cargo-value">2.5 CBM</span></div>
-        <div class="cargo-item"><span class="cargo-label" data-zh="件数：" data-en="Pieces:"></span><span class="cargo-value" data-zh="10 箱" data-en="10 Cartons"></span></div>
-        <div class="cargo-item"><span class="cargo-label" data-zh="起运地：" data-en="Origin:"></span><span class="cargo-value" data-zh="东京（NRT）" data-en="Tokyo (NRT)"></span></div>
-        <div class="cargo-item"><span class="cargo-label" data-zh="目的地：" data-en="Destination:"></span><span class="cargo-value" data-zh="上海（PVG）" data-en="Shanghai (PVG)"></span></div>
+    <!-- 客户信息 + 货物信息 -->
+    <div class="info-row">
+      <div class="info-block">
+        <div class="info-block-title">客户信息</div>
+        <div class="client-name">○○有限公司　收</div>
+        <div class="info-line"><span class="info-label">地址：</span>上海市浦东新区○○路123号</div>
+        <div class="info-line"><span class="info-label">电话：</span>021-0000-0000</div>
+        <div class="info-line"><span class="info-label">邮箱：</span>contact@example.com</div>
+      </div>
+      <div class="info-block">
+        <div class="info-block-title">货物信息</div>
+        <div class="info-line"><span class="info-label">品名：</span>电子零部件　<span class="info-label">件数：</span>10 箱</div>
+        <div class="info-line"><span class="info-label">重量：</span>500 kg　<span class="info-label">体积：</span>2.5 CBM</div>
+        <div class="info-line"><span class="info-label">起运地：</span>东京（NRT）</div>
+        <div class="info-line"><span class="info-label">目的地：</span>上海（PVG）</div>
       </div>
     </div>
 
@@ -212,25 +217,25 @@
     <table>
       <thead>
         <tr>
-          <th data-zh="费用明细" data-en="Description"></th>
-          <th data-zh="数量" data-en="Qty"></th>
-          <th data-zh="单价" data-en="Unit Price"></th>
-          <th data-zh="金额" data-en="Amount"></th>
-          <th data-zh="增值税（6%）" data-en="VAT (6%)"></th>
-          <th data-zh="备注" data-en="Remarks"></th>
+          <th>费用明细</th>
+          <th>数量</th>
+          <th>单价</th>
+          <th>金额</th>
+          <th>增值税（6%）</th>
+          <th>备注</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td data-zh="航空运输服务（东京→上海）" data-en="Air Freight Service (Tokyo→Shanghai)"></td>
+          <td>航空运输服务（东京→上海）</td>
           <td>1</td>
           <td>150,000</td>
           <td>150,000</td>
-          <td data-zh="免税" data-en="Exempt"></td>
+          <td>免税</td>
           <td></td>
         </tr>
         <tr>
-          <td data-zh="通关手续费" data-en="Customs Clearance Fee"></td>
+          <td>通关手续费</td>
           <td>1</td>
           <td>20,000</td>
           <td>20,000</td>
@@ -238,7 +243,7 @@
           <td></td>
         </tr>
         <tr>
-          <td data-zh="包装・仓储费" data-en="Packing & Storage Fee"></td>
+          <td>包装・仓储费</td>
           <td>2</td>
           <td>5,000</td>
           <td>10,000</td>
@@ -246,11 +251,11 @@
           <td></td>
         </tr>
         <tr>
-          <td data-zh="燃油附加费" data-en="Fuel Surcharge"></td>
+          <td>燃油附加费</td>
           <td>1</td>
           <td>8,000</td>
           <td>8,000</td>
-          <td data-zh="免税" data-en="Exempt"></td>
+          <td>免税</td>
           <td></td>
         </tr>
       </tbody>
@@ -258,34 +263,27 @@
 
     <!-- 合计 -->
     <div class="totals">
-      <div class="total-row"><span data-zh="小计" data-en="Subtotal"></span><span>CNY 188,000</span></div>
-      <div class="total-row"><span data-zh="增值税合计（6%）" data-en="Total VAT (6%)"></span><span>CNY 1,800</span></div>
-      <div class="total-row grand"><span data-zh="合计金额" data-en="Total Amount"></span><span>CNY 189,800</span></div>
+      <div class="totals-inner">
+        <div class="total-row"><span>小计</span><span>CNY 188,000</span></div>
+        <div class="total-row"><span>增值税合计（6%）</span><span>CNY 1,800</span></div>
+        <div class="total-row grand"><span>合计金额</span><span>CNY 189,800</span></div>
+      </div>
     </div>
+
+    </div><!-- end page-body -->
 
     <!-- 账户信息 -->
     <div class="notes">
-      <div class="notes-title" data-zh="账户信息" data-en="Bank Information"></div>
-      <div data-zh="开户银行：中国工商银行烟台XX支行" data-en="Bank: Industrial and Commercial Bank of China, Yantai XX Branch"></div>
-      <div data-zh="账户名：山东上星国际货运代理有限公司" data-en="Account Name: OPTEC EXPRESS CO., LTD."></div>
-      <div data-zh="账号：1234 5678 9012 3456" data-en="Account No.: 1234 5678 9012 3456"></div>
-      <div data-zh="汇款手续费请由贵方承担。" data-en="Bank charges are to be borne by the remitter."></div>
+      <div class="notes-title">账户信息</div>
+      <div class="notes-grid">
+        <div><span class="info-label">开户银行：</span>中国工商银行烟台XX支行</div>
+        <div><span class="info-label">账户名：</span>山东上星国际货运代理有限公司</div>
+        <div><span class="info-label">账号：</span>1234 5678 9012 3456</div>
+        <div><span class="info-label">备注：</span>汇款手续费请由贵方承担</div>
+      </div>
     </div>
 
   </div>
-
-  <script>
-    function setLang(lang) {
-      document.querySelectorAll('[data-zh]').forEach(el => {
-        el.textContent = el.dataset[lang];
-      });
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
-    }
-
-    // 初始化中文
-    setLang('zh');
-  </script>
 
 </body>
 </html>
