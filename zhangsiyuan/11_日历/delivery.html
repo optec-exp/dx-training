@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>配送スケジュール | OPTEC EXPRESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#d97706;
+  --accent-lt:#fbbf24;
+  --accent-bg:#fffbeb;
+  --bg:#f0f4f8;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --text-mid:#475569;
+  --text-dim:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+
+.site-head{background:var(--card);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.logo em{color:var(--accent);font-style:normal}
+.head-title{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-bg);padding:4px 12px;border-radius:20px}
+
+.main{flex:1;display:grid;grid-template-columns:1fr 300px;gap:0;max-height:calc(100vh - 57px);overflow:hidden}
+
+.cal-panel{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+
+.cal-nav{background:var(--card);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
+.nav-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.95rem;color:var(--text-mid);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.nav-btn:hover{background:var(--accent-bg);border-color:var(--accent-lt);color:var(--accent)}
+.nav-center{display:flex;align-items:center;gap:12px}
+.month-label{font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+.today-btn{padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:opacity .15s}
+.today-btn:hover{opacity:.85}
+
+.cal-grid{flex:1;overflow-y:auto}
+.week-header{display:grid;grid-template-columns:repeat(7,1fr);background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.wh-cell{padding:8px 0;text-align:center;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+.wh-cell:first-child{color:#ef4444}
+.wh-cell:last-child{color:#6366f1}
+.days{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(88px,1fr)}
+.day{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 7px;cursor:pointer;transition:background .12s;position:relative;background:var(--card);display:flex;flex-direction:column;gap:3px}
+.day:nth-child(7n){border-right:none}
+.day:hover{background:#fffdf5}
+.day.other-month{background:#f8f9fa}
+.day.other-month .day-num{color:var(--text-dim)}
+.day.selected{background:var(--accent-bg)!important;outline:2px solid var(--accent);outline-offset:-2px}
+.day-num{font-size:.78rem;font-weight:700;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;color:var(--text-mid)}
+.day:nth-child(7n+1) .day-num{color:#ef4444}
+.day:nth-child(7n) .day-num{color:#6366f1}
+.day.today .day-num{background:var(--accent);color:#fff}
+.event-chip{font-size:.58rem;font-weight:600;padding:2px 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.more-chip{font-size:.56rem;color:var(--text-dim);padding:1px 4px;font-weight:500}
+.add-day-btn{position:absolute;bottom:4px;right:5px;width:18px;height:18px;border-radius:4px;background:transparent;border:none;color:var(--text-dim);font-size:.9rem;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1;transition:all .15s}
+.day:hover .add-day-btn{display:flex}
+.add-day-btn:hover{color:var(--accent);background:var(--accent-bg)}
+
+.sidebar{background:var(--card);display:flex;flex-direction:column;overflow:hidden}
+.sb-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-date{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.sb-day-name{font-size:1.1rem;font-weight:800}
+.sb-events{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.no-events{display:flex;flex-direction:column;align-items:center;justify-content:center;height:120px;color:var(--text-dim);font-size:.78rem;text-align:center;gap:8px}
+.no-events-icon{font-size:1.8rem;opacity:.4}
+.ev-card{border-radius:10px;padding:10px 12px;position:relative;border:1px solid transparent}
+.ev-title{font-size:.82rem;font-weight:700;margin-bottom:2px;line-height:1.35}
+.ev-sub{font-size:.65rem;color:inherit;opacity:.65;margin-bottom:1px;line-height:1.4}
+.ev-type{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-top:2px}
+.ev-del{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:5px;border:none;background:rgba(0,0,0,.08);cursor:pointer;font-size:.72rem;color:inherit;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.ev-card:hover .ev-del{opacity:1}
+.ev-del:hover{background:rgba(239,68,68,.2);color:#b91c1c}
+.add-ev-btn{margin:0 16px 16px;padding:10px;background:var(--accent-bg);border:1.5px dashed var(--accent-lt);border-radius:10px;color:var(--accent);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.04em;flex-shrink:0}
+.add-ev-btn:hover{background:var(--accent);color:#fff;border-style:solid}
+
+.legend{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.legend-title{font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:.66rem;color:var(--text-mid)}
+.leg-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal{background:var(--card);border-radius:16px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.18);overflow:hidden}
+.modal-head{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:.95rem;font-weight:800}
+.modal-close{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:1rem;color:var(--text-dim);display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--bg)}
+.modal-body{padding:18px 20px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mid);display:block;margin-bottom:5px}
+.form-input,.form-select{width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--text);background:var(--card);outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus{border-color:var(--accent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.btn-cancel{padding:8px 18px;border:1px solid var(--border);border-radius:8px;background:transparent;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;color:var(--text-mid);cursor:pointer}
+.btn-cancel:hover{background:var(--bg)}
+.btn-save{padding:8px 20px;background:var(--accent);border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s}
+.btn-save:hover{opacity:.88}
+
+.et-air{background:#dbeafe;border-color:#bfdbfe;color:#1d4ed8}
+.et-urgent{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
+.et-confirmed{background:#dcfce7;border-color:#bbf7d0;color:#166534}
+.et-pending{background:#fef9c3;border-color:#fef08a;color:#854d0e}
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="logo">OPTEC <em>EXPRESS</em></div>
+  <div class="head-title">配送スケジュール</div>
+</header>
+
+<div class="main">
+  <div class="cal-panel">
+    <div class="cal-nav">
+      <button class="nav-btn" id="prevBtn">&#8249;</button>
+      <div class="nav-center">
+        <span class="month-label" id="monthLabel"></span>
+        <button class="today-btn" id="todayBtn">Today</button>
+      </div>
+      <button class="nav-btn" id="nextBtn">&#8250;</button>
+    </div>
+    <div class="cal-grid">
+      <div class="week-header">
+        <div class="wh-cell">月</div><div class="wh-cell">火</div><div class="wh-cell">水</div>
+        <div class="wh-cell">木</div><div class="wh-cell">金</div><div class="wh-cell">土</div><div class="wh-cell">日</div>
+      </div>
+      <div class="days" id="daysGrid"></div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sb-head">
+      <div class="sb-date" id="sbDate">日付を選択</div>
+      <div class="sb-day-name" id="sbDayName">クリックして詳細を表示</div>
+    </div>
+    <div class="sb-events" id="sbEvents">
+      <div class="no-events"><div class="no-events-icon">✈️</div>日付を選択してください</div>
+    </div>
+    <button class="add-ev-btn" id="addEvBtn">＋ 便を追加</button>
+    <div class="legend">
+      <div class="legend-title">凡例</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#93c5fd"></div>通常便 / Air Freight</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fca5a5"></div>緊急便 / Urgent</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#86efac"></div>到着確認 / Confirmed</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fde047"></div>確認待 / Pending</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title">便を追加</span>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">日付</label>
+        <input type="date" class="form-input" id="fDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">便名 / 内容</label>
+        <input type="text" class="form-input" id="fTitle" placeholder="例: NRT→CDG AF274">
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">AWB番号</label>
+          <input type="text" class="form-input" id="fAwb" placeholder="724-XXXXXXXX">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">種別</label>
+          <select class="form-select" id="fType">
+            <option value="air">通常便</option>
+            <option value="urgent">緊急便</option>
+            <option value="confirmed">到着確認</option>
+            <option value="pending">確認待</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" id="btnCancel">キャンセル</button>
+      <button class="btn-save" id="btnSave">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'optec_delivery_cal';
+const MONTHS_JA = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+const DAYS_JA = ['日','月','火','水','木','金','土'];
+const TYPE_LABELS = {air:'通常便',urgent:'緊急便',confirmed:'到着確認',pending:'確認待'};
+
+let events = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+let curYear, curMonth, selectedKey = null;
+const today = new Date();
+
+function pad(n){return String(n).padStart(2,'0')}
+function dateKey(y,m,d){return `${y}-${pad(m+1)}-${pad(d)}`}
+
+function clamp(d,y,m){
+  const max=new Date(y,m+1,0).getDate();
+  return Math.min(d,max);
+}
+
+function buildDefaults(){
+  const y=today.getFullYear(), m=today.getMonth();
+  const flights=[
+    {dep:3, route:'NRT→CDG', flight:'AF274', awb:'724-12340001', type:'air'},
+    {dep:5, route:'NRT→LHR', flight:'BA009', awb:'125-12340002', type:'air'},
+    {dep:7, route:'NRT→ORD', flight:'JL010', awb:'131-12340003', type:'urgent'},
+    {dep:10,route:'NRT→DXB', flight:'EK319', awb:'176-12340004', type:'air'},
+    {dep:12,route:'NRT→SIN', flight:'SQ12', awb:'618-12340005', type:'air'},
+    {dep:14,route:'NRT→SYD', flight:'QF25', awb:'081-12340006', type:'pending'},
+    {dep:17,route:'NRT→ICN', flight:'OZ102',awb:'988-12340007', type:'air'},
+    {dep:19,route:'NRT→HKG', flight:'CX504',awb:'160-12340008', type:'urgent'},
+    {dep:21,route:'NRT→LAX', flight:'NH106',awb:'205-12340009', type:'air'},
+    {dep:25,route:'NRT→FRA', flight:'LH718',awb:'220-12340010', type:'air'},
+  ];
+  flights.forEach(f=>{
+    const dep=clamp(f.dep,y,m);
+    const arr=clamp(f.dep+2,y,m);
+    function addShip(day,title,awb,type){
+      const k=dateKey(y,m,day);
+      if(!events[k]) events[k]=[];
+      if(!events[k].find(e=>e.awb===awb&&e.title===title))
+        events[k].push({id:Date.now()+Math.random(),title,awb,type});
+    }
+    addShip(dep,`${f.route} ${f.flight}`,f.awb,f.type);
+    addShip(arr,`到着確認 ${f.route}`,f.awb,'confirmed');
+  });
+  // Monthly AWB report
+  const lastDay=new Date(y,m+1,0).getDate();
+  const rk=dateKey(y,m,lastDay);
+  if(!events[rk]) events[rk]=[];
+  if(!events[rk].find(e=>e.title==='月次AWB締め・集計'))
+    events[rk].push({id:Date.now()+Math.random(),title:'月次AWB締め・集計',awb:'',type:'pending'});
+  save();
+}
+
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(events))}
+
+function render(){
+  const y=curYear, m=curMonth;
+  document.getElementById('monthLabel').textContent=`${y}年 ${MONTHS_JA[m]}`;
+  const firstDow=(new Date(y,m,1).getDay()+6)%7;
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+  const grid=document.getElementById('daysGrid');
+  grid.innerHTML='';
+
+  for(let i=0;i<42;i++){
+    const cell=document.createElement('div');
+    cell.className='day';
+    let d,dm,dy,isOther=false;
+    if(i<firstDow){d=prevDays-firstDow+1+i;dm=m-1<0?11:m-1;dy=m-1<0?y-1:y;isOther=true;}
+    else if(i>=firstDow+daysInMonth){d=i-firstDow-daysInMonth+1;dm=m+1>11?0:m+1;dy=m+1>11?y+1:y;isOther=true;}
+    else{d=i-firstDow+1;dm=m;dy=y;}
+    const key=dateKey(dy,dm,d);
+    if(isOther) cell.classList.add('other-month');
+    if(dy===today.getFullYear()&&dm===today.getMonth()&&d===today.getDate()) cell.classList.add('today');
+    if(key===selectedKey) cell.classList.add('selected');
+
+    const num=document.createElement('div');
+    num.className='day-num';num.textContent=d;
+    cell.appendChild(num);
+
+    const evs=events[key]||[];
+    evs.slice(0,2).forEach(ev=>{
+      const chip=document.createElement('div');
+      chip.className=`event-chip et-${ev.type}`;
+      chip.textContent=ev.title;
+      cell.appendChild(chip);
+    });
+    if(evs.length>2){
+      const more=document.createElement('div');
+      more.className='more-chip';more.textContent=`+${evs.length-2} more`;
+      cell.appendChild(more);
+    }
+
+    const addBtn=document.createElement('button');
+    addBtn.className='add-day-btn';addBtn.textContent='+';
+    addBtn.addEventListener('click',e=>{e.stopPropagation();openModal(key)});
+    cell.appendChild(addBtn);
+    cell.addEventListener('click',()=>selectDay(key,dy,dm,d));
+    grid.appendChild(cell);
+  }
+}
+
+function selectDay(key,y,m,d){
+  selectedKey=key;render();
+  const dow=new Date(y,m,d).getDay();
+  document.getElementById('sbDate').textContent=`${y}年${m+1}月${d}日（${DAYS_JA[dow]}）`;
+  document.getElementById('sbDayName').textContent=`${MONTHS_JA[m]} ${d}`;
+  renderSidebar(key);
+}
+
+function renderSidebar(key){
+  const sb=document.getElementById('sbEvents');
+  const evs=events[key]||[];
+  if(evs.length===0){sb.innerHTML='<div class="no-events"><div class="no-events-icon">✨</div>この日はフライトなし</div>';return;}
+  sb.innerHTML='';
+  evs.forEach(ev=>{
+    const card=document.createElement('div');
+    card.className=`ev-card et-${ev.type}`;
+    const awbLine=ev.awb?`<div class="ev-sub">AWB: ${ev.awb}</div>`:'';
+    card.innerHTML=`<div class="ev-title">${ev.title}</div>${awbLine}<div class="ev-type">${TYPE_LABELS[ev.type]||ev.type}</div>
+    <button class="ev-del" title="削除">✕</button>`;
+    card.querySelector('.ev-del').addEventListener('click',()=>deleteEvent(key,ev.id));
+    sb.appendChild(card);
+  });
+}
+
+function deleteEvent(key,id){
+  if(!confirm('この便を削除しますか？')) return;
+  events[key]=(events[key]||[]).filter(e=>e.id!==id);
+  if(events[key].length===0) delete events[key];
+  save();render();
+  if(selectedKey===key) renderSidebar(key);
+}
+
+function openModal(preKey){
+  document.getElementById('fDate').value=preKey||selectedKey||`${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+  document.getElementById('fTitle').value='';
+  document.getElementById('fAwb').value='';
+  document.getElementById('fType').value='air';
+  document.getElementById('modalBg').classList.add('show');
+  setTimeout(()=>document.getElementById('fTitle').focus(),50);
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('show')}
+function saveEvent(){
+  const dateVal=document.getElementById('fDate').value;
+  const title=document.getElementById('fTitle').value.trim();
+  const awb=document.getElementById('fAwb').value.trim();
+  const type=document.getElementById('fType').value;
+  if(!dateVal||!title) return;
+  if(!events[dateVal]) events[dateVal]=[];
+  events[dateVal].push({id:Date.now(),title,awb,type});
+  save();render();
+  if(selectedKey===dateVal) renderSidebar(dateVal);
+  closeModal();
+}
+
+document.getElementById('prevBtn').addEventListener('click',()=>{curMonth--;if(curMonth<0){curMonth=11;curYear--;}render()});
+document.getElementById('nextBtn').addEventListener('click',()=>{curMonth++;if(curMonth>11){curMonth=0;curYear++;}render()});
+document.getElementById('todayBtn').addEventListener('click',()=>{
+  curYear=today.getFullYear();curMonth=today.getMonth();
+  const k=dateKey(curYear,curMonth,today.getDate());
+  selectDay(k,curYear,curMonth,today.getDate());
+});
+document.getElementById('addEvBtn').addEventListener('click',()=>openModal(null));
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('btnCancel').addEventListener('click',closeModal);
+document.getElementById('btnSave').addEventListener('click',saveEvent);
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+document.getElementById('fTitle').addEventListener('keydown',e=>{if(e.key==='Enter')saveEvent()});
+
+curYear=today.getFullYear();curMonth=today.getMonth();
+buildDefaults();render();
+const tk=dateKey(curYear,curMonth,today.getDate());
+selectDay(tk,curYear,curMonth,today.getDate());
+</script>
+</body>
+</html>
