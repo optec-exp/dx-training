@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#161616;font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+body{background:#161616;font-family:'Inter',sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
 
-/* ── PREVIEW BAR ── */
+/* ── PREVIEW BAR (screen only) ── */
 .preview-bar{width:100%;background:#0e0e0e;border-bottom:1px solid #232323;padding:11px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .pb-label{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:#555}
 .pb-right{display:flex;align-items:center;gap:16px}
@@ -18,75 +18,90 @@ body{background:#161616;font-family:'Inter',sans-serif;min-height:100vh;display:
 .print-btn:hover{opacity:.82}
 
 /* ── DOC WRAPPER ── */
-.doc-wrap{padding:44px 24px 72px;width:100%;max-width:880px}
-.invoice{background:#fff;color:#0a0a0a;padding:56px 56px 64px;box-shadow:0 4px 60px rgba(0,0,0,.55)}
+.doc-wrap{padding:40px 0 60px;width:100%;display:flex;justify-content:center}
+
+/* ══════════════════════════════════════
+   INVOICE — A4 actual size (210 × 297mm)
+   All spacing in mm, all fonts in pt.
+   Screen renders at 96dpi ≈ 3.78px/mm.
+   Print renders at same physical size.
+   ══════════════════════════════════════ */
+.invoice{
+  width:210mm;
+  height:297mm;
+  padding:14mm 15mm 12mm;
+  background:#fff;
+  color:#0a0a0a;
+  font-family:'Inter',sans-serif;
+  font-size:9pt;
+  box-shadow:0 6px 64px rgba(0,0,0,.6);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  -webkit-print-color-adjust:exact;
+  print-color-adjust:exact;
+}
 
 /* ── HEADER ── */
-.inv-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:36px;border-bottom:2px solid #0a0a0a;margin-bottom:36px}
-.co-name{font-size:.95rem;font-weight:800;letter-spacing:.04em;margin-bottom:3px}
-.co-en{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:14px}
-.co-addr{font-size:.72rem;color:#666;line-height:1.7}
+.inv-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:5mm;border-bottom:0.5mm solid #0a0a0a;margin-bottom:5mm;flex-shrink:0}
+.co-name{font-size:10.5pt;font-weight:800;letter-spacing:.03em;margin-bottom:0.8mm}
+.co-en{font-size:6.5pt;letter-spacing:.16em;text-transform:uppercase;color:#999;margin-bottom:2.5mm}
+.co-addr{font-size:7.5pt;color:#666;line-height:1.65}
 .inv-meta{text-align:right}
-.inv-word{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;display:block;margin-bottom:10px}
-.inv-ref{font-size:.7rem;letter-spacing:.1em;color:#888;text-transform:uppercase;line-height:1.8}
+.inv-word{font-size:28pt;font-weight:900;letter-spacing:-.03em;display:block;line-height:1;margin-bottom:2.5mm}
+.inv-ref{font-size:7.5pt;letter-spacing:.07em;color:#888;text-transform:uppercase;line-height:1.75}
 .inv-ref strong{color:#0a0a0a;font-weight:700}
 
 /* ── PARTIES ── */
-.parties{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:28px}
-.party-lbl{font-size:.58rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#bbb;margin-bottom:8px}
-.party-name{font-size:.88rem;font-weight:700;margin-bottom:4px}
-.party-detail{font-size:.73rem;color:#666;line-height:1.68}
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:8mm;margin-bottom:4.5mm;flex-shrink:0}
+.party-lbl{font-size:6pt;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#bbb;margin-bottom:1.5mm}
+.party-name{font-size:9.5pt;font-weight:700;margin-bottom:1mm}
+.party-detail{font-size:7.5pt;color:#666;line-height:1.62}
 
 /* ── SHIPMENT STRIP ── */
-.shipment{background:#f7f7f5;padding:16px 20px;margin-bottom:32px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.sh-lbl{font-size:.57rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#bbb;margin-bottom:3px}
-.sh-val{font-size:.78rem;font-weight:600;color:#0a0a0a}
+.shipment{background:#f7f7f5;padding:3mm 4mm;margin-bottom:5mm;display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;flex-shrink:0}
+.sh-lbl{font-size:5.5pt;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#bbb;margin-bottom:1mm}
+.sh-val{font-size:8.5pt;font-weight:600;color:#0a0a0a}
 
 /* ── TABLE ── */
-table{width:100%;border-collapse:collapse}
-thead th{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#bbb;padding:8px 0;border-bottom:1px solid #e8e8e4;text-align:left}
+table{width:100%;border-collapse:collapse;flex-shrink:0}
+thead th{font-size:6pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#bbb;padding:1.5mm 0;border-bottom:0.3mm solid #e8e8e4;text-align:left}
 thead th:last-child,tbody td:last-child{text-align:right}
-tbody td{font-size:.79rem;color:#444;padding:13px 0;border-bottom:1px solid #f0f0ec;vertical-align:top;line-height:1.5}
+tbody td{font-size:8pt;color:#444;padding:2.5mm 0;border-bottom:0.2mm solid #f0f0ec;vertical-align:top;line-height:1.45}
 tbody td.main{color:#0a0a0a;font-weight:500}
-tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
+tbody td .sub{display:block;font-size:6.5pt;color:#aaa;margin-top:0.7mm}
 
 /* ── TOTALS ── */
-.totals{margin-top:4px;display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding-top:18px;border-top:2px solid #0a0a0a}
-.t-row{display:flex;align-items:baseline;gap:48px;font-size:.78rem}
-.t-k{color:#888;min-width:180px;text-align:right}
-.t-v{min-width:100px;text-align:right;font-weight:600;color:#0a0a0a}
-.t-row.subtax{border-top:1px solid #e8e8e4;padding-top:5px;margin-top:1px}
-.t-row.grand .t-k{font-weight:800;color:#0a0a0a;font-size:.84rem}
-.t-row.grand .t-v{font-size:1.15rem;font-weight:900}
+.totals{display:flex;flex-direction:column;align-items:flex-end;gap:1.2mm;padding-top:4mm;border-top:0.5mm solid #0a0a0a;margin-top:1mm;flex-shrink:0}
+.t-row{display:flex;align-items:baseline;gap:10mm;font-size:8pt}
+.t-k{color:#888;min-width:46mm;text-align:right}
+.t-v{min-width:22mm;text-align:right;font-weight:600;color:#0a0a0a}
+.t-row.subtax{border-top:0.2mm solid #e8e8e4;padding-top:1.5mm;margin-top:0.5mm}
+.t-row.grand .t-k{font-weight:800;color:#0a0a0a;font-size:9.5pt}
+.t-row.grand .t-v{font-size:13pt;font-weight:900}
 
-/* ── FOOTER ── */
-.inv-foot{margin-top:40px;padding-top:24px;border-top:1px solid #e8e8e4;display:grid;grid-template-columns:1fr 1fr;gap:36px}
-.foot-lbl{font-size:.57rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#bbb;margin-bottom:8px}
-.foot-text{font-size:.74rem;color:#666;line-height:1.75}
-.stamp{display:inline-block;border:2px solid #0a0a0a;padding:6px 14px;font-size:.63rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-top:14px;opacity:.2}
+/* ── FOOTER — pushed to page bottom via margin-top:auto ── */
+.inv-foot{margin-top:auto;padding-top:4mm;border-top:0.3mm solid #e8e8e4;display:grid;grid-template-columns:1fr 1fr;gap:8mm;flex-shrink:0}
+.foot-lbl{font-size:6pt;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#bbb;margin-bottom:1.5mm}
+.foot-text{font-size:7.5pt;color:#666;line-height:1.68}
+.stamp{display:inline-block;border:0.5mm solid #0a0a0a;padding:1.5mm 3.5mm;font-size:6pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-top:3mm;opacity:.2}
 
-/* ── PRINT ── */
+/* ── PRINT — only hide chrome + remove shadow, nothing else ── */
 @media print{
+  @page{margin:0;size:A4}
   body{background:#fff!important}
   .preview-bar{display:none!important}
-  .doc-wrap{padding:0;max-width:none}
-  .invoice{box-shadow:none;padding:18mm 16mm}
-  @page{margin:0;size:A4}
-}
-
-@media(max-width:640px){
-  .invoice{padding:32px 24px 40px}
-  .parties,.inv-foot{grid-template-columns:1fr;gap:20px}
-  .shipment{grid-template-columns:repeat(2,1fr)}
+  .doc-wrap{padding:0;display:block}
+  .invoice{box-shadow:none;margin:0}
 }
 </style>
 </head>
 <body>
 
 <div class="preview-bar">
-  <span class="pb-label">Invoice Preview · 发票预览</span>
+  <span class="pb-label">Invoice Preview · 发票预览 &nbsp;·&nbsp; A4 · What You See Is What Prints</span>
   <div class="pb-right">
-    <span class="pb-hint">A4 · Print-ready</span>
+    <span class="pb-hint">210 × 297 mm</span>
     <button class="print-btn" onclick="window.print()">⌘ Print</button>
   </div>
 </div>
@@ -94,6 +109,7 @@ tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
 <div class="doc-wrap">
 <div class="invoice">
 
+  <!-- HEADER -->
   <div class="inv-head">
     <div>
       <div class="co-name">オプテックエクスプレス株式会社</div>
@@ -114,6 +130,7 @@ tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
     </div>
   </div>
 
+  <!-- PARTIES -->
   <div class="parties">
     <div>
       <div class="party-lbl">Bill To</div>
@@ -136,6 +153,7 @@ tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
     </div>
   </div>
 
+  <!-- SHIPMENT STRIP -->
   <div class="shipment">
     <div><div class="sh-lbl">Origin</div><div class="sh-val">NRT · Tokyo Narita</div></div>
     <div><div class="sh-lbl">Destination</div><div class="sh-val">CDG · Paris CDG</div></div>
@@ -143,6 +161,7 @@ tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
     <div><div class="sh-lbl">Service Level</div><div class="sh-val">NFO Priority</div></div>
   </div>
 
+  <!-- TABLE -->
   <table>
     <thead>
       <tr>
@@ -186,12 +205,14 @@ tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
     </tbody>
   </table>
 
+  <!-- TOTALS -->
   <div class="totals">
     <div class="t-row"><span class="t-k">Subtotal</span><span class="t-v">¥129,925</span></div>
     <div class="t-row subtax"><span class="t-k">Consumption Tax (10%)</span><span class="t-v">¥12,993</span></div>
     <div class="t-row grand"><span class="t-k">Total Due</span><span class="t-v">¥142,918</span></div>
   </div>
 
+  <!-- FOOTER -->
   <div class="inv-foot">
     <div>
       <div class="foot-lbl">Payment Terms</div>
