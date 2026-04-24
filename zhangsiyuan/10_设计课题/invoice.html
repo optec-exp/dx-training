@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Invoice Preview | OPTEC EXPRESS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#161616;font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+
+/* ── PREVIEW BAR ── */
+.preview-bar{width:100%;background:#0e0e0e;border-bottom:1px solid #232323;padding:11px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.pb-label{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:#555}
+.pb-right{display:flex;align-items:center;gap:16px}
+.pb-hint{font-size:.67rem;color:#444;letter-spacing:.06em}
+.print-btn{padding:7px 20px;background:#f4f4f0;border:none;border-radius:4px;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:opacity .18s}
+.print-btn:hover{opacity:.82}
+
+/* ── DOC WRAPPER ── */
+.doc-wrap{padding:44px 24px 72px;width:100%;max-width:880px}
+.invoice{background:#fff;color:#0a0a0a;padding:56px 56px 64px;box-shadow:0 4px 60px rgba(0,0,0,.55)}
+
+/* ── HEADER ── */
+.inv-head{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:36px;border-bottom:2px solid #0a0a0a;margin-bottom:36px}
+.co-name{font-size:.95rem;font-weight:800;letter-spacing:.04em;margin-bottom:3px}
+.co-en{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:14px}
+.co-addr{font-size:.72rem;color:#666;line-height:1.7}
+.inv-meta{text-align:right}
+.inv-word{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;display:block;margin-bottom:10px}
+.inv-ref{font-size:.7rem;letter-spacing:.1em;color:#888;text-transform:uppercase;line-height:1.8}
+.inv-ref strong{color:#0a0a0a;font-weight:700}
+
+/* ── PARTIES ── */
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-bottom:28px}
+.party-lbl{font-size:.58rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#bbb;margin-bottom:8px}
+.party-name{font-size:.88rem;font-weight:700;margin-bottom:4px}
+.party-detail{font-size:.73rem;color:#666;line-height:1.68}
+
+/* ── SHIPMENT STRIP ── */
+.shipment{background:#f7f7f5;padding:16px 20px;margin-bottom:32px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.sh-lbl{font-size:.57rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#bbb;margin-bottom:3px}
+.sh-val{font-size:.78rem;font-weight:600;color:#0a0a0a}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse}
+thead th{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#bbb;padding:8px 0;border-bottom:1px solid #e8e8e4;text-align:left}
+thead th:last-child,tbody td:last-child{text-align:right}
+tbody td{font-size:.79rem;color:#444;padding:13px 0;border-bottom:1px solid #f0f0ec;vertical-align:top;line-height:1.5}
+tbody td.main{color:#0a0a0a;font-weight:500}
+tbody td .sub{display:block;font-size:.7rem;color:#aaa;margin-top:2px}
+
+/* ── TOTALS ── */
+.totals{margin-top:4px;display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding-top:18px;border-top:2px solid #0a0a0a}
+.t-row{display:flex;align-items:baseline;gap:48px;font-size:.78rem}
+.t-k{color:#888;min-width:180px;text-align:right}
+.t-v{min-width:100px;text-align:right;font-weight:600;color:#0a0a0a}
+.t-row.subtax{border-top:1px solid #e8e8e4;padding-top:5px;margin-top:1px}
+.t-row.grand .t-k{font-weight:800;color:#0a0a0a;font-size:.84rem}
+.t-row.grand .t-v{font-size:1.15rem;font-weight:900}
+
+/* ── FOOTER ── */
+.inv-foot{margin-top:40px;padding-top:24px;border-top:1px solid #e8e8e4;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.foot-lbl{font-size:.57rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#bbb;margin-bottom:8px}
+.foot-text{font-size:.74rem;color:#666;line-height:1.75}
+.stamp{display:inline-block;border:2px solid #0a0a0a;padding:6px 14px;font-size:.63rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;margin-top:14px;opacity:.2}
+
+/* ── PRINT ── */
+@media print{
+  body{background:#fff!important}
+  .preview-bar{display:none!important}
+  .doc-wrap{padding:0;max-width:none}
+  .invoice{box-shadow:none;padding:18mm 16mm}
+  @page{margin:0;size:A4}
+}
+
+@media(max-width:640px){
+  .invoice{padding:32px 24px 40px}
+  .parties,.inv-foot{grid-template-columns:1fr;gap:20px}
+  .shipment{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="preview-bar">
+  <span class="pb-label">Invoice Preview · 发票预览</span>
+  <div class="pb-right">
+    <span class="pb-hint">A4 · Print-ready</span>
+    <button class="print-btn" onclick="window.print()">⌘ Print</button>
+  </div>
+</div>
+
+<div class="doc-wrap">
+<div class="invoice">
+
+  <div class="inv-head">
+    <div>
+      <div class="co-name">オプテックエクスプレス株式会社</div>
+      <div class="co-en">OPTEC EXPRESS CO., LTD.</div>
+      <div class="co-addr">
+        3F Shinbashi Hara Bldg., 2-10-5 Shinbashi<br>
+        Minato-ku, Tokyo 105-0004, Japan<br>
+        TEL: +81-3-6809-8890 &nbsp;·&nbsp; invoice@optec-exp.com
+      </div>
+    </div>
+    <div class="inv-meta">
+      <span class="inv-word">INVOICE</span>
+      <div class="inv-ref">
+        No. &nbsp;<strong>OPTEC-2025-0312</strong><br>
+        Issue Date &nbsp;<strong>2025-03-12</strong><br>
+        Due Date &nbsp;<strong>2025-04-11</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div>
+      <div class="party-lbl">Bill To</div>
+      <div class="party-name">株式会社サンプル商事</div>
+      <div class="party-detail">
+        〒100-0001 東京都千代田区千代田 1-1<br>
+        物流管理部 御中<br>
+        TEL: +81-3-0000-0000
+      </div>
+    </div>
+    <div>
+      <div class="party-lbl">Service Reference</div>
+      <div class="party-name">NFO Emergency Air Freight</div>
+      <div class="party-detail">
+        AWB: 724-12345678<br>
+        Route: NRT → CDG<br>
+        Flight: AF274 &nbsp;/&nbsp; 2025-03-13<br>
+        2 Pkgs · 45.5 kg · 80×60×40 cm
+      </div>
+    </div>
+  </div>
+
+  <div class="shipment">
+    <div><div class="sh-lbl">Origin</div><div class="sh-val">NRT · Tokyo Narita</div></div>
+    <div><div class="sh-lbl">Destination</div><div class="sh-val">CDG · Paris CDG</div></div>
+    <div><div class="sh-lbl">Chargeable Wt.</div><div class="sh-val">45.5 kg</div></div>
+    <div><div class="sh-lbl">Service Level</div><div class="sh-val">NFO Priority</div></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:48%">Description</th>
+        <th>Qty / Wt</th>
+        <th>Rate</th>
+        <th>Amount (JPY)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="main">Air Freight Charge<span class="sub">NRT → CDG · AF274 · NFO Priority</span></td>
+        <td>45.5 kg</td>
+        <td>¥1,850 / kg</td>
+        <td>¥84,175</td>
+      </tr>
+      <tr>
+        <td class="main">Fuel Surcharge (FSC)<span class="sub">IATA Rate · March 2025</span></td>
+        <td>45.5 kg</td>
+        <td>¥380 / kg</td>
+        <td>¥17,290</td>
+      </tr>
+      <tr>
+        <td class="main">Security Surcharge (SSC)</td>
+        <td>45.5 kg</td>
+        <td>¥120 / kg</td>
+        <td>¥5,460</td>
+      </tr>
+      <tr>
+        <td class="main">Handling &amp; Documentation</td>
+        <td>—</td>
+        <td>Fixed</td>
+        <td>¥8,000</td>
+      </tr>
+      <tr>
+        <td class="main">Destination Customs Clearance<span class="sub">CDG · France · Standard Import</span></td>
+        <td>—</td>
+        <td>Fixed</td>
+        <td>¥15,000</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <div class="t-row"><span class="t-k">Subtotal</span><span class="t-v">¥129,925</span></div>
+    <div class="t-row subtax"><span class="t-k">Consumption Tax (10%)</span><span class="t-v">¥12,993</span></div>
+    <div class="t-row grand"><span class="t-k">Total Due</span><span class="t-v">¥142,918</span></div>
+  </div>
+
+  <div class="inv-foot">
+    <div>
+      <div class="foot-lbl">Payment Terms</div>
+      <div class="foot-text">
+        Bank transfer within 30 days of invoice date.<br>
+        Please quote invoice number on remittance.<br>
+        Late payment: 2% per annum.
+      </div>
+      <div class="stamp">OPTEC EXPRESS</div>
+    </div>
+    <div>
+      <div class="foot-lbl">Bank Details</div>
+      <div class="foot-text">
+        Bank: 三菱UFJ銀行 / MUFG Bank, Ltd.<br>
+        Branch: 新橋支店 / Shinbashi Branch<br>
+        Account Type: 普通 / Ordinary<br>
+        Account No.: 0123456<br>
+        Account Name: オプテックエクスプレス（株）
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</body>
+</html>
