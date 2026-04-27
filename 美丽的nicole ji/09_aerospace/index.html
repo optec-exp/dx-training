@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OPTEC Aerospace Logistics Alliance</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Barlow+Condensed:wght@400;600;700;800&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -78,6 +79,23 @@ nav {
   transition: background 0.2s;
 }
 .nav-cta:hover { background: var(--blue); }
+
+/* ── LANG SWITCHER ── */
+.lang-switcher { display:flex; background:rgba(255,255,255,0.1); border-radius:20px; padding:3px; gap:2px; }
+.lang-btn { background:transparent; border:none; padding:5px 12px; border-radius:16px; font-size:0.75rem; font-weight:700; cursor:pointer; color:rgba(255,255,255,0.6); font-family:'Barlow Condensed',sans-serif; letter-spacing:0.08em; transition:all 0.2s; }
+.lang-btn.active { background:var(--cyan); color:var(--navy); }
+.lang-btn:hover:not(.active) { color:#fff; }
+
+/* ── LEAFLET DARK THEME ── */
+.leaflet-container { background: var(--navy2) !important; font-family: 'Barlow', sans-serif; }
+.leaflet-bar a { background: var(--navy3); color: var(--cyan); border-color: rgba(255,255,255,0.12); }
+.leaflet-bar a:hover { background: var(--navy2); color: var(--white); }
+.leaflet-popup-content-wrapper { background: var(--navy3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+.leaflet-popup-tip { background: var(--navy3); }
+.leaflet-popup-content { margin: 10px 14px; font-size: 0.78rem; color: var(--white); font-family: 'Barlow', sans-serif; }
+.leaflet-popup-close-button { color: var(--gray) !important; }
+.leaflet-control-attribution { background: rgba(5,13,26,0.8) !important; color: var(--gray); font-size: 0.6rem; }
+.leaflet-control-attribution a { color: var(--cyan); }
 
 /* ── HERO ── */
 .hero {
@@ -592,14 +610,21 @@ footer {
       OPTEC <span>AERO</span>
     </a>
     <ul class="nav-menu">
-      <li><a href="#about">About</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#network">Network</a></li>
-      <li><a href="#data">Data</a></li>
-      <li><a href="#news">News</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#about" data-i18n="nav.about">About</a></li>
+      <li><a href="#services" data-i18n="nav.services">Services</a></li>
+      <li><a href="#network" data-i18n="nav.network">Network</a></li>
+      <li><a href="#data" data-i18n="nav.data">Data</a></li>
+      <li><a href="#news" data-i18n="nav.news">News</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
     </ul>
-    <a href="#quote" class="nav-cta">Freight Quote</a>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh" onclick="setLang('zh')">中</button>
+        <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="setLang('ja')">日</button>
+      </div>
+      <a href="#quote" class="nav-cta" data-i18n="nav.cta">Freight Quote</a>
+    </div>
   </nav>
 </header>
 
@@ -609,52 +634,52 @@ footer {
   <div class="hero-grid-lines"></div>
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-eyebrow">The Aerospace Logistics Alliance</div>
-      <h1>
+      <div class="hero-eyebrow" data-i18n="hero.eyebrow">The Aerospace Logistics Alliance</div>
+      <h1 data-i18n-html="hero.h1">
         Out-of-the-box<br>
         <em>Aerospace</em><br>
         Logistics Solutions
       </h1>
-      <p class="hero-desc">
+      <p class="hero-desc" data-i18n="hero.desc">
         OPTEC Aero connects 96 countries through a network of expert affiliates,
         delivering AOG response, engine transport, and charter services
         24/7/365 — anywhere on the globe.
       </p>
       <div class="hero-btns">
-        <a href="#quote" class="btn-fill">Get a Free Quote</a>
-        <a href="#services" class="btn-outline">Our Services</a>
+        <a href="#quote" class="btn-fill" data-i18n="hero.btn1">Get a Free Quote</a>
+        <a href="#services" class="btn-outline" data-i18n="hero.btn2">Our Services</a>
       </div>
     </div>
     <div class="hero-visual">
       <div class="hv-card">
         <div class="hv-icon">🚨</div>
         <div class="hv-text">
-          <h4>AOG Response</h4>
-          <p>Aircraft on Ground — emergency parts delivery</p>
+          <h4 data-i18n="hero.card1h">AOG Response</h4>
+          <p data-i18n="hero.card1p">Aircraft on Ground — emergency parts delivery</p>
         </div>
         <div class="hv-badge">24 / 7</div>
       </div>
       <div class="hv-card">
         <div class="hv-icon">✈️</div>
         <div class="hv-text">
-          <h4>Engine Transport</h4>
-          <p>Specialist oversize engine logistics worldwide</p>
+          <h4 data-i18n="hero.card2h">Engine Transport</h4>
+          <p data-i18n="hero.card2p">Specialist oversize engine logistics worldwide</p>
         </div>
         <div class="hv-badge">Global</div>
       </div>
       <div class="hv-card">
         <div class="hv-icon">🧑‍✈️</div>
         <div class="hv-text">
-          <h4>On-Board Courier</h4>
-          <p>Hand-carry critical aerospace components</p>
+          <h4 data-i18n="hero.card3h">On-Board Courier</h4>
+          <p data-i18n="hero.card3p">Hand-carry critical aerospace components</p>
         </div>
         <div class="hv-badge">Express</div>
       </div>
       <div class="hv-card">
         <div class="hv-icon">📋</div>
         <div class="hv-text">
-          <h4>Customs & Compliance</h4>
-          <p>Full clearance support in 96 countries</p>
+          <h4 data-i18n="hero.card4h">Customs &amp; Compliance</h4>
+          <p data-i18n="hero.card4p">Full clearance support in 96 countries</p>
         </div>
         <div class="hv-badge">Part 145</div>
       </div>
@@ -667,19 +692,19 @@ footer {
   <div class="stats-inner">
     <div class="stat-item reveal">
       <div class="stat-num" data-target="96">0</div>
-      <div class="stat-label">Countries Covered</div>
+      <div class="stat-label" data-i18n="stats.s1">Countries Covered</div>
     </div>
     <div class="stat-item reveal">
       <div class="stat-num" data-target="135">0</div>
-      <div class="stat-label">Airport Stations</div>
+      <div class="stat-label" data-i18n="stats.s2">Airport Stations</div>
     </div>
     <div class="stat-item reveal">
       <div class="stat-num" data-target="120000">0</div>
-      <div class="stat-label">Operations / Year</div>
+      <div class="stat-label" data-i18n="stats.s3">Operations / Year</div>
     </div>
     <div class="stat-item reveal">
       <div class="stat-num" data-suffix="h">24</div>
-      <div class="stat-label">365 Days Support</div>
+      <div class="stat-label" data-i18n="stats.s4">365 Days Support</div>
     </div>
   </div>
 </div>
@@ -688,40 +713,40 @@ footer {
 <section class="diff" id="about">
   <div class="wrap">
     <div class="reveal">
-      <div class="sec-label">What Makes Us Different</div>
-      <h2 class="sec-title">Why Choose OPTEC Aero</h2>
-      <p class="sec-desc">Six pillars that set our aerospace logistics apart from every other provider in the market.</p>
+      <div class="sec-label" data-i18n="diff.label">What Makes Us Different</div>
+      <h2 class="sec-title" data-i18n="diff.title">Why Choose OPTEC Aero</h2>
+      <p class="sec-desc" data-i18n="diff.desc">Six pillars that set our aerospace logistics apart from every other provider in the market.</p>
     </div>
     <div class="diff-grid">
       <div class="diff-card reveal">
         <div class="diff-num">01</div>
-        <h3>Aerospace Exclusive</h3>
-        <p>100% focused on the aerospace industry. Every process, tool, and contact is calibrated for aviation logistics — nothing else.</p>
+        <h3 data-i18n="diff.c1h">Aerospace Exclusive</h3>
+        <p data-i18n="diff.c1p">100% focused on the aerospace industry. Every process, tool, and contact is calibrated for aviation logistics — nothing else.</p>
       </div>
       <div class="diff-card reveal">
         <div class="diff-num">02</div>
-        <h3>Locally-Owned Branches</h3>
-        <p>Our 80+ affiliates are independent, owner-operated businesses with 120 specialized staff across 135 airports in 60+ countries.</p>
+        <h3 data-i18n="diff.c2h">Locally-Owned Branches</h3>
+        <p data-i18n="diff.c2p">Our 80+ affiliates are independent, owner-operated businesses with 120 specialized staff across 135 airports in 60+ countries.</p>
       </div>
       <div class="diff-card reveal">
         <div class="diff-num">03</div>
-        <h3>Connectivity & Agility</h3>
-        <p>Single point of contact, global network. React in minutes — not hours — to any AOG situation, anywhere on earth.</p>
+        <h3 data-i18n="diff.c3h">Connectivity &amp; Agility</h3>
+        <p data-i18n="diff.c3p">Single point of contact, global network. React in minutes — not hours — to any AOG situation, anywhere on earth.</p>
       </div>
       <div class="diff-card reveal">
         <div class="diff-num">04</div>
-        <h3>120,000 Operations</h3>
-        <p>26,000+ AOG and 730 engines transported in a single year. Volume and precision, consistently delivered.</p>
+        <h3 data-i18n="diff.c4h">120,000 Operations</h3>
+        <p data-i18n="diff.c4p">26,000+ AOG and 730 engines transported in a single year. Volume and precision, consistently delivered.</p>
       </div>
       <div class="diff-card reveal">
         <div class="diff-num">05</div>
-        <h3>Global Marketing</h3>
-        <p>Annual conference, MRO presence, and co-marketing support help our affiliates grow their business under the OPTEC Aero brand.</p>
+        <h3 data-i18n="diff.c5h">Global Marketing</h3>
+        <p data-i18n="diff.c5p">Annual conference, MRO presence, and co-marketing support help our affiliates grow their business under the OPTEC Aero brand.</p>
       </div>
       <div class="diff-card reveal">
         <div class="diff-num">06</div>
-        <h3>Part 145 Certified</h3>
-        <p>Our MRO-certified teams handle line maintenance and AOG technical support at key hubs, closing the gap between logistics and engineering.</p>
+        <h3 data-i18n="diff.c6h">Part 145 Certified</h3>
+        <p data-i18n="diff.c6p">Our MRO-certified teams handle line maintenance and AOG technical support at key hubs, closing the gap between logistics and engineering.</p>
       </div>
     </div>
   </div>
@@ -731,57 +756,57 @@ footer {
 <section class="services" id="services">
   <div class="wrap">
     <div class="reveal">
-      <div class="sec-label">Our Services</div>
-      <h2 class="sec-title">Complete Aerospace Logistics</h2>
-      <p class="sec-desc">From emergency AOG to scheduled engine moves — every aerospace logistics need, covered.</p>
+      <div class="sec-label" data-i18n="services.label">Our Services</div>
+      <h2 class="sec-title" data-i18n="services.title">Complete Aerospace Logistics</h2>
+      <p class="sec-desc" data-i18n="services.desc">From emergency AOG to scheduled engine moves — every aerospace logistics need, covered.</p>
     </div>
     <div class="srv-grid">
       <div class="srv-card reveal">
         <span class="srv-icon">🚨</span>
-        <h3>AOG</h3>
-        <p>24/7 emergency parts sourcing and express delivery to minimize aircraft-on-ground time.</p>
+        <h3 data-i18n="services.c1h">AOG</h3>
+        <p data-i18n="services.c1p">24/7 emergency parts sourcing and express delivery to minimize aircraft-on-ground time.</p>
         <span class="srv-tag">24 / 7 / 365</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">📦</span>
-        <h3>Routine</h3>
-        <p>Expedited scheduled part delivery with full track-and-trace and documentation.</p>
+        <h3 data-i18n="services.c2h">Routine</h3>
+        <p data-i18n="services.c2p">Expedited scheduled part delivery with full track-and-trace and documentation.</p>
         <span class="srv-tag">Express</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">🧑‍✈️</span>
-        <h3>OBC</h3>
-        <p>On-Board Courier hand-carry of critical components on commercial flights worldwide.</p>
+        <h3 data-i18n="services.c3h">OBC</h3>
+        <p data-i18n="services.c3p">On-Board Courier hand-carry of critical components on commercial flights worldwide.</p>
         <span class="srv-tag">Hand-Carry</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">✈️</span>
-        <h3>Charters</h3>
-        <p>Full charter solutions for oversize, overweight, or time-critical aerospace cargo.</p>
+        <h3 data-i18n="services.c4h">Charters</h3>
+        <p data-i18n="services.c4p">Full charter solutions for oversize, overweight, or time-critical aerospace cargo.</p>
         <span class="srv-tag">24 / 7 / 365</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">🏗️</span>
-        <h3>Air Side Access</h3>
-        <p>Exclusive airside access at key hubs for direct tarmac-to-aircraft part delivery.</p>
+        <h3 data-i18n="services.c5h">Air Side Access</h3>
+        <p data-i18n="services.c5p">Exclusive airside access at key hubs for direct tarmac-to-aircraft part delivery.</p>
         <span class="srv-tag">Airside</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">📋</span>
-        <h3>Custom Clearance</h3>
-        <p>Full customs brokerage and ATA carnet support in 96 countries.</p>
+        <h3 data-i18n="services.c6h">Custom Clearance</h3>
+        <p data-i18n="services.c6p">Full customs brokerage and ATA carnet support in 96 countries.</p>
         <span class="srv-tag">Global</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">🔧</span>
-        <h3>Part 145</h3>
-        <p>Approved aircraft line maintenance and AOG technical assistance at major airports.</p>
+        <h3 data-i18n="services.c7h">Part 145</h3>
+        <p data-i18n="services.c7p">Approved aircraft line maintenance and AOG technical assistance at major airports.</p>
         <span class="srv-tag">Certified</span>
       </div>
       <div class="srv-card reveal">
         <span class="srv-icon">🛠️</span>
-        <h3>Engine Services</h3>
-        <p>Specialized engine logistics — transport, storage, leasing coordination worldwide.</p>
+        <h3 data-i18n="services.c8h">Engine Services</h3>
+        <p data-i18n="services.c8p">Specialized engine logistics — transport, storage, leasing coordination worldwide.</p>
         <span class="srv-tag">Heavy Lift</span>
       </div>
     </div>
@@ -792,58 +817,49 @@ footer {
 <section class="network" id="network">
   <div class="wrap">
     <div class="reveal">
-      <div class="sec-label">Global Network</div>
-      <h2 class="sec-title" style="color:var(--white)">96 Countries · 135 Airports</h2>
-      <p class="sec-desc">Our locally-owned affiliate network spans every major aviation hub across six continents.</p>
+      <div class="sec-label" data-i18n="network.label">Global Network</div>
+      <h2 class="sec-title" style="color:var(--white)" data-i18n="network.title">96 Countries · 135 Airports</h2>
+      <p class="sec-desc" data-i18n="network.desc">Our locally-owned affiliate network spans every major aviation hub across six continents.</p>
     </div>
 
-    <div class="map-layout reveal">
-      <!-- Dot World Map -->
-      <div class="world-map-wrap">
-        <h4>▸ Network Coverage — Active Stations</h4>
-        <div class="dot-map" id="dotMap"></div>
-        <div class="map-legend">
-          <span><span class="legend-dot" style="background:var(--cyan)"></span>Primary Hub</span>
-          <span><span class="legend-dot" style="background:var(--blue2)"></span>Affiliate Station</span>
-          <span><span class="legend-dot" style="background:rgba(255,255,255,0.1)"></span>No Coverage</span>
+    <div class="map-layout reveal" style="grid-template-columns:1fr;">
+
+      <!-- Leaflet World Map — 91 Countries -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="dot" style="width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px rgba(0,180,216,0.6);animation:blink 2s ease-in-out infinite;flex-shrink:0;"></div>
+            <h4 style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);" data-i18n="network.gmapLabel">Global Network — 91 Countries</h4>
+          </div>
+          <div class="map-legend">
+            <span><span class="legend-dot" style="background:var(--cyan)"></span><span data-i18n="network.leg1">Primary Hub</span></span>
+            <span><span class="legend-dot" style="background:var(--blue2)"></span><span data-i18n="network.leg2">Affiliate Station</span></span>
+          </div>
         </div>
+        <div id="worldMap" style="width:100%;height:500px;"></div>
       </div>
 
-      <!-- Google Maps + Info -->
-      <div style="display:flex;flex-direction:column;gap:1.2rem;">
-        <div class="gmap-wrap">
-          <div class="gmap-header">
-            <div class="dot"></div>
-            <h4>Live — HQ & Key Offices</h4>
-          </div>
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d13800000!2d115!3d30!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1szh-CN!2scn!4v1700000000000!5m2!1szh-CN!2scn"
-            allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
+      <!-- Region breakdown -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;" data-i18n="network.r1">Asia Pacific</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">25</div>
+          <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;" data-i18n="network.r1sub">countries / 42 airports</div>
         </div>
-        <!-- Region breakdown -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;">Asia Pacific</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">28</div>
-            <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;">countries / 42 airports</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;">Europe</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">24</div>
-            <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;">countries / 38 airports</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;">Americas</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">22</div>
-            <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;">countries / 30 airports</div>
-          </div>
-          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;">MEA & Other</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">22</div>
-            <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;">countries / 25 airports</div>
-          </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;" data-i18n="network.r2">Europe</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">24</div>
+          <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;" data-i18n="network.r2sub">countries / 38 airports</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;" data-i18n="network.r3">Americas</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">22</div>
+          <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;" data-i18n="network.r3sub">countries / 30 airports</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;padding:16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px;" data-i18n="network.r4">MEA &amp; Other</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;color:var(--white);line-height:1;">20</div>
+          <div style="font-size:0.76rem;color:var(--gray);margin-top:3px;" data-i18n="network.r4sub">countries / 25 airports</div>
         </div>
       </div>
     </div>
@@ -854,31 +870,31 @@ footer {
 <section class="dataviz" id="data">
   <div class="wrap">
     <div class="reveal">
-      <div class="sec-label">Data Visualization</div>
-      <h2 class="sec-title">Operations By the Numbers</h2>
-      <p class="sec-desc">Annual performance data across service types, regions, and growth metrics.</p>
+      <div class="sec-label" data-i18n="data.label">Data Visualization</div>
+      <h2 class="sec-title" data-i18n="data.title">Operations By the Numbers</h2>
+      <p class="sec-desc" data-i18n="data.desc">Annual performance data across service types, regions, and growth metrics.</p>
     </div>
 
     <!-- counter row -->
     <div class="counter-row reveal" style="margin-top:3rem;">
       <div class="counter-card">
         <div class="counter-num"><span data-count="26000">0</span><span class="counter-unit">+</span></div>
-        <div class="counter-label">AOG Operations / Year</div>
+        <div class="counter-label" data-i18n="data.cnt1">AOG Operations / Year</div>
       </div>
       <div class="counter-card">
         <div class="counter-num"><span data-count="730">0</span></div>
-        <div class="counter-label">Engines Transported</div>
+        <div class="counter-label" data-i18n="data.cnt2">Engines Transported</div>
       </div>
       <div class="counter-card">
         <div class="counter-num"><span data-count="98">0</span><span class="counter-unit">%</span></div>
-        <div class="counter-label">On-Time Delivery Rate</div>
+        <div class="counter-label" data-i18n="data.cnt3">On-Time Delivery Rate</div>
       </div>
     </div>
 
     <div class="viz-grid" style="margin-top:2rem;">
       <!-- Bar chart -->
       <div class="chart-wrap reveal">
-        <div class="chart-title">Service Type Distribution</div>
+        <div class="chart-title" data-i18n="data.chart1">Service Type Distribution</div>
         <div class="bar-row">
           <span class="bar-label">AOG</span>
           <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
@@ -906,7 +922,7 @@ footer {
         </div>
 
         <!-- Year growth bars -->
-        <div class="chart-title" style="margin-top:24px;">Year-on-Year Growth</div>
+        <div class="chart-title" style="margin-top:24px;" data-i18n="data.chart2">Year-on-Year Growth</div>
         <div style="display:flex;align-items:flex-end;gap:8px;height:100px;margin-top:12px;">
           <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div style="width:100%;background:var(--blue);border-radius:3px 3px 0 0;height:40%;transition:height 1s;"></div>
@@ -933,7 +949,7 @@ footer {
 
       <!-- Donut chart -->
       <div class="donut-wrap reveal">
-        <div class="chart-title">Regional Coverage Share</div>
+        <div class="chart-title" data-i18n="data.chart3">Regional Coverage Share</div>
         <div class="donut-chart">
           <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
             <circle cx="70" cy="70" r="52" fill="none" stroke="#e8edf3" stroke-width="18"/>
@@ -950,17 +966,17 @@ footer {
             <circle cx="70" cy="70" r="52" fill="none" stroke="#4da8da" stroke-width="18"
               stroke-dasharray="74 252" stroke-dashoffset="-252" transform="rotate(-90 70 70)"/>
             <text x="70" y="66" text-anchor="middle" font-family="Barlow Condensed" font-size="22" font-weight="800" fill="#1e2d42">96</text>
-            <text x="70" y="80" text-anchor="middle" font-family="Barlow" font-size="10" fill="#8ba0b8">Countries</text>
+            <text x="70" y="80" text-anchor="middle" font-family="Barlow" font-size="10" fill="#8ba0b8" data-i18n="data.svgCountries">Countries</text>
           </svg>
           <div class="donut-legend">
-            <div class="dl-item"><span class="dl-dot" style="background:#1488db"></span><span class="dl-name">Asia Pacific</span><span class="dl-pct">29%</span></div>
-            <div class="dl-item"><span class="dl-dot" style="background:#00b4d8"></span><span class="dl-name">Europe</span><span class="dl-pct">25%</span></div>
-            <div class="dl-item"><span class="dl-dot" style="background:#0a6ebd"></span><span class="dl-name">Americas</span><span class="dl-pct">23%</span></div>
-            <div class="dl-item"><span class="dl-dot" style="background:#4da8da"></span><span class="dl-name">MEA &amp; Other</span><span class="dl-pct">23%</span></div>
+            <div class="dl-item"><span class="dl-dot" style="background:#1488db"></span><span class="dl-name" data-i18n="data.dl1">Asia Pacific</span><span class="dl-pct">29%</span></div>
+            <div class="dl-item"><span class="dl-dot" style="background:#00b4d8"></span><span class="dl-name" data-i18n="data.dl2">Europe</span><span class="dl-pct">25%</span></div>
+            <div class="dl-item"><span class="dl-dot" style="background:#0a6ebd"></span><span class="dl-name" data-i18n="data.dl3">Americas</span><span class="dl-pct">23%</span></div>
+            <div class="dl-item"><span class="dl-dot" style="background:#4da8da"></span><span class="dl-name" data-i18n="data.dl4">MEA &amp; Other</span><span class="dl-pct">23%</span></div>
           </div>
         </div>
 
-        <div class="chart-title" style="margin-top:24px;">Response Time SLA</div>
+        <div class="chart-title" style="margin-top:24px;" data-i18n="data.chart4">Response Time SLA</div>
         <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:0.78rem;color:var(--text2);min-width:80px;">AOG &lt; 2h</span>
@@ -992,11 +1008,11 @@ footer {
 <!-- FREIGHT QUOTE CTA -->
 <section class="quote-cta" id="quote">
   <div class="quote-cta-inner">
-    <h2>Order a Shipment<br><span>Anywhere, At All Times</span></h2>
-    <p>Get your freight quote for free — our team responds within 30 minutes, 24 hours a day.</p>
+    <h2 data-i18n-html="quote.h2">Order a Shipment<br><span>Anywhere, At All Times</span></h2>
+    <p data-i18n="quote.p">Get your freight quote for free — our team responds within 30 minutes, 24 hours a day.</p>
     <div class="quote-form">
-      <input type="email" placeholder="Enter your email address...">
-      <button type="button">Get Free Quote →</button>
+      <input type="email" data-i18n-placeholder="quote.placeholder" placeholder="Enter your email address...">
+      <button type="button" data-i18n="quote.btn">Get Free Quote →</button>
     </div>
   </div>
 </section>
@@ -1005,35 +1021,35 @@ footer {
 <section class="news" id="news">
   <div class="wrap">
     <div class="reveal">
-      <div class="sec-label">Latest News</div>
-      <h2 class="sec-title">Recent Operations</h2>
+      <div class="sec-label" data-i18n="news.label">Latest News</div>
+      <h2 class="sec-title" data-i18n="news.title">Recent Operations</h2>
     </div>
     <div class="news-grid">
       <div class="news-card reveal">
         <div class="news-img nc1">✈️</div>
         <div class="news-body">
-          <div class="news-tag">AOG · Asia Pacific</div>
-          <h3>Emergency engine seal delivered Tokyo → Osaka in 90 minutes</h3>
-          <p>OPTEC Aero's Japan team activated overnight to source and deliver a critical seal component, returning the aircraft to service within 3 hours of initial alert.</p>
-          <div class="news-date">April 2026</div>
+          <div class="news-tag" data-i18n="news.t1">AOG · Asia Pacific</div>
+          <h3 data-i18n="news.h1">Emergency engine seal delivered Tokyo → Osaka in 90 minutes</h3>
+          <p data-i18n="news.p1">OPTEC Aero's Japan team activated overnight to source and deliver a critical seal component, returning the aircraft to service within 3 hours of initial alert.</p>
+          <div class="news-date" data-i18n="news.d1">April 2026</div>
         </div>
       </div>
       <div class="news-card reveal">
         <div class="news-img nc2">🔧</div>
         <div class="news-body">
-          <div class="news-tag">Engine Services · Europe</div>
-          <h3>CFM56 engine transported Frankfurt → Dubai on specialized freighter</h3>
-          <p>Our engine logistics team coordinated customs documentation, airside access, and oversize charter in under 48 hours for a Tier-1 MRO client.</p>
-          <div class="news-date">March 2026</div>
+          <div class="news-tag" data-i18n="news.t2">Engine Services · Europe</div>
+          <h3 data-i18n="news.h2">CFM56 engine transported Frankfurt → Dubai on specialized freighter</h3>
+          <p data-i18n="news.p2">Our engine logistics team coordinated customs documentation, airside access, and oversize charter in under 48 hours for a Tier-1 MRO client.</p>
+          <div class="news-date" data-i18n="news.d2">March 2026</div>
         </div>
       </div>
       <div class="news-card reveal">
         <div class="news-img nc3">🧑‍✈️</div>
         <div class="news-body">
-          <div class="news-tag">OBC · Americas</div>
-          <h3>On-board courier delivers avionics from Miami to Bogotá in 6 hours</h3>
-          <p>Hand-carry mission completed door-to-hangar, with full customs clearance and in-bond documentation handled by our Bogotá affiliate.</p>
-          <div class="news-date">February 2026</div>
+          <div class="news-tag" data-i18n="news.t3">OBC · Americas</div>
+          <h3 data-i18n="news.h3">On-board courier delivers avionics from Miami to Bogotá in 6 hours</h3>
+          <p data-i18n="news.p3">Hand-carry mission completed door-to-hangar, with full customs clearance and in-bond documentation handled by our Bogotá affiliate.</p>
+          <div class="news-date" data-i18n="news.d3">February 2026</div>
         </div>
       </div>
     </div>
@@ -1043,7 +1059,7 @@ footer {
 <!-- TRUST -->
 <section class="trust">
   <div class="wrap">
-    <div class="trust-title">They Trust Us</div>
+    <div class="trust-title" data-i18n="trust.title">They Trust Us</div>
     <div class="trust-logos">
       <div class="trust-logo">Air China</div>
       <div class="trust-logo">Lufthansa</div>
@@ -1065,35 +1081,35 @@ footer {
         <div class="logo-mark">O</div>
         OPTEC <span>AERO</span>
       </a>
-      <p>A team of independent aerospace logistics experts, connected globally, acting locally — 24/7/365 for your aircraft.</p>
+      <p data-i18n="footer.p">A team of independent aerospace logistics experts, connected globally, acting locally — 24/7/365 for your aircraft.</p>
     </div>
     <div class="footer-col">
-      <h5>Services</h5>
+      <h5 data-i18n="footer.h1">Services</h5>
       <ul>
-        <li><a href="#">AOG Response</a></li>
-        <li><a href="#">OBC Courier</a></li>
-        <li><a href="#">Charter Flights</a></li>
-        <li><a href="#">Engine Transport</a></li>
-        <li><a href="#">Part 145 MRO</a></li>
+        <li><a href="#" data-i18n="footer.l1">AOG Response</a></li>
+        <li><a href="#" data-i18n="footer.l2">OBC Courier</a></li>
+        <li><a href="#" data-i18n="footer.l3">Charter Flights</a></li>
+        <li><a href="#" data-i18n="footer.l4">Engine Transport</a></li>
+        <li><a href="#" data-i18n="footer.l5">Part 145 MRO</a></li>
       </ul>
     </div>
     <div class="footer-col">
-      <h5>Company</h5>
+      <h5 data-i18n="footer.h2">Company</h5>
       <ul>
-        <li><a href="#">About OPTEC</a></li>
-        <li><a href="#">Our Network</a></li>
-        <li><a href="#">Certifications</a></li>
-        <li><a href="#">News</a></li>
-        <li><a href="#">Join the Alliance</a></li>
+        <li><a href="#" data-i18n="footer.l6">About OPTEC</a></li>
+        <li><a href="#" data-i18n="footer.l7">Our Network</a></li>
+        <li><a href="#" data-i18n="footer.l8">Certifications</a></li>
+        <li><a href="#" data-i18n="footer.l9">News</a></li>
+        <li><a href="#" data-i18n="footer.l10">Join the Alliance</a></li>
       </ul>
     </div>
     <div class="footer-col">
-      <h5>Contact</h5>
+      <h5 data-i18n="footer.h3">Contact</h5>
       <ul>
-        <li><a href="#">Yantai HQ</a></li>
-        <li><a href="#">Osaka Office</a></li>
-        <li><a href="#">24/7 AOG Line</a></li>
-        <li><a href="#">Freight Quote</a></li>
+        <li><a href="#" data-i18n="footer.l11">Yantai HQ</a></li>
+        <li><a href="#" data-i18n="footer.l12">Osaka Office</a></li>
+        <li><a href="#" data-i18n="footer.l13">24/7 AOG Line</a></li>
+        <li><a href="#" data-i18n="footer.l14">Freight Quote</a></li>
       </ul>
     </div>
   </div>
@@ -1103,45 +1119,434 @@ footer {
   </div>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* ── DOT MAP ── */
-const map = document.getElementById('dotMap');
-const COLS = 36, ROWS = 18;
-/* approximate world shape — rows where continents appear */
-const landMask = [
-  [4,5,6,7,13,14,15,16,17,18,26,27,28,29,30,31,32,33],   // r0
-  [3,4,5,6,7,13,14,15,16,17,18,19,27,28,29,30,31,32,33,34],
-  [3,4,5,6,7,8,12,13,14,15,16,17,18,19,20,25,26,27,28,29,30,31,32,33,34],
-  [2,3,4,5,6,7,8,9,13,14,15,16,17,18,19,20,21,24,25,26,27,28,29,30,31,32,33],
-  [1,2,3,4,5,6,7,8,9,10,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
-  [1,2,3,4,5,6,7,8,9,10,11,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
-  [0,1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,35],
-  [0,1,2,3,4,5,6,7,8,9,10,11,12,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,35],
-  [0,1,2,3,4,5,6,7,8,9,10,11,12,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,35],
-  [1,2,3,4,5,6,7,8,9,10,11,17,18,19,20,21,22,23,24,25,26,27,28,29,30],
-  [1,2,3,4,5,6,7,8,9,10,17,18,19,20,21,22,23,24,25,26,27,28,29,30],
-  [2,3,4,5,6,7,8,9,18,19,20,21,22,23,24,25,26,27,28,29],
-  [3,4,5,6,7,8,9,18,19,20,21,22,23,24,25,26,27,28],
-  [3,4,5,6,7,8,19,20,21,22,23,24,25,26],
-  [4,5,6,7,8,20,21,22,23,24,25,26],
-  [5,6,7,8,21,22,23,24,25],
-  [6,7,22,23,24],
-  [7,22,23],
-];
-/* primary hubs */
-const hubs = [
-  [4,27],[5,28],[6,15],[6,16],[7,28],[7,29],[4,13],[5,14],
-  [6,19],[7,20],[8,21],[6,30],[7,31],[5,9],[6,8],[3,15],
-];
-for (let r = 0; r < ROWS; r++) {
-  for (let c = 0; c < COLS; c++) {
-    const d = document.createElement('div');
-    const isLand = landMask[r] && landMask[r].includes(c);
-    const isHub  = hubs.some(h => h[0]===r && h[1]===c);
-    d.className = 'dm-dot' + (isHub ? ' active' : isLand ? ' active-2' : '');
-    map.appendChild(d);
-  }
+/* ══════════════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════════════ */
+const translations = {
+  en: {
+    nav: { about:'About', services:'Services', network:'Network', data:'Data', news:'News', contact:'Contact', cta:'Freight Quote' },
+    hero: {
+      eyebrow: 'The Aerospace Logistics Alliance',
+      h1: 'Out-of-the-box<br><em>Aerospace</em><br>Logistics Solutions',
+      desc: 'OPTEC Aero connects 96 countries through a network of expert affiliates, delivering AOG response, engine transport, and charter services 24/7/365 — anywhere on the globe.',
+      btn1: 'Get a Free Quote', btn2: 'Our Services',
+      card1h: 'AOG Response', card1p: 'Aircraft on Ground — emergency parts delivery',
+      card2h: 'Engine Transport', card2p: 'Specialist oversize engine logistics worldwide',
+      card3h: 'On-Board Courier', card3p: 'Hand-carry critical aerospace components',
+      card4h: 'Customs & Compliance', card4p: 'Full clearance support in 96 countries',
+    },
+    stats: { s1:'Countries Covered', s2:'Airport Stations', s3:'Operations / Year', s4:'365 Days Support' },
+    diff: {
+      label:'What Makes Us Different', title:'Why Choose OPTEC Aero',
+      desc:'Six pillars that set our aerospace logistics apart from every other provider in the market.',
+      c1h:'Aerospace Exclusive', c1p:'100% focused on the aerospace industry. Every process, tool, and contact is calibrated for aviation logistics — nothing else.',
+      c2h:'Locally-Owned Branches', c2p:'Our 80+ affiliates are independent, owner-operated businesses with 120 specialized staff across 135 airports in 60+ countries.',
+      c3h:'Connectivity & Agility', c3p:'Single point of contact, global network. React in minutes — not hours — to any AOG situation, anywhere on earth.',
+      c4h:'120,000 Operations', c4p:'26,000+ AOG and 730 engines transported in a single year. Volume and precision, consistently delivered.',
+      c5h:'Global Marketing', c5p:'Annual conference, MRO presence, and co-marketing support help our affiliates grow their business under the OPTEC Aero brand.',
+      c6h:'Part 145 Certified', c6p:'Our MRO-certified teams handle line maintenance and AOG technical support at key hubs, closing the gap between logistics and engineering.',
+    },
+    services: {
+      label:'Our Services', title:'Complete Aerospace Logistics',
+      desc:'From emergency AOG to scheduled engine moves — every aerospace logistics need, covered.',
+      c1h:'AOG', c1p:'24/7 emergency parts sourcing and express delivery to minimize aircraft-on-ground time.',
+      c2h:'Routine', c2p:'Expedited scheduled part delivery with full track-and-trace and documentation.',
+      c3h:'OBC', c3p:'On-Board Courier hand-carry of critical components on commercial flights worldwide.',
+      c4h:'Charters', c4p:'Full charter solutions for oversize, overweight, or time-critical aerospace cargo.',
+      c5h:'Air Side Access', c5p:'Exclusive airside access at key hubs for direct tarmac-to-aircraft part delivery.',
+      c6h:'Custom Clearance', c6p:'Full customs brokerage and ATA carnet support in 96 countries.',
+      c7h:'Part 145', c7p:'Approved aircraft line maintenance and AOG technical assistance at major airports.',
+      c8h:'Engine Services', c8p:'Specialized engine logistics — transport, storage, leasing coordination worldwide.',
+    },
+    network: {
+      label:'Global Network', title:'96 Countries · 135 Airports',
+      desc:'Our locally-owned affiliate network spans every major aviation hub across six continents.',
+      mapLabel:'▸ Network Coverage — Active Stations',
+      gmapLabel:'Live — HQ & Key Offices',
+      r1:'Asia Pacific', r1sub:'countries / 42 airports',
+      r2:'Europe', r2sub:'countries / 38 airports',
+      r3:'Americas', r3sub:'countries / 30 airports',
+      r4:'MEA & Other', r4sub:'countries / 25 airports',
+      leg1:'Primary Hub', leg2:'Affiliate Station', leg3:'No Coverage',
+    },
+    data: {
+      label:'Data Visualization', title:'Operations By the Numbers',
+      desc:'Annual performance data across service types, regions, and growth metrics.',
+      cnt1:'AOG Operations / Year', cnt2:'Engines Transported', cnt3:'On-Time Delivery Rate',
+      chart1:'Service Type Distribution', chart2:'Year-on-Year Growth',
+      chart3:'Regional Coverage Share', chart4:'Response Time SLA',
+      dl1:'Asia Pacific', dl2:'Europe', dl3:'Americas', dl4:'MEA & Other',
+      svgCountries:'Countries',
+    },
+    quote: {
+      h2:'Order a Shipment<br><span>Anywhere, At All Times</span>',
+      p:'Get your freight quote for free — our team responds within 30 minutes, 24 hours a day.',
+      placeholder:'Enter your email address...', btn:'Get Free Quote →',
+    },
+    news: {
+      label:'Latest News', title:'Recent Operations',
+      t1:'AOG · Asia Pacific', h1:'Emergency engine seal delivered Tokyo → Osaka in 90 minutes',
+      p1:"OPTEC Aero's Japan team activated overnight to source and deliver a critical seal component, returning the aircraft to service within 3 hours of initial alert.",
+      d1:'April 2026',
+      t2:'Engine Services · Europe', h2:'CFM56 engine transported Frankfurt → Dubai on specialized freighter',
+      p2:'Our engine logistics team coordinated customs documentation, airside access, and oversize charter in under 48 hours for a Tier-1 MRO client.',
+      d2:'March 2026',
+      t3:'OBC · Americas', h3:'On-board courier delivers avionics from Miami to Bogotá in 6 hours',
+      p3:'Hand-carry mission completed door-to-hangar, with full customs clearance and in-bond documentation handled by our Bogotá affiliate.',
+      d3:'February 2026',
+    },
+    trust: { title:'They Trust Us' },
+    footer: {
+      p:'A team of independent aerospace logistics experts, connected globally, acting locally — 24/7/365 for your aircraft.',
+      h1:'Services', h2:'Company', h3:'Contact',
+      l1:'AOG Response', l2:'OBC Courier', l3:'Charter Flights', l4:'Engine Transport', l5:'Part 145 MRO',
+      l6:'About OPTEC', l7:'Our Network', l8:'Certifications', l9:'News', l10:'Join the Alliance',
+      l11:'Yantai HQ', l12:'Osaka Office', l13:'24/7 AOG Line', l14:'Freight Quote',
+    },
+  },
+  ja: {
+    nav: { about:'会社について', services:'サービス', network:'ネットワーク', data:'データ', news:'ニュース', contact:'お問い合わせ', cta:'貨物見積' },
+    hero: {
+      eyebrow: '航空宇宙物流アライアンス',
+      h1: '最先端の<br><em>航空宇宙</em><br>物流ソリューション',
+      desc: 'OPTEC Aeroは専門アフィリエイトのネットワークを通じて96カ国を繋ぎ、AOG対応、エンジン輸送、チャーターサービスを世界中で24/7/365提供します。',
+      btn1: '無料見積を取得', btn2: 'サービス一覧',
+      card1h: 'AOG対応', card1p: '航空機停止地上 — 緊急部品配送',
+      card2h: 'エンジン輸送', card2p: '特殊大型エンジン世界規模物流',
+      card3h: '随行クーリエ', card3p: '重要な航空部品の手持ち輸送',
+      card4h: '通関・コンプライアンス', card4p: '96カ国での完全通関サポート',
+    },
+    stats: { s1:'対応国数', s2:'空港ステーション', s3:'年間オペレーション数', s4:'365日対応サポート' },
+    diff: {
+      label:'私たちが違う理由', title:'なぜOPTEC Aeroを選ぶのか',
+      desc:'当社の航空物流を市場の他のプロバイダーと差別化する6つの柱。',
+      c1h:'航空宇宙専門', c1p:'100%航空宇宙産業に特化。すべてのプロセス、ツール、コンタクトが航空物流に合わせて最適化。',
+      c2h:'地元所有支店', c2p:'80以上の独立オーナー運営企業が、60カ国以上の135空港に120名の専門スタッフを配置。',
+      c3h:'接続性と機敏性', c3p:'一点の連絡先でグローバルネットワーク対応。地球上のどこでもAOG状況に数分で対応。',
+      c4h:'12万件のオペレーション', c4p:'年間26,000以上のAOGと730基のエンジン輸送。大量かつ精密に一貫して提供。',
+      c5h:'グローバルマーケティング', c5p:'年次カンファレンス、MROプレゼンス、co-marketingサポートでアフィリエイトの事業成長を支援。',
+      c6h:'Part 145認定', c6p:'MRO認定チームが主要ハブでライン整備とAOG技術サポートを担当。',
+    },
+    services: {
+      label:'サービス', title:'完全な航空宇宙物流',
+      desc:'緊急AOGから定期エンジン移動まで、航空宇宙物流のあらゆるニーズに対応。',
+      c1h:'AOG', c1p:'航空機の停止時間を最小化するための24/7緊急部品調達と特急配送。',
+      c2h:'定期便', c2p:'完全なトラッキングと書類を備えた特急定期部品配送。',
+      c3h:'OBC', c3p:'世界中の定期便で重要コンポーネントを手持ち輸送。',
+      c4h:'チャーター', c4p:'超大型・超重量・時間的に重要な航空宇宙貨物のための完全チャーターソリューション。',
+      c5h:'エアサイドアクセス', c5p:'主要ハブの独占エアサイドアクセスで、ターミナルから航空機への直接部品配送。',
+      c6h:'通関', c6p:'96カ国での完全通関代理とATAカルネサポート。',
+      c7h:'Part 145', c7p:'主要空港での認定航空機ライン整備とAOG技術支援。',
+      c8h:'エンジンサービス', c8p:'世界規模の専門エンジン物流 — 輸送、保管、リース調整。',
+    },
+    network: {
+      label:'グローバルネットワーク', title:'96カ国 · 135空港',
+      desc:'地元所有のアフィリエイトネットワークが、6大陸の主要航空ハブすべてをカバー。',
+      mapLabel:'▸ ネットワークカバレッジ — アクティブステーション',
+      gmapLabel:'ライブ — 本社 & 主要オフィス',
+      r1:'アジア太平洋', r1sub:'カ国 / 42空港',
+      r2:'ヨーロッパ', r2sub:'カ国 / 38空港',
+      r3:'南北アメリカ', r3sub:'カ国 / 30空港',
+      r4:'中東・アフリカ等', r4sub:'カ国 / 25空港',
+      leg1:'プライマリーハブ', leg2:'アフィリエイトステーション', leg3:'カバレッジなし',
+    },
+    data: {
+      label:'データビジュアライゼーション', title:'数字で見るオペレーション',
+      desc:'サービスタイプ、地域、成長指標にわたる年次パフォーマンスデータ。',
+      cnt1:'年間AOGオペレーション', cnt2:'輸送エンジン数', cnt3:'時間通り配送率',
+      chart1:'サービスタイプ別分布', chart2:'前年比成長',
+      chart3:'地域カバレッジシェア', chart4:'応答時間SLA',
+      dl1:'アジア太平洋', dl2:'ヨーロッパ', dl3:'南北アメリカ', dl4:'中東・アフリカ等',
+      svgCountries:'カ国',
+    },
+    quote: {
+      h2:'貨物を発注する<br><span>いつでも、どこでも</span>',
+      p:'無料で貨物見積を取得 — チームは24時間、30分以内に対応します。',
+      placeholder:'メールアドレスを入力...', btn:'無料見積を取得 →',
+    },
+    news: {
+      label:'最新ニュース', title:'最近のオペレーション',
+      t1:'AOG · アジア太平洋', h1:'緊急エンジンシールを東京→大阪に90分で配送',
+      p1:'OPTEC AeroのJapanチームが夜間に重要なシール部品を調達・配送し、最初の警告から3時間以内に航空機を運航復帰させました。',
+      d1:'2026年4月',
+      t2:'エンジンサービス · ヨーロッパ', h2:'CFM56エンジンを特殊貨物機でフランクフルト→ドバイへ輸送',
+      p2:'エンジン物流チームが通関書類、エアサイドアクセス、超大型チャーターを48時間以内に手配しました。',
+      d2:'2026年3月',
+      t3:'OBC · アメリカ', h3:'OBCがマイアミからボゴタへ航空電子機器を6時間で配送',
+      p3:'ドア・ツー・ハンガーのハンドキャリー任務が完了し、ボゴタのアフィリエイトが完全な通関とインボンド書類を処理しました。',
+      d3:'2026年2月',
+    },
+    trust: { title:'信頼いただいているお客様' },
+    footer: {
+      p:'独立した航空宇宙物流の専門家チームが、グローバルに繋がり、地域で行動 — お客様の航空機のために24/7/365。',
+      h1:'サービス', h2:'会社', h3:'お問い合わせ',
+      l1:'AOG対応', l2:'OBCクーリエ', l3:'チャーター便', l4:'エンジン輸送', l5:'Part 145 MRO',
+      l6:'OPTECについて', l7:'私たちのネットワーク', l8:'認定', l9:'ニュース', l10:'アライアンスに参加',
+      l11:'煙台本社', l12:'大阪オフィス', l13:'24/7 AOGライン', l14:'貨物見積',
+    },
+  },
+  zh: {
+    nav: { about:'关于我们', services:'服务', network:'网络', data:'数据', news:'新闻', contact:'联系', cta:'货运报价' },
+    hero: {
+      eyebrow: '航空航天物流联盟',
+      h1: '突破传统的<br><em>航空航天</em><br>物流解决方案',
+      desc: 'OPTEC Aero 通过专业合作网络连接96个国家，全年无休提供AOG响应、发动机运输和包机服务，覆盖全球每个角落。',
+      btn1: '获取免费报价', btn2: '我们的服务',
+      card1h: 'AOG响应', card1p: '航空器停场 — 紧急零件配送',
+      card2h: '发动机运输', card2p: '专业超大型发动机全球物流',
+      card3h: '随行快递', card3p: '随身携带重要航空航天部件',
+      card4h: '通关与合规', card4p: '96国全方位通关支持',
+    },
+    stats: { s1:'覆盖国家', s2:'机场站点', s3:'年度运营量', s4:'365天全天候支持' },
+    diff: {
+      label:'我们的差异化优势', title:'为什么选择 OPTEC Aero',
+      desc:'六大支柱，让我们的航空物流区别于市场上所有其他供应商。',
+      c1h:'航空航天专属', c1p:'100%专注于航空航天行业。每一个流程、工具和联系人都专为航空物流精心设计。',
+      c2h:'本地自营分支', c2p:'80余家独立自营企业，在60多个国家的135个机场配备120名专业员工。',
+      c3h:'连接性与敏捷性', c3p:'单一联系点，全球网络覆盖。对地球上任何AOG情况，分钟级响应，而非小时级。',
+      c4h:'12万次运营', c4p:'年度完成26,000余次AOG和730台发动机运输，量大质精，始终如一。',
+      c5h:'全球营销', c5p:'年度会议、MRO参展及联合营销支持，助力合作方在OPTEC Aero品牌下拓展业务。',
+      c6h:'Part 145认证', c6p:'MRO认证团队负责主要枢纽的航线维护和AOG技术支持，弥合物流与工程之间的差距。',
+    },
+    services: {
+      label:'我们的服务', title:'完整航空航天物流服务',
+      desc:'从紧急AOG到定期发动机运输，涵盖航空航天物流的每一项需求。',
+      c1h:'AOG', c1p:'24/7紧急零件采购和快速配送，将航空器停场时间降至最低。',
+      c2h:'定期运输', c2p:'配备完整追踪与文件的加急定期零件配送。',
+      c3h:'OBC', c3p:'随身携带重要部件，通过全球商业航班运输。',
+      c4h:'包机服务', c4p:'针对超大型、超重量或时效性强的航空航天货物，提供完整包机解决方案。',
+      c5h:'机坪通行权', c5p:'主要枢纽独家机坪通行权，实现零件从停机坪直接送达飞机。',
+      c6h:'通关服务', c6p:'96国完整报关代理及ATA单证册支持。',
+      c7h:'Part 145', c7p:'主要机场认证航线维护及AOG技术援助。',
+      c8h:'发动机服务', c8p:'专业发动机物流 — 全球运输、存储及租赁协调。',
+    },
+    network: {
+      label:'全球网络', title:'96国 · 135机场',
+      desc:'我们本地自营的合作网络覆盖六大洲所有主要航空枢纽。',
+      mapLabel:'▸ 网络覆盖 — 活跃站点',
+      gmapLabel:'实时 — 总部及主要办事处',
+      r1:'亚太地区', r1sub:'个国家 / 42个机场',
+      r2:'欧洲', r2sub:'个国家 / 38个机场',
+      r3:'美洲', r3sub:'个国家 / 30个机场',
+      r4:'中东非洲及其他', r4sub:'个国家 / 25个机场',
+      leg1:'主要枢纽', leg2:'合作站点', leg3:'未覆盖',
+    },
+    data: {
+      label:'数据可视化', title:'数字背后的运营实力',
+      desc:'涵盖服务类型、地区及增长指标的年度绩效数据。',
+      cnt1:'年度AOG运营量', cnt2:'运输发动机数', cnt3:'准时交付率',
+      chart1:'服务类型分布', chart2:'逐年增长',
+      chart3:'区域覆盖占比', chart4:'响应时间SLA',
+      dl1:'亚太地区', dl2:'欧洲', dl3:'美洲', dl4:'中东非洲及其他',
+      svgCountries:'个国家',
+    },
+    quote: {
+      h2:'立即下单托运<br><span>随时随地，全球可达</span>',
+      p:'免费获取货运报价 — 我们的团队24小时内30分钟响应。',
+      placeholder:'输入您的邮箱地址...', btn:'获取免费报价 →',
+    },
+    news: {
+      label:'最新动态', title:'近期运营案例',
+      t1:'AOG · 亚太地区', h1:'紧急发动机密封件东京→大阪90分钟完成配送',
+      p1:'OPTEC Aero日本团队连夜行动，完成关键密封件采购与配送，在初始警报发出3小时内使飞机恢复运营。',
+      d1:'2026年4月',
+      t2:'发动机服务 · 欧洲', h2:'CFM56发动机专用货机法兰克福→迪拜运输完成',
+      p2:'发动机物流团队在48小时内协调完成通关文件、机坪通行权及超大型包机。',
+      d2:'2026年3月',
+      t3:'OBC · 美洲', h3:'OBC随行快递6小时完成迈阿密→波哥大航电设备配送',
+      p3:'门到机库随身携带任务圆满完成，波哥大合作方处理了完整的通关和保税文件。',
+      d3:'2026年2月',
+    },
+    trust: { title:'他们信任我们' },
+    footer: {
+      p:'一支独立的航空航天物流专家团队，全球互联，本地行动 — 为您的飞机全年无休服务。',
+      h1:'服务', h2:'公司', h3:'联系我们',
+      l1:'AOG响应', l2:'OBC快递', l3:'包机服务', l4:'发动机运输', l5:'Part 145 MRO',
+      l6:'关于OPTEC', l7:'我们的网络', l8:'认证', l9:'新闻', l10:'加入联盟',
+      l11:'烟台总部', l12:'大阪办事处', l13:'24/7 AOG热线', l14:'货运报价',
+    },
+  },
+};
+
+/* ══════════════════════════════════════════════
+   setLang() — update all i18n elements
+══════════════════════════════════════════════ */
+let currentLang = 'en';
+
+function getNestedValue(obj, keyPath) {
+  return keyPath.split('.').reduce((acc, k) => (acc && acc[k] !== undefined ? acc[k] : null), obj);
 }
+
+function setLang(lang) {
+  if (!translations[lang]) return;
+  currentLang = lang;
+
+  /* update html lang attribute */
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang === 'ja' ? 'ja' : 'en';
+
+  const t = translations[lang];
+
+  /* plain text */
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const val = getNestedValue(t, el.dataset.i18n);
+    if (val !== null) el.textContent = val;
+  });
+
+  /* innerHTML (allows <br>, <em>, <span> etc.) */
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const val = getNestedValue(t, el.dataset.i18nHtml);
+    if (val !== null) el.innerHTML = val;
+  });
+
+  /* placeholder */
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const val = getNestedValue(t, el.dataset.i18nPlaceholder);
+    if (val !== null) el.placeholder = val;
+  });
+
+  /* update SVG text nodes (data-i18n works on SVG <text> too via textContent) */
+
+  /* update active button state */
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
+
+/* initialise on page load */
+setLang('en');
+
+/* ── LEAFLET WORLD MAP — 91 COUNTRIES ── */
+(function initWorldMap() {
+  const wm = L.map('worldMap', {
+    center: [20, 10], zoom: 2,
+    minZoom: 2, maxZoom: 6,
+    scrollWheelZoom: false,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd', maxZoom: 19,
+  }).addTo(wm);
+
+  const hubIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:11px;height:11px;border-radius:50%;background:#00b4d8;box-shadow:0 0 10px rgba(0,180,216,0.8),0 0 3px rgba(0,180,216,0.4);border:1.5px solid rgba(255,255,255,0.4);"></div>',
+    iconSize: [11,11], iconAnchor: [5.5,5.5], popupAnchor: [0,-8],
+  });
+  const stationIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:7px;height:7px;border-radius:50%;background:#1488db;box-shadow:0 0 6px rgba(20,136,219,0.7);border:1px solid rgba(255,255,255,0.3);"></div>',
+    iconSize: [7,7], iconAnchor: [3.5,3.5], popupAnchor: [0,-6],
+  });
+
+  const countries = [
+    /* ── Asia Pacific (25) ── */
+    { n:'日本 / Japan',         lat:35.68, lng:139.69, hub:true  },
+    { n:'中国 / China',         lat:31.23, lng:121.47, hub:true  },
+    { n:'韓国 / South Korea',   lat:37.57, lng:126.98, hub:true  },
+    { n:'香港 / Hong Kong',     lat:22.32, lng:114.17, hub:true  },
+    { n:'台湾 / Taiwan',        lat:25.03, lng:121.57 },
+    { n:'シンガポール / Singapore', lat:1.35, lng:103.82, hub:true },
+    { n:'タイ / Thailand',      lat:13.76, lng:100.50 },
+    { n:'マレーシア / Malaysia', lat:3.14,  lng:101.69 },
+    { n:'インドネシア / Indonesia', lat:-6.21, lng:106.85 },
+    { n:'フィリピン / Philippines', lat:14.60, lng:120.98 },
+    { n:'ベトナム / Vietnam',   lat:10.82, lng:106.63 },
+    { n:'インド / India',       lat:19.08, lng:72.88, hub:true  },
+    { n:'カンボジア / Cambodia', lat:11.56, lng:104.93 },
+    { n:'ミャンマー / Myanmar',  lat:16.87, lng:96.19  },
+    { n:'ブルネイ / Brunei',    lat:4.90,  lng:114.94 },
+    { n:'ラオス / Laos',        lat:17.98, lng:102.63 },
+    { n:'バングラデシュ / Bangladesh', lat:23.81, lng:90.41 },
+    { n:'スリランカ / Sri Lanka', lat:6.93, lng:79.86  },
+    { n:'ネパール / Nepal',     lat:27.72, lng:85.32  },
+    { n:'パキスタン / Pakistan', lat:24.86, lng:67.01  },
+    { n:'カザフスタン / Kazakhstan', lat:43.22, lng:76.85 },
+    { n:'ウズベキスタン / Uzbekistan', lat:41.30, lng:69.24 },
+    { n:'モンゴル / Mongolia',  lat:47.89, lng:106.91 },
+    { n:'オーストラリア / Australia', lat:-33.87, lng:151.21, hub:true },
+    { n:'ニュージーランド / New Zealand', lat:-36.85, lng:174.76 },
+    /* ── Europe (24) ── */
+    { n:'英国 / United Kingdom', lat:51.51, lng:-0.13, hub:true },
+    { n:'ドイツ / Germany',     lat:50.11, lng:8.68, hub:true  },
+    { n:'フランス / France',    lat:48.86, lng:2.35, hub:true  },
+    { n:'オランダ / Netherlands', lat:52.37, lng:4.90, hub:true },
+    { n:'ベルギー / Belgium',   lat:50.85, lng:4.35  },
+    { n:'スイス / Switzerland', lat:47.38, lng:8.54  },
+    { n:'オーストリア / Austria', lat:48.21, lng:16.37 },
+    { n:'イタリア / Italy',     lat:45.47, lng:9.19  },
+    { n:'スペイン / Spain',     lat:40.42, lng:-3.70 },
+    { n:'ポルトガル / Portugal', lat:38.72, lng:-9.14 },
+    { n:'ポーランド / Poland',  lat:52.23, lng:21.01 },
+    { n:'チェコ / Czech Republic', lat:50.08, lng:14.44 },
+    { n:'ハンガリー / Hungary', lat:47.50, lng:19.04 },
+    { n:'スウェーデン / Sweden', lat:59.33, lng:18.07 },
+    { n:'ノルウェー / Norway',  lat:59.91, lng:10.75 },
+    { n:'デンマーク / Denmark', lat:55.68, lng:12.57 },
+    { n:'フィンランド / Finland', lat:60.17, lng:24.94 },
+    { n:'トルコ / Turkey',      lat:41.01, lng:28.98, hub:true },
+    { n:'ロシア / Russia',      lat:55.76, lng:37.62, hub:true },
+    { n:'ウクライナ / Ukraine', lat:50.45, lng:30.52 },
+    { n:'ギリシャ / Greece',    lat:37.98, lng:23.73 },
+    { n:'ルーマニア / Romania', lat:44.43, lng:26.10 },
+    { n:'アイルランド / Ireland', lat:53.35, lng:-6.26 },
+    { n:'ルクセンブルク / Luxembourg', lat:49.61, lng:6.13 },
+    /* ── Americas (22) ── */
+    { n:'アメリカ / USA',       lat:40.71, lng:-74.01, hub:true },
+    { n:'カナダ / Canada',      lat:43.65, lng:-79.38, hub:true },
+    { n:'メキシコ / Mexico',    lat:19.43, lng:-99.13 },
+    { n:'ブラジル / Brazil',    lat:-23.55, lng:-46.63, hub:true },
+    { n:'アルゼンチン / Argentina', lat:-34.60, lng:-58.38 },
+    { n:'チリ / Chile',         lat:-33.45, lng:-70.67 },
+    { n:'コロンビア / Colombia', lat:4.71,  lng:-74.07 },
+    { n:'ペルー / Peru',        lat:-12.05, lng:-77.04 },
+    { n:'ベネズエラ / Venezuela', lat:10.48, lng:-66.90 },
+    { n:'パナマ / Panama',      lat:8.99,  lng:-79.52 },
+    { n:'コスタリカ / Costa Rica', lat:9.93, lng:-84.09 },
+    { n:'グアテマラ / Guatemala', lat:14.63, lng:-90.51 },
+    { n:'ドミニカ共和国 / Dominican Republic', lat:18.49, lng:-69.93 },
+    { n:'ジャマイカ / Jamaica',  lat:18.00, lng:-76.79 },
+    { n:'トリニダード / Trinidad & Tobago', lat:10.69, lng:-61.22 },
+    { n:'エクアドル / Ecuador',  lat:-0.18, lng:-78.47 },
+    { n:'ボリビア / Bolivia',   lat:-16.50, lng:-68.12 },
+    { n:'ウルグアイ / Uruguay', lat:-34.90, lng:-56.16 },
+    { n:'ホンジュラス / Honduras', lat:14.07, lng:-87.20 },
+    { n:'エルサルバドル / El Salvador', lat:13.69, lng:-89.22 },
+    { n:'バハマ / Bahamas',     lat:25.05, lng:-77.35 },
+    { n:'キューバ / Cuba',      lat:23.11, lng:-82.37 },
+    /* ── MEA & Other (20) ── */
+    { n:'UAE / ドバイ',         lat:25.20, lng:55.27, hub:true },
+    { n:'サウジアラビア / Saudi Arabia', lat:24.71, lng:46.68 },
+    { n:'カタール / Qatar',     lat:25.29, lng:51.53, hub:true },
+    { n:'クウェート / Kuwait',  lat:29.38, lng:47.98 },
+    { n:'バーレーン / Bahrain', lat:26.22, lng:50.59 },
+    { n:'オマーン / Oman',      lat:23.59, lng:58.38 },
+    { n:'イスラエル / Israel',  lat:32.09, lng:34.78 },
+    { n:'ヨルダン / Jordan',    lat:31.95, lng:35.93 },
+    { n:'レバノン / Lebanon',   lat:33.89, lng:35.50 },
+    { n:'エジプト / Egypt',     lat:30.04, lng:31.24 },
+    { n:'南アフリカ / South Africa', lat:-26.20, lng:28.05, hub:true },
+    { n:'ケニア / Kenya',       lat:-1.29,  lng:36.82 },
+    { n:'エチオピア / Ethiopia', lat:9.03,  lng:38.74 },
+    { n:'ナイジェリア / Nigeria', lat:6.52,  lng:3.38  },
+    { n:'モロッコ / Morocco',   lat:33.57, lng:-7.59  },
+    { n:'ガーナ / Ghana',       lat:5.60,  lng:-0.19  },
+    { n:'タンザニア / Tanzania', lat:-6.79, lng:39.21  },
+    { n:'カメルーン / Cameroon', lat:3.85,  lng:11.52  },
+    { n:'コートジボワール / Ivory Coast', lat:5.35, lng:-4.00 },
+    { n:'セネガル / Senegal',   lat:14.72, lng:-17.47 },
+  ];
+
+  countries.forEach(c => {
+    const icon = c.hub ? hubIcon : stationIcon;
+    L.marker([c.lat, c.lng], { icon })
+      .addTo(wm)
+      .bindPopup(`<strong style="color:${c.hub ? '#00b4d8' : '#1488db'}">${c.n}</strong>`);
+  });
+}());
 
 /* ── SCROLL REVEAL ── */
 const obs = new IntersectionObserver(entries => {
