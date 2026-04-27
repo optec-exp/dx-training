@@ -1,0 +1,118 @@
+================================================================
+  Air Cargo China 2026 参展介绍网站  —  开发者参考文档
+  预览地址：http://localhost:3001
+================================================================
+
+■ 启动开发服务器
+  cd 13_AirCargo2026
+  npm run dev          → http://localhost:3001
+
+================================================================
+  文件结构一览
+================================================================
+
+13_AirCargo2026/
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx          页面框架（<html><body>，引入 CSS）
+│   │   ├── page.tsx            主页面（所有内容都在这里）
+│   │   └── globals.css         所有样式
+│   │
+│   ├── components/             可复用组件
+│   │   ├── LangSwitcher.tsx    JP / 中 / EN 切换按钮
+│   │   ├── HeroSection.tsx     顶部大图区域
+│   │   ├── StatsBar.tsx        四格数字统计条
+│   │   ├── SegmentCard.tsx     展区介绍卡片（6张）
+│   │   ├── FaqItem.tsx         FAQ 折叠条目（含 useState）
+│   │   ├── RegisterCta.tsx     底部注册呼吁区域
+│   │   └── SupportWidget.tsx   右下角浮动客服组件（含 useState）
+│   │
+│   └── data/
+│       ├── exhibition.json     活动基础数据（日期、场馆、展商数等）
+│       └── translations.ts     三语言文字内容（ja / zh / en）
+│
+├── package.json                项目配置，端口设定为 3001
+
+================================================================
+  我想改 XX，去哪里改？
+================================================================
+
+【活动日期 / 场馆名称 / 展商数量】
+  → src/data/exhibition.json
+  例：展商数 130+ 改为 150+
+      "exhibitors": 150
+
+【页面所有文字（标题、按钮、说明文等）】
+  → src/data/translations.ts
+  文件分三段：ja（日文）/ zh（中文）/ en（英文）
+  每段结构相同，按对应语言修改即可
+  常用位置：
+    hero.h1         → 顶部大标题
+    hero.desc       → 顶部说明文
+    hero.btn_register / btn_program  → 两个按钮文字
+    stats[]         → 四格数字的标签（value 改数字，label 改标签名）
+    about.h2 / desc → 活动介绍区标题和正文
+    segments[]      → 六个展区的标题和说明
+    why[]           → "为什么参加"三张卡片
+    schedule.days[] → 日程三天的标题和每天的场次列表
+    faq[]           → FAQ 的问题（q）和答案（a）
+    register.h2 / desc / btn_visitor / btn_exhibitor  → 报名区
+    support.*       → 右下角客服组件的所有文字和邮件地址
+    footer          → 页脚一行文字
+
+【客服邮件地址】
+  → src/data/translations.ts
+  搜索 "info@aircargochina.jp"，三个语言各一处，共三行
+
+【客服服务时间文字】
+  → src/data/translations.ts
+  搜索 "hours:" 和 "tz:"（日文/中文/英文各一组）
+
+【展区图标（✈ 🏗 📦 等）】
+  → src/data/exhibition.json
+  "segments" 数组里的 "icon" 字段，共6个
+
+【颜色 / 字号 / 间距等样式】
+  → src/app/globals.css
+  文件顶部 :root {} 里是设计变量（颜色 token）：
+    --navy   深蓝色（标题、导航背景）
+    --blue   蓝色（按钮、数字、强调色）
+    --sky    浅蓝色（徽章背景、About 插图背景）
+    --gray   浅灰色（交替背景的 section）
+    --muted  灰色（说明文字）
+  改这里的颜色会影响整个网站
+
+【页面整体结构 / 各区块顺序】
+  → src/app/page.tsx
+  文件里每个区块都有注释标记，如：
+    {/* ── About ── */}
+    {/* ── Segments ── */}
+    {/* ── Schedule ── */}
+  调整区块顺序直接移动对应的 <section> 块即可
+
+【导航栏链接文字】
+  → src/data/translations.ts
+  搜索 "nav:" 块，修改 about / segments / schedule / faq / register
+
+【Hero 区域日期和场馆显示】
+  数据来源：src/data/exhibition.json → dates.display[lang] 和 venue.name[lang]
+  多语言日期格式在 exhibition.json 的 "display" 对象里修改
+
+================================================================
+  useState 的三处位置（教学重点）
+================================================================
+
+  src/app/page.tsx         line ~16  → 语言切换（'ja'/'zh'/'en'）
+  src/components/FaqItem.tsx  line ~9  → FAQ 折叠开关（true/false）
+  src/components/SupportWidget.tsx line ~9 → 客服面板开关（true/false）
+
+================================================================
+  注意事项
+================================================================
+
+・node_modules/ 和 .next/ 不需要上传到 GitHub（自动排除）
+・修改 translations.ts 或 exhibition.json 后，浏览器会自动热刷新
+・三种语言的翻译结构完全相同，修改时三段都要改
+・端口固定 3001（package.json 里设定），与 12号作业（3000）同时运行互不干扰
+
+================================================================
