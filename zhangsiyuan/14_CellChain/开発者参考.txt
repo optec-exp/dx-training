@@ -1,0 +1,143 @@
+================================================================
+  CellChain Logistics 品牌网站  —  开发者参考文档
+  预览地址：http://localhost:3002
+================================================================
+
+■ 启动开发服务器
+  cd 14_CellChain
+  npm run dev          → http://localhost:3002
+
+================================================================
+  文件结构一览
+================================================================
+
+14_CellChain/
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx          页面框架（引入 CSS、挂载 LangProvider 和 Nav）
+│   │   ├── globals.css         所有样式
+│   │   ├── page.tsx            首页（概览 + 统计 + 3个服务入口卡片 + Mission）
+│   │   ├── cryowing/
+│   │   │   └── page.tsx        CryoWing 服务页（超低温输送）
+│   │   ├── thermosure/
+│   │   │   └── page.tsx        ThermoSure 服务页（精密温控）
+│   │   └── cellpass/
+│   │       └── page.tsx        CellPass 服务页（通关·许可证申请）
+│   │
+│   ├── components/             可复用组件（本作业核心：组件复用）
+│   │   ├── Nav.tsx             顶部标签导航 + 语言切换按钮
+│   │   ├── PageHero.tsx        大标题区域（首页和三个服务页面都复用）
+│   │   ├── FeatureList.tsx     6格功能介绍卡片（三个服务页面都复用）
+│   │   ├── StatsBand.tsx       首页 4格数字统计条
+│   │   └── ContactCta.tsx      联系我们区域（首页和三个服务页面都复用）
+│   │
+│   ├── context/
+│   │   └── LangContext.tsx     语言状态（React Context，跨页面共享）
+│   │
+│   └── data/
+│       └── translations.ts     三语言文字内容（ja / zh / en）
+│
+├── package.json                项目配置，端口设定为 3002
+
+================================================================
+  我想改 XX，去哪里改？
+================================================================
+
+【页面所有文字（标题、说明、按钮等）】
+  → src/data/translations.ts
+  文件分三段：ja（日文）/ zh（中文）/ en（英文），每段结构相同
+  各区块对应关系：
+    home.*              → 首页的文字（大标题、按钮、Mission 文字等）
+    stats[]             → 首页 4格统计数字和标签
+    services[]          → 首页 3个服务入口卡片的标题和简介
+    cryowing.*          → CryoWing 页面的标题、副标题、说明文
+    cryowing.features[] → CryoWing 页面的 6个功能卡片（icon/title/desc）
+    thermosure.*        → ThermoSure 页面（结构同上）
+    cellpass.*          → CellPass 页面（结构同上）
+    contact.*           → 联系我们区域的文字和邮件、电话
+    footer              → 页脚一行文字
+
+【联系电话 / 邮件地址】
+  → src/data/translations.ts
+  搜索 "03-4500-7408" 和 "info@optec-exp.com"
+  三个语言各一处，共三行，都要改
+
+【首页统计数字（10年 / 24/7 / 96国 / -196°C）】
+  → src/data/translations.ts
+  搜索 "stats:" 区块，修改 value（数字）或 label（标签文字）
+
+【首页 Mission 文字】
+  → src/data/translations.ts
+  搜索 "mission:" 字段（每个语言各一处）
+
+【服务页的功能卡片（图标 + 标题 + 说明）】
+  → src/data/translations.ts
+  搜索对应服务名（cryowing / thermosure / cellpass）下的 features 数组
+  每个卡片有三个字段：
+    icon   → emoji 图标
+    title  → 卡片标题
+    desc   → 说明文字
+
+【导航标签文字（ホーム / CryoWing 等）】
+  → src/data/translations.ts
+  搜索 "nav:" 区块，修改 home / cryowing / thermosure / cellpass
+
+【颜色 / 字号 / 间距等样式】
+  → src/app/globals.css
+  文件顶部 :root {} 里是设计变量（颜色 token）：
+    --bg        深蓝黑色背景
+    --surface   卡片/区块背景色
+    --ice       青蓝色强调色（按钮、数字、激活标签、边框）
+    --white     近白色正文
+    --muted     灰蓝色辅助文字
+    --border    半透明青色边框
+  改这里会影响整个网站
+
+【标签导航激活状态的判断逻辑】
+  → src/components/Nav.tsx
+  用 usePathname() 获取当前 URL，与 tabs 数组里的 href 比对
+  匹配则加 .active CSS 类（显示青色下划线）
+
+【页面整体结构 / 各区块顺序】
+  → src/app/page.tsx（首页）
+  → src/app/cryowing/page.tsx（CryoWing 页）
+  → src/app/thermosure/page.tsx（ThermoSure 页）
+  → src/app/cellpass/page.tsx（CellPass 页）
+  各页面结构：PageHero → FeatureList → ContactCta → Footer
+
+================================================================
+  组件复用一览（教学重点）
+================================================================
+
+  PageHero      → 首页 + CryoWing + ThermoSure + CellPass（共4处）
+  FeatureList   → CryoWing + ThermoSure + CellPass（共3处）
+  ContactCta    → 首页 + CryoWing + ThermoSure + CellPass（共4处）
+  Nav           → 通过 layout.tsx 在所有页面显示（1处定义、全局生效）
+
+  使用方式：在各页面中 import 组件，通过 props 传入不同内容，
+  组件本身的结构和样式不变，只有数据不同。
+
+================================================================
+  语言切换的工作原理
+================================================================
+
+  src/context/LangContext.tsx  →  存储 lang 状态（'ja'/'zh'/'en'）
+  src/components/Nav.tsx       →  渲染切换按钮，调用 setLang()
+  各页面                       →  通过 useLang() 获取 lang，
+                                   再从 translations[lang] 拿对应文字
+
+  关键：LangContext 挂载在 layout.tsx（根布局），
+  切换语言后点击标签跳转到其他页面，语言不会重置。
+
+================================================================
+  注意事项
+================================================================
+
+・node_modules/ 和 .next/ 不需要上传到 GitHub（自动排除）
+・修改 translations.ts 后，浏览器会自动热刷新，无需重启服务器
+・三种语言的翻译结构完全相同，修改时三段都要改
+・端口固定 3002（package.json 里设定），与 12号（3000）、13号（3001）互不干扰
+・误字提醒：Desktop 下有 "训练营"（正确）和 "训练営"（误字旧文件夹），
+  本项目文件均在 "训练营" 下
+
+================================================================
