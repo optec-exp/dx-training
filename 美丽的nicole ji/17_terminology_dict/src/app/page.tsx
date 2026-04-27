@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { terms, CATEGORIES, type Category } from '@/data/terms';
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -13,12 +13,11 @@ const CATEGORY_COLOR: Record<string, string> = {
 export default function TermDictionary() {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<'全部' | Category>('全部');
-  const [filtered, setFiltered] = useState(terms);
 
-  // useEffect: query や activeCategory が変わるたびに絞り込みを更新する
-  useEffect(() => {
+  // useMemo: query / activeCategory が変わるたびに即座に再計算
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const result = terms.filter((t) => {
+    return terms.filter((t) => {
       const matchCat = activeCategory === '全部' || t.category === activeCategory;
       const matchQ =
         q === '' ||
@@ -28,8 +27,15 @@ export default function TermDictionary() {
         (t.note?.toLowerCase().includes(q) ?? false);
       return matchCat && matchQ;
     });
-    setFiltered(result);
   }, [query, activeCategory]);
+
+  // useEffect: 検索結果件数をページタイトルに反映する
+  useEffect(() => {
+    document.title =
+      filtered.length === terms.length
+        ? 'OPTEC 物流术语词典'
+        : `OPTEC 词典 — 找到 ${filtered.length} 条`;
+  }, [filtered.length]);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--dark)', color: 'var(--text)' }}>
@@ -58,7 +64,7 @@ export default function TermDictionary() {
         <div style={{ position: 'relative', marginBottom: 24 }}>
           <span style={{
             position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
-            fontSize: 16, color: 'var(--muted)',
+            fontSize: 16, color: 'var(--muted)', pointerEvents: 'none',
           }}>🔍</span>
           <input
             type="text"
@@ -69,7 +75,7 @@ export default function TermDictionary() {
               width: '100%',
               padding: '12px 16px 12px 42px',
               background: 'var(--dark-3)',
-              border: '1px solid rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.15)',
               borderRadius: 10,
               color: 'var(--text)',
               fontSize: 15,
@@ -78,6 +84,7 @@ export default function TermDictionary() {
           />
           {query && (
             <button
+              type="button"
               onClick={() => setQuery('')}
               style={{
                 position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
@@ -89,31 +96,41 @@ export default function TermDictionary() {
 
         {/* ── Category Tabs ── */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-          {(['全部', ...CATEGORIES] as const).map((cat) => {
+          {(['全部', ...CATEGORIES] as Array<'全部' | Category>).map((cat) => {
             const isActive = activeCategory === cat;
             const color = cat === '全部' ? '#64748b' : CATEGORY_COLOR[cat];
+            const count = cat === '全部' ? terms.length : terms.filter(t => t.category === cat).length;
             return (
               <button
+                type="button"
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 style={{
-                  padding: '7px 18px',
+                  padding: '8px 20px',
                   borderRadius: 20,
-                  border: `1px solid ${isActive ? color : 'rgba(255,255,255,0.12)'}`,
-                  background: isActive ? color : 'transparent',
-                  color: isActive ? '#fff' : 'var(--muted)',
+                  border: `2px solid ${isActive ? color : 'rgba(255,255,255,0.15)'}`,
+                  background: isActive ? color : 'rgba(255,255,255,0.04)',
+                  color: isActive ? '#fff' : '#94a3b8',
                   cursor: 'pointer',
-                  fontSize: 13,
-                  fontWeight: isActive ? 600 : 400,
-                  transition: 'all 0.15s',
+                  fontSize: 14,
+                  fontWeight: isActive ? 700 : 400,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  transition: 'all 0.2s',
+                  boxShadow: isActive ? `0 0 12px ${color}66` : 'none',
                 }}
               >
                 {cat}
-                {cat !== '全部' && (
-                  <span style={{ marginLeft: 6, opacity: 0.7, fontSize: 11 }}>
-                    {terms.filter(t => t.category === cat).length}
-                  </span>
-                )}
+                <span style={{
+                  background: isActive ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
+                  borderRadius: 10,
+                  padding: '1px 7px',
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}>
+                  {count}
+                </span>
               </button>
             );
           })}
@@ -121,7 +138,17 @@ export default function TermDictionary() {
 
         {/* ── Result Count ── */}
         <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 16 }}>
-          显示 {filtered.length} 条 / 共 {terms.length} 条
+          {activeCategory !== '全部' && (
+            <span style={{
+              display: 'inline-block', marginRight: 8,
+              background: CATEGORY_COLOR[activeCategory] + '33',
+              color: CATEGORY_COLOR[activeCategory],
+              padding: '2px 10px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+            }}>
+              {activeCategory}
+            </span>
+          )}
+          显示 <strong style={{ color: 'var(--text)' }}>{filtered.length}</strong> 条 / 共 {terms.length} 条
         </p>
 
         {/* ── Term Cards Grid ── */}
@@ -142,41 +169,52 @@ export default function TermDictionary() {
                   key={term.id}
                   style={{
                     background: 'var(--dark-3)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    border: `1px solid rgba(255,255,255,0.08)`,
                     borderRadius: 12,
                     padding: '18px 20px',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 6,
-                    transition: 'border-color 0.15s',
+                    cursor: 'default',
+                    transition: 'transform 0.15s, border-color 0.15s',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = color;
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                    e.currentTarget.style.transform = 'none';
+                  }}
                 >
-                  {/* Top row: abbr + category badge */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <span style={{ fontSize: 20, fontWeight: 700, color: color, letterSpacing: 0.5 }}>
                       {term.abbr}
                     </span>
-                    <span style={{
-                      fontSize: 10, padding: '2px 8px', borderRadius: 10,
-                      background: color + '22', color: color, fontWeight: 600, whiteSpace: 'nowrap',
-                    }}>
+                    {/* 分类标签：点击可切换筛选 */}
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory(term.category)}
+                      style={{
+                        fontSize: 10, padding: '3px 10px', borderRadius: 10,
+                        background: color + '22', color: color, fontWeight: 600,
+                        border: `1px solid ${color}44`,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       {term.category}
-                    </span>
+                    </button>
                   </div>
 
-                  {/* English full name */}
                   <p style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.4 }}>
                     {term.en}
                   </p>
 
-                  {/* Chinese meaning */}
                   <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>
                     {term.zh}
                   </p>
 
-                  {/* Optional note */}
                   {term.note && (
                     <p style={{
                       fontSize: 11, color: '#94a3b8',
@@ -193,7 +231,6 @@ export default function TermDictionary() {
         )}
       </div>
 
-      {/* ── Footer ── */}
       <footer style={{
         textAlign: 'center', padding: '24px 16px',
         borderTop: '1px solid rgba(255,255,255,0.06)',
