@@ -1,72 +1,119 @@
 import Link from 'next/link';
 
 const services = [
-  { icon: '✈️', title: '国际航空货运', desc: '日本↔中国主要航线，快速可靠的空运服务' },
-  { icon: '🛃', title: '进出口通关', desc: '专业报关团队，全程代办清关手续' },
-  { icon: '📦', title: '仓储与包装', desc: '温控仓库管理，专业包装解决方案' },
-  { icon: '🔗', title: 'CellChain 冷链', desc: '医药品・生物样本专用温控物流' },
+  { icon: '✈️', title: 'NFO 紧急空运', desc: '利用最近可用航班，最快9小时送达，守护您的交货期限' },
+  { icon: '🧳', title: 'Hand Carry（OBC）', desc: '专人随身携带货物，提供最高速度的紧急派送服务' },
+  { icon: '🛃', title: '进出口通关代理', desc: '东京海关许可证持有，中日两国专业报关，全程无忧' },
+  { icon: '🔬', title: 'CellChain 冷链物流', desc: '医药品・生物样本专用温控物流，GxP合规全程记录' },
+];
+
+const stats = [
+  { value: '2,428件', label: '年度紧急空运' },
+  { value: '570万kg', label: '年度运输重量' },
+  { value: '186城市', label: '目的地覆盖' },
+  { value: '30分钟', label: '报价响应' },
 ];
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="bg-[#f8f9fc]">
+
       {/* Hero */}
-      <section className="bg-[#0f2557] text-white py-24 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="text-blue-300 text-sm font-semibold tracking-widest uppercase mb-3">
-            OPTEC EXPRESS CO., LTD.
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-            专业国际航空货运代理<br />连接中日，畅达全球
+      <section className="bg-gradient-to-br from-[#0a1628] to-[#0f2557] text-white py-28 px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="inline-flex items-center gap-2 border border-[#c9a84c]/40 px-4 py-1.5 rounded-full mb-8">
+            <div className="w-1.5 h-1.5 bg-[#c9a84c] rounded-full"></div>
+            <span className="text-[#c9a84c] text-xs font-semibold tracking-widest">JAPAN'S ONLY EMERGENCY CARGO SPECIALIST</span>
+          </div>
+          <h1 className="text-5xl font-bold leading-tight mb-6 max-w-2xl">
+            以时间为价值<br />守护您的每一次交货
           </h1>
-          <p className="text-blue-200 text-lg mb-10 max-w-2xl mx-auto">
-            山东上星国际货运代理有限公司，深耕国际物流行业，提供安全、高效、可追溯的一站式货运解决方案。
+          <p className="text-blue-200 text-lg mb-10 max-w-xl leading-relaxed">
+            24小时全年无休 · 30分钟内报价 · 中日英三语对应<br />
+            从东京到全球，让紧急不再是问题。
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Link
-              href="/contact"
-              className="bg-white text-[#0f2557] font-semibold px-8 py-3 rounded-full hover:bg-blue-50 transition"
-            >
-              立即咨询
+          <div className="flex gap-4 flex-wrap">
+            <Link href="/contact" className="bg-[#c9a84c] text-[#0a1628] font-bold px-8 py-3 hover:bg-[#b8963e] transition">
+              立即获取报价
             </Link>
-            <Link
-              href="/services"
-              className="border border-white text-white px-8 py-3 rounded-full hover:bg-white/10 transition"
-            >
-              了解服务
+            <Link href="/services" className="border border-white/30 text-white px-8 py-3 hover:bg-white/10 transition">
+              了解服务 →
             </Link>
           </div>
         </div>
       </section>
 
+      {/* Stats */}
+      <section className="px-8">
+        <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg -mt-8 grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
+          {stats.map((s) => (
+            <div key={s.label} className="px-8 py-6 text-center">
+              <div className="text-2xl font-bold text-[#0a1628] mb-1">{s.value}</div>
+              <div className="text-gray-400 text-xs">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Services */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-8">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-center text-[#0f2557] mb-12">核心服务</h2>
+          <div className="text-center mb-12">
+            <p className="text-[#c9a84c] text-xs font-bold tracking-widest uppercase mb-2">Our Services</p>
+            <h2 className="text-2xl font-bold text-[#0a1628]">一站式货运解决方案</h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((s) => (
-              <div key={s.title} className="bg-gray-50 rounded-2xl p-6 text-center hover:shadow-md transition">
-                <div className="text-4xl mb-3">{s.icon}</div>
-                <h3 className="font-semibold text-[#0f2557] mb-2">{s.title}</h3>
-                <p className="text-gray-500 text-sm">{s.desc}</p>
+              <div key={s.title} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition group">
+                <div className="text-3xl mb-4">{s.icon}</div>
+                <h3 className="font-bold text-[#0a1628] mb-2 text-sm">{s.title}</h3>
+                <p className="text-gray-400 text-xs leading-relaxed">{s.desc}</p>
+                <div className="mt-4 text-[#c9a84c] text-xs font-semibold group-hover:translate-x-1 transition-transform">
+                  了解详情 →
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 px-6 bg-blue-50">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-[#0f2557] mb-4">需要货运解决方案？</h2>
-          <p className="text-gray-600 mb-8">我们的专业团队随时为您提供报价和咨询服务</p>
-          <Link
-            href="/contact"
-            className="bg-[#0f2557] text-white font-semibold px-10 py-3 rounded-full hover:bg-[#1a3a7a] transition"
-          >
-            联系我们
-          </Link>
+      {/* Features */}
+      <section className="py-16 px-8 bg-white">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+          {[
+            { icon: '🌐', title: '国际会员网络', desc: '加入 TALA、WCA、MI Pharma、X2、ALNA、NAP 等国际组织，合作伙伴覆盖全球96个国家' },
+            { icon: '🗣️', title: '三语对应', desc: '日语・中文・英语全天候服务，沟通零障碍' },
+            { icon: '✅', title: 'IATA 认证', desc: 'IATA认证货运代理、危险品专业资质，合规有保障' },
+          ].map((f) => (
+            <div key={f.title}>
+              <div className="text-3xl mb-3">{f.icon}</div>
+              <h3 className="font-semibold text-[#0a1628] mb-2">{f.title}</h3>
+              <p className="text-gray-500 text-sm">{f.desc}</p>
+            </div>
+          ))}
         </div>
+      </section>
+
+      {/* Member bar */}
+      <section className="bg-white border-t border-gray-100 py-12 px-8">
+        <div className="max-w-5xl mx-auto text-center">
+          <p className="text-[#c9a84c] text-xs font-bold tracking-widest uppercase mb-6">加盟国际组织</p>
+          <div className="flex gap-10 flex-wrap justify-center">
+            {['TALA','WCA','MI Pharma','X2','ALNA','NAP'].map(n => (
+              <span key={n} className="text-gray-400 text-sm font-semibold hover:text-[#0a1628] transition cursor-pointer">{n}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 px-8 bg-[#f8f9fc] text-center">
+        <p className="text-[#c9a84c] text-xs font-bold tracking-widest uppercase mb-3">Contact Us</p>
+        <h2 className="text-2xl font-bold text-[#0a1628] mb-4">30分钟内回复报价</h2>
+        <p className="text-gray-500 mb-8">无论多紧急的货运需求，我们都能为您找到解决方案</p>
+        <Link href="/contact" className="bg-[#0a1628] text-white font-bold px-10 py-3 hover:bg-[#0f2557] transition">
+          联系我们
+        </Link>
       </section>
     </div>
   );
