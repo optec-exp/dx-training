@@ -1,0 +1,45 @@
+{
+  "event": {
+    "name": "Air Cargo China 2026",
+    "parent": "Transport Logistic China 2026",
+    "edition": "2026",
+    "organizer": "Messe München Shanghai Co., Ltd.",
+    "website": "https://www.transportlogistic-china.com/air-cargo-china"
+  },
+  "dates": {
+    "start": "2026-06-24",
+    "end": "2026-06-26",
+    "display": {
+      "ja": "2026年6月24日（水）〜 26日（金）",
+      "zh": "2026年6月24日（周三）至26日（周五）",
+      "en": "June 24–26, 2026  (Wed–Fri)"
+    }
+  },
+  "venue": {
+    "name": {
+      "ja": "上海新国際博覧中心（SNIEC）",
+      "zh": "上海新国际博览中心（SNIEC）",
+      "en": "Shanghai New International Expo Centre (SNIEC)"
+    },
+    "city": "Shanghai, China"
+  },
+  "scale": {
+    "exhibitors": 130,
+    "international_pct": 60,
+    "sessions": 6,
+    "days": 3
+  },
+  "segments": [
+    { "id": "airlines",      "icon": "✈" },
+    { "id": "airports",      "icon": "🏗" },
+    { "id": "forwarding",    "icon": "📦" },
+    { "id": "pharma",        "icon": "🧊" },
+    { "id": "technology",    "icon": "💻" },
+    { "id": "sustainability","icon": "🌿" }
+  ],
+  "schedule": [
+    { "day": 1, "date": { "ja": "6月24日（水）", "zh": "6月24日（周三）", "en": "Wed, Jun 24" } },
+    { "day": 2, "date": { "ja": "6月25日（木）", "zh": "6月25日（周四）", "en": "Thu, Jun 25" } },
+    { "day": 3, "date": { "ja": "6月26日（金）", "zh": "6月26日（周五）", "en": "Fri, Jun 26" } }
+  ]
+}
