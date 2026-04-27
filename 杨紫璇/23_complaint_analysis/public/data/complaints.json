@@ -1,0 +1,22 @@
+[
+  { "id": "C-2026-001", "date": "2026-01-08", "type": "破损", "customer": "ABC Electronics", "description": "货物外箱破损，内部器材刮花", "status": "已关闭" },
+  { "id": "C-2026-002", "date": "2026-01-12", "type": "延误", "customer": "Fresh Foods Co.", "description": "航班取消导致货物延误48小时送达", "status": "已关闭" },
+  { "id": "C-2026-003", "date": "2026-01-19", "type": "文件错误", "customer": "Global Pharma", "description": "申报文件品名与实货不符，导致清关延误", "status": "已关闭" },
+  { "id": "C-2026-004", "date": "2026-01-25", "type": "温度超标", "customer": "BioMed Ltd.", "description": "冷链货物运输途中温度超出2-8°C范围", "status": "已关闭" },
+  { "id": "C-2026-005", "date": "2026-02-03", "type": "破损", "customer": "Tech Supplies HK", "description": "货盘塌陷，部分货物受压变形", "status": "已关闭" },
+  { "id": "C-2026-006", "date": "2026-02-07", "type": "延误", "customer": "AutoParts Inc.", "description": "海关查验导致货物滞留3天", "status": "已关闭" },
+  { "id": "C-2026-007", "date": "2026-02-14", "type": "其他", "customer": "Luxury Goods Co.", "description": "货物到达目的地后无人通知收货方", "status": "已关闭" },
+  { "id": "C-2026-008", "date": "2026-02-21", "type": "文件错误", "customer": "Chemical Corp", "description": "危险品申报类别填写错误", "status": "已关闭" },
+  { "id": "C-2026-009", "date": "2026-02-26", "type": "破损", "customer": "HomeDecor Ltd.", "description": "玻璃艺术品包装不足导致破碎", "status": "已关闭" },
+  { "id": "C-2026-010", "date": "2026-03-04", "type": "延误", "customer": "Fashion Brand X", "description": "旺季运力不足，货物等待装机3天", "status": "已关闭" },
+  { "id": "C-2026-011", "date": "2026-03-10", "type": "温度超标", "customer": "BioMed Ltd.", "description": "转机期间温控设备故障，温度记录仪报警", "status": "已关闭" },
+  { "id": "C-2026-012", "date": "2026-03-15", "type": "破损", "customer": "Electronics Hub", "description": "叉车操作不当造成货物侧翻", "status": "已关闭" },
+  { "id": "C-2026-013", "date": "2026-03-19", "type": "其他", "customer": "Food & Bev Co.", "description": "货物重量与申报不符，产生额外费用纠纷", "status": "已关闭" },
+  { "id": "C-2026-014", "date": "2026-03-25", "type": "文件错误", "customer": "MedDevice Corp", "description": "FDA申报文件缺失，货物被扣押", "status": "已关闭" },
+  { "id": "C-2026-015", "date": "2026-04-02", "type": "延误", "customer": "Auto Components", "description": "目的地机场拥堵，交货延迟36小时", "status": "进行中" },
+  { "id": "C-2026-016", "date": "2026-04-07", "type": "破损", "customer": "Optical Tech", "description": "精密仪器运输过程中出现碰撞损伤", "status": "进行中" },
+  { "id": "C-2026-017", "date": "2026-04-11", "type": "温度超标", "customer": "Vaccine Logistics", "description": "疫苗货物温度短暂超标，需重新评估药效", "status": "进行中" },
+  { "id": "C-2026-018", "date": "2026-04-15", "type": "其他", "customer": "Retail Chain HK", "description": "货物部分丢失，箱数与提单不符", "status": "进行中" },
+  { "id": "C-2026-019", "date": "2026-04-18", "type": "文件错误", "customer": "Chemical Corp", "description": "MSDS文件版本过期，目的地海关拒绝放行", "status": "进行中" },
+  { "id": "C-2026-020", "date": "2026-04-22", "type": "延误", "customer": "Express Fashion", "description": "航班机械故障取消，等待改签中", "status": "进行中" }
+]
