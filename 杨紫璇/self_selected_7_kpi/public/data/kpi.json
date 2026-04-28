@@ -1,0 +1,6 @@
+{
+  "2026-01": { "onTimeRate": 96.2, "anomalyRate": 0.8, "ncrCloseRate": 92.0, "complaints": 3 },
+  "2026-02": { "onTimeRate": 94.8, "anomalyRate": 1.1, "ncrCloseRate": 88.5, "complaints": 4 },
+  "2026-03": { "onTimeRate": 93.1, "anomalyRate": 1.4, "ncrCloseRate": 85.0, "complaints": 7 },
+  "2026-04": { "onTimeRate": 97.0, "anomalyRate": 0.6, "ncrCloseRate": 91.0, "complaints": 2 }
+}
