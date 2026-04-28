@@ -1,0 +1,215 @@
+================================================================================
+  18号作业 · 机场代码搜索工具 — 开发者参考文档
+  Airport Code Search · Developer Reference
+================================================================================
+
+【启动方式】
+  npm run dev      → 开发服务器，端口 3006，访问 http://localhost:3006
+  npm run build    → 生产构建
+  npm run start    → 启动生产服务器
+
+
+================================================================================
+  目录结构
+================================================================================
+
+src/
+├── app/
+│   ├── globals.css           ← 全局样式（所有 CSS 变量和组件样式都在这里）
+│   ├── layout.tsx            ← 根 Layout，挂载 CSS（含 Leaflet CSS），设置 metadata
+│   └── page.tsx              ← 应用入口，状态管理（语言、搜索词、过滤器、选中机场）
+│
+├── components/
+│   ├── Header.tsx            ← 顶部导航（Logo + 语言切换按钮）
+│   ├── SearchBar.tsx         ← 搜索框（输入 + 清除按钮）
+│   ├── AirportCard.tsx       ← 机场卡片（IATA/ICAO badge + 机场名 + 城市国家 + 地图按钮）
+│   ├── AirportMap.tsx        ← Leaflet 地图组件（仅客户端，CartoDB Dark Matter 底图）
+│   └── AirportModal.tsx      ← 详情弹窗（机场信息 + 嵌入地图）
+│
+├── data/
+│   └── airports.json         ← 机场数据库（OurAirports 开源数据，约 350 条大中型机场）
+│
+└── lib/
+    ├── types.ts              ← TypeScript 类型定义（Airport、Lang）
+    ├── countries.ts          ← 国家/地区名称翻译表（ISO 2字母代码 → zh/en/ja）
+    ├── search.ts             ← 搜索算法（模糊匹配 + 权重评分）
+    └── translations.ts       ← UI 文本翻译（中/英/日）
+
+
+================================================================================
+  按需定位：我想改 XX，去哪里？
+================================================================================
+
+► 新增 / 修改机场数据
+  → src/data/airports.json
+  每条记录结构如下：
+  {
+    "iata": "NRT",           ← IATA 3字母代码（唯一标识）
+    "icao": "RJAA",          ← ICAO 4字母代码
+    "name": "Narita International Airport",  ← 英文机场名
+    "city": "Tokyo",         ← 英文城市名
+    "country": "JP",         ← ISO 2字母国家代码（对照 countries.ts）
+    "lat": 35.7647,          ← 纬度（WGS84）
+    "lon": 140.3864,         ← 经度（WGS84）
+    "elev": 141,             ← 海拔（英尺）
+    "type": "large"          ← 类型："large"（大型）或 "medium"（中型）
+  }
+
+  数据来源：OurAirports（https://ourairports.com/data/）
+  原始数据为公共领域（CC0），可自由使用。
+  下载 airports.csv，按 scheduled_service=yes 且 type=large_airport/medium_airport 筛选。
+
+► 新增国家/地区翻译
+  → src/lib/countries.ts
+  在 COUNTRY_NAMES 对象中按 ISO 2字母代码添加一项：
+  XX: { zh: '中文名', ja: '日本語名', en: 'English Name' }
+
+► 改 UI 文字（标题 / 按钮 / 占位符 / 空状态等）
+  → src/lib/translations.ts，UI 对象，按语言（zh / en / ja）分别修改。
+
+► 改整体颜色 / 字体 / 圆角
+  → src/app/globals.css，顶部 :root{} 内的 CSS 变量：
+  --bg-base        背景底色
+  --bg-surface     搜索框背景
+  --bg-card        卡片背景（rgba）
+  --bg-card-hover  卡片悬停背景
+  --bg-modal       弹窗背景
+  --border         默认边框色
+  --border-hover   悬停边框色
+  --text-primary   主要文字色
+  --text-secondary 次要文字色
+  --text-muted     灰色提示文字
+  --accent         主题蓝色（渐变起点）
+  --accent2        主题青色（渐变终点）
+  --accent-glow    主题色发光（半透明背景）
+
+► 改地图底图样式
+  → src/components/AirportMap.tsx
+  L.tileLayer() 的 URL 即为底图地址。
+  当前使用：CartoDB Dark Matter（免费、无需 API Key）
+    URL: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+  其他可选底图（均免费、无需 Key）：
+    CartoDB Positron（浅色）: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    OpenStreetMap 标准:       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    Stadia Alidade Smooth Dark: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
+  attribution 字段须随底图更新，保留版权信息。
+
+► 改地图标记样式（机场图标）
+  → src/components/AirportMap.tsx，customIcon 的 html 字段。
+  目前使用 div + CSS 渲染飞机图标。
+  → src/app/globals.css，.map-marker 类控制图标外观。
+
+► 改地图初始缩放级别
+  → src/components/AirportMap.tsx，L.map() 的 zoom: 10
+  建议范围 8（显示周边城市）至 13（街道级别）。
+
+► 改搜索逻辑（权重 / 模糊度）
+  → src/lib/search.ts
+  score()         → 单字段评分（100=完全匹配 / 90=前缀 / 80=包含 / 55=字符序列）
+  searchAirports()→ 多字段权重合并（IATA×3 / ICAO×3 / 机场名×2 / 城市×2 / 国家代码×1）
+
+► 改防抖延迟（搜索响应速度）
+  → src/app/page.tsx，setTimeout(..., 200) 中的 200（毫秒）
+  调小 → 更即时；调大 → 减少计算频次。
+
+► 改卡片最大显示数量
+  → src/app/page.tsx，filtered.slice(0, 120) 中的 120
+  搜索结果超过此数量时截断显示。
+
+► 改弹窗地图高度
+  → src/app/globals.css，.leaflet-map { height: 300px }
+
+► 改页面 <title> 或 <meta>
+  → src/app/layout.tsx，metadata 对象
+
+► 改端口（默认 3006）
+  → package.json，scripts.dev 和 scripts.start 中的 --port 参数
+
+► 新增语言（以法语 fr 为例）
+  1. src/lib/types.ts → Lang 类型加 | 'fr'
+  2. src/lib/translations.ts
+     → LANGUAGES 数组添加 { code: 'fr', label: 'FR' }
+     → UI 对象添加 fr: { ... }，参照 en 的所有 key 翻译
+  3. src/lib/countries.ts
+     → 每个国家对象添加 fr: '...' 字段（并更新类型）
+
+
+================================================================================
+  数据来源说明（开源机场数据库）
+================================================================================
+
+  数据集：OurAirports（https://ourairports.com/data/）
+  许可证：公共领域（CC0 1.0 Universal）— 可自由使用、修改、分发，无需署名。
+
+  本工具收录：约 350 条有 IATA 代码的大型 / 中型机场
+  覆盖地区：亚洲、欧洲、北美洲、南美洲、非洲、大洋洲
+
+  如需获取最新完整数据：
+  1. 访问 https://ourairports.com/data/airports.csv 下载 CSV
+  2. 筛选条件：scheduled_service = yes AND type IN (large_airport, medium_airport)
+  3. 取所需字段：iata_code, ident(ICAO), name, municipality(城市), iso_country,
+                 latitude_deg, longitude_deg, elevation_ft, type
+  4. 将 country 字段更新到 src/lib/countries.ts 中
+
+
+================================================================================
+  地图技术说明
+================================================================================
+
+  地图库：Leaflet 1.9.4（MIT License）
+  底图服务：CARTO（CartoDB Dark Matter）— 免费，无需 API Key
+  React 绑定：react-leaflet 4.2.1（MIT License）
+
+  注意事项：
+  - Leaflet 不支持 SSR（服务端渲染），AirportMap.tsx 使用 'use client' 标记
+  - AirportModal.tsx 通过 next/dynamic 的 { ssr: false } 加载 AirportMap，避免 window 未定义错误
+  - layout.tsx 中导入了 'leaflet/dist/leaflet.css'，确保地图样式正确加载
+
+  实时显示逻辑：
+  搜索时 → useEffect + 200ms 防抖 → 过滤 filtered 数组 → AirportCard 显示城市/国家
+  点击卡片 → setSelected(airport) → AirportModal 打开 → AirportMap 渲染 Leaflet 地图
+  → 自动以机场坐标为中心，zoom=10，打开 Popup 显示 IATA/ICAO + 机场名 + 城市国家
+
+
+================================================================================
+  核心数据流（page.tsx）
+================================================================================
+
+  query（输入框）
+    ↓ useEffect 200ms 防抖
+  debouncedQuery
+    ↓ useMemo（依赖 debouncedQuery + filter）
+  filtered（过滤后的机场列表）
+    ↓ .slice(0,120) 渲染
+  AirportCard × N
+    ↓ onSelect(airport)
+  selected（选中机场）
+    ↓ 渲染
+  AirportModal → AirportMap（Leaflet）
+
+
+================================================================================
+  依赖说明
+================================================================================
+
+  Next.js 16    → React 全栈框架（App Router）
+  React 19      → UI 组件
+  TypeScript    → 类型安全
+  Leaflet 1.9   → 地图渲染（MIT License，开源）
+  react-leaflet → Leaflet 的 React 封装
+  CartoDB Dark  → 地图底图（免费，无需 API Key）
+
+  安装命令（React 19 与 react-leaflet 4 需要 --legacy-peer-deps）：
+  npm install --legacy-peer-deps
+
+
+================================================================================
+  端口 & 构建
+================================================================================
+
+  开发：  npm run dev    → http://localhost:3006
+  构建：  npm run build
+  生产：  npm run start  → http://localhost:3006
+
+
+================================================================================
