@@ -1,0 +1,176 @@
+================================================================================
+  16号作业 · 体积重量计算工具 — 开发者参考文档
+  Volume Weight Calculator · Developer Reference
+================================================================================
+
+【启动方式】
+  npm run dev      → 开发服务器，端口 3004，访问 http://localhost:3004
+  npm run build    → 生产构建
+  npm run start    → 启动生产服务器
+
+
+================================================================================
+  目录结构
+================================================================================
+
+src/
+├── app/
+│   ├── globals.css           ← 全局样式（所有 CSS 都在这里）
+│   ├── layout.tsx            ← 根 Layout，设置 <html>/<body>，挂载 CSS
+│   └── page.tsx              ← 应用入口，组合所有组件
+│
+├── components/
+│   ├── Header.tsx            ← 顶部导航栏（标题 + 语言切换按钮）
+│   ├── FreightSettings.tsx   ← 设置栏（尺寸单位 / 重量单位 / 运输方式 / 自定义系数）
+│   ├── CargoFormPanel.tsx    ← 左侧货物录入表单（名称 / L×W×H / 件数 / 单件重量）
+│   ├── CargoResultTable.tsx  ← 右侧货物结果表格（体积重、实重、计费重等）
+│   ├── SummaryCards.tsx      ← 底部汇总卡片（4 张：总体积 / 总体积重 / 总实重 / 总计费重）
+│   └── DiagramPanel.tsx      ← 三视图 + 立体示意图（2×2 Canvas 面板）
+│
+├── context/
+│   └── AppContext.tsx         ← 全局状态管理（货物列表 / 单位 / 语言 / 运费系数）
+│
+├── lib/
+│   ├── calculations.ts       ← 计算逻辑（体积重、实重、计费重的公式）
+│   └── canvasDrawing.ts      ← Canvas 绘图（正视图 / 侧视图 / 俯视图 / 立体等轴图）
+│
+└── data/
+    └── translations.ts       ← 多语言文本（中文 / 英文 / 日文）
+
+
+================================================================================
+  按需定位：我想改 XX，去哪里？
+================================================================================
+
+► 改界面文字 / 翻译
+  → src/data/translations.ts
+  文件中有 zh / en / ja 三个对象，每个 key 对应一处界面文本。
+  新增语言：在 LANGUAGES 数组加一项，在 translations 对象加同名 key。
+
+► 改整体样式（颜色 / 字体 / 间距 / 卡片圆角等）
+  → src/app/globals.css
+  顶部 :root{} 中有所有 CSS 变量（--primary, --bg, --card, --radius 等），
+  改这里即可全局生效。
+
+► 改货物颜色（每种货物对应的颜色）
+  → src/lib/canvasDrawing.ts
+  文件开头的 CARGO_COLORS 数组，每个元素包含：
+    fill   → 矩形填充色（带透明度）
+    stroke → 边框 / 标注色
+    top    → 等轴图顶面颜色
+    right  → 等轴图右面颜色
+    text   → 文字标注颜色
+  最多支持 8 种货物，超出则循环使用。
+
+► 改体积重量计算公式
+  → src/lib/calculations.ts
+  核心函数：calculateCargo()
+  公式：体积重 = L(cm) × W(cm) × H(cm) / divisor
+  单位换算表在文件顶部：DIM_TO_CM（尺寸转cm）/ KG_TO_WEIGHT（kg转显示单位）
+
+► 改默认运费系数（默认航空 6000）
+  → src/context/AppContext.tsx
+  const [divisor, setDivisorState] = useState(6000);   ← 改这里
+  const [freightMode, ...] = useState('air');            ← 默认模式
+
+► 改默认单位（默认 cm / kg）
+  → src/context/AppContext.tsx
+  const [dimUnit, setDimUnit] = useState('cm');
+  const [weightUnit, setWeightUnit] = useState('kg');
+
+► 改默认语言
+  → src/context/AppContext.tsx
+  const [language, setLanguage] = useState('zh');
+  可选值: 'zh' | 'en' | 'ja'
+
+► 改货物录入表单（字段 / 校验 / 默认值）
+  → src/components/CargoFormPanel.tsx
+  EMPTY 常量控制初始值；handleAdd() 中有输入校验逻辑。
+
+► 改计算结果表格（列 / 格式）
+  → src/components/CargoResultTable.tsx
+  fmt() 控制数值小数位；fmtVol() 控制体积的显示格式（cm³/L/m³自动换算）。
+
+► 改汇总卡片（4张）
+  → src/components/SummaryCards.tsx
+
+► 改三视图 / 立体图的绘制样式
+  → src/lib/canvasDrawing.ts
+  drawFront()   → 正视图 (L×H)
+  drawSide()    → 侧视图 (W×H)
+  drawTop()     → 俯视图 (L×W)
+  drawIsometric() → 立体等轴投影图
+  setupCanvas() → 背景 + 网格
+  dimLineH() / dimLineV() → 标注线（刻度线 + 文字）
+
+► 改图例和说明文字（三视图区域）
+  → src/components/DiagramPanel.tsx
+  画布尺寸在 <canvas width={440} height={300} /> 这里改
+
+► 改顶部导航栏
+  → src/components/Header.tsx
+
+► 改设置栏（运输方式选项 / 单位选项）
+  → src/components/FreightSettings.tsx
+  DIM_UNITS / WEIGHT_UNITS / MODES 数组控制可选项
+
+
+================================================================================
+  关键业务概念
+================================================================================
+
+  体积重量 (Volumetric Weight)
+    = L(cm) × W(cm) × H(cm) / divisor
+    航空货运系数：6000 cm³/kg
+    快递件系数：  5000 cm³/kg
+
+  计费重量 (Chargeable Weight)
+    = max(体积重量, 实际重量)
+    哪个大按哪个收费
+
+  CBM（立方米）
+    = 总体积(cm³) / 1,000,000
+    海运常用单位
+
+  图表说明（单件 vs 堆叠）
+    - 图中每个实线框 = 1件货物的尺寸（单件个体）
+    - 多件叠加后框内有虚线分隔 = 堆叠效果
+    - 每种货物独立颜色，标注货物名称和 ×件数
+    - 正视图：X轴=L，Y轴=H；侧视图：X轴=W，Y轴=H；俯视图：X轴=L，Y轴=W
+    - 立体图使用等轴测投影（30°），同时标注 L/W/H
+
+
+================================================================================
+  如何新增一种语言（以法语为例）
+================================================================================
+
+  1. 打开 src/data/translations.ts
+  2. 在 Language 类型加 | 'fr'
+  3. 在 LANGUAGES 数组添加：
+       { code: 'fr', label: 'Français', flag: '🇫🇷' }
+  4. 在 translations 对象添加 fr: { ... }，
+     参考 en 的所有 key，逐一翻译即可。
+
+
+================================================================================
+  依赖说明
+================================================================================
+
+  Next.js 16   → React 全栈框架（app router）
+  React 19     → UI 组件
+  TypeScript   → 类型安全
+
+  无第三方 UI 库，无图表库（图表用原生 Canvas API 绘制）。
+  Canvas 绘图代码全部在 src/lib/canvasDrawing.ts。
+
+
+================================================================================
+  端口 & 构建
+================================================================================
+
+  开发：  npm run dev    → http://localhost:3004
+  构建：  npm run build
+  生产：  npm run start  → http://localhost:3004
+
+
+================================================================================
