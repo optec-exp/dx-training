@@ -1,0 +1,771 @@
+[
+  {
+    "id": "nfo",
+    "abbr": "NFO",
+    "category": "service",
+    "fullName": {
+      "en": "Next Flight Out",
+      "zh": "紧急空运",
+      "ja": "次便緊急航空便"
+    },
+    "definition": {
+      "en": "NFO stands for \"Next Flight Out\". It refers to urgent air freight that must be loaded onto the very next available flight, covering both domestic and international air shipments. NFO is the fastest standard air freight option for time-critical cargo.",
+      "zh": "NFO全称 \"NEXT FLIGHT OUT\"，意指紧急空运，包括国内空运和国际空运。NFO要求货物搭乘最近一班可用航班，是时间紧迫货物的首选运输方式。",
+      "ja": "NFOとは「Next Flight Out」の略で、次の便に搭載する緊急航空便のことです。国内および国際航空輸送を含みます。時間的に緊急な貨物に対して最も迅速な標準航空輸送手段です。"
+    }
+  },
+  {
+    "id": "obc",
+    "abbr": "OBC",
+    "category": "service",
+    "fullName": {
+      "en": "On Board Courier",
+      "zh": "手提带货",
+      "ja": "ハンドキャリー"
+    },
+    "definition": {
+      "en": "OBC stands for \"On Board Courier\". It refers to hand-carry delivery, where a dedicated courier personally carries the customer's goods as cabin baggage and delivers them directly to the designated destination. This is currently the fastest direct cargo transport method available, ensuring safe and timely delivery of the most urgent shipments.",
+      "zh": "OBC全称是 \"On Board Courier\"，意指 handcarry，就是我们常说的飞人手提带货。手提带货意味着飞人将随身携带顾客的货物作为行李，人工送达至指定目的地，是目前最快的直接运输货物的方式。通过此种方式，来确保顾客时间紧迫的货物能够安全、及时送达。",
+      "ja": "OBCとは「On Board Courier」の略で、ハンドキャリー（手荷物持込）のことです。専属の運送人が顧客の貨物を機内持込手荷物として目的地まで直接お届けします。現在最も迅速な貨物輸送手段であり、緊急度の高い貨物を確実かつ迅速にお届けします。"
+    }
+  },
+  {
+    "id": "aog",
+    "abbr": "AOG",
+    "category": "service",
+    "fullName": {
+      "en": "Aircraft on Ground",
+      "zh": "飞机支援服务",
+      "ja": "航空機支援サービス"
+    },
+    "definition": {
+      "en": "AOG stands for \"Aircraft on Ground\". It refers to emergency logistics support services for aircraft grounded due to technical issues. AOG shipments involve transporting critical aircraft parts and maintenance equipment with the highest priority to minimize aircraft downtime.",
+      "zh": "AOG全称 \"Aircraft on Ground\"，指飞机因技术故障停飞时的紧急支援服务。AOG运输涉及以最高优先级输送航空器关键零件及维修设备，旨在最大限度减少飞机停飞时间。",
+      "ja": "AOGとは「Aircraft on Ground」の略で、技術的な問題で航空機が運航不能になった場合の緊急支援サービスです。航空機部品や整備機材を最優先で輸送し、航空機の運航停止時間を最小限に抑えます。"
+    }
+  },
+  {
+    "id": "eco",
+    "abbr": "ECO",
+    "category": "service",
+    "fullName": {
+      "en": "Economy Air Freight",
+      "zh": "经济空运",
+      "ja": "エコノミー航空便"
+    },
+    "definition": {
+      "en": "ECO stands for \"Economy\". It refers to the standard economy mode of air freight. Compared to NFO, ECO is slower but more cost-effective, suitable for non-urgent air cargo shipments.",
+      "zh": "ECO全称 \"ECONOMY\"，指的是空运的经济模式。速度较NFO慢，价格较低，适用于非紧急空运货物。",
+      "ja": "ECOとは「Economy」の略で、航空便のエコノミーモードを指します。NFOに比べて速度は遅くなりますが、費用が低く抑えられ、緊急性の低い航空貨物に適しています。"
+    }
+  },
+  {
+    "id": "nfo_dg",
+    "abbr": "NFO+DG",
+    "category": "service",
+    "fullName": {
+      "en": "Next Flight Out with Dangerous Goods",
+      "zh": "危险品紧急空运",
+      "ja": "危険物緊急航空便"
+    },
+    "definition": {
+      "en": "NFO with DG refers to urgent air freight services specifically handling Dangerous Goods (DG). This service combines the urgency of NFO with specialized handling protocols for hazardous materials, complying with IATA Dangerous Goods Regulations.",
+      "zh": "NFO with DG指涉及危险品（DG）的紧急空运服务，将NFO的时效性与危险品专业操作规程相结合，须符合IATA危险品航空运输规定。",
+      "ja": "NFO with DGとは、危険物（DG）を取り扱う緊急航空便サービスです。NFOの緊急性と危険物専門取扱規程を組み合わせ、IATAの危険物航空輸送規則に準拠しています。"
+    }
+  },
+  {
+    "id": "ata_carnet",
+    "abbr": "ATA CARNET",
+    "category": "service",
+    "fullName": {
+      "en": "ATA Carnet",
+      "zh": "ATA单证册",
+      "ja": "ATAカルネ"
+    },
+    "definition": {
+      "en": "An ATA Carnet is an international customs document that allows temporary import of goods into member countries without paying customs duties or taxes. The acronym ATA comes from the French and English words \"Admission Temporaire / Temporary Admission\". It is commonly used for trade shows, professional equipment, and commercial samples.",
+      "zh": "ATA单证册是一种国际海关文件，允许货物在成员国之间临时进口，无需缴纳关税或税款。ATA来源于法文和英文的组合 \"Admission Temporaire / Temporary Admission\"，即临时入境。常用于参展、专业设备及商业样品的临时进出口。",
+      "ja": "ATAカルネとは、加盟国間での一時的な物品の輸入を、関税や税金を支払わずに認める国際税関書類です。ATAはフランス語と英語の「Admission Temporaire / Temporary Admission（一時輸入）」の頭字語です。見本市、専門機器、商業サンプルの一時輸出入に広く使用されます。"
+    }
+  },
+  {
+    "id": "customs",
+    "abbr": "CUSTOMS",
+    "category": "service",
+    "fullName": {
+      "en": "Import / Export Customs Clearance",
+      "zh": "进出口清关",
+      "ja": "輸出入通関"
+    },
+    "definition": {
+      "en": "Import/Export Customs Clearance refers to the process of passing goods through customs so they can enter or exit a country. This involves preparing and submitting documentation, paying applicable duties and taxes, and complying with all regulations of the destination country.",
+      "zh": "进出口清关是指货物在进出一个国家时，通过海关检查并满足相关法规要求的过程。包括准备并提交报关文件、缴纳适用关税和税款，以及符合目的地国家的各项规定。",
+      "ja": "輸出入通関とは、貨物が国境を出入りする際に税関を通過するプロセスです。必要書類の作成・提出、関税・税金の支払い、および目的国の規制への準拠が含まれます。"
+    }
+  },
+  {
+    "id": "cold_chain",
+    "abbr": "COLD CHAIN",
+    "category": "service",
+    "fullName": {
+      "en": "Cold Chain Logistics",
+      "zh": "冷链物流",
+      "ja": "コールドチェーン物流"
+    },
+    "definition": {
+      "en": "Cold Chain Logistics refers to the temperature-controlled supply chain for goods that require refrigeration or specific temperature ranges throughout transportation, storage, and distribution. Common cold chain cargo includes pharmaceuticals, fresh produce, and perishable food items.",
+      "zh": "冷链物流是指在运输、储存和配送全过程中，对需要冷藏或特定温度范围的货物实施温控管理的供应链体系。常见冷链货物包括医药品、生鲜农产品及易腐食品。",
+      "ja": "コールドチェーン物流とは、輸送・保管・配送の全過程において、冷蔵や特定温度帯の管理が必要な貨物に対して温度管理を行うサプライチェーン体系です。医薬品、生鮮農産物、腐敗しやすい食品などが代表的な冷蔵貨物です。"
+    }
+  },
+  {
+    "id": "eta",
+    "abbr": "ETA",
+    "category": "time",
+    "fullName": {
+      "en": "Estimated Time of Arrival",
+      "zh": "预计到达时间",
+      "ja": "到着予定時刻"
+    },
+    "definition": {
+      "en": "ETA stands for \"Estimated Time of Arrival\". It represents the predicted time at which a shipment, vessel, or aircraft is expected to arrive at its destination.",
+      "zh": "ETA全称 \"Estimated Time of Arrival\"，表示预计到达时间，即货物、船舶或飞机预计抵达目的地的时间。",
+      "ja": "ETAとは「Estimated Time of Arrival」の略で、貨物・船舶・航空機が目的地に到着する予定時刻を表します。"
+    }
+  },
+  {
+    "id": "etd",
+    "abbr": "ETD",
+    "category": "time",
+    "fullName": {
+      "en": "Estimated Time of Departure",
+      "zh": "预计离港时间",
+      "ja": "出発予定時刻"
+    },
+    "definition": {
+      "en": "ETD stands for \"Estimated Time of Departure\". It represents the predicted time at which a shipment, vessel, or aircraft is scheduled to depart from its origin or port of loading.",
+      "zh": "ETD全称 \"Estimated Time of Departure\"，表示预计离港时间，即货物、船舶或飞机预计从始发地或装货港出发的时间。",
+      "ja": "ETDとは「Estimated Time of Departure」の略で、貨物・船舶・航空機が出発地または積み込み港から出発する予定時刻を表します。"
+    }
+  },
+  {
+    "id": "ata_time",
+    "abbr": "ATA",
+    "category": "time",
+    "fullName": {
+      "en": "Actual Time of Arrival",
+      "zh": "实际到达时间",
+      "ja": "実際到着時刻"
+    },
+    "definition": {
+      "en": "ATA stands for \"Actual Time of Arrival\". It records the exact time at which a shipment, vessel, or aircraft actually arrived at its destination, as opposed to the estimated time (ETA).",
+      "zh": "ATA全称 \"Actual Time of Arrival\"，表示实际到达时间，即货物、船舶或飞机实际抵达目的地的时间，与预计时间（ETA）相对应。",
+      "ja": "ATAとは「Actual Time of Arrival」の略で、貨物・船舶・航空機が目的地に実際に到着した時刻を記録します。予定時刻（ETA）と対をなします。"
+    }
+  },
+  {
+    "id": "atd",
+    "abbr": "ATD",
+    "category": "time",
+    "fullName": {
+      "en": "Actual Time of Departure",
+      "zh": "实际离港时间",
+      "ja": "実際出発時刻"
+    },
+    "definition": {
+      "en": "ATD stands for \"Actual Time of Departure\". It records the exact time at which a shipment, vessel, or aircraft actually departed, as opposed to the estimated departure time (ETD).",
+      "zh": "ATD全称 \"Actual Time of Departure\"，表示实际离港时间，即货物、船舶或飞机实际出发的时间，与预计时间（ETD）相对应。",
+      "ja": "ATDとは「Actual Time of Departure」の略で、貨物・船舶・航空機が実際に出発した時刻を記録します。予定出発時刻（ETD）と対をなします。"
+    }
+  },
+  {
+    "id": "awb",
+    "abbr": "AWB",
+    "category": "document",
+    "fullName": {
+      "en": "Air Waybill",
+      "zh": "航空运单",
+      "ja": "航空運送状"
+    },
+    "definition": {
+      "en": "AWB stands for \"Air Waybill\". It is a document used for air cargo transport that records the details of a shipment from its origin to its destination. The AWB serves as a contract of carriage, a receipt for the goods, and a customs declaration. It is one of the most important documents in international air freight.",
+      "zh": "AWB是 \"Air Waybill\" 的缩写，中文意为航空运单。AWB是一种用于航空货物运输的文件，记录了货物从起始地点到目的地的详细信息。它同时作为运输合同、货物收据及海关申报文件，是国际货物运输中非常重要的文件之一。",
+      "ja": "AWBとは「Air Waybill」の略で、航空運送状を意味します。起点から目的地までの貨物の詳細を記録する航空貨物輸送書類です。運送契約書、貨物の受取証、税関申告書として機能し、国際航空貨物において最も重要な書類のひとつです。"
+    }
+  },
+  {
+    "id": "mawb",
+    "abbr": "MAWB",
+    "category": "document",
+    "fullName": {
+      "en": "Master Air Waybill",
+      "zh": "主单（总运单）",
+      "ja": "マスター航空運送状"
+    },
+    "definition": {
+      "en": "MAWB stands for \"Master Air Waybill\". It is issued by the airline or main carrier and covers the overall consolidated shipment. The MAWB is the contract between the airline and the freight forwarder for a consolidated cargo shipment.",
+      "zh": "MAWB全称为 \"Master Air WayBill\"，中文表示主单（总运单）。由航空公司或主承运人签发，涵盖整体合并货运。MAWB是航空公司与货运代理公司之间针对合并货物运输的运输合同。",
+      "ja": "MAWBとは「Master Air Waybill」の略で、マスター航空運送状を意味します。航空会社または主運送人が発行し、混載貨物全体をカバーします。MAWBは航空会社と貨物運送業者との間で締結される混載貨物の運送契約です。"
+    }
+  },
+  {
+    "id": "hawb",
+    "abbr": "HAWB",
+    "category": "document",
+    "fullName": {
+      "en": "House Air Waybill",
+      "zh": "分单（子运单）",
+      "ja": "ハウス航空運送状"
+    },
+    "definition": {
+      "en": "HAWB stands for \"House Air Waybill\". It is issued by the freight forwarder to the individual shipper for each consignment within a consolidated shipment. Each HAWB corresponds to a specific shipper's cargo and is subordinate to the MAWB.",
+      "zh": "HAWB全称为 \"House Air WayBill\"，中文表示分单（子运单）。由货运代理公司向合并货运中的各发货人单独签发。每张HAWB对应一位特定发货人的货物，从属于MAWB之下。",
+      "ja": "HAWBとは「House Air Waybill」の略で、ハウス航空運送状を意味します。貨物運送業者が混載貨物内の各荷送人に対して個別に発行します。各HAWBは特定の荷送人の貨物に対応し、MAWBに従属します。"
+    }
+  },
+  {
+    "id": "gw",
+    "abbr": "GW",
+    "category": "weight",
+    "fullName": {
+      "en": "Gross Weight",
+      "zh": "毛重",
+      "ja": "総重量"
+    },
+    "definition": {
+      "en": "GW stands for \"Gross Weight\". It refers to the total weight of a shipment including the goods themselves, packaging, pallets, and any other packing materials. This is the actual physical weight measured on a scale.",
+      "zh": "GW全称为 \"Gross weight\"，译为毛重。指货物本身连同包装材料、托盘及其他包装物的总重量，即在磅秤上实际测量的物理重量。",
+      "ja": "GWとは「Gross Weight」の略で、総重量を意味します。貨物本体、梱包材、パレット、その他の包装材を含む輸送物全体の重量を指し、実際に計量器で測定した物理的重量です。"
+    }
+  },
+  {
+    "id": "cw",
+    "abbr": "CW",
+    "category": "weight",
+    "fullName": {
+      "en": "Chargeable Weight",
+      "zh": "计费重量",
+      "ja": "課金重量"
+    },
+    "definition": {
+      "en": "CW stands for \"Chargeable Weight\". It is the weight used by carriers to calculate freight charges. The chargeable weight is the greater of the actual gross weight and the volumetric weight. Airlines charge based on whichever is higher.",
+      "zh": "CW全称为 \"Chargeable weight\"，译为计费重量。是承运人用于计算运费的重量，取实际毛重与体积重量中较大者。航空公司按两者中较高者收费。",
+      "ja": "CWとは「Chargeable Weight」の略で、課金重量を意味します。運送業者が運賃計算に使用する重量で、実際の総重量と容積重量のうち大きい方を採用します。航空会社はいずれか高い方で請求します。"
+    }
+  },
+  {
+    "id": "vw",
+    "abbr": "VW",
+    "category": "weight",
+    "fullName": {
+      "en": "Volumetric Weight",
+      "zh": "体积重量",
+      "ja": "容積重量"
+    },
+    "definition": {
+      "en": "VW stands for \"Volumetric Weight\" (also called Dimensional Weight). It is a pricing technique used by carriers that accounts for the space a package occupies relative to its actual weight. Calculated as: Length × Width × Height (cm) ÷ 6000 for air freight.",
+      "zh": "VW全称为 \"Volume weight\"，译为体积重量（又称量方重量）。是承运人根据货物所占空间而非实际重量计费的方式。航空货运计算公式为：长×宽×高（cm）÷ 6000。",
+      "ja": "VWとは「Volumetric Weight」の略で、容積重量（寸法重量）を意味します。実際の重量ではなく、荷物が占めるスペースに基づいて運賃を計算する手法です。航空貨物の計算式：縦×横×高さ（cm）÷ 6000。"
+    }
+  },
+  {
+    "id": "dg",
+    "abbr": "DG",
+    "category": "cargo",
+    "fullName": {
+      "en": "Dangerous Goods",
+      "zh": "危险品",
+      "ja": "危険物"
+    },
+    "definition": {
+      "en": "DG stands for \"Dangerous Goods\". These are articles or substances that pose a risk to health, safety, property, or the environment when transported. Air transport of DG is strictly regulated by the IATA Dangerous Goods Regulations (DGR) and requires special handling, packaging, and documentation.",
+      "zh": "DG是 \"Dangerous Goods\" 的简称，即危险品。指在运输过程中对健康、安全、财产或环境构成风险的物品或物质。危险品航空运输受IATA危险品规则（DGR）严格监管，需要特殊处理、包装和文件。",
+      "ja": "DGとは「Dangerous Goods」の略で、危険物を意味します。輸送中に健康・安全・財産・環境に危険を及ぼす可能性のある物品や物質です。危険物の航空輸送はIATA危険物規則（DGR）によって厳しく規制されており、特別な取り扱い・梱包・書類が必要です。"
+    }
+  },
+  {
+    "id": "pcs",
+    "abbr": "PCS",
+    "category": "cargo",
+    "fullName": {
+      "en": "Pieces",
+      "zh": "件数",
+      "ja": "個数"
+    },
+    "definition": {
+      "en": "PCS is an abbreviation for \"Pieces\". It refers to the number of individual units or items in a shipment. Used as a cargo quantity unit in shipping documents.",
+      "zh": "PCS是 \"piece\" 的缩写，表示件数，指货物中独立单件的数量。在运输文件中用作货物数量单位。",
+      "ja": "PCSは「Pieces」の略で、個数を意味します。輸送物内の個々の単位または品目の数を指し、輸送書類における貨物数量単位として使用されます。"
+    }
+  },
+  {
+    "id": "pa",
+    "abbr": "PA",
+    "category": "cargo",
+    "fullName": {
+      "en": "Pallet",
+      "zh": "托盘",
+      "ja": "パレット"
+    },
+    "definition": {
+      "en": "PA is an abbreviation for \"Pallet\". A pallet is a flat structure used as a base for assembling, storing, handling, and transporting goods. Palletized cargo can be efficiently moved using forklifts and is a common unit in air and sea freight.",
+      "zh": "PA是 \"pallet\" 的缩写，表示托盘。托盘是用于货物组装、存放、搬运和运输的平板结构，便于叉车操作，是空运和海运中常见的货物单位。",
+      "ja": "PAは「Pallet」の略で、パレットを意味します。パレットは貨物の組み立て・保管・取り扱い・輸送の基台として使用される平板構造物です。フォークリフトで効率よく移動でき、航空・海上輸送でよく使われる単位です。"
+    }
+  },
+  {
+    "id": "cts",
+    "abbr": "CTS",
+    "category": "cargo",
+    "fullName": {
+      "en": "Cartons",
+      "zh": "纸箱（件数）",
+      "ja": "カートン"
+    },
+    "definition": {
+      "en": "CTS is an abbreviation for \"Cartons\". It refers to cardboard boxes used as packaging units for goods. In shipping documents, CTS indicates the number of carton boxes in a shipment.",
+      "zh": "CTS是 \"cartons\" 的缩写，表示纸箱，指作为货物包装单位的纸板箱。在运输文件中，CTS表示货运中纸箱的数量。",
+      "ja": "CTSは「Cartons」の略で、カートンを意味します。貨物の包装単位として使用される段ボール箱を指します。輸送書類では、CTSは輸送物内の段ボール箱の数を示します。"
+    }
+  },
+  {
+    "id": "shipper",
+    "abbr": "SHIPPER",
+    "category": "party",
+    "fullName": {
+      "en": "Shipper",
+      "zh": "发货人",
+      "ja": "荷送人"
+    },
+    "definition": {
+      "en": "Shipper refers to the person or company that ships goods, i.e., the sender or exporter. The shipper is responsible for preparing the cargo, completing export documentation, and delivering the goods to the carrier.",
+      "zh": "Shipper即发货人，指托运货物的个人或公司，即发件方或出口商。发货人负责准备货物、完成出口报关文件，并将货物交付承运人。",
+      "ja": "荷送人（Shipper）とは、貨物を発送する個人または会社、つまり送り主または輸出者を指します。荷送人は貨物の準備、輸出書類の作成、および運送人への貨物の引き渡しを担当します。"
+    }
+  },
+  {
+    "id": "consignee",
+    "abbr": "CNEE",
+    "category": "party",
+    "fullName": {
+      "en": "Consignee",
+      "zh": "收货人",
+      "ja": "荷受人"
+    },
+    "definition": {
+      "en": "Consignee (abbreviated CNEE) refers to the person or company to whom the shipment is addressed, i.e., the receiver or importer. The consignee is responsible for accepting delivery of the goods and completing import customs procedures.",
+      "zh": "收货人（简称CNEE）是指货物的收件方，即进口商。收货人负责接收货物并完成进口清关手续。",
+      "ja": "荷受人（CNEE）とは、貨物の宛先となる個人または会社、つまり受取人または輸入者を指します。荷受人は貨物の受け取りと輸入通関手続きを担当します。"
+    }
+  },
+  {
+    "id": "fcl",
+    "abbr": "FCL",
+    "category": "transport",
+    "fullName": {
+      "en": "Full Container Load",
+      "zh": "整柜",
+      "ja": "フルコンテナ"
+    },
+    "definition": {
+      "en": "FCL stands for \"Full Container Load\". It refers to a shipping method where a shipper's cargo fills an entire container. FCL is more cost-effective for large volumes and provides better security as the container is sealed and not shared with other shippers.",
+      "zh": "FCL全称 \"Full Container Load\"，即整柜运输。指发货人的货物装满整个集装箱的运输方式。适合大批量货物，成本效益更好，安全性更高，因为集装箱密封且不与其他发货人共用。",
+      "ja": "FCLとは「Full Container Load」の略で、フルコンテナを意味します。荷送人の貨物がコンテナ全体を占める輸送方法です。大量貨物に対してコスト効率が高く、コンテナが封印されて他の荷送人と共有されないため安全性も優れています。"
+    }
+  },
+  {
+    "id": "lcl",
+    "abbr": "LCL",
+    "category": "transport",
+    "fullName": {
+      "en": "Less than Container Load",
+      "zh": "拼箱",
+      "ja": "混載コンテナ"
+    },
+    "definition": {
+      "en": "LCL stands for \"Less than Container Load\". It refers to a shipping method where a shipper's cargo does not fill an entire container, so the space is shared with cargo from other shippers. LCL is suitable for smaller shipments and allows flexible shipping without waiting to fill a full container.",
+      "zh": "LCL全称 \"Less-than-Container-Load\"，即拼箱运输。指货物不足一整柜，需与其他发货人的货物共用集装箱空间。LCL适用于小批量货物，无需等待装满整柜即可灵活安排发货。",
+      "ja": "LCLとは「Less than Container Load」の略で、混載コンテナを意味します。荷送人の貨物がコンテナを満たさないため、他の荷送人の貨物とスペースを共有する輸送方法です。小口貨物に適しており、満載を待つことなく柔軟に発送できます。"
+    }
+  },
+  {
+    "id": "d2p",
+    "abbr": "DOOR2PORT",
+    "category": "transport",
+    "fullName": {
+      "en": "Door to Port",
+      "zh": "门到港",
+      "ja": "ドア・トゥ・ポート"
+    },
+    "definition": {
+      "en": "Door to Port is a shipping service where the carrier picks up cargo from the shipper's premises (door) and delivers it to the destination port. The consignee is responsible for customs clearance and onward delivery from the port.",
+      "zh": "门到港（Door to Port）是一种运输服务，承运人从发货人处（门）取货，并将货物运送至目的港。收货人负责目的港的清关及后续配送。",
+      "ja": "ドア・トゥ・ポートとは、運送業者が荷送人の施設（ドア）から集荷し、目的港まで輸送するサービスです。荷受人は目的港での通関および以降の配送を担当します。"
+    }
+  },
+  {
+    "id": "exw",
+    "abbr": "EXW",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Ex Works",
+      "zh": "工厂交货",
+      "ja": "工場渡し"
+    },
+    "definition": {
+      "en": "EXW (Ex Works) means the seller makes the goods available at their premises (factory, warehouse, etc.). The buyer bears all costs and risks from that point, including loading, export customs, transport, and import customs.",
+      "zh": "EXW（工厂交货）指卖方在其所在地或其他指定地点（工厂、仓库等）提供货物。买方承担从该点起的所有费用和风险，包括装货、出口清关、运输及进口清关。",
+      "ja": "EXW（工場渡し）は、売主が自社の施設（工場・倉庫等）で商品を引き渡すことを意味します。買主はその時点からすべての費用とリスク（積み込み・輸出通関・輸送・輸入通関を含む）を負担します。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "buyer",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "买方接管货物后",
+        "en": "When buyer takes over the goods"
+      }
+    }
+  },
+  {
+    "id": "fca",
+    "abbr": "FCA",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Free Carrier",
+      "zh": "货交承运人",
+      "ja": "運送人渡し"
+    },
+    "definition": {
+      "en": "FCA (Free Carrier) means the seller delivers goods to a named carrier or another nominated party at the seller's premises or another named place. The seller handles export customs, while the buyer arranges and pays for the main carriage.",
+      "zh": "FCA（货交承运人）指卖方将货物交付给指定承运人或在指定地点由卖方交货。卖方负责出口清关，买方负责安排并支付主运费。",
+      "ja": "FCA（運送人渡し）は、売主が指定された場所で指定運送人または買主が指名した者に貨物を引き渡すことを意味します。売主は輸出通関を行い、買主は主要輸送を手配・支払いします。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "承运人接管货物后",
+        "en": "When carrier takes over the goods"
+      }
+    }
+  },
+  {
+    "id": "cpt",
+    "abbr": "CPT",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Carriage Paid To",
+      "zh": "运费付至",
+      "ja": "運賃払込渡し"
+    },
+    "definition": {
+      "en": "CPT (Carriage Paid To) means the seller pays the freight to transport goods to the named destination. Risk transfers to the buyer when the carrier takes possession. The seller handles export customs; buyer handles import customs.",
+      "zh": "CPT（运费付至）指卖方支付将货物运至指定目的地的运费。货物交付承运人后风险转移至买方。卖方负责出口清关；买方负责进口清关。",
+      "ja": "CPT（運賃払込渡し）は、売主が指定目的地まで運賃を支払うことを意味します。運送人が貨物を受け取るとリスクは買主に移転します。売主は輸出通関を行い、買主は輸入通関を担当します。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "承运人接管货物后",
+        "en": "When carrier takes over the goods"
+      }
+    }
+  },
+  {
+    "id": "cip",
+    "abbr": "CIP",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Carriage and Insurance Paid To",
+      "zh": "运费及保险费付至",
+      "ja": "運賃保険料払込渡し"
+    },
+    "definition": {
+      "en": "CIP (Carriage and Insurance Paid To) is similar to CPT but also requires the seller to purchase insurance covering the buyer's risk of loss or damage during transport. The seller must provide insurance with a minimum coverage of 110% of the contract value.",
+      "zh": "CIP（运费及保险费付至）与CPT大体相似，但卖方还须购买涵盖买方货物损失或损坏风险的保险。卖方须提供不低于合同价值110%的保险额度。",
+      "ja": "CIP（運賃保険料払込渡し）はCPTに類似しますが、売主が輸送中の買主の貨物損失・損傷リスクをカバーする保険を購入する義務があります。売主は契約価格の110%以上の保険を提供する必要があります。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "承运人接管货物后",
+        "en": "When carrier takes over the goods"
+      }
+    }
+  },
+  {
+    "id": "dap",
+    "abbr": "DAP",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered at Place",
+      "zh": "目的地交货",
+      "ja": "仕向地持込渡し"
+    },
+    "definition": {
+      "en": "DAP (Delivered at Place) means the seller delivers goods to the named destination, ready for unloading. The seller manages all risks until arrival at the destination. The buyer handles import customs and pays import duties.",
+      "zh": "DAP（目的地交货）指卖方将货物送达指定目的地并做好卸货准备，卖方承担抵达目的地前的所有风险。买方负责进口清关并缴纳进口关税。",
+      "ja": "DAP（仕向地持込渡し）は、売主が指定目的地で荷卸し可能な状態で貨物を引き渡すことを意味します。売主は目的地到着まですべてのリスクを負います。買主は輸入通関と関税の支払いを担当します。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "买方在目的地收货后",
+        "en": "When buyer receives goods at destination"
+      }
+    }
+  },
+  {
+    "id": "dpu",
+    "abbr": "DPU",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered at Place Unloaded",
+      "zh": "卸货地交货",
+      "ja": "荷卸込仕向地持込渡し"
+    },
+    "definition": {
+      "en": "DPU (Delivered at Place Unloaded), formerly DAT, is the only Incoterm that requires the seller to unload goods at the named destination. The seller bears all costs and risks up to and including unloading. The buyer handles import customs.",
+      "zh": "DPU（卸货地交货），原称DAT，是唯一要求卖方在指定目的地卸货的贸易术语。卖方承担直至卸货完成的所有费用和风险。买方负责进口清关。",
+      "ja": "DPU（荷卸込仕向地持込渡し）は、旧DAT（ターミナル持込渡し）の名称変更版で、売主が指定目的地で貨物の荷卸しを行うことを義務付ける唯一のインコタームズです。売主は荷卸しまでのすべての費用とリスクを負います。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "目的地卸货完成后",
+        "en": "After unloading at destination"
+      }
+    }
+  },
+  {
+    "id": "ddp",
+    "abbr": "DDP",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered Duty Paid",
+      "zh": "完税后交货",
+      "ja": "関税込持込渡し"
+    },
+    "definition": {
+      "en": "DDP (Delivered Duty Paid) places maximum obligation on the seller. The seller delivers goods to the named destination, cleared for import, with all duties and taxes paid. The seller is not responsible for unloading.",
+      "zh": "DDP（完税后交货）对卖方义务要求最高。卖方将货物运送至指定目的地，完成进口清关并支付所有关税和税款后交付给买方。卖方不负责卸货。",
+      "ja": "DDP（関税込持込渡し）は売主の義務が最も大きいインコタームズです。売主は指定目的地まで貨物を輸送し、輸入通関を完了してすべての関税・税金を支払った上で引き渡します。荷卸しは売主の義務に含まれません。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "seller",
+      "riskTransfer": {
+        "zh": "买方在目的地收货后",
+        "en": "When buyer receives goods at destination"
+      }
+    }
+  },
+  {
+    "id": "fas",
+    "abbr": "FAS",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Free Alongside Ship",
+      "zh": "船边交货",
+      "ja": "船側渡し"
+    },
+    "definition": {
+      "en": "FAS (Free Alongside Ship) means the seller delivers goods alongside the vessel at the named port of shipment. The risk transfers to the buyer at that point. FAS applies only to sea or inland waterway transport.",
+      "zh": "FAS（船边交货）指卖方在指定装运港将货物放置于船边，风险随即转移给买方。FAS仅适用于海运和内河运输。",
+      "ja": "FAS（船側渡し）は、売主が指定積み込み港で船側に貨物を置いた時点で引き渡すことを意味します。その時点でリスクは買主に移転します。FASは海上輸送および内陸水路輸送にのみ適用されます。"
+    },
+    "meta": {
+      "transport": "sea",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "货物置于船边后",
+        "en": "When goods are placed alongside the ship"
+      }
+    }
+  },
+  {
+    "id": "fob",
+    "abbr": "FOB",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Free on Board",
+      "zh": "船上交货",
+      "ja": "本船渡し"
+    },
+    "definition": {
+      "en": "FOB (Free on Board) means the seller delivers goods on board the vessel at the named port of shipment. Risk transfers to the buyer once the goods are on board. FOB applies only to sea or inland waterway transport and is one of the most commonly used Incoterms.",
+      "zh": "FOB（船上交货）指卖方在指定装运港将货物装上船后完成交货，风险随即转移给买方。FOB仅适用于海运和内河运输，是最常用的贸易术语之一。",
+      "ja": "FOB（本船渡し）は、売主が指定積み込み港で本船に貨物を積み込んだ時点で引き渡すことを意味します。船積み時点でリスクは買主に移転します。FOBは海上・内陸水路輸送にのみ適用され、最も広く使われるインコタームズのひとつです。"
+    },
+    "meta": {
+      "transport": "sea",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "货物越过船舷后",
+        "en": "When goods pass the ship's rail"
+      }
+    }
+  },
+  {
+    "id": "cfr",
+    "abbr": "CFR",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Cost and Freight",
+      "zh": "成本加运费",
+      "ja": "運賃込み"
+    },
+    "definition": {
+      "en": "CFR (Cost and Freight) means the seller pays the cost and freight to bring goods to the destination port. Risk transfers to the buyer when goods are on board the vessel at the port of origin. CFR applies only to sea or inland waterway transport.",
+      "zh": "CFR（成本加运费）指卖方支付将货物运至目的港的费用和运费。货物在装运港装上船时，风险转移至买方。CFR仅适用于海运和内河运输。",
+      "ja": "CFR（運賃込み）は、売主が目的港まで貨物を運ぶコストと運賃を支払うことを意味します。積み込み港で貨物が本船に積み込まれると、リスクは買主に移転します。CFRは海上・内陸水路輸送にのみ適用されます。"
+    },
+    "meta": {
+      "transport": "sea",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "货物在装运港装船后",
+        "en": "When goods are on board at port of shipment"
+      }
+    }
+  },
+  {
+    "id": "cif",
+    "abbr": "CIF",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Cost, Insurance and Freight",
+      "zh": "成本、保险费加运费",
+      "ja": "運賃保険料込み"
+    },
+    "definition": {
+      "en": "CIF (Cost, Insurance and Freight) is similar to CFR but also requires the seller to purchase minimum insurance for the buyer's risk during transport. CIF applies only to sea or inland waterway transport.",
+      "zh": "CIF（成本、保险费加运费）与CFR基本相同，但卖方还须为运输途中买方的货物损失风险购买最低限度的保险。CIF仅适用于海运和内河运输。",
+      "ja": "CIF（運賃保険料込み）はCFRに類似しますが、売主が輸送中の買主のリスクに対して最低限の保険を購入する義務があります。CIFは海上・内陸水路輸送にのみ適用されます。"
+    },
+    "meta": {
+      "transport": "sea",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "riskTransfer": {
+        "zh": "货物在装运港装船后",
+        "en": "When goods are on board at port of shipment"
+      }
+    }
+  },
+  {
+    "id": "daf",
+    "abbr": "DAF",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered at Frontier",
+      "zh": "边境交货",
+      "ja": "国境持込渡し"
+    },
+    "definition": {
+      "en": "DAF (Delivered at Frontier) was used in Incoterms 2000 for land border deliveries. The seller delivers goods at a named frontier point before the customs border of the adjoining country. This term was replaced by DAP in Incoterms 2010.",
+      "zh": "DAF（边境交货）是Incoterms 2000中的条款，适用于陆路边境交货。卖方在指定边境地点（邻国海关边境之前）交货。该术语在Incoterms 2010中被DAP取代。",
+      "ja": "DAF（国境持込渡し）は、インコタームズ2000の陸路国境引き渡しに使用された条件です。売主は隣接国の税関国境手前の指定国境地点で貨物を引き渡します。この条件はインコタームズ2010でDAPに置き換えられました。"
+    },
+    "meta": {
+      "transport": "land",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "legacy": true,
+      "riskTransfer": {
+        "zh": "买方在边境指定地点收货后",
+        "en": "When buyer receives goods at named frontier"
+      }
+    }
+  },
+  {
+    "id": "des",
+    "abbr": "DES",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered Ex Ship",
+      "zh": "目的港船上交货",
+      "ja": "仕向地本船渡し"
+    },
+    "definition": {
+      "en": "DES (Delivered Ex Ship) was used in Incoterms 2000. The seller delivers goods on board the vessel at the port of destination before unloading. This term was replaced by DAP in Incoterms 2010.",
+      "zh": "DES（目的港船上交货）是Incoterms 2000中的条款。卖方在目的港卸货前将货物交付于船上。该术语在Incoterms 2010中被DAP取代。",
+      "ja": "DES（仕向地本船渡し）はインコタームズ2000の条件です。売主は目的港での荷卸し前に本船上で貨物を引き渡します。この条件はインコタームズ2010でDAPに置き換えられました。"
+    },
+    "meta": {
+      "transport": "sea",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "legacy": true,
+      "riskTransfer": {
+        "zh": "买方在目的港船上收货后",
+        "en": "When buyer receives goods on board at destination port"
+      }
+    }
+  },
+  {
+    "id": "deq",
+    "abbr": "DEQ",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered Ex Quay",
+      "zh": "目的港码头交货",
+      "ja": "仕向港波止場渡し"
+    },
+    "definition": {
+      "en": "DEQ (Delivered Ex Quay) was used in Incoterms 2000. The seller delivers goods on the quay (dock) at the destination port. This term was replaced by DPU in Incoterms 2010/2020.",
+      "zh": "DEQ（目的港码头交货）是Incoterms 2000中的条款。卖方在目的港的码头上交付货物。该术语在Incoterms 2010/2020中被DPU取代。",
+      "ja": "DEQ（仕向港波止場渡し）はインコタームズ2000の条件です。売主が目的港の波止場（埠頭）で貨物を引き渡します。この条件はインコタームズ2010/2020でDPUに置き換えられました。"
+    },
+    "meta": {
+      "transport": "sea",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "legacy": true,
+      "riskTransfer": {
+        "zh": "买方在目的港码头收货后",
+        "en": "When buyer receives goods at destination quay"
+      }
+    }
+  },
+  {
+    "id": "ddu",
+    "abbr": "DDU",
+    "category": "incoterm",
+    "fullName": {
+      "en": "Delivered Duty Unpaid",
+      "zh": "未完税交货",
+      "ja": "関税抜持込渡し"
+    },
+    "definition": {
+      "en": "DDU (Delivered Duty Unpaid) was used in Incoterms 2000. The seller delivers goods to the destination country without paying import duties or taxes, which are the buyer's responsibility. This term was replaced by DAP in Incoterms 2010.",
+      "zh": "DDU（未完税交货）是Incoterms 2000中的条款。卖方将货物运送至目的地国家，但不缴纳进口关税和税款，该责任由买方承担。该术语在Incoterms 2010中被DAP取代。",
+      "ja": "DDU（関税抜持込渡し）はインコタームズ2000の条件です。売主は輸入関税・税金を支払わずに目的国まで貨物を輸送し、それらは買主の責任となります。この条件はインコタームズ2010でDAPに置き換えられました。"
+    },
+    "meta": {
+      "transport": "any",
+      "customsExport": "seller",
+      "customsImport": "buyer",
+      "legacy": true,
+      "riskTransfer": {
+        "zh": "买方在进口国指定地点收货后",
+        "en": "When buyer receives goods at named place in import country"
+      }
+    }
+  }
+]
