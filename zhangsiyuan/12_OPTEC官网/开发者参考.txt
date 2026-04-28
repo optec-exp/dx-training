@@ -1,0 +1,134 @@
+========================================
+  OPTEC Express 官网 — 开发者参考手册
+  作业12 / Next.js App Router---------------------http://localhost:3000
+========================================
+
+----- 一、想改文字内容 → 去这里 -----
+
+  文件：src/data/translations.ts
+
+  这是全站唯一的文字数据库。
+  结构：translations[语言][页面][字段]
+
+  语言代码：
+    ja = 日语
+    zh = 中文
+    en = 英语
+
+  页面代码：
+    home     = 首页
+    about    = 公司概要
+    services = 服务
+    contact  = 联系我们
+    nav      = 导航栏链接文字
+
+  常见修改位置示例：
+    - 公司成立年份     → ja/zh/en > about > table > 第2行
+    - 海外拠点列表     → ja/zh/en > about > table > 第4行
+    - 联系邮件回复时限 → ja/zh/en > contact > hero_p / ci / info
+    - 首页副标题文字   → ja/zh/en > home > lead
+    - 服务卡片描述     → ja/zh/en > services > items > 找对应id
+    - 联系页部门名称   → ja/zh/en > contact > dept_name
+
+
+----- 二、想改页面结构/布局 → 去这里 -----
+
+  页面文件（URL = 文件夹名）：
+
+    首页 /
+    └── src/app/page.tsx
+
+    公司概要 /about
+    └── src/app/about/page.tsx
+        注意：页面左侧的SVG装饰地图也在这个文件里
+              城市标注在文件中搜索 "TOKYO" 可以找到
+
+    服务 /services
+    └── src/app/services/page.tsx
+
+    联系我们 /contact
+    └── src/app/contact/page.tsx
+
+  公共组件（每个页面都显示）：
+
+    导航栏（顶部）
+    └── src/components/Nav.tsx
+        语言切换按钮也在这里
+
+    底部 Footer
+    └── src/components/Footer.tsx
+
+    首页地图（Leaflet交互地图）
+    └── src/components/WorldMapInner.tsx
+        修改地图标记位置 → 找 BRANCHES 数组
+        修改标记样式     → 找 hqIcon / branchIcon
+
+
+----- 三、想改颜色/字体/间距 → 去这里 -----
+
+  文件：src/app/globals.css
+
+  全站颜色变量（改一处全站生效）：
+    --gold  : #c8a155   金色（标题、强调、按钮边框）
+    --golt  : #e8c472   浅金色（悬停高亮）
+    --bg    : #04091a   主背景深蓝
+    --bg2   : #080f24   次级背景（卡片等）
+    --bg3   : #0c1630   三级背景
+    --w     : #eef2ff   主文字色（近白）
+    --m     : #6b7fa0   次要文字色（灰蓝）
+    --ln    : rgba(255,255,255,0.06)  分隔线颜色
+    --ok    : #4ade80   成功绿色（表单验证通过）
+    --err   : #f87171   错误红色（表单验证失败）
+
+  各区域样式搜索关键词：
+    导航栏    → 搜索 .nav
+    底部      → 搜索 .footer
+    首页HERO  → 搜索 .home-hero
+    公司概要  → 搜索 .about-page
+    服务页    → 搜索 .services-page
+    联系页    → 搜索 .contact-page
+    统计数字栏 → 搜索 .stats-row
+    地图弹窗  → 搜索 .leaflet-popup
+
+
+----- 四、想改多语言切换逻辑 → 去这里 -----
+
+  语言状态管理（Context）：
+  └── src/context/LanguageContext.tsx
+      默认语言在这里修改（第11行 useState<Lang>('ja')）
+      改成 'zh' 则默认显示中文，'en' 则默认显示英文
+
+
+----- 五、项目文件总览 -----
+
+  12_OPTEC官网/
+  ├── src/
+  │   ├── app/
+  │   │   ├── layout.tsx          公共框架（包裹所有页面，加载Nav+Footer）
+  │   │   ├── globals.css         全站样式
+  │   │   ├── page.tsx            首页
+  │   │   ├── about/page.tsx      公司概要页
+  │   │   ├── services/page.tsx   服务页
+  │   │   └── contact/page.tsx    联系页
+  │   ├── components/
+  │   │   ├── Nav.tsx             导航栏（含语言切换）
+  │   │   ├── Footer.tsx          页脚
+  │   │   └── WorldMapInner.tsx   首页Leaflet交互地图
+  │   ├── context/
+  │   │   └── LanguageContext.tsx 语言状态（全局共享）
+  │   └── data/
+  │       └── translations.ts     全站文字内容数据库
+  ├── package.json                依赖包配置
+  └── 开发者参考.txt              本文件
+
+
+----- 六、开发命令 -----
+
+  启动本地预览（保存后自动热更新）：
+    npm run dev
+    → 浏览器打开 http://localhost:3000
+
+  检查代码错误：
+    npm run lint
+
+========================================

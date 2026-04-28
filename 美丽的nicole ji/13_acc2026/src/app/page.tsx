@@ -132,7 +132,7 @@ export default function Home() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <span style={{ width: '28px', height: '2px', background: 'var(--red)', display: 'inline-block' }} />
-            <span style={{ fontSize: '10px', letterSpacing: '4px', color: 'var(--red)', textTransform: 'uppercase' }}>Exhibition Info</span>
+            <span style={{ fontSize: '10px', letterSpacing: '4px', color: 'var(--red)', textTransform: 'uppercase' }}>{t.info.label}</span>
           </div>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '36px', fontWeight: 600, color: 'var(--ink)', marginBottom: '40px' }}>{t.info.title}</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -151,7 +151,7 @@ export default function Home() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <span style={{ width: '28px', height: '2px', background: 'var(--red)', display: 'inline-block' }} />
-            <span style={{ fontSize: '10px', letterSpacing: '4px', color: 'var(--red)', textTransform: 'uppercase' }}>Our Services</span>
+            <span style={{ fontSize: '10px', letterSpacing: '4px', color: 'var(--red)', textTransform: 'uppercase' }}>{t.services.label}</span>
           </div>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '36px', fontWeight: 600, color: 'var(--ink)', marginBottom: '8px' }}>{t.services.title}</h2>
           <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '48px' }}>{t.services.sub}</p>
@@ -172,7 +172,7 @@ export default function Home() {
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <span style={{ width: '28px', height: '2px', background: 'var(--red)', display: 'inline-block' }} />
-            <span style={{ fontSize: '10px', letterSpacing: '4px', color: 'var(--red)', textTransform: 'uppercase' }}>Contact</span>
+            <span style={{ fontSize: '10px', letterSpacing: '4px', color: 'var(--red)', textTransform: 'uppercase' }}>{t.contact.label}</span>
           </div>
           <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '36px', fontWeight: 600, color: 'var(--ink)', marginBottom: '12px' }}>{t.contact.title}</h2>
           <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 2, marginBottom: '48px', whiteSpace: 'pre-line' }}>{t.contact.sub}</p>

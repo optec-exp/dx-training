@@ -1,0 +1,226 @@
+================================================================================
+  17号作业 · 航空货运术语词典 — 开发者参考文档
+  Air Cargo Glossary · Developer Reference
+================================================================================
+
+【启动方式】
+  npm run dev      → 开发服务器，端口 3005，访问 http://localhost:3005
+  npm run build    → 生产构建
+  npm run start    → 启动生产服务器
+
+
+================================================================================
+  目录结构
+================================================================================
+
+src/
+├── app/
+│   ├── globals.css           ← 全局样式（所有 CSS 变量和组件样式都在这里）
+│   ├── layout.tsx            ← 根 Layout，挂载 CSS，设置页面 metadata
+│   └── page.tsx              ← 应用入口，状态管理 + useEffect 核心逻辑
+│
+├── components/
+│   ├── Header.tsx            ← 顶部导航（Logo + 语言切换按钮）
+│   ├── SearchBar.tsx         ← 搜索框（输入 + 清除按钮）
+│   ├── CategoryFilter.tsx    ← 分类过滤标签栏（横向滚动）
+│   ├── TermCard.tsx          ← 术语卡片（缩写 + 全称 + 简短定义）
+│   └── TermModal.tsx         ← 术语详情弹窗（三语全称 + 完整定义 + 贸易术语元数据）
+│
+├── data/
+│   └── terms.json            ← 所有术语数据（42条，JSON格式）
+│
+└── lib/
+    ├── fuzzySearch.ts        ← 模糊搜索算法 + Term 类型定义
+    └── translations.ts       ← UI 文本翻译（中/英/日） + 分类颜色配置
+
+
+================================================================================
+  按需定位：我想改 XX，去哪里？
+================================================================================
+
+► 新增 / 修改术语内容
+  → src/data/terms.json
+  每条术语结构如下（参考现有条目复制修改）：
+  {
+    "id": "唯一ID（英文小写，用_分隔）",
+    "abbr": "缩写（显示在卡片左上角）",
+    "category": "分类ID（见下方分类表）",
+    "fullName": { "en": "...", "zh": "...", "ja": "..." },
+    "definition": { "en": "...", "zh": "...", "ja": "..." },
+    "meta": {                   ← 仅贸易术语（incoterm）需要填写
+      "transport": "any|sea|land",
+      "customsExport": "buyer|seller",
+      "customsImport": "buyer|seller",
+      "legacy": true,           ← 仅废止术语（DAF/DES/DEQ/DDU）加这个
+      "riskTransfer": { "zh": "...", "en": "..." }
+    }
+  }
+
+► 分类 ID 对照表
+  service    → 航空服务（NFO / OBC / AOG / ECO / 冷链 等）
+  time       → 时间术语（ETA / ETD / ATA / ATD）
+  document   → 单据文件（AWB / MAWB / HAWB / ATA Carnet）
+  weight     → 重量计费（GW / CW / VW）
+  cargo      → 货物属性（DG / PCS / PA / CTS）
+  party      → 相关方（Shipper / Consignee）
+  transport  → 运输方式（FCL / LCL / Door to Port）
+  incoterm   → 贸易术语（EXW / FOB / CIF / DDP 等）
+
+► 新增一个分类
+  1. src/data/terms.json  → 在新术语的 category 字段写入新ID
+  2. src/lib/translations.ts → CATEGORIES 数组末尾加一项：
+       { id: "新ID", color: "#颜色" }
+  3. src/lib/translations.ts → UI.zh.categories / UI.en.categories / UI.ja.categories
+     各加一行 → 新ID: "中文名称" / "English Name" / "日本語名"
+
+► 改整体颜色 / 字体 / 卡片圆角
+  → src/app/globals.css，顶部 :root{} 内的 CSS 变量：
+  --bg-base        背景底色
+  --bg-card        卡片背景（rgba）
+  --border         卡片默认边框色
+  --border-hover   卡片悬停边框色
+  --accent         主题蓝色（搜索框高亮 / 语言按钮激活）
+  --text-primary   主要文字色
+  --text-secondary 次要文字色
+  --text-muted     灰色提示文字
+
+► 改各分类的颜色（卡片顶部高亮线 / badge / 缩写字体色）
+  → src/lib/translations.ts，CATEGORIES 数组，每个对象的 color 字段。
+
+► 改 UI 文字（标题 / 按钮文字 / 占位符 / 空状态提示等）
+  → src/lib/translations.ts，UI 对象，按语言（zh / en / ja）分别修改。
+
+► 改搜索权重或模糊匹配逻辑
+  → src/lib/fuzzySearch.ts
+  scoreMatch()   → 单字段打分逻辑（精确 > 前缀 > 包含 > 模糊序列）
+  searchTerms()  → 多字段合并搜索（abbr 权重3 / 全称权重2 / 定义权重1）
+
+► 改分类过滤标签栏
+  → src/components/CategoryFilter.tsx
+  标签按钮的外观在 globals.css 中的 .cat-btn / .cat-btn.active 控制
+
+► 改搜索框外观
+  → globals.css  .search-input / .search-wrap / .search-clear
+
+► 改卡片内容或布局
+  → src/components/TermCard.tsx
+  卡片顶部分隔线颜色 = 分类颜色，通过 CSS 变量 --card-color 注入
+
+► 改详情弹窗（Modal）
+  → src/components/TermModal.tsx
+  弹窗内容包含：三语全称表格、当前语言完整定义、贸易术语专属元数据区
+  键盘 Esc / 点击遮罩均可关闭
+
+► 改顶部导航
+  → src/components/Header.tsx
+  Logo 图标 / 文字在这里改
+
+► 改页面 <title> 或 <meta>
+  → src/app/layout.tsx，metadata 对象
+
+► 改端口（默认 3005）
+  → package.json，scripts.dev 和 scripts.start 中的 --port 参数
+
+
+================================================================================
+  核心技术要点（useEffect 实现原理）
+================================================================================
+
+  应用的核心搜索逻辑位于 src/app/page.tsx：
+
+  useEffect(() => {
+    let result = ALL_TERMS
+
+    // Step 1：按分类筛选
+    if (selectedCategory !== 'all') {
+      result = result.filter(t => t.category === selectedCategory)
+    }
+
+    // Step 2：模糊搜索
+    if (query.trim()) {
+      result = searchTerms(result, query, lang)
+    }
+
+    setFilteredTerms(result)
+  }, [query, selectedCategory, lang])
+
+  依赖数组 [query, selectedCategory, lang] 中任一变化，
+  useEffect 立即重新执行 → filteredTerms 更新 → 页面即时重渲染。
+  这就是"实时搜索 / 即时过滤"的实现原理。
+
+
+================================================================================
+  模糊搜索逻辑说明
+================================================================================
+
+  src/lib/fuzzySearch.ts → scoreMatch() 函数评分规则：
+
+  100分  完全匹配（缩写 = 查询词）
+   90分  前缀匹配（缩写以查询词开头）
+   80分  包含匹配（字段包含查询词子串）
+   70分  多词匹配（查询词拆分成多个单词，每个都出现在字段中）
+  ≤60分  字符序列模糊匹配（查询词的每个字符按顺序出现在字段中）
+
+  搜索范围（字段权重）：
+  - 缩写（abbr）× 3        ← 最高优先级
+  - 全称（fullName）× 2
+  - 定义（definition）× 1  ← 最低优先级
+
+
+================================================================================
+  多语言支持
+================================================================================
+
+  支持语言：中文（zh） / English（en） / 日本語（ja）
+
+  新增语言步骤（以法语 fr 为例）：
+  1. src/lib/fuzzySearch.ts
+     → Lang 类型加 | 'fr'
+  2. src/lib/translations.ts
+     → LANGUAGES 数组添加 { code: 'fr', label: 'FR' }
+     → UI 对象添加 fr: { ... }，参照 en 的所有 key 翻译
+  3. src/data/terms.json
+     → 每条术语的 fullName 和 definition 添加 "fr" 字段
+  4. src/components/TermModal.tsx
+     → langLabels 对象加 fr: 'Français'
+
+
+================================================================================
+  数据统计
+================================================================================
+
+  总术语数：42 条
+  分类分布：
+  - 航空服务（service）   ：8 条（NFO / OBC / AOG / ECO / NFO+DG / ATA Carnet / 清关 / 冷链）
+  - 时间术语（time）      ：4 条（ETA / ETD / ATA / ATD）
+  - 单据文件（document）  ：3 条（AWB / MAWB / HAWB）
+  - 重量计费（weight）    ：3 条（GW / CW / VW）
+  - 货物属性（cargo）     ：4 条（DG / PCS / PA / CTS）
+  - 相关方（party）       ：2 条（Shipper / Consignee）
+  - 运输方式（transport） ：3 条（FCL / LCL / Door to Port）
+  - 贸易术语（incoterm）  ：15 条（含 4 条废止条款）
+
+
+================================================================================
+  依赖说明
+================================================================================
+
+  Next.js 16   → React 全栈框架（App Router）
+  React 19     → UI 组件
+  TypeScript   → 类型安全
+
+  无第三方 UI 库，无图表库，无搜索库。
+  模糊搜索为自研算法（src/lib/fuzzySearch.ts）。
+  所有样式为纯 CSS（src/app/globals.css）。
+
+
+================================================================================
+  端口 & 构建
+================================================================================
+
+  开发：  npm run dev    → http://localhost:3005
+  构建：  npm run build
+  生产：  npm run start  → http://localhost:3005
+
+
+================================================================================

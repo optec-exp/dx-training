@@ -1,0 +1,18 @@
+[
+  { "id": 1,  "name": "冷链货物温控操作规程",          "category": "温度管理", "version": "v3.2", "effectiveDate": "2025-04-01", "nextReviewDate": "2026-04-01", "owner": "业务部" },
+  { "id": 2,  "name": "温度敏感货物包装标准",          "category": "温度管理", "version": "v2.1", "effectiveDate": "2025-07-01", "nextReviewDate": "2026-07-01", "owner": "品质管理部" },
+  { "id": 3,  "name": "冷藏车辆温度监控程序",          "category": "温度管理", "version": "v1.4", "effectiveDate": "2024-10-01", "nextReviewDate": "2026-05-15", "owner": "运输部" },
+  { "id": 4,  "name": "疫苗及生物制品处理规程",        "category": "温度管理", "version": "v4.0", "effectiveDate": "2025-01-15", "nextReviewDate": "2026-01-15", "owner": "特货部" },
+  { "id": 5,  "name": "危险品航空运输操作规程",        "category": "危险品",   "version": "v5.1", "effectiveDate": "2025-03-01", "nextReviewDate": "2026-03-01", "owner": "危品部" },
+  { "id": 6,  "name": "锂电池申报与包装规范",          "category": "危险品",   "version": "v3.3", "effectiveDate": "2025-06-01", "nextReviewDate": "2026-06-01", "owner": "危品部" },
+  { "id": 7,  "name": "放射性物质运输安全规程",        "category": "危险品",   "version": "v2.0", "effectiveDate": "2024-09-01", "nextReviewDate": "2026-06-20", "owner": "危品部" },
+  { "id": 8,  "name": "危险品事故应急响应程序",        "category": "危险品",   "version": "v1.8", "effectiveDate": "2025-02-01", "nextReviewDate": "2026-02-01", "owner": "安全管理部" },
+  { "id": 9,  "name": "进口清关作业标准流程",          "category": "通关",     "version": "v4.2", "effectiveDate": "2025-05-01", "nextReviewDate": "2026-05-01", "owner": "关务部" },
+  { "id": 10, "name": "出口报关文件审核规程",          "category": "通关",     "version": "v3.5", "effectiveDate": "2025-08-01", "nextReviewDate": "2026-08-01", "owner": "关务部" },
+  { "id": 11, "name": "AEO认证合规操作指引",           "category": "通关",     "version": "v2.2", "effectiveDate": "2024-11-01", "nextReviewDate": "2026-07-10", "owner": "合规部" },
+  { "id": 12, "name": "海关查验配合操作规程",          "category": "通关",     "version": "v1.6", "effectiveDate": "2025-01-01", "nextReviewDate": "2026-01-01", "owner": "关务部" },
+  { "id": 13, "name": "精密仪器包装作业标准",          "category": "包装",     "version": "v2.8", "effectiveDate": "2025-04-15", "nextReviewDate": "2026-04-15", "owner": "操作部" },
+  { "id": 14, "name": "液体货物防漏包装规范",          "category": "包装",     "version": "v3.1", "effectiveDate": "2025-09-01", "nextReviewDate": "2026-09-01", "owner": "操作部" },
+  { "id": 15, "name": "超规格货物加固包装程序",        "category": "包装",     "version": "v1.9", "effectiveDate": "2024-12-01", "nextReviewDate": "2026-07-25", "owner": "操作部" },
+  { "id": 16, "name": "ULD装载与包装标准",             "category": "包装",     "version": "v4.3", "effectiveDate": "2025-03-15", "nextReviewDate": "2026-03-15", "owner": "操作部" }
+]
