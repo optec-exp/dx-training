@@ -22,7 +22,10 @@ const PEAK = 6;    // 旺季附加费
 // 体积重换算（航空 IATA 标准：长×宽×高(cm) ÷ 6000 = kg）
 
 type Result = {
+  actualWeight: number;
+  volWeight: number;
   chargeableWeight: number;
+  chargeableBasis: 'actual' | 'volume';
   freightBase: number;
   fsc: number;
   ssc: number;
@@ -74,7 +77,10 @@ export default function FreightCalcPage() {
     const total       = freightBase + fscAmt + sscAmt + warAmt + peakAmt;
 
     setResult({
+      actualWeight: aw,
+      volWeight: volWeight > 0 ? Math.round(volWeight * 100) / 100 : 0,
       chargeableWeight: cw,
+      chargeableBasis: volWeight > aw ? 'volume' : 'actual',
       freightBase,
       fsc: fscAmt,
       ssc: sscAmt,
@@ -258,11 +264,28 @@ export default function FreightCalcPage() {
             ) : (
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-[#0a1628] to-[#0f2557] p-6 text-white">
-                  <p className="text-[#c9a84c] text-xs font-bold tracking-widest uppercase mb-1">估算结果</p>
+                  <p className="text-[#c9a84c] text-xs font-bold tracking-widest uppercase mb-3">估算结果</p>
+                  {/* 重量对比 */}
+                  <div className="flex gap-3 mb-4">
+                    <div className={`flex-1 rounded-lg px-3 py-2 text-center text-xs ${result.chargeableBasis === 'actual' ? 'bg-[#c9a84c] text-[#0a1628]' : 'bg-white/10 text-blue-200'}`}>
+                      <div className="font-bold text-sm">{result.actualWeight} kg</div>
+                      <div>实际重量{result.chargeableBasis === 'actual' ? ' ✓ 采用' : ''}</div>
+                    </div>
+                    {result.volWeight > 0 && (
+                      <div className={`flex-1 rounded-lg px-3 py-2 text-center text-xs ${result.chargeableBasis === 'volume' ? 'bg-[#c9a84c] text-[#0a1628]' : 'bg-white/10 text-blue-200'}`}>
+                        <div className="font-bold text-sm">{result.volWeight} kg</div>
+                        <div>体积重量{result.chargeableBasis === 'volume' ? ' ✓ 采用' : ''}</div>
+                      </div>
+                    )}
+                    <div className="flex-1 bg-white/20 rounded-lg px-3 py-2 text-center text-xs">
+                      <div className="font-bold text-sm">{result.chargeableWeight} kg</div>
+                      <div>计费重量</div>
+                    </div>
+                  </div>
                   <h2 className="text-3xl font-black mb-1">
                     CNY {result.total.toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </h2>
-                  <p className="text-blue-300 text-xs">目的地：{result.region}　计费重量：{result.chargeableWeight} kg</p>
+                  <p className="text-blue-300 text-xs">目的地：{result.region}</p>
                 </div>
 
                 <div className="p-6 space-y-3">
