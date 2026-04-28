@@ -1,0 +1,207 @@
+================================================================================
+  19号作业 · 月度结算检查清单 — 开发者参考文档
+  Monthly Settlement Checklist · Developer Reference
+================================================================================
+
+【启动方式】
+  npm run dev      → 开发服务器，端口 3007，访问 http://localhost:3007
+  npm run build    → 生产构建
+  npm run start    → 启动生产服务器
+
+
+================================================================================
+  目录结构
+================================================================================
+
+src/
+├── app/
+│   ├── globals.css           ← 全局样式（所有 CSS 变量和组件样式都在这里）
+│   ├── layout.tsx            ← 根 Layout，挂载 CSS，设置页面 metadata
+│   └── page.tsx              ← 应用入口，状态管理（语言、勾选、过滤器）
+│
+├── components/
+│   ├── Header.tsx            ← 顶部导航（标题 + 当前年月 + 语言切换）
+│   ├── ProgressBar.tsx       ← 进度条（完成数 / 总数 + 百分比 + 分段格子 + 重置按钮）
+│   ├── ChecklistSection.tsx  ← 单分类区块（分类标题 + 完成计数 + 子项目列表）
+│   └── ChecklistItem.tsx     ← 单条检查项（复选框 + 项目名 + 说明 + 截止日 + 紧急度徽章）
+│
+└── lib/
+    ├── types.ts              ← 类型定义（Lang、Category、Urgency、ChecklistItem、ItemState）
+    ├── data.ts               ← 检查项数据（19 条月结任务 + 分类颜色配置）
+    ├── translations.ts       ← UI 文本翻译（中/英/日）
+    └── urgency.ts            ← 紧急度计算逻辑（截止日 vs 今日 → overdue/today/soon/normal/done）
+
+
+================================================================================
+  按需定位：我想改 XX，去哪里？
+================================================================================
+
+► 新增 / 修改检查项
+  → src/lib/data.ts，CHECKLIST 数组
+  每条项目结构：
+  {
+    id:          "唯一ID（英文小写+连字符，如 ar-01）",
+    category:    "ar | ap | reconcile | report | approval",
+    deadlineDay: 每月几号截止（1–31 的整数）,
+    priority:    "high | medium | low",
+    label:  { zh: "中文名称", en: "English Name", ja: "日本語名" },
+    note:   { zh: "中文说明", en: "English note", ja: "日本語説明" },
+  }
+
+► 修改分类颜色
+  → src/lib/data.ts，CATEGORIES 数组，每项的 color 字段（十六进制颜色码）
+  颜色会同时影响：分类区块左边框、分类标题小圆点
+
+► 分类 ID 对照表
+  ar         → 应收账款（Accounts Receivable / 売掛金管理）
+  ap         → 应付账款（Accounts Payable / 買掛金管理）
+  reconcile  → 账目对账（Reconciliation / 勘定照合）
+  report     → 报告编制（Reporting / 報告書作成）
+  approval   → 审核存档（Approval & Filing / 承認・保管）
+
+► 新增一个分类
+  1. src/lib/types.ts → Category 类型加 | '新ID'
+  2. src/lib/data.ts → CATEGORIES 数组末尾加 { id: '新ID', color: '#颜色' }
+  3. src/lib/translations.ts → CATEGORY_LABELS 加 新ID: { zh:..., en:..., ja:... }
+  4. src/lib/data.ts → 在 CHECKLIST 中添加属于该分类的项目
+
+► 改紧急度判断规则（超期 / 今日到期 / 即将到期的天数阈值）
+  → src/lib/urgency.ts，calcUrgency() 函数
+  当前规则：
+    diff < 0   → overdue  （已超期）
+    diff == 0  → today    （今日截止）
+    diff <= 3  → soon     （3天内截止）
+    diff > 3   → normal
+  修改"即将到期"阈值：把 diff <= 3 改为 diff <= N
+
+► 改紧急度颜色
+  → src/app/globals.css，:root{} 内的 CSS 变量：
+  --overdue-bg / --overdue-border / --overdue-text   ← 已超期（红色系）
+  --today-bg   / --today-border   / --today-text     ← 今日截止（橙色系）
+  --soon-bg    / --soon-border    / --soon-text       ← 即将到期（黄色系）
+  --done-bg    / --done-border                        ← 已完成（绿色系）
+
+► 改进度条样式（颜色 / 高度 / 分段格子大小）
+  → src/app/globals.css
+  .progress-fill    → 进度条颜色（当前渐变：蓝→紫）
+  .progress-track   → 进度条轨道高度（height: 8px）
+  .seg / .seg.done  → 分段格子的宽高和颜色
+
+► 改 UI 文字（标题 / 按钮 / 标签等）
+  → src/lib/translations.ts，UI 对象，按语言（zh / en / ja）分别修改
+
+► 改优先级标签（高/中/低 的文字）
+  → src/lib/translations.ts，PRIORITY_LABELS 对象
+
+► 改紧急度标签文字（已逾期 / 今日截止 等）
+  → src/lib/translations.ts，URGENCY_LABELS 对象
+
+► 改优先级徽章颜色
+  → src/app/globals.css
+  .priority-badge.priority-high    ← 高优先级
+  .priority-badge.priority-medium  ← 中优先级
+  .priority-badge.priority-low     ← 低优先级
+
+► 改复选框外观
+  → src/app/globals.css，.checkbox / .checkbox.checked / .checkmark
+
+► 改整体颜色 / 字体
+  → src/app/globals.css，顶部 :root{} 内的 CSS 变量：
+  --bg-base        背景底色
+  --bg-surface     进度卡片背景
+  --bg-card        区块背景
+  --accent         主题蓝色（进度百分比、激活态）
+
+► 改页面 <title> 或 <meta>
+  → src/app/layout.tsx，metadata 对象
+
+► 改端口（默认 3007）
+  → package.json，scripts.dev 和 scripts.start 中的 --port 参数
+
+► 新增语言（以法语 fr 为例）
+  1. src/lib/types.ts → Lang 类型加 | 'fr'
+  2. src/lib/translations.ts
+     → LANGUAGES 数组添加 { code: 'fr', label: 'FR' }
+     → UI 对象添加 fr: { ... }（参照 en 的所有 key 翻译）
+     → CATEGORY_LABELS 每项添加 fr: '...'
+     → PRIORITY_LABELS 添加 fr: { high:..., medium:..., low:... }
+     → URGENCY_LABELS 每项添加 fr: '...'
+  3. src/lib/data.ts → 每条项目的 label / note 添加 fr 字段
+
+
+================================================================================
+  核心技术要点
+================================================================================
+
+► 复选框状态管理（useState）
+  → src/app/page.tsx，states 状态对象
+  类型：Record<string, { checked: boolean; checkedAt: string | null }>
+  初始值由 buildInitialStates() 生成（所有项目 checked=false）
+  toggle(id) → 翻转指定 ID 的 checked，并记录完成时间（ISO 字符串）
+
+► 进度计算（useMemo）
+  → src/app/page.tsx，doneCount
+  useMemo 依赖 states，统计 checked=true 的数量
+  进度百分比 = Math.round(doneCount / CHECKLIST.length * 100)
+
+► 日期比较与警告显示（calcUrgency）
+  → src/lib/urgency.ts
+  const TODAY = new Date()（每次页面加载时固定，不实时刷新）
+  diff = deadlineDay - today.getDate()
+  → 返回 Urgency 类型，驱动 CSS class (.urgency-overdue 等) 和 badge 显示
+
+  注意：TODAY 在 page.tsx 顶层定义（模块级常量），不在组件内。
+  如果需要页面每分钟自动刷新今日日期，可改为 useState + setInterval。
+
+► 项目排序（useMemo）
+  → src/app/page.tsx，groupedItems
+  在每个分类内部，按 URGENCY_ORDER（超期 > 今日 > 即将 > 正常 > 完成）排序，
+  同一紧急度再按 deadlineDay 升序排列。
+
+► 过滤器（filter state）
+  'all'     → 显示全部
+  'pending' → 仅显示 checked=false
+  'done'    → 仅显示 checked=true
+
+
+================================================================================
+  检查项数据统计
+================================================================================
+
+  总项目数：19 条
+  分类分布：
+  - 应收账款（ar）      ：4 条（截止日：3、5、8、10 日）
+  - 应付账款（ap）      ：4 条（截止日：5、7、12、15 日）
+  - 账目对账（reconcile）：4 条（截止日：8、10、10、15 日）
+  - 报告编制（report）  ：4 条（截止日：18、18、20、20 日）
+  - 审核存档（approval）：3 条（截止日：22、25、28 日）
+
+  优先级分布：
+  高（high）  ：9 条
+  中（medium）：8 条
+  低（low）   ：2 条
+
+
+================================================================================
+  依赖说明
+================================================================================
+
+  Next.js 16   → React 全栈框架（App Router）
+  React 19     → UI 组件
+  TypeScript   → 类型安全
+
+  无第三方 UI 库，无图表库。
+  进度条、复选框、紧急度高亮均为纯 CSS 实现。
+  所有样式为纯 CSS（src/app/globals.css）。
+
+
+================================================================================
+  端口 & 构建
+================================================================================
+
+  开发：  npm run dev    → http://localhost:3007
+  构建：  npm run build
+  生产：  npm run start  → http://localhost:3007
+
+
+================================================================================
