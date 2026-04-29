@@ -1,0 +1,191 @@
+================================================================================
+  20号作业 · 配送期限追踪器（ETD/ETA管理）— 开发者参考文档
+  Delivery Deadline Tracker · Developer Reference
+================================================================================
+
+【启动方式】
+  npm run dev      → 开发服务器，端口 3008，访问 http://localhost:3008
+  npm run build    → 生产构建
+  npm run start    → 启动生产服务器
+
+
+================================================================================
+  目录结构
+================================================================================
+
+src/
+├── app/
+│   ├── globals.css           ← 全局样式（所有 CSS 变量和组件样式都在这里）
+│   ├── layout.tsx            ← 根 Layout，设置页面 metadata
+│   └── page.tsx              ← 应用入口，状态管理（语言、出发/到达勾选、过滤器）
+│
+├── components/
+│   ├── Header.tsx            ← 顶部导航（标题 + 语言切换）
+│   ├── ProgressSummary.tsx   ← 进度汇总卡（已到达数 / 总数 + 进度条 + 统计徽章）
+│   └── ShipmentCard.tsx      ← 货物卡片（AWB + 航线 + ETD/ETA时间线 + 双复选框）
+│
+└── lib/
+    ├── types.ts              ← 类型定义（Lang、Priority、EtaUrgency、EtdStatus、Shipment、ShipmentState）
+    ├── data.ts               ← 货物数据（12票示例货物，覆盖各urgency状态）
+    ├── translations.ts       ← UI 文本翻译（中/英/日）
+    └── urgency.ts            ← 日期比较逻辑（diffDays / calcEtaUrgency / calcEtdStatus）
+
+
+================================================================================
+  按需定位：我想改 XX，去哪里？
+================================================================================
+
+► 新增 / 修改货物数据
+  → src/lib/data.ts，SHIPMENTS 数组
+  每票货物结构：
+  {
+    id:          "唯一ID（如 S013）",
+    awb:         "AWB 号（如 '180-12345678'）",
+    origin:      "始发地（如 'Tokyo (NRT)'）",
+    destination: "目的地（如 'Frankfurt (FRA)'）",
+    cargo:       { zh: "货物中文名", en: "English Name", ja: "日本語名" },
+    etd:         "YYYY-MM-DD",   ← 预计出发日期
+    eta:         "YYYY-MM-DD",   ← 预计到达日期
+    weightKg:    数值（公斤）,
+    priority:    "urgent | normal | low",
+  }
+
+► 改 ETA 紧急度判断阈值（「即将到达」天数）
+  → src/lib/urgency.ts，calcEtaUrgency() 函数
+  当前：diff <= 3 → 'soon'（即将到达）
+  改为其他天数：修改 <= 3 的数字即可
+
+► 改 ETD 延误判断逻辑
+  → src/lib/urgency.ts，calcEtdStatus() 函数
+  当前逻辑：
+    diff < 0   → 'delayed'    （ETD 已过但未出发）
+    diff === 0 → 'departing'  （今日出发）
+    diff > 0   → 'upcoming'   （待出发）
+
+► 改紧急度颜色
+  → src/app/globals.css，:root{} 内：
+  --c-overdue    ← ETA已逾期（红色）
+  --c-today      ← 今日到达/出发（橙色）
+  --c-soon       ← 即将到达（黄色）
+  --c-arrived    ← 已到达（绿色）
+  --c-departed   ← 已出发（蓝色）
+  --c-delayed    ← ETD延误（同红色）
+  --c-depart-today ← 今日出发（同橙色）
+
+► 改卡片左边框紧急度颜色（卡片高亮区域）
+  → src/app/globals.css
+  .shipment-card.eta-overdue  → border-left-color 和 background
+  .shipment-card.eta-today    → 同上
+  .shipment-card.eta-soon     → 同上
+  .shipment-card.eta-arrived  → 同上（已到达状态，略微透明）
+
+► 改优先级标签文字
+  → src/lib/translations.ts，PRIORITY_LABEL 对象，按语言修改
+
+► 改 UI 文字（标题 / 按钮 / 过滤器 / 剩余天数格式等）
+  → src/lib/translations.ts，UI 对象，按语言（zh / en / ja）分别修改
+  特别注意：daysLeft / daysToEtd 是函数，接收差值天数并返回字符串
+
+► 改进度条颜色
+  → src/app/globals.css，.progress-fill { background: ... }
+  当前：蓝→青色渐变
+
+► 改时间线连接线样式（出发前 vs 出发后）
+  → src/app/globals.css
+  .tl-line        → 未出发状态（灰色）
+  .tl-line.active → 已出发状态（蓝→青色渐变）
+
+► 改复选框颜色
+  → src/app/globals.css，.check-box.checked { background: ... }
+
+► 改卡片布局（时间线 / 复选框区域）
+  → src/components/ShipmentCard.tsx
+  → src/app/globals.css，.card-timeline / .card-checks
+
+► 改页面 <title> 或 <meta>
+  → src/app/layout.tsx，metadata 对象
+
+► 改端口（默认 3008）
+  → package.json，scripts.dev / scripts.start 中的 --port 参数
+
+► 新增语言（以法语 fr 为例）
+  1. src/lib/types.ts → Lang 类型加 | 'fr'
+  2. src/lib/translations.ts
+     → LANGUAGES 数组加 { code: 'fr', label: 'FR' }
+     → UI 对象加 fr: { ... }（参照 en 翻译所有 key）
+     → ETA_URGENCY_LABEL / ETD_STATUS_LABEL / PRIORITY_LABEL 各加 fr: '...'
+  3. src/lib/data.ts → 每票货物的 cargo 对象加 fr: '...' 字段
+
+
+================================================================================
+  核心技术要点
+================================================================================
+
+► 复选框状态管理（useState）
+  → src/app/page.tsx，states 对象
+  类型：Record<id, { departed: boolean; arrived: boolean; departedAt: string|null; arrivedAt: string|null }>
+  规则：
+  - 勾选「到达」时，自动将「出发」也设为 true（不能先到后发）
+  - 取消「出发」时，同时清除「到达」状态（逻辑一致性）
+
+► 进度计算（useMemo）
+  → src/app/page.tsx，arrivedCount / departedCount / overdueCount
+  依赖 states，遍历所有货物统计各状态数量
+  进度百分比 = arrivedCount / total × 100
+
+► 日期比较与警告（calcEtaUrgency / calcEtdStatus）
+  → src/lib/urgency.ts
+  diffDays(dateStr, today) → 差值天数（正=未来，负=过去）
+  calcEtaUrgency → 返回 EtaUrgency（驱动卡片颜色 + badge）
+  calcEtdStatus  → 返回 EtdStatus（驱动 ETD 行颜色 + badge）
+
+  TODAY 在 page.tsx 模块级定义（const TODAY = new Date()），
+  页面加载时固定，不实时更新。
+
+► 货物排序（useMemo）
+  → src/app/page.tsx，displayShipments
+  按 ETA_URGENCY_ORDER（overdue→today→soon→normal→arrived）排序，
+  同一紧急度再按 eta 字符串升序（越早到达越靠前）
+
+
+================================================================================
+  货物数据（src/lib/data.ts）
+================================================================================
+
+  共 12 票，覆盖所有 urgency 状态（基准日：2026-04-28）：
+
+  S001  NRT→FRA  ETA: 04-23  → 逾期未到（overdue）
+  S002  PVG→LAX  ETA: 04-27  → 逾期未到（overdue）
+  S003  KIX→SIN  ETA: 04-28  → 今日到达（today）
+  S004  ICN→DXB  ETA: 04-29  → 明日到达（soon）
+  S005  HKG→LHR  ETA: 04-30  → 3天内到达（soon）
+  S006  TPE→ORD  ETA: 05-01  → 3天内到达（soon）
+  S007  PEK→AMS  ETA: 05-02  → 4天後（normal）
+  S008  BKK→SYD  ETA: 05-05  → normal
+  S009  HND→JFK  ETA: 05-07  → normal
+  S010  KUL→CDG  ETA: 05-10  → normal
+  S011  BOM→NRT  ETA: 05-13  → normal
+  S012  FRA→KIX  ETA: 05-15  → normal
+
+
+================================================================================
+  依赖说明
+================================================================================
+
+  Next.js 16   → React 全栈框架（App Router）
+  React 19     → UI 组件
+  TypeScript   → 类型安全
+
+  無第三方 UI 库。複選框・進度条・urgency 配色均為純 CSS 實現。
+
+
+================================================================================
+  端口 & 构建
+================================================================================
+
+  開發：  npm run dev    → http://localhost:3008
+  建構：  npm run build
+  本番：  npm run start  → http://localhost:3008
+
+
+================================================================================
