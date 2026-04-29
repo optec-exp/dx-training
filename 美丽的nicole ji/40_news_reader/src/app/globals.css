@@ -1,0 +1,4 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#030b18;color:#e2e8f0;font-family:'Segoe UI',sans-serif}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#0d1b2e}::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
+mark{background:#854d0e;color:#fde68a;border-radius:3px;padding:0 2px}
