@@ -1,0 +1,272 @@
+[
+  {
+    "id": "p001",
+    "title": "航空公司运费结算（4月）",
+    "amount": 128500,
+    "currency": "JPY",
+    "dueDate": "2026-04-25",
+    "category": "运费",
+    "counterparty": "ANA Cargo"
+  },
+  {
+    "id": "p002",
+    "title": "报关代理手续费（4月）",
+    "amount": 35000,
+    "currency": "JPY",
+    "dueDate": "2026-04-28",
+    "category": "代理费",
+    "counterparty": "通关行A"
+  },
+  {
+    "id": "p003",
+    "title": "仓储保管料（3月分）",
+    "amount": 18000,
+    "currency": "JPY",
+    "dueDate": "2026-04-15",
+    "category": "仓储费",
+    "counterparty": "成田保税仓库"
+  },
+  {
+    "id": "p004",
+    "title": "月次结算（国内运送）",
+    "amount": 56000,
+    "currency": "JPY",
+    "dueDate": "2026-04-30",
+    "category": "运费",
+    "counterparty": "ヤマト运输"
+  },
+  {
+    "id": "p005",
+    "title": "关税・消費税（3月申告分）",
+    "amount": 73200,
+    "currency": "JPY",
+    "dueDate": "2026-04-30",
+    "category": "税金",
+    "counterparty": "税务署"
+  },
+  {
+    "id": "p006",
+    "title": "国际快递费用精算（4月）",
+    "amount": 1200,
+    "currency": "USD",
+    "dueDate": "2026-05-02",
+    "category": "快递费",
+    "counterparty": "FedEx Japan"
+  },
+  {
+    "id": "p007",
+    "title": "系统使用费（CW1）",
+    "amount": 850,
+    "currency": "USD",
+    "dueDate": "2026-05-01",
+    "category": "系统费",
+    "counterparty": "CargoWise"
+  },
+  {
+    "id": "p008",
+    "title": "保险料（4月货物保险）",
+    "amount": 22000,
+    "currency": "JPY",
+    "dueDate": "2026-05-03",
+    "category": "保险费",
+    "counterparty": "东京海上日动"
+  },
+  {
+    "id": "p009",
+    "title": "航空运费（上海便・4月）",
+    "amount": 18500,
+    "currency": "CNY",
+    "dueDate": "2026-05-06",
+    "category": "运费",
+    "counterparty": "中国国际航空"
+  },
+  {
+    "id": "p010",
+    "title": "Handling Fee（4月）",
+    "amount": 42000,
+    "currency": "JPY",
+    "dueDate": "2026-05-10",
+    "category": "操作费",
+    "counterparty": "GHA成田"
+  },
+  {
+    "id": "p011",
+    "title": "代理佣金（上海代理・4月）",
+    "amount": 6200,
+    "currency": "CNY",
+    "dueDate": "2026-05-10",
+    "category": "代理费",
+    "counterparty": "上海物流代理B"
+  },
+  {
+    "id": "p012",
+    "title": "空运附加費（FSC/SSC・4月）",
+    "amount": 2400,
+    "currency": "USD",
+    "dueDate": "2026-05-11",
+    "category": "附加费",
+    "counterparty": "Lufthansa Cargo"
+  },
+  {
+    "id": "p013",
+    "title": "WCA会費（年度）",
+    "amount": 3200,
+    "currency": "USD",
+    "dueDate": "2026-05-15",
+    "category": "会费",
+    "counterparty": "WCA"
+  },
+  {
+    "id": "p014",
+    "title": "卡车运输費（4月）",
+    "amount": 31500,
+    "currency": "JPY",
+    "dueDate": "2026-05-16",
+    "category": "运费",
+    "counterparty": "陆运公司B"
+  },
+  {
+    "id": "p015",
+    "title": "仓储費（4月分・浦东）",
+    "amount": 9800,
+    "currency": "CNY",
+    "dueDate": "2026-05-20",
+    "category": "仓储费",
+    "counterparty": "浦东保税仓库"
+  },
+  {
+    "id": "p016",
+    "title": "航空运费（香港便・4月）",
+    "amount": 185000,
+    "currency": "JPY",
+    "dueDate": "2026-05-21",
+    "category": "运费",
+    "counterparty": "Cathay Pacific Cargo"
+  },
+  {
+    "id": "p017",
+    "title": "通关代理手续費（5月）",
+    "amount": 38000,
+    "currency": "JPY",
+    "dueDate": "2026-05-22",
+    "category": "代理费",
+    "counterparty": "通关行A"
+  },
+  {
+    "id": "p018",
+    "title": "平台利用費（Inttra・月次）",
+    "amount": 620,
+    "currency": "USD",
+    "dueDate": "2026-05-25",
+    "category": "系统费",
+    "counterparty": "Inttra"
+  },
+  {
+    "id": "p019",
+    "title": "仓储費（4月分・成田）",
+    "amount": 24000,
+    "currency": "JPY",
+    "dueDate": "2026-05-25",
+    "category": "仓储费",
+    "counterparty": "成田保税仓库"
+  },
+  {
+    "id": "p020",
+    "title": "代理手续費（北京代理）",
+    "amount": 4500,
+    "currency": "CNY",
+    "dueDate": "2026-05-28",
+    "category": "代理费",
+    "counterparty": "北京货运代理C"
+  },
+  {
+    "id": "p021",
+    "title": "航空运费（ソウル便・5月）",
+    "amount": 95000,
+    "currency": "JPY",
+    "dueDate": "2026-05-29",
+    "category": "运费",
+    "counterparty": "Korean Air Cargo"
+  },
+  {
+    "id": "p022",
+    "title": "燃油附加費（5月）",
+    "amount": 1850,
+    "currency": "USD",
+    "dueDate": "2026-05-31",
+    "category": "附加费",
+    "counterparty": "Emirates SkyCargo"
+  },
+  {
+    "id": "p023",
+    "title": "月次保険料（5月）",
+    "amount": 18500,
+    "currency": "JPY",
+    "dueDate": "2026-06-03",
+    "category": "保险费",
+    "counterparty": "东京海上日动"
+  },
+  {
+    "id": "p024",
+    "title": "航空运费（バンコク便・5月）",
+    "amount": 12800,
+    "currency": "CNY",
+    "dueDate": "2026-06-05",
+    "category": "运费",
+    "counterparty": "Thai Airways Cargo"
+  },
+  {
+    "id": "p025",
+    "title": "Handling Fee（5月）",
+    "amount": 45000,
+    "currency": "JPY",
+    "dueDate": "2026-06-10",
+    "category": "操作费",
+    "counterparty": "GHA成田"
+  },
+  {
+    "id": "p026",
+    "title": "空运附加費（6月）",
+    "amount": 2200,
+    "currency": "USD",
+    "dueDate": "2026-06-12",
+    "category": "附加费",
+    "counterparty": "Lufthansa Cargo"
+  },
+  {
+    "id": "p027",
+    "title": "仓储費（5月分・浦东）",
+    "amount": 11200,
+    "currency": "CNY",
+    "dueDate": "2026-06-20",
+    "category": "仓储费",
+    "counterparty": "浦东保税仓库"
+  },
+  {
+    "id": "p028",
+    "title": "卡车运输費（5月）",
+    "amount": 33000,
+    "currency": "JPY",
+    "dueDate": "2026-06-15",
+    "category": "运费",
+    "counterparty": "陆运公司B"
+  },
+  {
+    "id": "p029",
+    "title": "系统使用費（CW1・6月）",
+    "amount": 850,
+    "currency": "USD",
+    "dueDate": "2026-06-01",
+    "category": "系统费",
+    "counterparty": "CargoWise"
+  },
+  {
+    "id": "p030",
+    "title": "通关代理手续費（6月）",
+    "amount": 38000,
+    "currency": "JPY",
+    "dueDate": "2026-06-22",
+    "category": "代理费",
+    "counterparty": "通关行A"
+  }
+]
