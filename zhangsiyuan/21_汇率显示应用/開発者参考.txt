@@ -10,21 +10,24 @@
 
 
 ================================================================================
-  ⚠ 首次使用：配置 API Key
+  数据来源：Frankfurter API（免费，无需注册）
 ================================================================================
 
-  1. 注册免费账号：https://openexchangerates.org/signup/free
-     （无需信用卡，月1000次请求，支持最新汇率 + 历史汇率）
+  URL：https://api.frankfurter.app
+  数据来源：欧洲中央银行（ECB）每日更新
+  特点：完全免费，无需 API Key，无请求限制
+  支持货币：约 33 种（不含 TWD、VND、AED、SAR 等非 ECB 货币）
+  最早历史：1999 年
 
-  2. 登录后进入 Dashboard，复制 App ID
+  接口格式：
+    GET /latest          → 最新汇率（以 EUR 为基准）
+    GET /2024-01-15      → 指定日期汇率
+  响应示例：
+    { "base": "EUR", "date": "2024-01-15", "rates": { "USD": 1.09, "JPY": 161.2, ... } }
+  注意：响应中不包含 base 货币本身，route.ts 中手动补充 [data.base]: 1.0
 
-  3. 打开项目根目录的 .env.local 文件，填入 App ID：
-     OPEN_EXCHANGE_RATES_APP_ID=你的AppID
-
-  4. 重启开发服务器（npm run dev）
-
-  注意：.env.local 已被 .gitignore 排除，不会被上传到 GitHub。
-  提交代码时请参考 .env.example 文件格式。
+  配置方式：.env.local 中设置 API 基础 URL（无需 Key）：
+    EXCHANGE_API_BASE=https://api.frankfurter.app
 
 
 ================================================================================
@@ -35,21 +38,21 @@ src/
 ├── app/
 │   ├── api/
 │   │   └── rates/
-│   │       └── route.ts    ← 服务端 API 代理（隐藏 API Key）
+│   │       └── route.ts    ← 服务端 API 代理
 │   ├── globals.css         ← 全局样式（亮色主题）
 │   ├── layout.tsx          ← 根 Layout，metadata
 │   └── page.tsx            ← 应用入口（所有 UI 和转换逻辑）
-.env.local                  ← API Key（gitignored，需自行填写）
-.env.example                ← API Key 格式模板（已提交到 git）
+.env.local                  ← API 基础 URL（gitignored）
+.env.example                ← 环境变量格式模板（已提交到 git）
 
 
 ================================================================================
   核心功能
 ================================================================================
 
-► 26 种主要货币支持
-  USD EUR CNY JPY GBP KRW HKD TWD SGD AUD CAD CHF INR THB MYR
-  IDR PHP VND AED SAR BRL MXN ZAR NOK SEK NZD
+► 22 种主要货币支持（frankfurter.app 支持范围内）
+  USD EUR CNY JPY GBP KRW HKD TRY SGD AUD CAD CHF INR THB MYR
+  IDR PHP PLN DKK ILS BRL MXN ZAR NOK SEK NZD
 
 ► 多目标货币同时转换
   默认选中 EUR / CNY / JPY / GBP / KRW / HKD / SGD / AUD（8种）
@@ -66,10 +69,6 @@ src/
 ► 双向汇率显示
   每张结果卡片同时显示正向和反向汇率（如 1 USD = 149.20 JPY 和 1 JPY = 0.0067 USD）。
 
-► API Key 安全管理
-  API Key 存储在 .env.local（服务端环境变量），
-  通过 Next.js API Route 代理请求，不暴露在客户端代码中。
-
 ► 三语言支持（中/英/日）
 
 
@@ -80,7 +79,7 @@ src/
 ► 新增货币
   → src/app/page.tsx，CURRENCIES 数组，添加新条目：
   { code:'XXX', name:{zh:'...',en:'...',ja:'...'}, flag:'🇿🇿', symbol:'...' }
-  注意：Open Exchange Rates 支持 170+ 种货币，可在其官网查询可用代码。
+  注意：frankfurter.app 支持约 33 种货币（ECB 范围），可在 https://api.frankfurter.app/currencies 查看完整列表。
 
 ► 修改默认选中的目标货币
   → src/app/page.tsx，DEFAULT_TARGETS（Set<string>）
@@ -111,18 +110,18 @@ src/
   技术要点
 ================================================================================
 
-► API Key 安全架构（Server Route 代理）
+► API 架构（Server Route 代理）
   客户端（page.tsx）→ fetch('/api/rates?date=...')
-  服务端（route.ts）→ 读取 process.env.OPEN_EXCHANGE_RATES_APP_ID
-                    → 请求 openexchangerates.org
+  服务端（route.ts）→ 读取 process.env.EXCHANGE_API_BASE
+                    → 请求 frankfurter.app
+                    → 补充 base 货币（[data.base]: 1.0）
                     → 返回只包含 rates/date/base 的干净响应
-  API Key 永远不会出现在浏览器网络请求或客户端 JS 中。
 
 ► 汇率计算（跨货币换算）
-  Open Exchange Rates 免费版以 USD 为基准：rates = { USD: 1, EUR: 0.92, JPY: 149.2, ... }
+  frankfurter.app 以 EUR 为基准：rates = { EUR: 1, USD: 1.09, JPY: 161.2, ... }
   公式：result = amount × (rates[TO] / rates[FROM])
-  例：100 EUR → JPY = 100 × (149.2 / 0.92) ≈ 16,217 JPY
-  此公式适用于所有货币对，无需 USD 中转步骤。
+  例：100 USD → JPY = 100 × (161.2 / 1.09) ≈ 14,789 JPY
+  此公式适用于所有货币对，无需 EUR 中转步骤。
 
 ► Fetch 缓存策略（Next.js）
   next: { revalidate: 3600 }    → 今日汇率，1小时内缓存复用
@@ -132,23 +131,9 @@ src/
   rates 数据只在日期变化时重新请求；
   金额/源币种/目标币种变化时只触发 useMemo 重算，不产生 API 请求。
 
-► 环境变量类型
-  OPEN_EXCHANGE_RATES_APP_ID  → 无 NEXT_PUBLIC_ 前缀 → 仅服务端可读
-  如果加了 NEXT_PUBLIC_，API Key 会被打包进客户端 JS，不安全。
-
-
-================================================================================
-  API 使用说明（Open Exchange Rates 免费版限制）
-================================================================================
-
-  - 月请求上限：1,000 次
-  - 最新汇率：支持 ✓（每小时更新）
-  - 历史汇率：支持 ✓（可追溯至 1999 年）
-  - 基准货币：仅 USD（免费版）
-  - 实时汇率（分钟级）：不支持 ✗（需付费）
-
-  超出 1000 次/月后 API 会返回 429 错误，应用会显示错误提示。
-  如需更高频率，可升级到付费计划（$9/月起）。
+► 环境变量
+  EXCHANGE_API_BASE  → 无 NEXT_PUBLIC_ 前缀 → 仅服务端可读
+  存储 API 基础 URL（非 Key），但保持服务端模式以防日后替换为需要 Key 的 API。
 
 
 ================================================================================

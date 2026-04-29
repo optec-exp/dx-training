@@ -1,39 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+const BASE = process.env.EXCHANGE_API_BASE ?? 'https://api.frankfurter.app'
+
 export async function GET(req: NextRequest) {
   const date = req.nextUrl.searchParams.get('date') ?? ''
   const today = new Date().toISOString().split('T')[0]
   const isLatest = !date || date >= today
 
-  const APP_ID = process.env.OPEN_EXCHANGE_RATES_APP_ID
-  if (!APP_ID) {
-    return NextResponse.json(
-      { error: 'API key not configured. Set OPEN_EXCHANGE_RATES_APP_ID in .env.local' },
-      { status: 500 }
-    )
-  }
-
-  const url = isLatest
-    ? `https://openexchangerates.org/api/latest.json?app_id=${APP_ID}`
-    : `https://openexchangerates.org/api/historical/${date}.json?app_id=${APP_ID}`
+  const endpoint = isLatest ? `${BASE}/latest` : `${BASE}/${date}`
 
   try {
-    const res = await fetch(url, {
+    const res = await fetch(endpoint, {
       next: { revalidate: isLatest ? 3600 : 60 * 60 * 24 * 30 },
     })
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
       return NextResponse.json(
-        { error: (err as { description?: string }).description ?? `HTTP ${res.status}` },
+        { error: `Frankfurter API error: HTTP ${res.status}` },
         { status: res.status }
       )
     }
-    const data = await res.json() as { rates: Record<string, number>; base: string; timestamp: number; date?: string }
-    return NextResponse.json({
-      rates: data.rates,
-      base: data.base,
-      date: data.date ?? new Date(data.timestamp * 1000).toISOString().split('T')[0],
-    })
+    const data = await res.json() as {
+      base: string
+      date: string
+      rates: Record<string, number>
+    }
+    // Add base currency itself (frankfurter omits it from the rates object)
+    const rates: Record<string, number> = { ...data.rates, [data.base]: 1.0 }
+    return NextResponse.json({ rates, base: data.base, date: data.date })
   } catch {
     return NextResponse.json({ error: 'Network error — failed to fetch exchange rates' }, { status: 500 })
   }

@@ -19,7 +19,7 @@ const CURRENCIES: CurrencyInfo[] = [
   { code: 'GBP', name: { zh: '英镑',         en: 'British Pound',        ja: '英ポンド'           }, flag: '🇬🇧', symbol: '£'    },
   { code: 'KRW', name: { zh: '韩元',         en: 'Korean Won',           ja: '韓国ウォン'         }, flag: '🇰🇷', symbol: '₩'    },
   { code: 'HKD', name: { zh: '港元',         en: 'Hong Kong Dollar',     ja: '香港ドル'           }, flag: '🇭🇰', symbol: 'HK$'  },
-  { code: 'TWD', name: { zh: '新台币',       en: 'Taiwan Dollar',        ja: '台湾ドル'           }, flag: '🇹🇼', symbol: 'NT$'  },
+  { code: 'TRY', name: { zh: '土耳其里拉',   en: 'Turkish Lira',         ja: 'トルコリラ'         }, flag: '🇹🇷', symbol: '₺'    },
   { code: 'SGD', name: { zh: '新加坡元',     en: 'Singapore Dollar',     ja: 'シンガポールドル'   }, flag: '🇸🇬', symbol: 'S$'   },
   { code: 'AUD', name: { zh: '澳大利亚元',   en: 'Australian Dollar',    ja: '豪ドル'             }, flag: '🇦🇺', symbol: 'A$'   },
   { code: 'CAD', name: { zh: '加拿大元',     en: 'Canadian Dollar',      ja: 'カナダドル'         }, flag: '🇨🇦', symbol: 'C$'   },
@@ -29,9 +29,9 @@ const CURRENCIES: CurrencyInfo[] = [
   { code: 'MYR', name: { zh: '马来西亚林吉特', en: 'Malaysian Ringgit',  ja: 'リンギット'         }, flag: '🇲🇾', symbol: 'RM'   },
   { code: 'IDR', name: { zh: '印尼盾',       en: 'Indonesian Rupiah',    ja: 'インドネシアルピア' }, flag: '🇮🇩', symbol: 'Rp'   },
   { code: 'PHP', name: { zh: '菲律宾比索',   en: 'Philippine Peso',      ja: 'フィリピンペソ'     }, flag: '🇵🇭', symbol: '₱'    },
-  { code: 'VND', name: { zh: '越南盾',       en: 'Vietnamese Dong',      ja: 'ベトナムドン'       }, flag: '🇻🇳', symbol: '₫'    },
-  { code: 'AED', name: { zh: '迪拜迪拉姆',   en: 'UAE Dirham',           ja: 'UAEディルハム'      }, flag: '🇦🇪', symbol: 'AED'  },
-  { code: 'SAR', name: { zh: '沙特里亚尔',   en: 'Saudi Riyal',          ja: 'サウジリヤル'       }, flag: '🇸🇦', symbol: 'SAR'  },
+  { code: 'PLN', name: { zh: '波兰兹罗提',   en: 'Polish Zloty',         ja: 'ポーランドズロチ'   }, flag: '🇵🇱', symbol: 'zł'   },
+  { code: 'DKK', name: { zh: '丹麦克朗',     en: 'Danish Krone',         ja: 'デンマーククローネ' }, flag: '🇩🇰', symbol: 'kr'   },
+  { code: 'ILS', name: { zh: '以色列新谢克尔', en: 'Israeli New Shekel',  ja: 'イスラエルシェケル' }, flag: '🇮🇱', symbol: '₪'    },
   { code: 'BRL', name: { zh: '巴西雷亚尔',   en: 'Brazilian Real',       ja: 'ブラジルレアル'     }, flag: '🇧🇷', symbol: 'R$'   },
   { code: 'MXN', name: { zh: '墨西哥比索',   en: 'Mexican Peso',         ja: 'メキシコペソ'       }, flag: '🇲🇽', symbol: 'MX$'  },
   { code: 'ZAR', name: { zh: '南非兰特',     en: 'South African Rand',   ja: '南アフリカランド'   }, flag: '🇿🇦', symbol: 'R'    },
@@ -41,7 +41,7 @@ const CURRENCIES: CurrencyInfo[] = [
 ]
 
 const DEFAULT_TARGETS = new Set(['EUR', 'CNY', 'JPY', 'GBP', 'KRW', 'HKD', 'SGD', 'AUD'])
-const HIGH_UNIT = new Set(['JPY', 'KRW', 'IDR', 'VND'])
+const HIGH_UNIT = new Set(['JPY', 'KRW', 'IDR'])
 
 function fmtAmount(n: number, code: string): string {
   if (!isFinite(n)) return '—'
