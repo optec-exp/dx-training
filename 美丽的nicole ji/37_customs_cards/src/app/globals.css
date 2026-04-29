@@ -1,0 +1,7 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#030b18;color:#e2e8f0;font-family:'Segoe UI',sans-serif}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#0d1b2e}::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
+.card-inner{transition:transform .5s;transform-style:preserve-3d;position:relative;width:100%;height:100%}
+.card-inner.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px}
+.card-back{transform:rotateY(180deg)}
