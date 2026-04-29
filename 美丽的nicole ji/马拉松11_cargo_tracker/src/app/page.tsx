@@ -2,13 +2,14 @@
 import { useState, useMemo } from 'react';
 
 const NODES = [
-  { key: 'received', emoji: '📦', label: '已收货', desc: '货物已安全到达仓库' },
+  { key: 'received', emoji: '📦', label: '仓库收货', desc: '货物已安全到达仓库' },
   { key: 'departed', emoji: '🏭', label: '已出库', desc: '货物已从仓库装车发出' },
   { key: 'takeoff',  emoji: '✈️', label: '起飞',   desc: '航班已按时起飞' },
   { key: 'arrived',  emoji: '🛬', label: '到达',   desc: '货物已到达目的地机场' },
-  { key: 'customs',  emoji: '🔍', label: '清关',   desc: '正在办理进口通关手续' },
-  { key: 'delivery', emoji: '🚚', label: '派送',   desc: '货物正在前往目的地配送' },
+  { key: 'customs',  emoji: '🛃', label: '清关',   desc: '正在办理进口通关手续' },
+
   { key: 'complete', emoji: '🎯', label: '完成',   desc: '货物已成功交付给收货人' },
+  { key: 'lost',     emoji: '❌', label: '失败', desc: '货物已丢失' },
 ] as const;
 
 type NS = 'pending' | 'current' | 'done';
@@ -19,7 +20,7 @@ interface NodeState { status: NS; time: string; note: string; }
 const NEXT: Record<NS, NS> = { pending: 'current', current: 'done', done: 'pending' };
 const S_ICON:  Record<NS, string> = { pending: '⬜', current: '⏳', done: '✅' };
 const S_LABEL: Record<NS, string> = { pending: '待处理', current: '进行中', done: '已完成' };
-const S_COLOR: Record<NS, string> = { pending: '#1e3a5f', current: '#92400e', done: '#14532d' };
+const S_COLOR: Record<NS, string> = { pending: '#1e3a5f', current: '#a47f40', done: '#14532d' };
 const S_BORDER: Record<NS, string> = { pending: '#1e3a5f', current: '#f59e0b', done: '#22c55e' };
 
 const initNodes = (): Record<NodeKey, NodeState> =>
@@ -103,7 +104,7 @@ export default function Page() {
 
   const field = (label: string, value: string, setter: (v: string) => void, placeholder = '') => (
     <div style={{ marginBottom: 12 }}>
-      <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 16, color: '#94a3b8', marginBottom: 4 }}>{label}</div>
       <input style={INP} value={value} placeholder={placeholder} onChange={e => setter(e.target.value)} />
     </div>
   );
@@ -120,7 +121,7 @@ export default function Page() {
         {/* LEFT */}
         <div>
           {/* Basic Info */}
-          <div style={{ background: '#0d1b2e', borderRadius: 12, padding: 20, marginBottom: 16 }}>
+          <div style={{ background: '#0d1b2e', borderRadius: 12, padding: 30, marginBottom: 16 }}>
             <div style={{ fontWeight: 600, marginBottom: 16, color: '#93c5fd' }}>📋 案件基本信息</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 12px' }}>
               {field('案件号', caseNo, setCaseNo, 'OPT-2026-XXXX')}
