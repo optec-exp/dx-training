@@ -28,13 +28,10 @@ export async function GET(req: NextRequest) {
         )
       }
       const data = await res.json() as {
-        meta: { last_updated_at: string }
         data: Record<string, number>
       }
-      // FreeCurrencyAPI omits base currency from response — add it manually
       const rates: Record<string, number> = { ...data.data, USD: 1.0 }
-      const rateDate = data.meta.last_updated_at.split('T')[0]
-      return NextResponse.json({ rates, base: 'USD', date: rateDate })
+      return NextResponse.json({ rates, base: 'USD', date: today })
     } else {
       const res = await fetch(
         `${BASE}/historical?apikey=${API_KEY}&date=${date}&base_currency=USD`,
@@ -59,9 +56,10 @@ export async function GET(req: NextRequest) {
       const rates: Record<string, number> = { ...dateRates, USD: 1.0 }
       return NextResponse.json({ rates, base: 'USD', date })
     }
-  } catch {
+  } catch (err) {
+    console.error('[rates] fetch failed:', err)
     return NextResponse.json(
-      { error: 'Network error — failed to fetch exchange rates' },
+      { error: `Network error: ${err instanceof Error ? err.message : String(err)}` },
       { status: 500 }
     )
   }
