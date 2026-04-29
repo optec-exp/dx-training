@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+body {
+  background: #f5f3ff;
+  color: #1f2937;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media print {
+  .no-print { display: none !important; }
+  .print-area { box-shadow: none !important; }
+}
