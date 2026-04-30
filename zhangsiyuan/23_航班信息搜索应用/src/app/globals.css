@@ -1,0 +1,207 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f1f5f9;--surface:#fff;--border:#e2e8f0;--border2:#cbd5e1;
+  --text:#1e293b;--text2:#475569;--muted:#94a3b8;
+  --accent:#0284c7;--accent-bg:#e0f2fe;--accent-h:#0369a1;
+  --green:#16a34a;--green-bg:#dcfce7;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --r:12px;--r-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.09);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.5;font-size:14px}
+.app{min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Header ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:20;box-shadow:var(--shadow)}
+.header-brand{display:flex;align-items:center;gap:10px}
+.header-icon{width:34px;height:34px;background:linear-gradient(135deg,#0284c7,#0369a1);
+  border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:17px}
+.header-title{font-size:15px;font-weight:800;color:var(--text)}
+.lang-switcher{display:flex;gap:4px}
+.lang-btn{background:transparent;border:1px solid var(--border);color:var(--text2);
+  border-radius:var(--r-sm);padding:4px 10px;font-size:12px;cursor:pointer;transition:.15s}
+.lang-btn:hover{border-color:var(--border2);color:var(--text)}
+.lang-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:700}
+
+/* ── Main ── */
+.main{flex:1;padding:20px 24px;max-width:960px;margin:0 auto;width:100%}
+
+/* ── Search card ── */
+.search-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;margin-bottom:20px;box-shadow:var(--shadow)}
+
+.trip-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.trip-btn{background:transparent;border:1.5px solid var(--border);color:var(--text2);
+  border-radius:20px;padding:5px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.trip-btn:hover{border-color:var(--border2);color:var(--text)}
+.trip-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.direct-check{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);
+  cursor:pointer;margin-left:auto}
+.direct-check input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
+
+.search-fields{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:16px}
+.field-group{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field-group-wide{flex:1;min-width:180px}
+.field-group-date{width:160px}
+.field-group-sm{width:110px}
+.field-label{font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em}
+
+/* ── Airport autocomplete ── */
+.ap-wrap{position:relative}
+.ap-field{display:flex;align-items:center;background:var(--bg);
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  padding:0 10px;height:40px;gap:6px;transition:.15s}
+.ap-field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.ap-field.ap-selected{border-color:var(--green);background:var(--green-bg)}
+.ap-input{flex:1;background:transparent;border:none;outline:none;font-size:14px;
+  font-weight:600;color:var(--text);font-family:inherit;min-width:0}
+.ap-input::placeholder{font-weight:400;color:var(--muted)}
+.ap-clear{background:none;border:none;color:var(--muted);font-size:16px;
+  cursor:pointer;padding:0;line-height:1;flex-shrink:0;transition:.15s}
+.ap-clear:hover{color:var(--red)}
+.ap-spin{width:14px;height:14px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ap-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-sm);
+  box-shadow:var(--shadow-md);z-index:100;overflow:hidden;max-height:280px;overflow-y:auto}
+.ap-opt{width:100%;background:none;border:none;text-align:left;
+  display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;
+  border-bottom:1px solid var(--border);transition:.1s}
+.ap-opt:last-child{border-bottom:none}
+.ap-opt:hover{background:var(--accent-bg)}
+.ap-code{font-size:15px;font-weight:800;color:var(--accent);width:36px;flex-shrink:0}
+.ap-detail{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ap-city{font-size:13px;font-weight:600;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-name{font-size:11px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-badge{font-size:14px;flex-shrink:0}
+
+/* ── Swap button ── */
+.swap-col{display:flex;align-items:flex-end;padding-bottom:1px}
+.swap-btn{background:var(--bg);border:1.5px solid var(--border);color:var(--text2);
+  border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+.swap-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+
+/* ── Date / count inputs ── */
+.date-input{width:100%;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--r-sm);padding:0 12px;height:40px;font-size:14px;
+  font-weight:600;color:var(--text);outline:none;transition:.15s;font-family:inherit}
+.date-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+.num-row{display:flex;align-items:center;height:40px;gap:0;
+  background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);overflow:hidden;
+  transition:.15s}
+.num-row:focus-within{border-color:var(--accent)}
+.num-btn{background:transparent;border:none;color:var(--text2);
+  width:32px;height:100%;font-size:18px;cursor:pointer;transition:.1s;
+  display:flex;align-items:center;justify-content:center}
+.num-btn:hover{background:var(--accent-bg);color:var(--accent)}
+.num-val{flex:1;text-align:center;font-size:15px;font-weight:700;color:var(--text)}
+
+/* ── Search button ── */
+.search-btn{width:100%;height:44px;background:var(--accent);color:#fff;border:none;
+  border-radius:var(--r-sm);font-size:15px;font-weight:700;cursor:pointer;
+  transition:.15s;font-family:inherit;letter-spacing:.02em}
+.search-btn:hover:not(:disabled){background:var(--accent-h)}
+.search-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── Loading / error ── */
+.loading-full{display:flex;flex-direction:column;align-items:center;gap:14px;
+  padding:60px 20px;color:var(--muted)}
+.loading-full .spinner{width:26px;height:26px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.error-banner{background:var(--red-bg);border:1px solid #fca5a5;border-radius:var(--r-sm);
+  padding:14px 16px;color:var(--red);font-size:13px;margin-bottom:16px;line-height:1.5}
+.config-banner{background:#fef3c7;border:1px solid #fbbf24;border-radius:var(--r-sm);
+  padding:14px 16px;color:#92400e;font-size:13px;margin-bottom:16px;line-height:1.6}
+.no-results{text-align:center;padding:60px 20px;color:var(--muted)}
+.no-results-icon{font-size:40px;margin-bottom:12px;opacity:.5}
+.no-results-text{font-size:14px}
+
+/* ── Results ── */
+.results-header{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.results-count{font-size:13px;font-weight:700;color:var(--text2)}
+.sort-btns{display:flex;gap:4px}
+.sort-btn{background:transparent;border:1px solid var(--border);color:var(--text2);
+  border-radius:var(--r-sm);padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.sort-btn:hover{border-color:var(--border2);color:var(--text)}
+.sort-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+
+/* ── Flight card ── */
+.flights-list{display:flex;flex-direction:column;gap:10px}
+.flight-card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;transition:.15s}
+.flight-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md)}
+
+/* Itinerary block */
+.itin{padding:16px 16px 12px}
+.itin+.itin{border-top:1px dashed var(--border2);background:var(--bg)}
+.itin-label{font-size:10px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.itin-label-return{color:var(--accent)}
+
+/* Route row */
+.route-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.route-point{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:52px}
+.route-point-r{align-items:flex-end}
+.r-time{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1}
+.r-iata{font-size:13px;font-weight:700;color:var(--accent)}
+.r-term{font-size:10px;color:var(--muted)}
+.route-mid{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.r-dur{font-size:12px;font-weight:600;color:var(--text2)}
+.r-line{display:flex;align-items:center;width:100%;position:relative}
+.r-line::before{content:'';position:absolute;left:0;right:0;height:1px;background:var(--border2)}
+.r-dot{width:6px;height:6px;background:var(--surface);border:2px solid var(--border2);
+  border-radius:50%;position:relative;z-index:1;flex-shrink:0;margin:0 auto}
+.r-stops{font-size:11px;color:var(--text2);font-weight:600}
+.r-stops.direct{color:var(--green);font-weight:700}
+
+/* Airline + flight info */
+.flight-info-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.carrier-name{font-size:12px;font-weight:600;color:var(--text2)}
+.flight-num{font-size:11px;color:var(--muted);font-family:'Courier New',monospace}
+
+/* Connections */
+.conn-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.conn-tag{background:var(--accent-bg);color:var(--accent);border-radius:4px;
+  padding:2px 8px;font-size:11px;font-weight:600}
+
+/* Segment detail (expanded) */
+.seg-detail{display:flex;align-items:center;gap:10px;padding:6px 0;
+  border-top:1px solid var(--border);margin-top:6px;flex-wrap:wrap}
+.seg-flight{font-size:11px;font-weight:700;color:var(--muted);
+  background:var(--bg);border-radius:4px;padding:2px 6px}
+.seg-route{font-size:12px;color:var(--text);font-weight:600;flex:1}
+.seg-dur{font-size:11px;color:var(--muted)}
+
+/* Card footer */
+.card-footer{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-top:1px solid var(--border);background:var(--bg)}
+.price-block{display:flex;flex-direction:column;gap:1px}
+.price-total{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:-.5px}
+.price-seats{font-size:11px;color:var(--muted)}
+.expand-btn{background:var(--surface);border:1px solid var(--border);color:var(--text2);
+  border-radius:var(--r-sm);padding:6px 14px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:.15s}
+.expand-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+
+/* ── Responsive ── */
+@media(max-width:640px){
+  .main{padding:12px}
+  .header{padding:0 14px}
+  .search-fields{gap:10px}
+  .field-group-wide{min-width:100%;flex:unset}
+  .field-group-date{width:calc(50% - 5px)}
+  .swap-col{display:none}
+  .r-time{font-size:18px}
+  .price-total{font-size:18px}
+}
