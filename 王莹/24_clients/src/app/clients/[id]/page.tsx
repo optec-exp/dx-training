@@ -75,29 +75,32 @@ export default async function ClientDetailPage({
   }, 0);
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen" style={{background:'#f4f4f2'}}>
       {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <Link href="/" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600 mb-3 transition-colors">
+      <header style={{background:'#0a1628'}} className="px-6 py-5">
+        <Link href="/" className="inline-flex items-center gap-1 text-xs mb-3 transition-colors" style={{color:'#c9a84c'}}>
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          顧客一覧
+          顧客一覧へ戻る
         </Link>
-        <h1 className="text-xl font-semibold text-gray-900">{clientName}</h1>
-        <p className="text-sm text-gray-500 mt-0.5">案件履歴</p>
+        <p className="text-xs tracking-widest uppercase mb-0.5" style={{color:'#c9a84c'}}>Case History</p>
+        <h1 className="text-xl font-bold text-white">{clientName}</h1>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-4">
+      <div className="p-6 space-y-5">
         {/* サマリーカード */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white rounded-xl shadow-sm px-5 py-4">
-            <p className="text-xs text-gray-500 mb-1">案件数</p>
-            <p className="text-2xl font-bold text-gray-900">{cases.length} <span className="text-base font-normal text-gray-400">件</span></p>
+          <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4" style={{borderLeftColor:'#0a1628'}}>
+            <p className="text-xs mb-1" style={{color:'#c9a84c'}}>案件数</p>
+            <p className="text-2xl font-bold" style={{color:'#0a1628'}}>
+              {cases.length}<span className="text-sm font-normal text-slate-400 ml-1">件</span>
+            </p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm px-5 py-4">
-            <p className="text-xs text-gray-500 mb-1">円換算粗利益 合計</p>
-            <p className={`text-2xl font-bold ${totalProfit >= 0 ? 'text-blue-700' : 'text-red-600'}`}>
+          <div className="bg-white rounded-lg shadow-sm px-5 py-4 border-l-4" style={{borderLeftColor:'#c9a84c'}}>
+            <p className="text-xs mb-1" style={{color:'#c9a84c'}}>円換算粗利益 合計</p>
+            <p className={`text-2xl font-bold ${totalProfit >= 0 ? '' : 'text-red-500'}`}
+              style={totalProfit >= 0 ? {color:'#0a1628'} : {}}>
               {new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(totalProfit)}
             </p>
           </div>
@@ -105,32 +108,32 @@ export default async function ClientDetailPage({
 
         {/* 案件テーブル */}
         {cases.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm px-5 py-16 text-center text-gray-400">
-            <p>この顧客の案件履歴はありません</p>
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm px-5 py-16 text-center text-slate-400">
+            この顧客の案件履歴はありません
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">当社案件番号</th>
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">請求日</th>
-                  <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">ステータス</th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">円換算粗利益</th>
+                <tr style={{background:'#0a1628'}}>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-white uppercase tracking-wide">当社案件番号</th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-white uppercase tracking-wide">納品完了日（請求日）</th>
+                  <th className="text-center px-6 py-3 text-xs font-semibold text-white uppercase tracking-wide">ステータス</th>
+                  <th className="text-right px-6 py-3 text-xs font-semibold text-white uppercase tracking-wide">円換算粗利益</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {cases.map((c) => {
                   const profit = parseFloat(c['円換算粗利益'].value);
-                  const profitColor = isNaN(profit) ? 'text-gray-400' : profit >= 0 ? 'text-gray-900' : 'text-red-600';
+                  const profitClass = isNaN(profit) ? 'text-slate-400' : profit >= 0 ? 'text-blue-600' : 'text-red-500';
                   return (
-                    <tr key={c.$id.value} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-3.5 font-mono text-gray-800">{c['当社案件番号'].value || '—'}</td>
-                      <td className="px-5 py-3.5 text-gray-600">{formatDate(c['請求日'].value)}</td>
-                      <td className="px-5 py-3.5 text-center">
+                    <tr key={c.$id.value} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-3.5 font-mono font-medium text-slate-700">{c['当社案件番号'].value || '—'}</td>
+                      <td className="px-6 py-3.5 text-slate-500">{formatDate(c['請求日'].value)}</td>
+                      <td className="px-6 py-3.5 text-center">
                         <CancelBadge value={c['案件取消'].value} />
                       </td>
-                      <td className={`px-5 py-3.5 text-right font-medium tabular-nums ${profitColor}`}>
+                      <td className={`px-6 py-3.5 text-right font-semibold tabular-nums ${profitClass}`}>
                         {formatCurrency(c['円換算粗利益'].value)}
                       </td>
                     </tr>

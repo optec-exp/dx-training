@@ -38,13 +38,14 @@ export async function GET(
     record['会社名_現地名']?.value?.trim() ||
     record['会社名_英名']?.value?.trim() ||
     '';
+  const uKey = record['顧客Uキー']?.value?.trim() || '';
 
-  if (!clientName) {
+  if (!clientName && !uKey) {
     return NextResponse.json({ error: 'Client not found' }, { status: 404 });
   }
 
-  // Step 2: App #1001 から顧客名で案件履歴を取得
-  const query = encodeURIComponent(`顧客名 = "${clientName}" order by 請求日 desc`);
+  // Step 2: App #1001 から顧客Uキーで案件履歴を取得
+  const query = encodeURIComponent(`顧客Uキー = "${uKey}" order by 請求日 desc`);
   const caseUrl = `https://${SUBDOMAIN}.cybozu.com/k/v1/records.json?app=${CASE_APP_ID}&limit=500&query=${query}&${CASE_FIELDS}`;
 
   const caseRes = await fetch(caseUrl, {
@@ -60,7 +61,7 @@ export async function GET(
   const caseData = await caseRes.json();
 
   return NextResponse.json({
-    clientName,
+    clientName: clientName || uKey,
     cases: caseData.records,
   });
 }
