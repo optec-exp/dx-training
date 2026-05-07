@@ -30,12 +30,13 @@ export function getGradient(weatherMain: string): string {
   return map[weatherMain] ?? 'from-sky-400 to-blue-500'
 }
 
-export function formatDate(dateStr: string): string {
+export function formatDate(dateStr: string, lang: 'zh' | 'ja' = 'zh'): string {
   const date = new Date(dateStr)
-  const days = ['日', '月', '火', '水', '木', '金', '土']
+  const daysZh = ['日', '一', '二', '三', '四', '五', '六']
+  const daysJa = ['日', '月', '火', '水', '木', '金', '土']
   const month = date.getMonth() + 1
   const day = date.getDate()
-  const dow = days[date.getDay()]
+  const dow = lang === 'ja' ? daysJa[date.getDay()] : daysZh[date.getDay()]
   return `${month}/${day}（${dow}）`
 }
 
