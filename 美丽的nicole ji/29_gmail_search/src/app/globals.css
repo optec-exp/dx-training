@@ -1,0 +1,17 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: Arial, 'Helvetica Neue', sans-serif;
+  background: #f5f7fa;
+  color: #202124;
+  -webkit-font-smoothing: antialiased;
+}
+
+input:focus { outline: 2px solid #1a73e8; outline-offset: -1px; }
+button:hover { opacity: 0.88; }
