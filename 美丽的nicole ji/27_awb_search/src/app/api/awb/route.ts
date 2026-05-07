@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
   if (dateTo)   conditions.push(`ETD <= "${dateTo}"`);
   if (customer) conditions.push(`顧客名 like "${customer}"`);
   if (status)   conditions.push(`操作ステータス in ("${status}")`);
-  if (mode)     conditions.push(`Mode = "${mode}"`);
+  if (mode)     conditions.push(`Mode in ("${mode}")`);
   if (awb)      conditions.push(`AWB_NO like "${awb}"`);
 
   const wherePart = conditions.length > 0 ? conditions.join(' and ') + ' ' : '';
