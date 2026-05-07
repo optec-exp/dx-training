@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // ── 颜色常量 ──────────────────────────────────────────────
 const C = {
@@ -94,6 +94,14 @@ export default function Home() {
   const [status,   setStatus]   = useState('');
   const [mode,     setMode]     = useState('');
   const [awb,      setAwb]      = useState('');
+
+  // 动态状态列表（从 Kintone 读取）
+  const [statusList, setStatusList] = useState<string[]>([]);
+  useEffect(() => {
+    fetch('/api/statuses')
+      .then(r => r.json())
+      .then(json => { if (json.statuses) setStatusList(json.statuses); });
+  }, []);
 
   // 结果
   const [records, setRecords] = useState<KintoneRecord[]>([]);
@@ -222,10 +230,9 @@ export default function Home() {
               <div style={{ fontSize: 12, color: C.sub, marginBottom: 4 }}>状態</div>
               <select value={status} onChange={e => setStatus(e.target.value)} style={inputStyle}>
                 <option value="">全部</option>
-                <option value="◆処理中">◆処理中</option>
-                <option value="●完了">●完了</option>
-                <option value="▲要確認">▲要確認</option>
-                <option value="×キャンセル">×キャンセル</option>
+                {statusList.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
               </select>
             </div>
           </div>
