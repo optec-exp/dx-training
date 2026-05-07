@@ -22,10 +22,10 @@ interface NewsData {
 
 // ── 话题选项 ──────────────────────────────────────────────
 const TOPICS = [
-  { label: '✈ 航空',   q: 'aviation airline' },
-  { label: '📦 物流',   q: 'logistics freight cargo' },
-  { label: '🛃 海关',   q: 'customs import export trade' },
-  { label: '🚢 海运',   q: 'shipping container port' },
+  { label: '✈ 航空',   q: 'aviation' },
+  { label: '📦 物流',   q: 'logistics' },
+  { label: '🛃 海关',   q: 'customs' },
+  { label: '🚢 海运',   q: 'shipping' },
 ];
 
 // ── 日期格式化 ────────────────────────────────────────────
@@ -71,8 +71,8 @@ export default function Home() {
     setError(null);
 
     const params = new URLSearchParams({
-      q:    TOPICS[topicIdx].q,
-      page: String(page),
+      topic: TOPICS[topicIdx].q,
+      page:  String(page),
     });
 
     fetch(`/api/news?${params}`)
