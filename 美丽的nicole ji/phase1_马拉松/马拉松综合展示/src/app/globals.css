@@ -1,0 +1,6 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #030b18; color: #e2e8f0; font-family: system-ui, 'Segoe UI', sans-serif; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0d1829; }
+::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 3px; }
+input, select, textarea, button { font-family: inherit; }
