@@ -57,7 +57,7 @@ type KpiData = {
   sga: number; netProfit: number; caseCount: number;
   salesChange?: number; grossProfitChange?: number; grossMarginChange?: number;
   sgaChange?: number; netProfitChange?: number; caseChange?: number;
-  ytdSales?: number; ytdGrossProfit?: number; ytdNetProfit?: number;
+  ytdSales?: number; ytdGrossProfit?: number; ytdNetProfit?: number; ytdSga?: number; ytdCaseCount?: number;
 };
 
 function KpiCard({ cfg, kpi }: { cfg: typeof KPI_CONFIG[0]; kpi: KpiData }) {
@@ -87,8 +87,8 @@ function KpiCard({ cfg, kpi }: { cfg: typeof KPI_CONFIG[0]; kpi: KpiData }) {
           <span className="text-lg">{cfg.icon}</span>
         </div>
         <div className="text-lg font-extrabold text-slate-800 leading-tight break-all">{valueStr}</div>
-        {ytdVal !== undefined && !cfg.pct && !cfg.count && (
-          <div className="text-xs text-slate-400">YTD: <span className="font-semibold text-slate-600">{formatJPY(ytdVal)}</span></div>
+        {ytdVal !== undefined && !cfg.pct && (
+          <div className="text-xs text-slate-400">YTD: <span className="font-semibold text-slate-600">{cfg.count ? ytdVal + " 件" : formatJPY(ytdVal)}</span></div>
         )}
         <div className="flex items-center gap-2 text-xs mt-auto">
           {ch !== undefined && (
@@ -292,6 +292,8 @@ export default function Dashboard() {
     const ytdSales       = ytdRows.reduce((a,r) => a+r.sales, 0);
     const ytdGrossProfit = ytdRows.reduce((a,r) => a+r.grossProfit, 0);
     const ytdNetProfit   = ytdRows.reduce((a,r) => a+r.netProfit, 0);
+    const ytdSga         = ytdRows.reduce((a,r) => a+r.sga, 0);
+    const ytdCaseCount   = ytdRows.reduce((a,r) => a+r.caseCount, 0);
     return {
       sales: c.sales, grossProfit: c.grossProfit, grossMarginPct: c.grossMarginPct,
       sga: c.sga, netProfit: c.netProfit, caseCount: c.caseCount,
@@ -301,7 +303,7 @@ export default function Dashboard() {
       sgaChange:          p ? calcChange(c.sga, p.sga) : undefined,
       netProfitChange:    p ? calcChange(c.netProfit, p.netProfit) : undefined,
       caseChange:         p ? calcChange(c.caseCount, p.caseCount) : undefined,
-      ytdSales, ytdGrossProfit, ytdNetProfit,
+      ytdSales, ytdGrossProfit, ytdNetProfit, ytdSga, ytdCaseCount,
     };
   }, [trend, activeMonth]);
 
