@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品27 | 出口货物通知书自动生成</title>
+<style>
+  /* ===== 基础重置 ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2744;
+    --blue: #2563eb;
+    --blue-light: #eff6ff;
+    --blue-mid: #dbeafe;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --red: #dc2626;
+    --shadow: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,.12);
+  }
+
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* ===== ヘッダー ===== */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-lg);
+  }
+  header .logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: .6;
+    text-transform: uppercase;
+  }
+  header h1 {
+    font-size: 15px;
+    font-weight: 600;
+    flex: 1;
+  }
+  header .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 11px;
+    letter-spacing: .5px;
+  }
+
+  /* ===== レイアウト ===== */
+  .layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ===== 左パネル（入力フォーム） ===== */
+  .sidebar {
+    background: #fff;
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    background: var(--gray-50);
+  }
+  .sidebar-header h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  /* プリセット選択 */
+  .preset-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .preset-btn {
+    padding: 5px 11px;
+    border-radius: 6px;
+    border: 1px solid var(--blue);
+    background: transparent;
+    color: var(--blue);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .preset-btn:hover { background: var(--blue); color: #fff; }
+  .preset-btn.active { background: var(--blue); color: #fff; }
+
+  .form-body { padding: 20px 24px; flex: 1; }
+
+  /* フォームグループ */
+  .form-section {
+    margin-bottom: 20px;
+  }
+  .form-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-400);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .form-group {
+    margin-bottom: 12px;
+  }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 4px;
+  }
+  label .required {
+    color: var(--red);
+    margin-left: 2px;
+  }
+  input[type="text"],
+  input[type="date"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    transition: border-color .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* アクションボタン */
+  .sidebar-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--gray-50);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-primary {
+    width: 100%;
+    padding: 11px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background .15s, transform .1s;
+  }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-primary:active { transform: scale(.98); }
+  .btn-primary:disabled { background: var(--gray-400); cursor: not-allowed; transform: none; }
+
+  /* 生成結果バナー */
+  .result-banner {
+    margin: 0 24px 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: none;
+  }
+  .result-banner.success {
+    background: var(--green-light);
+    border: 1px solid #86efac;
+    color: var(--green);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .result-banner.error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: var(--red);
+    display: block;
+  }
+  .result-banner a {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+  }
+  .result-banner .link-view { background: var(--green); color: #fff; }
+  .result-banner .link-dl { background: transparent; border: 1px solid var(--green); color: var(--green); }
+  .btn-secondary {
+    width: 100%;
+    padding: 9px;
+    background: transparent;
+    color: var(--gray-600);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-secondary:hover { background: var(--gray-100); color: var(--gray-800); }
+
+  /* ===== 右パネル（プレビュー） ===== */
+  .preview-panel {
+    background: var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .preview-toolbar {
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .preview-toolbar h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    flex: 1;
+  }
+  .preview-info {
+    font-size: 11px;
+    color: var(--gray-400);
+    background: var(--gray-100);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .btn-pdf {
+    padding: 8px 18px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .15s;
+  }
+  .btn-pdf:hover { background: #15803d; }
+
+  .preview-stage {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 32px 24px;
+  }
+
+  /* ===== 文書プレビュー本体 ===== */
+  .doc-paper {
+    background: #fff;
+    width: 794px; /* A4 横 96dpi近似 */
+    min-height: 1123px;
+    box-shadow: var(--shadow-lg);
+    border-radius: 2px;
+    padding: 60px 72px;
+    position: relative;
+    font-family: 'Yu Mincho', 'Hiragino Mincho ProN', Georgia, serif;
+  }
+
+  /* 透かし */
+  .doc-paper::before {
+    content: 'OPTEC';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 120px;
+    font-weight: 900;
+    color: rgba(37,99,235,.04);
+    letter-spacing: 8px;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* 文書ヘッダー */
+  .doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--navy);
+  }
+  .doc-company {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .doc-company-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-company-sub {
+    font-size: 10px;
+    color: var(--gray-400);
+    letter-spacing: 1px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-meta {
+    text-align: right;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-doc-no {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 4px;
+  }
+  .doc-doc-no span { font-weight: 700; color: var(--navy); }
+  .doc-date {
+    font-size: 12px;
+    color: var(--gray-600);
+  }
+  .doc-date span { font-weight: 600; }
+
+  /* 文書タイトル */
+  .doc-title-block {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .doc-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 6px;
+    display: inline-block;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--blue);
+  }
+  .doc-subtitle {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 6px;
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  /* 宛先・発信者ブロック */
+  .doc-parties {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .doc-party-box {
+    padding: 14px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    background: var(--gray-50);
+  }
+  .doc-party-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray-400);
+    margin-bottom: 6px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-party-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 2px;
+  }
+  .doc-party-detail {
+    font-size: 11px;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  /* 案件情報テーブル */
+  .doc-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--blue);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--blue-mid);
+  }
+
+  .doc-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 28px;
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .doc-info-cell {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .doc-info-cell:nth-child(even) { border-right: none; }
+  .doc-info-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .doc-info-key {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-400);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-info-val {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  /* 貨物明細テーブル */
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+    font-size: 13px;
+  }
+  .doc-table thead tr {
+    background: var(--navy);
+    color: #fff;
+  }
+  .doc-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-table th:last-child { text-align: right; }
+  .doc-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-800);
+    vertical-align: top;
+  }
+  .doc-table td:last-child { text-align: right; }
+  .doc-table tbody tr:nth-child(even) { background: var(--gray-50); }
+  .doc-table tfoot tr { background: var(--blue-light); }
+  .doc-table tfoot td {
+    padding: 10px 12px;
+    font-weight: 700;
+    border-top: 2px solid var(--blue);
+    border-bottom: none;
+    color: var(--navy);
+  }
+
+  /* 備考 */
+  .doc-remarks {
+    padding: 14px 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: 4px;
+    background: var(--gray-50);
+    min-height: 60px;
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+  .doc-remarks.empty { color: var(--gray-400); font-style: italic; }
+
+  /* 署名欄 */
+  .doc-signature {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .doc-sig-box {
+    width: 220px;
+    text-align: center;
+  }
+  .doc-sig-label {
+    font-size: 10px;
+    color: var(--gray-400);
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .doc-sig-line {
+    border-top: 1px solid var(--gray-800);
+    padding-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+  .doc-sig-dept {
+    font-size: 10px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  /* フッター */
+  .doc-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 72px;
+    right: 72px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--gray-400);
+    border-top: 1px solid var(--gray-200);
+    padding-top: 8px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  /* ===== 空フィールド表示 ===== */
+  .placeholder-empty {
+    color: var(--gray-400);
+    font-style: italic;
+    font-size: .9em;
+  }
+
+  /* ===== 更新アニメ ===== */
+  @keyframes highlight {
+    0% { background: rgba(37,99,235,.1); }
+    100% { background: transparent; }
+  }
+  .just-updated {
+    animation: highlight 1s ease-out;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== 印刷・PDF出力 ===== */
+  @media print {
+    body { background: #fff; }
+    header, .sidebar, .preview-toolbar { display: none !important; }
+    .layout { display: block; }
+    .preview-panel { background: #fff; overflow: visible; }
+    .preview-stage { padding: 0; justify-content: flex-start; }
+    .doc-paper {
+      box-shadow: none;
+      width: 100%;
+      min-height: auto;
+      padding: 20mm 25mm;
+    }
+    .doc-paper::before { display: none; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">OPTEC</div>
+  <h1>出口货物通知书 — 自動生成システム</h1>
+  <div class="badge">作品 27 / Day 21</div>
+</header>
+
+<div class="layout">
+
+  <!-- ===== 左：入力フォーム ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>データ入力</h2>
+      <div class="preset-bar">
+        <button class="preset-btn" onclick="loadPreset(0)">案件①</button>
+        <button class="preset-btn" onclick="loadPreset(1)">案件②</button>
+        <button class="preset-btn" onclick="loadPreset(2)">案件③</button>
+        <button class="preset-btn" onclick="clearForm()">クリア</button>
+      </div>
+    </div>
+
+    <div class="form-body">
+
+      <!-- 文書情報 -->
+      <div class="form-section">
+        <div class="form-section-title">文書情報</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>文書番号 <span class="required">*</span></label>
+            <input type="text" id="docNo" placeholder="EX-2026-001" oninput="render()">
+          </div>
+          <div class="form-group">
+            <label>発行日 <span class="required">*</span></label>
+            <input type="date" id="issueDate" oninput="render()">
+          </div>
+        </div>
+      </div>
+
+      <!-- 宛先 -->
+      <div class="form-section">
+        <div class="form-section-title">宛先（客户）</div>
+        <div class="form-group">
+          <label>会社名 <span class="required">*</span></label>
+          <input type="text" id="toCompany" placeholder="〇〇株式会社" oninput="render()">
+        </div>
+        <div class="form-group">
+          <label>担当者名</label>
+          <input type="text" id="toContact" placeholder="田中 太郎 様" oninput="render()">
+        </div>
+      </div>
+
+      <!-- 貨物情報 -->
+      <div class="form-section">
+        <div class="form-section-title">貨物情報</div>
+        <div class="form-group">
+          <label>AWB番号 <span class="required">*</span></label>
+          <input type="text" id="awbNo" placeholder="180-12345678" oninput="render()">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>出発地</label>
+            <input type="text" id="origin" placeholder="NRT" oninput="render()">
+          </div>
+          <div class="form-group">
+            <label>仕向地</label>
+            <input type="text" id="destination" placeholder="LAX" oninput="render()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>出発予定日</label>
+            <input type="date" id="flightDate" oninput="render()">
+          </div>
+          <div class="form-group">
+            <label>便名</label>
+            <input type="text" id="flightNo" placeholder="NH006" oninput="render()">
+          </div>
+        </div>
+      </div>
+
+      <!-- 貨物明細 -->
+      <div class="form-section">
+        <div class="form-section-title">品目（最大3件）</div>
+        <div id="items-container">
+          <!-- item rows injected by JS -->
+        </div>
+      </div>
+
+      <!-- 担当者 -->
+      <div class="form-section">
+        <div class="form-section-title">担当者・備考</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>担当者名 <span class="required">*</span></label>
+            <input type="text" id="staffName" placeholder="王 莹" oninput="render()">
+          </div>
+          <div class="form-group">
+            <label>部署</label>
+            <input type="text" id="staffDept" placeholder="DX室" oninput="render()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>備考</label>
+          <textarea id="remarks" placeholder="特記事項があれば入力してください…" oninput="render()"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /form-body -->
+
+    <div class="result-banner" id="resultBanner"></div>
+    <div class="sidebar-footer">
+      <button class="btn-primary" id="generateBtn" onclick="generateDoc()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        Google DocsでPDF生成
+      </button>
+      <button class="btn-secondary" onclick="clearForm()">入力内容をリセット</button>
+    </div>
+  </aside>
+
+  <!-- ===== 右：プレビュー ===== -->
+  <div class="preview-panel">
+    <div class="preview-toolbar">
+      <h3>リアルタイムプレビュー</h3>
+      <div class="preview-info">A4 縦 / 印刷最適化済み</div>
+      <button class="btn-pdf" onclick="generateDoc()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PDF 生成
+      </button>
+    </div>
+
+    <div class="preview-stage">
+      <div class="doc-paper" id="docPaper">
+
+        <!-- 文書ヘッダー -->
+        <div class="doc-header">
+          <div class="doc-company">
+            <div class="doc-company-name">OPTEC</div>
+            <div class="doc-company-sub">OPTEC EXPRESS CO., LTD.</div>
+            <div class="doc-company-sub" style="margin-top:2px;">DX室 / 国際物流部</div>
+          </div>
+          <div class="doc-meta">
+            <div class="doc-doc-no">文書番号：<span id="p-docNo">—</span></div>
+            <div class="doc-date">発行日：<span id="p-issueDate">—</span></div>
+          </div>
+        </div>
+
+        <!-- タイトル -->
+        <div class="doc-title-block">
+          <div class="doc-title">出口货物通知书</div>
+          <div class="doc-subtitle">EXPORT CARGO NOTIFICATION</div>
+        </div>
+
+        <!-- 宛先・発信者 -->
+        <div class="doc-parties">
+          <div class="doc-party-box">
+            <div class="doc-party-label">To / 宛先</div>
+            <div class="doc-party-name" id="p-toCompany">—</div>
+            <div class="doc-party-detail" id="p-toContact"></div>
+          </div>
+          <div class="doc-party-box">
+            <div class="doc-party-label">From / 発信元</div>
+            <div class="doc-party-name">OPTEC EXPRESS CO., LTD.</div>
+            <div class="doc-party-detail">DX室 国際物流部<br>Tel: 03-XXXX-XXXX</div>
+          </div>
+        </div>
+
+        <!-- フライト情報 -->
+        <div class="doc-section-title">Shipment Information / 出荷情報</div>
+        <div class="doc-info-grid">
+          <div class="doc-info-cell">
+            <span class="doc-info-key">AWB No.</span>
+            <span class="doc-info-val" id="p-awbNo">—</span>
+          </div>
+          <div class="doc-info-cell">
+            <span class="doc-info-key">Flight No. / 便名</span>
+            <span class="doc-info-val" id="p-flightNo">—</span>
+          </div>
+          <div class="doc-info-cell">
+            <span class="doc-info-key">Origin / 出発地</span>
+            <span class="doc-info-val" id="p-origin">—</span>
+          </div>
+          <div class="doc-info-cell">
+            <span class="doc-info-key">Destination / 仕向地</span>
+            <span class="doc-info-val" id="p-destination">—</span>
+          </div>
+          <div class="doc-info-cell" style="grid-column: 1/-1; border-right: none;">
+            <span class="doc-info-key">Departure Date / 出発予定日</span>
+            <span class="doc-info-val" id="p-flightDate">—</span>
+          </div>
+        </div>
+
+        <!-- 貨物明細 -->
+        <div class="doc-section-title">Cargo Details / 貨物明細</div>
+        <table class="doc-table">
+          <thead>
+            <tr>
+              <th>品名 / Description</th>
+              <th>数量 / Qty</th>
+              <th>重量(kg) / Weight</th>
+              <th>金額(JPY) / Amount</th>
+            </tr>
+          </thead>
+          <tbody id="p-items">
+            <tr><td colspan="4" class="placeholder-empty" style="text-align:center;padding:20px;">品目を入力してください</td></tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">合計 / Total</td>
+              <td id="p-totalWeight">—</td>
+              <td id="p-totalAmount">—</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- 備考 -->
+        <div class="doc-section-title">Remarks / 備考</div>
+        <div class="doc-remarks" id="p-remarks"><span class="placeholder-empty">特記事項なし</span></div>
+
+        <!-- 署名 -->
+        <div class="doc-signature">
+          <div class="doc-sig-box">
+            <div class="doc-sig-label">AUTHORIZED BY / 担当者</div>
+            <div class="doc-sig-line" id="p-staffName">—</div>
+            <div class="doc-sig-dept" id="p-staffDept"></div>
+          </div>
+        </div>
+
+        <!-- フッター -->
+        <div class="doc-footer">
+          <span>OPTEC EXPRESS CO., LTD. — Confidential</span>
+          <span id="p-footerDocNo"></span>
+        </div>
+
+      </div><!-- /doc-paper -->
+    </div><!-- /preview-stage -->
+  </div><!-- /preview-panel -->
+
+</div><!-- /layout -->
+
+<script>
+  /* ========================================================
+     品目入力行の生成
+  ======================================================== */
+  const ITEM_COUNT = 3;
+
+  function buildItemRows() {
+    const container = document.getElementById('items-container');
+    container.innerHTML = '';
+    for (let i = 0; i < ITEM_COUNT; i++) {
+      container.innerHTML += `
+        <div style="margin-bottom:12px;padding:10px;border:1px solid var(--gray-200);border-radius:6px;background:var(--gray-50);">
+          <div style="font-size:10px;font-weight:700;color:var(--gray-400);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">品目 ${i + 1}</div>
+          <div class="form-group">
+            <label>品名</label>
+            <input type="text" id="item${i}_name" placeholder="品名を入力" oninput="render()">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>数量</label>
+              <input type="number" id="item${i}_qty" placeholder="0" min="0" oninput="render()">
+            </div>
+            <div class="form-group">
+              <label>重量(kg)</label>
+              <input type="number" id="item${i}_weight" placeholder="0.0" min="0" step="0.1" oninput="render()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>金額(JPY)</label>
+            <input type="number" id="item${i}_amount" placeholder="0" min="0" oninput="render()">
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  /* ========================================================
+     テンプレートエンジン：値を取得してプレビューへ反映
+  ======================================================== */
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function set(id, text, fallback = '—') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text || fallback;
+  }
+
+  function fmt(num, decimals = 0) {
+    if (!num && num !== 0) return '—';
+    return Number(num).toLocaleString('ja-JP', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+
+  function fmtDate(dateStr) {
+    if (!dateStr) return '—';
+    const [y, m, d] = dateStr.split('-');
+    return `${y}年${m}月${d}日`;
+  }
+
+  function render() {
+    /* 文書情報 */
+    set('p-docNo', val('docNo'));
+    set('p-issueDate', fmtDate(val('issueDate')));
+    set('p-footerDocNo', val('docNo') ? `Doc No. ${val('docNo')}` : '');
+
+    /* 宛先 */
+    set('p-toCompany', val('toCompany'));
+    set('p-toContact', val('toContact'), '');
+
+    /* フライト */
+    set('p-awbNo', val('awbNo'));
+    set('p-flightNo', val('flightNo'));
+    set('p-origin', val('origin'));
+    set('p-destination', val('destination'));
+    set('p-flightDate', fmtDate(val('flightDate')));
+
+    /* 貨物明細テーブル */
+    const tbody = document.getElementById('p-items');
+    let totalWeight = 0, totalAmount = 0;
+    let rows = '';
+    let hasItems = false;
+
+    for (let i = 0; i < ITEM_COUNT; i++) {
+      const name   = val(`item${i}_name`);
+      const qty    = val(`item${i}_qty`);
+      const weight = parseFloat(val(`item${i}_weight`)) || 0;
+      const amount = parseFloat(val(`item${i}_amount`)) || 0;
+
+      if (!name) continue;
+      hasItems = true;
+      totalWeight += weight;
+      totalAmount += amount;
+
+      rows += `<tr>
+        <td>${name}</td>
+        <td>${qty ? fmt(qty) : '—'}</td>
+        <td>${weight ? fmt(weight, 1) : '—'}</td>
+        <td>${amount ? '¥' + fmt(amount) : '—'}</td>
+      </tr>`;
+    }
+
+    tbody.innerHTML = hasItems
+      ? rows
+      : `<tr><td colspan="4" class="placeholder-empty" style="text-align:center;padding:20px;">品目を入力してください</td></tr>`;
+
+    set('p-totalWeight', hasItems ? fmt(totalWeight, 1) + ' kg' : '—');
+    set('p-totalAmount', hasItems ? '¥' + fmt(totalAmount) : '—');
+
+    /* 備考 */
+    const remarksEl = document.getElementById('p-remarks');
+    const rText = val('remarks');
+    remarksEl.innerHTML = rText
+      ? rText.replace(/\n/g, '<br>')
+      : '<span class="placeholder-empty">特記事項なし</span>';
+
+    /* 担当者 */
+    set('p-staffName', val('staffName'));
+    set('p-staffDept', val('staffDept'), '');
+  }
+
+  /* ========================================================
+     プリセットデータ
+  ======================================================== */
+  const PRESETS = [
+    {
+      docNo: 'EX-2026-0512',
+      issueDate: '2026-05-12',
+      toCompany: '山田電機株式会社',
+      toContact: '山田 太郎 様',
+      awbNo: '180-23456789',
+      origin: 'NRT',
+      destination: 'LAX',
+      flightDate: '2026-05-15',
+      flightNo: 'NH006',
+      staffName: '王 莹',
+      staffDept: 'DX室 / 財務',
+      remarks: '温度管理不要。\n取り扱い注意：精密機器。',
+      items: [
+        { name: '精密電子部品（Type-A）', qty: '50', weight: '12.5', amount: '850000' },
+        { name: '制御基板ユニット', qty: '10', weight: '5.0', amount: '320000' },
+        { name: '', qty: '', weight: '', amount: '' },
+      ]
+    },
+    {
+      docNo: 'EX-2026-0489',
+      issueDate: '2026-05-10',
+      toCompany: '上海光電科技有限公司',
+      toContact: '李 明 様',
+      awbNo: '160-98765432',
+      origin: 'NRT',
+      destination: 'PVG',
+      flightDate: '2026-05-13',
+      flightNo: 'CA918',
+      staffName: '王 莹',
+      staffDept: 'DX室 / 財務',
+      remarks: '輸出許可証番号：JP2026-EX-04890\n通関書類添付済み。',
+      items: [
+        { name: '光学レンズセット', qty: '100', weight: '8.0', amount: '1200000' },
+        { name: 'センサーモジュール', qty: '200', weight: '15.0', amount: '980000' },
+        { name: 'ケーブルハーネス（2m）', qty: '500', weight: '20.0', amount: '250000' },
+      ]
+    },
+    {
+      docNo: 'EX-2026-0471',
+      issueDate: '2026-05-08',
+      toCompany: 'OPTEC USA Inc.',
+      toContact: 'John Smith',
+      awbNo: '006-11223344',
+      origin: 'KIX',
+      destination: 'ORD',
+      flightDate: '2026-05-11',
+      flightNo: 'JL010',
+      staffName: '王 莹',
+      staffDept: 'DX室 / 財務',
+      remarks: '優先便指定。\nDelivery Before: 2026-05-12 17:00 CST',
+      items: [
+        { name: 'Medical Device Component', qty: '30', weight: '6.0', amount: '2500000' },
+        { name: '', qty: '', weight: '', amount: '' },
+        { name: '', qty: '', weight: '', amount: '' },
+      ]
+    }
+  ];
+
+  function loadPreset(idx) {
+    const p = PRESETS[idx];
+    document.getElementById('docNo').value      = p.docNo;
+    document.getElementById('issueDate').value  = p.issueDate;
+    document.getElementById('toCompany').value  = p.toCompany;
+    document.getElementById('toContact').value  = p.toContact;
+    document.getElementById('awbNo').value      = p.awbNo;
+    document.getElementById('origin').value     = p.origin;
+    document.getElementById('destination').value= p.destination;
+    document.getElementById('flightDate').value = p.flightDate;
+    document.getElementById('flightNo').value   = p.flightNo;
+    document.getElementById('staffName').value  = p.staffName;
+    document.getElementById('staffDept').value  = p.staffDept;
+    document.getElementById('remarks').value    = p.remarks;
+
+    for (let i = 0; i < ITEM_COUNT; i++) {
+      document.getElementById(`item${i}_name`).value   = p.items[i]?.name   || '';
+      document.getElementById(`item${i}_qty`).value    = p.items[i]?.qty    || '';
+      document.getElementById(`item${i}_weight`).value = p.items[i]?.weight || '';
+      document.getElementById(`item${i}_amount`).value = p.items[i]?.amount || '';
+    }
+
+    /* アクティブ状態 */
+    document.querySelectorAll('.preset-btn').forEach((b, i) => {
+      b.classList.toggle('active', i === idx);
+    });
+
+    render();
+  }
+
+  function clearForm() {
+    document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    render();
+  }
+
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza-2gC5I4hvuDOELReGBWIZjyw_DeM_MjEZWntFGnHP3b4d9tAh4V3iYrqsncUsA4oxw/exec';
+
+  function generateDoc() {
+    const banner = document.getElementById('resultBanner');
+
+    // 必須チェック
+    if (!val('toCompany') || !val('awbNo') || !val('staffName')) {
+      banner.className = 'result-banner error';
+      banner.textContent = '「宛先会社名」「AWB番号」「担当者名」は必須です。';
+      return;
+    }
+
+    // 品目データ収集・合計計算
+    let totalWeight = 0, totalAmount = 0;
+    const itemFields = {};
+    for (let i = 1; i <= 3; i++) {
+      const w = parseFloat(val(`item${i-1}_weight`)) || 0;
+      const a = parseFloat(val(`item${i-1}_amount`)) || 0;
+      itemFields[`item${i}_name`]   = val(`item${i-1}_name`);
+      itemFields[`item${i}_qty`]    = val(`item${i-1}_qty`);
+      itemFields[`item${i}_weight`] = w ? w.toFixed(1) : '';
+      itemFields[`item${i}_amount`] = a ? a.toLocaleString() : '';
+      if (val(`item${i-1}_name`)) { totalWeight += w; totalAmount += a; }
+    }
+
+    const payload = {
+      docNo:       val('docNo') || `EX-${new Date().toISOString().slice(0,10).replace(/-/g,'')}`,
+      issueDate:   val('issueDate') || new Date().toLocaleDateString('ja-JP'),
+      toCompany:   val('toCompany'),
+      toContact:   val('toContact'),
+      awbNo:       val('awbNo'),
+      flightNo:    val('flightNo'),
+      origin:      val('origin'),
+      destination: val('destination'),
+      flightDate:  val('flightDate'),
+      totalWeight: totalWeight ? totalWeight.toFixed(1) : '',
+      totalAmount: totalAmount ? totalAmount.toLocaleString() : '',
+      remarks:     val('remarks') || '特記事項なし',
+      staffName:   val('staffName'),
+      staffDept:   val('staffDept'),
+      ...itemFields
+    };
+
+    // 隠しフォームを使って POST 送信（新しいタブで開く）
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = APPS_SCRIPT_URL;
+    form.target = '_blank';
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'data';
+    input.value = JSON.stringify(payload);
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+  }
+
+  /* ========================================================
+     初期化
+  ======================================================== */
+  buildItemRows();
+  // デフォルトで今日の日付を設定
+  document.getElementById('issueDate').value = new Date().toISOString().split('T')[0];
+  render();
+</script>
+</body>
+</html>
