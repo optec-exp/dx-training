@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    font-size: 10.5pt;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 36px 48px;
+    line-height: 1.7;
+  }
+
+  /* Header */
+  .doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #1a3a5c;
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+  }
+  .company-block .company-name {
+    font-size: 17pt;
+    font-weight: bold;
+    color: #1a3a5c;
+    letter-spacing: 0.06em;
+  }
+  .company-block .company-sub {
+    font-size: 9pt;
+    color: #555;
+    margin-top: 2px;
+  }
+  .doc-meta { text-align: right; font-size: 9.5pt; color: #444; }
+  .doc-meta .doc-title {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #1a3a5c;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  /* Customer block */
+  .customer-block {
+    margin-bottom: 22px;
+    border-left: 4px solid #1a3a5c;
+    padding-left: 14px;
+  }
+  .customer-block .customer-name {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #1a1a1a;
+  }
+  .customer-block .customer-sub { font-size: 9.5pt; color: #555; }
+
+  /* Info table */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    font-size: 10pt;
+  }
+  .info-table td {
+    padding: 7px 12px;
+    border: 1px solid #ccc;
+  }
+  .info-table td.label {
+    width: 140px;
+    background: #eef2f7;
+    font-weight: bold;
+    color: #1a3a5c;
+  }
+
+  /* Service table */
+  .section-title {
+    font-size: 10.5pt;
+    font-weight: bold;
+    color: #1a3a5c;
+    background: #eef2f7;
+    border-left: 4px solid #1a3a5c;
+    padding: 6px 12px;
+    margin: 22px 0 8px;
+  }
+  .service-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+  .service-table th {
+    background: #1a3a5c;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: normal;
+  }
+  .service-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+  }
+  .service-table tr:nth-child(even) td { background: #f7f9fc; }
+
+  /* Total */
+  .total-block {
+    margin-top: 16px;
+    text-align: right;
+  }
+  .total-block .total-label { font-size: 10pt; color: #555; }
+  .total-block .total-value {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #1a3a5c;
+  }
+
+  /* Notes */
+  .notes-box {
+    margin-top: 22px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 9.5pt;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 32px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9pt;
+    color: #888;
+  }
+  .stamp-area {
+    border: 1px solid #ccc;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+    color: #ccc;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="company-block">
+      <div class="company-name">OPTEC EXPRESS INC.</div>
+      <div class="company-sub">オプテック エクスプレス株式会社</div>
+      <div class="company-sub" style="margin-top:6px; font-size:8.5pt;">
+        〒000-0000 東京都○○区○○<br>
+        TEL: 03-XXXX-XXXX　FAX: 03-XXXX-XXXX
+      </div>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-title">御　見　積　書</div>
+      <div>見積番号：<strong>{{案件番号}}</strong></div>
+      <div>発行日：{{発行日}}</div>
+      <div>担当者：{{担当者名}}</div>
+    </div>
+  </div>
+
+  <!-- Customer -->
+  <div class="customer-block">
+    <div class="customer-name">{{顧客名}} 御中</div>
+    <div class="customer-sub">下記の通りお見積り申し上げます。</div>
+  </div>
+
+  <!-- Info table -->
+  <table class="info-table">
+    <tr>
+      <td class="label">案件番号</td>
+      <td>{{案件番号}}</td>
+      <td class="label">AWB番号</td>
+      <td>{{AWB番号}}</td>
+    </tr>
+    <tr>
+      <td class="label">件名</td>
+      <td colspan="3">{{件名}}</td>
+    </tr>
+    <tr>
+      <td class="label">ステータス</td>
+      <td>{{操作ステータス}}</td>
+      <td class="label">有効期限</td>
+      <td>発行日より30日間</td>
+    </tr>
+  </table>
+
+  <!-- Service details -->
+  <div class="section-title">■ サービス内容・費用明細</div>
+  <table class="service-table">
+    <thead>
+      <tr>
+        <th style="width:40%">サービス項目</th>
+        <th style="width:15%">数量</th>
+        <th style="width:20%">単価</th>
+        <th style="width:25%">金額</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>航空貨物輸送サービス</td>
+        <td>1式</td>
+        <td>— 円</td>
+        <td>— 円</td>
+      </tr>
+      <tr>
+        <td>通関手数料</td>
+        <td>1式</td>
+        <td>— 円</td>
+        <td>— 円</td>
+      </tr>
+      <tr>
+        <td>その他費用（詳細別途）</td>
+        <td>1式</td>
+        <td>— 円</td>
+        <td>— 円</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="total-block">
+    <div class="total-label">合計金額（税別）</div>
+    <div class="total-value">別途お見積り</div>
+  </div>
+
+  <!-- Notes -->
+  <div class="notes-box">
+    <strong>備考・特記事項</strong><br>
+    ・本見積書の有効期限は発行日より30日間です。<br>
+    ・記載金額は別途消費税が加算されます。<br>
+    ・詳細はご担当者（{{担当者名}}）までお問い合わせください。
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <div>
+      OPTEC EXPRESS INC.　|　本書は自動生成された見積書です<br>
+      Generated: {{発行日}}
+    </div>
+    <div style="text-align:right;">
+      <div class="stamp-area">承認印</div>
+    </div>
+  </div>
+</body>
+</html>
