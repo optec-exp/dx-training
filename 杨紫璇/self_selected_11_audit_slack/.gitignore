@@ -1,0 +1,10 @@
+# 环境变量（含 API Key，绝对不能提交到 Git）
+.env.local
+.env
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
