@@ -1,0 +1,45 @@
+:root {
+  --dark:        #0d0d1a;
+  --card:        #12121f;
+  --card2:       #0f0f1c;
+  --border:      rgba(201,169,110,0.18);
+  --border-strong: rgba(201,169,110,0.35);
+  --gold:        #c9a96e;
+  --gold-light:  #e8c88a;
+  --text:        #e8e6e0;
+  --text-dim:    rgba(232,230,224,0.45);
+  --red:         #e05555;
+  --green:       #4caf50;
+  --blue:        #60a5fa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+input, select, textarea {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-strong);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-dim);
+}
+
+button { cursor: pointer; font-family: inherit; }
