@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+body {
+  font-family: "Hiragino Sans", "Noto Sans CJK SC", Arial, sans-serif;
+}
