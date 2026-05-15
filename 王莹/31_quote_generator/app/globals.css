@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --navy: #1a2744;
+  --gold: #b8933a;
+  --blue: #2563eb;
+}
+
+body {
+  font-family: "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", Arial, sans-serif;
+}
+
+/* ===== 印刷・PDF出力 ===== */
+@media print {
+  /* ヘッダー・サイドバー・ツールバーを非表示 */
+  #app-header,
+  #case-list-panel,
+  #quote-toolbar,
+  #empty-state {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  #quote-preview-panel {
+    background: white !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  #quote-doc {
+    box-shadow: none !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 15mm 20mm !important;
+    margin: 0 !important;
+  }
+
+  #quote-doc::before {
+    display: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
