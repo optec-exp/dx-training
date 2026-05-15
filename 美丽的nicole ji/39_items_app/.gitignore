@@ -1,0 +1,20 @@
+# dependencies
+/node_modules
+
+# Next.js
+/.next/
+/out/
+
+# env files（重要：API キーをGitに含めない）
+.env.local
+.env*.local
+
+# debug
+npm-debug.log*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
