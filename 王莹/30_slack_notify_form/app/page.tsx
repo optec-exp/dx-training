@@ -115,7 +115,6 @@ export default function Home() {
     if (!form.通貨) e.通貨 = "必須項目です";
     if (!form.取引日) e.取引日 = "必須項目です";
     if (!form.支払期日) e.支払期日 = "必須項目です";
-    if (!form.支払先.trim()) e.支払先 = "必須項目です";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -232,7 +231,7 @@ export default function Home() {
 
               {/* 費用項目 */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">費用項目 <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">費用項目</label>
                 <select value={form.費用項目} onChange={(e) => handleChange("費用項目", e.target.value)} className={inputClass("費用項目")}>
                   <option value="">選択してください</option>
                   {EXPENSE_ITEMS.map((item) => <option key={item} value={item}>{item}</option>)}
@@ -297,7 +296,7 @@ export default function Home() {
 
               {/* 支払先 Autocomplete */}
               <div ref={payeeRef} className="relative">
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">支払先 <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">支払先</label>
                 <div className="relative">
                   <input
                     type="text"
