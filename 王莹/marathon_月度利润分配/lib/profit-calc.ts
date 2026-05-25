@@ -87,12 +87,29 @@ export function distributeProfit(c: KintoneCase): CaseAllocation {
   const exportKan = isKan(c.exportTeam);
   const importKan = isKan(c.importTeam);
   if (exportKan || importKan) {
-    allocations.push({
-      team: "通关",
-      jpy: c.grossProfitJpy,
-      cny: c.grossProfitCny,
-      basis: "kan_full",
-    });
+    const kanMitsumoriTeam = c.mitsumoriTeam ? normalizeTeam(c.mitsumoriTeam) : null;
+    if (!kanMitsumoriTeam || kanMitsumoriTeam === "通关") {
+      allocations.push({
+        team: "通关",
+        jpy: c.grossProfitJpy,
+        cny: c.grossProfitCny,
+        basis: "kan_full",
+      });
+    } else {
+      const mitsumoriShare = DISTRIBUTION_RULES.mitsumori;
+      allocations.push({
+        team: kanMitsumoriTeam,
+        jpy: c.grossProfitJpy * mitsumoriShare,
+        cny: c.grossProfitCny * mitsumoriShare,
+        basis: "mitsumori",
+      });
+      allocations.push({
+        team: "通关",
+        jpy: c.grossProfitJpy * (1 - mitsumoriShare),
+        cny: c.grossProfitCny * (1 - mitsumoriShare),
+        basis: "kan_full",
+      });
+    }
     return { case: c, primaryTeam, allocations };
   }
 

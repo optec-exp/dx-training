@@ -30,17 +30,34 @@ function fmtMoney(n: number, currency: Currency): string {
 }
 
 export function CaseDetail({ report, team, currency }: Props) {
-  const filtered: { ca: CaseAllocation; amount: number; basis: string }[] = [];
+  const grouped = new Map<
+    string,
+    { ca: CaseAllocation; amount: number; bases: string[] }
+  >();
+
   for (const ca of report.caseAllocations) {
     for (const a of ca.allocations) {
       if (a.team !== team) continue;
       const amount = currency === "jpy" ? a.jpy : a.cny;
-      if (Math.abs(amount) < 0.01) continue;
-      filtered.push({ ca, amount, basis: a.basis });
+      const existing = grouped.get(ca.case.recordId);
+      if (existing) {
+        existing.amount += amount;
+        if (!existing.bases.includes(a.basis)) existing.bases.push(a.basis);
+      } else {
+        grouped.set(ca.case.recordId, {
+          ca,
+          amount,
+          bases: [a.basis],
+        });
+      }
     }
   }
 
-  if (filtered.length === 0) {
+  const rows = Array.from(grouped.values())
+    .filter((r) => Math.abs(r.amount) >= 0.01)
+    .sort((a, b) => b.amount - a.amount);
+
+  if (rows.length === 0) {
     return (
       <div className="mx-6 my-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500">
         {team} 在本月没有分配明细
@@ -62,13 +79,15 @@ export function CaseDetail({ report, team, currency }: Props) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {filtered.map((row, idx) => (
-            <tr key={`${row.ca.case.recordId}-${idx}`} className="hover:bg-white">
+          {rows.map((row) => (
+            <tr key={row.ca.case.recordId} className="hover:bg-white">
               <td className="px-3 py-2 font-mono">{row.ca.case.caseNumber || "-"}</td>
               <td className="px-3 py-2">{APP_LABEL[row.ca.case.appType]}</td>
               <td className="px-3 py-2">{row.ca.case.customerName || "-"}</td>
               <td className="px-3 py-2">{row.ca.case.customerCountry || "-"}</td>
-              <td className="px-3 py-2 text-slate-500">{BASIS_LABEL[row.basis] ?? row.basis}</td>
+              <td className="px-3 py-2 text-slate-500">
+                {row.bases.map((b) => BASIS_LABEL[b] ?? b).join(" + ")}
+              </td>
               <td className="px-3 py-2 text-right tabular-nums font-semibold">
                 {fmtMoney(row.amount, currency)}
               </td>

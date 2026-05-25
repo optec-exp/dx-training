@@ -109,7 +109,21 @@ export async function GET(req: Request) {
 
     for (const ca of report.caseAllocations) {
       const c = ca.case;
+      const byTeam = new Map<
+        string,
+        { jpy: number; cny: number; bases: string[] }
+      >();
       for (const a of ca.allocations) {
+        const existing = byTeam.get(a.team);
+        if (existing) {
+          existing.jpy += a.jpy;
+          existing.cny += a.cny;
+          if (!existing.bases.includes(a.basis)) existing.bases.push(a.basis);
+        } else {
+          byTeam.set(a.team, { jpy: a.jpy, cny: a.cny, bases: [a.basis] });
+        }
+      }
+      for (const [team, v] of byTeam) {
         detailSheet.addRow({
           appType: APP_LABEL[c.appType],
           caseNo: c.caseNumber,
@@ -122,10 +136,10 @@ export async function GET(req: Request) {
           grossCny: Math.round(c.grossProfitCny),
           kanJpy: Math.round(c.kanFeeJpy),
           kanCny: Math.round(c.kanFeeCny),
-          team: a.team,
-          basis: BASIS_LABEL[a.basis] ?? a.basis,
-          shareJpy: Math.round(a.jpy),
-          shareCny: Math.round(a.cny),
+          team,
+          basis: v.bases.map((b) => BASIS_LABEL[b] ?? b).join(" + "),
+          shareJpy: Math.round(v.jpy),
+          shareCny: Math.round(v.cny),
         });
       }
     }
