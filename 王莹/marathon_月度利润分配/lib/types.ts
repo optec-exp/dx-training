@@ -54,6 +54,32 @@ export interface TeamSummary {
   caseCount: number;
   totalJpy: number;
   totalCny: number;
+  mitsumoriJpy: number;
+  mitsumoriCny: number;
+  countryJpy: number;
+  countryCny: number;
+  opExportJpy: number;
+  opExportCny: number;
+  opImportJpy: number;
+  opImportCny: number;
+}
+
+export interface GroupedSummary {
+  name: string;
+  isGroup: boolean;
+  caseCount: number;
+  totalJpy: number;
+  totalCny: number;
+  mitsumoriJpy: number;
+  mitsumoriCny: number;
+  countryJpy: number;
+  countryCny: number;
+  opExportJpy: number;
+  opExportCny: number;
+  opImportJpy: number;
+  opImportCny: number;
+  childTeams: string[];
+  children: TeamSummary[] | null;
 }
 
 export interface MonthlyReport {
@@ -63,6 +89,7 @@ export interface MonthlyReport {
   totalProfitJpy: number;
   totalProfitCny: number;
   summaries: TeamSummary[];
+  groupedSummaries: GroupedSummary[];
   caseAllocations: CaseAllocation[];
   dataFetchedAt: number;
   fromCache: boolean;

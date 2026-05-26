@@ -21,6 +21,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const load = useCallback(
     async (y: number, m: number, forceRefresh = false) => {
@@ -50,16 +51,42 @@ export default function HomePage() {
     setYear(y);
     setMonth(m);
     setExpandedTeam(null);
+    setExpandedGroups(new Set());
   };
 
   const handleRefresh = () => {
     setExpandedTeam(null);
+    setExpandedGroups(new Set());
     load(year, month, true);
   };
 
-  const handleToggleTeam = (team: string) => {
-    setExpandedTeam((prev) => (prev === team ? null : team));
+  const handleToggleDetail = (key: string) => {
+    setExpandedTeam((prev) => (prev === key ? null : key));
   };
+
+  const handleToggleGroup = (group: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(group)) next.delete(group);
+      else next.add(group);
+      return next;
+    });
+  };
+
+  const detailTarget = (() => {
+    if (!expandedTeam || !report) return null;
+    if (expandedTeam.startsWith("group:")) {
+      const name = expandedTeam.slice("group:".length);
+      const g = report.groupedSummaries.find((x) => x.name === name);
+      if (!g) return null;
+      return { teams: g.childTeams, label: g.name };
+    }
+    if (expandedTeam.startsWith("team:")) {
+      const team = expandedTeam.slice("team:".length);
+      return { teams: [team], label: team };
+    }
+    return null;
+  })();
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
@@ -121,7 +148,7 @@ export default function HomePage() {
                 currency === "jpy" ? report.totalProfitJpy : report.totalProfitCny
               ).toLocaleString("en-US")}`}
             />
-            <StatCard label="参与分利小组数" value={String(report.summaries.length)} />
+            <StatCard label="参与分利小组数" value={String(report.groupedSummaries.length)} />
           </div>
 
           <div className="mb-4">
@@ -132,11 +159,18 @@ export default function HomePage() {
             <SummaryTable
               report={report}
               currency={currency}
+              expandedGroups={expandedGroups}
               expandedTeam={expandedTeam}
-              onToggleTeam={handleToggleTeam}
+              onToggleGroup={handleToggleGroup}
+              onToggleDetail={handleToggleDetail}
             />
-            {expandedTeam && (
-              <CaseDetail report={report} team={expandedTeam} currency={currency} />
+            {detailTarget && (
+              <CaseDetail
+                report={report}
+                teams={detailTarget.teams}
+                groupName={detailTarget.label}
+                currency={currency}
+              />
             )}
           </div>
         </>

@@ -46,12 +46,15 @@ export async function GET(req: Request) {
 
     const sumSheet = wb.addWorksheet("小组汇总");
     sumSheet.columns = [
-      { header: "小组", key: "team", width: 16 },
+      { header: "小组", key: "team", width: 18 },
       { header: "案件数", key: "count", width: 10 },
-      { header: "利润合计 (JPY)", key: "jpy", width: 20, style: { numFmt: "#,##0" } },
-      { header: "利润合计 (CNY)", key: "cny", width: 20, style: { numFmt: "#,##0" } },
-      { header: "JPY 占比", key: "pctJpy", width: 12, style: { numFmt: "0.0%" } },
-      { header: "CNY 占比", key: "pctCny", width: 12, style: { numFmt: "0.0%" } },
+      { header: "見積 (JPY)", key: "mitsumoriJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: "顾客所在国 (JPY)", key: "countryJpy", width: 18, style: { numFmt: "#,##0" } },
+      { header: "操作-輸出 (JPY)", key: "opExportJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: "操作-輸入 (JPY)", key: "opImportJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: "合计 (JPY)", key: "jpy", width: 18, style: { numFmt: "#,##0" } },
+      { header: "合计 (CNY)", key: "cny", width: 18, style: { numFmt: "#,##0" } },
+      { header: "JPY 占比", key: "pctJpy", width: 10, style: { numFmt: "0.0%" } },
     ];
     sumSheet.getRow(1).font = { bold: true };
     sumSheet.getRow(1).fill = {
@@ -62,25 +65,63 @@ export async function GET(req: Request) {
 
     const totalJpy = report.totalProfitJpy || 1;
     const totalCny = report.totalProfitCny || 1;
-    for (const s of report.summaries) {
-      sumSheet.addRow({
-        team: s.team,
-        count: s.caseCount,
-        jpy: Math.round(s.totalJpy),
-        cny: Math.round(s.totalCny),
-        pctJpy: s.totalJpy / totalJpy,
-        pctCny: s.totalCny / totalCny,
+    for (const g of report.groupedSummaries) {
+      const groupRow = sumSheet.addRow({
+        team: g.name,
+        count: g.caseCount,
+        mitsumoriJpy: Math.round(g.mitsumoriJpy),
+        countryJpy: Math.round(g.countryJpy),
+        opExportJpy: Math.round(g.opExportJpy),
+        opImportJpy: Math.round(g.opImportJpy),
+        jpy: Math.round(g.totalJpy),
+        cny: Math.round(g.totalCny),
+        pctJpy: g.totalJpy / totalJpy,
       });
+      if (g.isGroup) {
+        groupRow.font = { bold: true };
+        groupRow.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFF8FAFC" },
+        };
+      }
+      if (g.isGroup && g.children) {
+        for (const c of g.children) {
+          sumSheet.addRow({
+            team: "    └ " + c.team,
+            count: c.caseCount,
+            mitsumoriJpy: Math.round(c.mitsumoriJpy),
+            countryJpy: Math.round(c.countryJpy),
+            opExportJpy: Math.round(c.opExportJpy),
+            opImportJpy: Math.round(c.opImportJpy),
+            jpy: Math.round(c.totalJpy),
+            cny: Math.round(c.totalCny),
+            pctJpy: c.totalJpy / totalJpy,
+          });
+        }
+      }
     }
+    const sumM = report.groupedSummaries.reduce((s, g) => s + g.mitsumoriJpy, 0);
+    const sumC = report.groupedSummaries.reduce((s, g) => s + g.countryJpy, 0);
+    const sumOE = report.groupedSummaries.reduce((s, g) => s + g.opExportJpy, 0);
+    const sumOI = report.groupedSummaries.reduce((s, g) => s + g.opImportJpy, 0);
     const totalRow = sumSheet.addRow({
       team: "合计",
       count: report.totalCases,
+      mitsumoriJpy: Math.round(sumM),
+      countryJpy: Math.round(sumC),
+      opExportJpy: Math.round(sumOE),
+      opImportJpy: Math.round(sumOI),
       jpy: Math.round(report.totalProfitJpy),
       cny: Math.round(report.totalProfitCny),
       pctJpy: 1,
-      pctCny: 1,
     });
     totalRow.font = { bold: true };
+    totalRow.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFE5E7EB" },
+    };
 
     const detailSheet = wb.addWorksheet("案件明细");
     detailSheet.columns = [

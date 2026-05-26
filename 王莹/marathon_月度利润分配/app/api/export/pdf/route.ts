@@ -179,17 +179,31 @@ function ReportDoc({ report }: { report: MonthlyReport }) {
           e(Text, { style: styles.cellMoney }, "利润 (CNY)"),
           e(Text, { style: styles.cellPct }, "占比 JPY")
         ),
-        ...report.summaries.map((s) =>
-          e(
+        ...report.groupedSummaries.flatMap((g) => {
+          const groupRow = e(
             View,
-            { style: styles.row, key: s.team },
-            e(Text, { style: styles.cellTeam }, s.team),
-            e(Text, { style: styles.cellCount }, String(s.caseCount)),
-            e(Text, { style: styles.cellMoney }, `¥${fmt(s.totalJpy)}`),
-            e(Text, { style: styles.cellMoney }, `¥${fmt(s.totalCny)}`),
-            e(Text, { style: styles.cellPct }, pct(s.totalJpy, report.totalProfitJpy))
-          )
-        ),
+            { style: styles.row, key: `g-${g.name}` },
+            e(Text, { style: [styles.cellTeam, { fontWeight: "bold" }] }, g.name),
+            e(Text, { style: styles.cellCount }, String(g.caseCount)),
+            e(Text, { style: styles.cellMoney }, `¥${fmt(g.totalJpy)}`),
+            e(Text, { style: styles.cellMoney }, `¥${fmt(g.totalCny)}`),
+            e(Text, { style: styles.cellPct }, pct(g.totalJpy, report.totalProfitJpy))
+          );
+          const childRows = g.isGroup && g.children
+            ? g.children.map((c) =>
+                e(
+                  View,
+                  { style: styles.row, key: `c-${g.name}-${c.team}` },
+                  e(Text, { style: [styles.cellTeam, { color: "#64748b", paddingLeft: 12 }] }, `└ ${c.team}`),
+                  e(Text, { style: [styles.cellCount, { color: "#64748b" }] }, String(c.caseCount)),
+                  e(Text, { style: [styles.cellMoney, { color: "#64748b" }] }, `¥${fmt(c.totalJpy)}`),
+                  e(Text, { style: [styles.cellMoney, { color: "#64748b" }] }, `¥${fmt(c.totalCny)}`),
+                  e(Text, { style: [styles.cellPct, { color: "#64748b" }] }, pct(c.totalJpy, report.totalProfitJpy))
+                )
+              )
+            : [];
+          return [groupRow, ...childRows];
+        }),
         e(
           View,
           { style: styles.rowTotal },

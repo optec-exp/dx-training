@@ -58,3 +58,12 @@ export const DISTRIBUTION_RULES = {
   exportOp: 0.27,
   importOp: 0.18,
 } as const;
+
+export const TEAM_TO_GROUP: Partial<Record<Team, string>> = {
+  TCC: "Japan Desk",
+  GC: "Japan Desk",
+  EC: "Japan Desk",
+  "Japan Desk": "Japan Desk",
+};
+
+export const GROUP_ORDER: string[] = ["Japan Desk"];

@@ -1,14 +1,17 @@
 import {
   CHINA_TEAMS,
   DISTRIBUTION_RULES,
+  GROUP_ORDER,
   KAN_KEYWORDS,
   NO_OPERATION_KEYWORDS,
   TEAMS,
+  TEAM_TO_GROUP,
   type Team,
 } from "./constants";
 import type {
   AllocationDetail,
   CaseAllocation,
+  GroupedSummary,
   KintoneCase,
   MonthlyReport,
   TeamSummary,
@@ -186,6 +189,65 @@ export function distributeProfit(c: KintoneCase): CaseAllocation {
   return { case: c, primaryTeam, allocations };
 }
 
+type DimColumn = "mitsumori" | "country" | "opExport" | "opImport";
+
+function mapBasisToDimension(c: KintoneCase, basis: AllocationDetail["basis"]): DimColumn {
+  switch (basis) {
+    case "mitsumori":
+      return "mitsumori";
+    case "country":
+      return "country";
+    case "operation_export":
+      return "opExport";
+    case "operation_import":
+      return "opImport";
+    case "kan_full": {
+      const expKan = isKan(c.exportTeam);
+      const impKan = isKan(c.importTeam);
+      if (expKan && !impKan) return "opExport";
+      if (impKan && !expKan) return "opImport";
+      return "opImport";
+    }
+    case "kan_fee":
+      return "opImport";
+    case "ec_full": {
+      const exp = stripDirection(c.exportTeam);
+      if (exp === "EC") return "opExport";
+      return "opImport";
+    }
+  }
+}
+
+interface TeamAggregate {
+  jpy: number;
+  cny: number;
+  primaryCount: number;
+  mitsumoriJpy: number;
+  mitsumoriCny: number;
+  countryJpy: number;
+  countryCny: number;
+  opExportJpy: number;
+  opExportCny: number;
+  opImportJpy: number;
+  opImportCny: number;
+}
+
+function newAggregate(): TeamAggregate {
+  return {
+    jpy: 0,
+    cny: 0,
+    primaryCount: 0,
+    mitsumoriJpy: 0,
+    mitsumoriCny: 0,
+    countryJpy: 0,
+    countryCny: 0,
+    opExportJpy: 0,
+    opExportCny: 0,
+    opImportJpy: 0,
+    opImportCny: 0,
+  };
+}
+
 export function buildMonthlyReport(
   year: number,
   month: number,
@@ -197,25 +259,31 @@ export function buildMonthlyReport(
 ): MonthlyReport {
   const caseAllocations = cases.map((c) => distributeProfit(c));
 
-  const teamTotals = new Map<Team, { jpy: number; cny: number; primaryCount: number }>();
+  const teamTotals = new Map<Team, TeamAggregate>();
   for (const ca of caseAllocations) {
     if (ca.primaryTeam) {
-      const existing = teamTotals.get(ca.primaryTeam) ?? {
-        jpy: 0,
-        cny: 0,
-        primaryCount: 0,
-      };
+      const existing = teamTotals.get(ca.primaryTeam) ?? newAggregate();
       existing.primaryCount += 1;
       teamTotals.set(ca.primaryTeam, existing);
     }
     for (const a of ca.allocations) {
-      const existing = teamTotals.get(a.team) ?? {
-        jpy: 0,
-        cny: 0,
-        primaryCount: 0,
-      };
+      const existing = teamTotals.get(a.team) ?? newAggregate();
       existing.jpy += a.jpy;
       existing.cny += a.cny;
+      const dim = mapBasisToDimension(ca.case, a.basis);
+      if (dim === "mitsumori") {
+        existing.mitsumoriJpy += a.jpy;
+        existing.mitsumoriCny += a.cny;
+      } else if (dim === "country") {
+        existing.countryJpy += a.jpy;
+        existing.countryCny += a.cny;
+      } else if (dim === "opExport") {
+        existing.opExportJpy += a.jpy;
+        existing.opExportCny += a.cny;
+      } else if (dim === "opImport") {
+        existing.opImportJpy += a.jpy;
+        existing.opImportCny += a.cny;
+      }
       teamTotals.set(a.team, existing);
     }
   }
@@ -226,6 +294,14 @@ export function buildMonthlyReport(
       caseCount: v.primaryCount,
       totalJpy: v.jpy,
       totalCny: v.cny,
+      mitsumoriJpy: v.mitsumoriJpy,
+      mitsumoriCny: v.mitsumoriCny,
+      countryJpy: v.countryJpy,
+      countryCny: v.countryCny,
+      opExportJpy: v.opExportJpy,
+      opExportCny: v.opExportCny,
+      opImportJpy: v.opImportJpy,
+      opImportCny: v.opImportCny,
     }))
     .filter((s) => s.caseCount > 0 || Math.abs(s.totalJpy) > 0.01 || Math.abs(s.totalCny) > 0.01)
     .sort((a, b) => b.totalJpy - a.totalJpy);
@@ -239,6 +315,8 @@ export function buildMonthlyReport(
     0
   );
 
+  const groupedSummaries = buildGroupedSummaries(summaries);
+
   return {
     year,
     month,
@@ -246,8 +324,105 @@ export function buildMonthlyReport(
     totalProfitJpy,
     totalProfitCny,
     summaries,
+    groupedSummaries,
     caseAllocations,
     dataFetchedAt: meta.fetchedAt,
     fromCache: meta.fromCache,
   };
+}
+
+function buildGroupedSummaries(summaries: TeamSummary[]): GroupedSummary[] {
+  const groupMap = new Map<string, TeamSummary[]>();
+  const standalone: TeamSummary[] = [];
+
+  for (const s of summaries) {
+    const groupName = TEAM_TO_GROUP[s.team];
+    if (groupName) {
+      const list = groupMap.get(groupName) ?? [];
+      list.push(s);
+      groupMap.set(groupName, list);
+    } else {
+      standalone.push(s);
+    }
+  }
+
+  for (const groupName of GROUP_ORDER) {
+    if (!groupMap.has(groupName)) {
+      groupMap.set(groupName, []);
+    }
+  }
+
+  const result: GroupedSummary[] = [];
+
+  for (const [groupName, children] of groupMap) {
+    const childTeams = Object.entries(TEAM_TO_GROUP)
+      .filter(([, g]) => g === groupName)
+      .map(([t]) => t);
+
+    const orderedChildren: TeamSummary[] = childTeams
+      .map((t) => children.find((c) => c.team === t))
+      .filter((c): c is TeamSummary => Boolean(c))
+      .sort((a, b) => b.totalJpy - a.totalJpy);
+
+    const totals = orderedChildren.reduce(
+      (acc, c) => ({
+        caseCount: acc.caseCount + c.caseCount,
+        totalJpy: acc.totalJpy + c.totalJpy,
+        totalCny: acc.totalCny + c.totalCny,
+        mitsumoriJpy: acc.mitsumoriJpy + c.mitsumoriJpy,
+        mitsumoriCny: acc.mitsumoriCny + c.mitsumoriCny,
+        countryJpy: acc.countryJpy + c.countryJpy,
+        countryCny: acc.countryCny + c.countryCny,
+        opExportJpy: acc.opExportJpy + c.opExportJpy,
+        opExportCny: acc.opExportCny + c.opExportCny,
+        opImportJpy: acc.opImportJpy + c.opImportJpy,
+        opImportCny: acc.opImportCny + c.opImportCny,
+      }),
+      {
+        caseCount: 0,
+        totalJpy: 0,
+        totalCny: 0,
+        mitsumoriJpy: 0,
+        mitsumoriCny: 0,
+        countryJpy: 0,
+        countryCny: 0,
+        opExportJpy: 0,
+        opExportCny: 0,
+        opImportJpy: 0,
+        opImportCny: 0,
+      }
+    );
+
+    if (totals.caseCount === 0 && Math.abs(totals.totalJpy) < 0.01) continue;
+
+    result.push({
+      name: groupName,
+      isGroup: true,
+      ...totals,
+      childTeams,
+      children: orderedChildren,
+    });
+  }
+
+  for (const s of standalone) {
+    result.push({
+      name: s.team,
+      isGroup: false,
+      caseCount: s.caseCount,
+      totalJpy: s.totalJpy,
+      totalCny: s.totalCny,
+      mitsumoriJpy: s.mitsumoriJpy,
+      mitsumoriCny: s.mitsumoriCny,
+      countryJpy: s.countryJpy,
+      countryCny: s.countryCny,
+      opExportJpy: s.opExportJpy,
+      opExportCny: s.opExportCny,
+      opImportJpy: s.opImportJpy,
+      opImportCny: s.opImportCny,
+      childTeams: [s.team],
+      children: null,
+    });
+  }
+
+  return result.sort((a, b) => b.totalJpy - a.totalJpy);
 }

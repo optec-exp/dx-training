@@ -4,7 +4,8 @@ import type { CaseAllocation, Currency, MonthlyReport } from "@/lib/types";
 
 interface Props {
   report: MonthlyReport;
-  team: string;
+  teams: string[];
+  groupName: string;
   currency: Currency;
 }
 
@@ -29,24 +30,28 @@ function fmtMoney(n: number, currency: Currency): string {
   return `¥${rounded.toLocaleString("en-US")}`;
 }
 
-export function CaseDetail({ report, team, currency }: Props) {
+export function CaseDetail({ report, teams, groupName, currency }: Props) {
+  const teamSet = new Set(teams);
+
   const grouped = new Map<
     string,
-    { ca: CaseAllocation; amount: number; bases: string[] }
+    { ca: CaseAllocation; amount: number; team: string; bases: string[] }
   >();
 
   for (const ca of report.caseAllocations) {
     for (const a of ca.allocations) {
-      if (a.team !== team) continue;
+      if (!teamSet.has(a.team)) continue;
       const amount = currency === "jpy" ? a.jpy : a.cny;
-      const existing = grouped.get(ca.case.recordId);
+      const key = `${ca.case.recordId}::${a.team}`;
+      const existing = grouped.get(key);
       if (existing) {
         existing.amount += amount;
         if (!existing.bases.includes(a.basis)) existing.bases.push(a.basis);
       } else {
-        grouped.set(ca.case.recordId, {
+        grouped.set(key, {
           ca,
           amount,
+          team: a.team,
           bases: [a.basis],
         });
       }
@@ -60,10 +65,12 @@ export function CaseDetail({ report, team, currency }: Props) {
   if (rows.length === 0) {
     return (
       <div className="mx-6 my-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500">
-        {team} 在本月没有分配明细
+        {groupName} 在本月没有分配明细
       </div>
     );
   }
+
+  const showTeamColumn = teams.length > 1;
 
   return (
     <div className="mx-6 my-3 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
@@ -72,6 +79,9 @@ export function CaseDetail({ report, team, currency }: Props) {
           <tr>
             <th className="px-3 py-2 text-left font-medium">案件番号</th>
             <th className="px-3 py-2 text-left font-medium">类别</th>
+            {showTeamColumn && (
+              <th className="px-3 py-2 text-left font-medium">归属小组</th>
+            )}
             <th className="px-3 py-2 text-left font-medium">顾客名</th>
             <th className="px-3 py-2 text-left font-medium">国コード</th>
             <th className="px-3 py-2 text-left font-medium">分配依据</th>
@@ -79,10 +89,11 @@ export function CaseDetail({ report, team, currency }: Props) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {rows.map((row) => (
-            <tr key={row.ca.case.recordId} className="hover:bg-white">
+          {rows.map((row, idx) => (
+            <tr key={`${row.ca.case.recordId}-${row.team}-${idx}`} className="hover:bg-white">
               <td className="px-3 py-2 font-mono">{row.ca.case.caseNumber || "-"}</td>
               <td className="px-3 py-2">{APP_LABEL[row.ca.case.appType]}</td>
+              {showTeamColumn && <td className="px-3 py-2 font-medium">{row.team}</td>}
               <td className="px-3 py-2">{row.ca.case.customerName || "-"}</td>
               <td className="px-3 py-2">{row.ca.case.customerCountry || "-"}</td>
               <td className="px-3 py-2 text-slate-500">

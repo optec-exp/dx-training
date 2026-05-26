@@ -75,21 +75,32 @@ export async function POST(req: Request) {
 
     const tableLines: string[] = [];
     tableLines.push(
-      padW("小组", 14) +
+      padW("小组", 16) +
         padW("案件", 8) +
         padW("JPY", 16) +
         padW("CNY", 14) +
         "占比"
     );
-    tableLines.push("─".repeat(58));
-    for (const s of report.summaries) {
+    tableLines.push("─".repeat(60));
+    for (const g of report.groupedSummaries) {
       tableLines.push(
-        padW(s.team, 14) +
-          padW(String(s.caseCount), 8) +
-          padW("¥" + fmt(s.totalJpy), 16) +
-          padW("¥" + fmt(s.totalCny), 14) +
-          pct(s.totalJpy, report.totalProfitJpy)
+        padW(g.name, 16) +
+          padW(String(g.caseCount), 8) +
+          padW("¥" + fmt(g.totalJpy), 16) +
+          padW("¥" + fmt(g.totalCny), 14) +
+          pct(g.totalJpy, report.totalProfitJpy)
       );
+      if (g.isGroup && g.children) {
+        for (const c of g.children) {
+          tableLines.push(
+            padW("  └ " + c.team, 16) +
+              padW(String(c.caseCount), 8) +
+              padW("¥" + fmt(c.totalJpy), 16) +
+              padW("¥" + fmt(c.totalCny), 14) +
+              pct(c.totalJpy, report.totalProfitJpy)
+          );
+        }
+      }
     }
 
     const payload = {
