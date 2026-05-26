@@ -80,9 +80,27 @@ export function distributeProfit(c: KintoneCase): CaseAllocation {
   if (c.appType === "ec") {
     allocations.push({
       team: "EC",
-      jpy: c.grossProfitJpy,
-      cny: c.grossProfitCny,
-      basis: "ec_full",
+      jpy: c.grossProfitJpy * DISTRIBUTION_RULES.mitsumori,
+      cny: c.grossProfitCny * DISTRIBUTION_RULES.mitsumori,
+      basis: "mitsumori",
+    });
+    allocations.push({
+      team: "EC",
+      jpy: c.grossProfitJpy * DISTRIBUTION_RULES.customerCountry,
+      cny: c.grossProfitCny * DISTRIBUTION_RULES.customerCountry,
+      basis: "country",
+    });
+    allocations.push({
+      team: "EC",
+      jpy: c.grossProfitJpy * DISTRIBUTION_RULES.exportOp,
+      cny: c.grossProfitCny * DISTRIBUTION_RULES.exportOp,
+      basis: "operation_export",
+    });
+    allocations.push({
+      team: "EC",
+      jpy: c.grossProfitJpy * DISTRIBUTION_RULES.importOp,
+      cny: c.grossProfitCny * DISTRIBUTION_RULES.importOp,
+      basis: "operation_import",
     });
     return { case: c, primaryTeam, allocations };
   }
@@ -152,20 +170,31 @@ export function distributeProfit(c: KintoneCase): CaseAllocation {
     });
   }
 
-  const opTotal = DISTRIBUTION_RULES.exportOp + DISTRIBUTION_RULES.importOp;
   if (exportEmpty && importTeam) {
     allocations.push({
       team: importTeam,
-      jpy: remainJpy * opTotal,
-      cny: remainCny * opTotal,
+      jpy: remainJpy * DISTRIBUTION_RULES.exportOp,
+      cny: remainCny * DISTRIBUTION_RULES.exportOp,
+      basis: "operation_export",
+    });
+    allocations.push({
+      team: importTeam,
+      jpy: remainJpy * DISTRIBUTION_RULES.importOp,
+      cny: remainCny * DISTRIBUTION_RULES.importOp,
       basis: "operation_import",
     });
   } else if (importEmpty && exportTeam) {
     allocations.push({
       team: exportTeam,
-      jpy: remainJpy * opTotal,
-      cny: remainCny * opTotal,
+      jpy: remainJpy * DISTRIBUTION_RULES.exportOp,
+      cny: remainCny * DISTRIBUTION_RULES.exportOp,
       basis: "operation_export",
+    });
+    allocations.push({
+      team: exportTeam,
+      jpy: remainJpy * DISTRIBUTION_RULES.importOp,
+      cny: remainCny * DISTRIBUTION_RULES.importOp,
+      basis: "operation_import",
     });
   } else {
     if (exportTeam) {
