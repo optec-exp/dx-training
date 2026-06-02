@@ -1,0 +1,12 @@
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+// 服务端 Supabase 客户端（用 service_role key，绕过 RLS）。
+// 仅在 server components / route handlers / scripts 中使用，绝不能在浏览器侧导入。
+export function getSupabaseAdmin(): SupabaseClient {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error("缺少 NEXT_PUBLIC_SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY 环境变量");
+  }
+  return createClient(url, key, { auth: { persistSession: false } });
+}
