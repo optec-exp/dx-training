@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import { FileBarChart, AlertOctagon, Clock, Wallet } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import {
   PieChart, Pie, Cell, BarChart, Bar, LineChart, Line,
@@ -13,10 +14,23 @@ const severityStyle = {
   S4: 'bg-red-100 text-red-700',
   S3: 'bg-orange-100 text-orange-700',
   S2: 'bg-yellow-100 text-yellow-700',
-  S1: 'bg-gray-100 text-gray-600',
+  S1: 'bg-slate-100 text-slate-600',
 }
 
-const COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#6366f1', '#14b8a6', '#eab308']
+// 精致企业级配色 — 低饱和、有层次(emerald 主导,辅 indigo/sky/violet)
+const COLORS = [
+  '#10b981', // emerald-500 品牌主色
+  '#6366f1', // indigo-500
+  '#f59e0b', // amber-500
+  '#0ea5e9', // sky-500
+  '#8b5cf6', // violet-500
+  '#ec4899', // pink-500
+  '#14b8a6', // teal-500
+  '#f97316', // orange-500
+]
+
+const AXIS_TICK = { fontSize: 11, fill: '#64748b' } // slate-500
+const GRID_STROKE = '#e2e8f0' // slate-200
 
 function countBy(arr, keyFn) {
   const m = {}
@@ -116,19 +130,34 @@ function buildStatsText(records, stats, rangeLabel) {
   return lines.join('\n')
 }
 
-function StatCard({ label, value, accent }) {
+function StatCard({ label, value, accent, icon: Icon, bar }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="text-sm text-gray-500">{label}</div>
-      <div className={`mt-1 text-2xl font-bold ${accent || 'text-gray-800'}`}>{value}</div>
+    <div className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+      {bar && <div className={`h-1 ${bar}`} />}
+      <div className="flex items-start justify-between p-4">
+        <div>
+          <div className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</div>
+          <div className={`mt-1.5 text-2xl font-bold tabular-nums ${accent || 'text-slate-900'}`}>{value}</div>
+        </div>
+        {Icon && <Icon size={22} className="text-slate-300 transition-colors group-hover:text-slate-400" />}
+      </div>
+    </div>
+  )
+}
+
+function FilterRow({ label, children }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="w-10 shrink-0 text-xs font-medium uppercase tracking-wide text-slate-500">{label}</span>
+      {children}
     </div>
   )
 }
 
 function ChartCard({ title, children }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <h3 className="mb-3 text-sm font-semibold text-gray-700">{title}</h3>
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+      <h3 className="mb-3 text-sm font-semibold text-slate-700">{title}</h3>
       {children}
     </div>
   )
@@ -139,7 +168,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const [selectedYear, setSelectedYear] = useState('all')
   const [selectedMonth, setSelectedMonth] = useState('all')
+  const [selectedDept, setSelectedDept] = useState('all')
 
   const [analyzing, setAnalyzing] = useState(false)
   const [analysis, setAnalysis] = useState('')
@@ -154,6 +185,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from('ncr_records')
         .select('*')
+        .is('deleted_at', null)
         .order('occur_date', { ascending: false })
       if (error) setError(error.message)
       else setRecords(data || [])
@@ -162,17 +194,38 @@ export default function Home() {
     load()
   }, [])
 
+  const years = useMemo(() => {
+    const set = new Set(records.map((r) => (r.occur_date || '').slice(0, 4)).filter(Boolean))
+    return [...set].sort()
+  }, [records])
+
   const months = useMemo(() => {
-    const set = new Set(records.map((r) => (r.occur_date || '').slice(0, 7)).filter(Boolean))
+    const inYear = selectedYear === 'all'
+      ? records
+      : records.filter((r) => (r.occur_date || '').slice(0, 4) === selectedYear)
+    const set = new Set(inYear.map((r) => (r.occur_date || '').slice(0, 7)).filter(Boolean))
+    return [...set].sort()
+  }, [records, selectedYear])
+
+  const depts = useMemo(() => {
+    const set = new Set(records.map((r) => r.department).filter(Boolean))
     return [...set].sort()
   }, [records])
 
   const filtered = useMemo(() => {
-    if (selectedMonth === 'all') return records
-    return records.filter((r) => (r.occur_date || '').slice(0, 7) === selectedMonth)
-  }, [records, selectedMonth])
+    return records.filter((r) => {
+      if (selectedYear !== 'all' && (r.occur_date || '').slice(0, 4) !== selectedYear) return false
+      if (selectedMonth !== 'all' && (r.occur_date || '').slice(0, 7) !== selectedMonth) return false
+      if (selectedDept !== 'all' && r.department !== selectedDept) return false
+      return true
+    })
+  }, [records, selectedYear, selectedMonth, selectedDept])
 
-  const rangeLabel = selectedMonth === 'all' ? '近 6 个月' : `${selectedMonth} 月`
+  const rangeLabel = [
+    selectedYear === 'all' ? '近 6 个月' : `${selectedYear} 年`,
+    selectedMonth !== 'all' ? `${selectedMonth} 月` : null,
+    selectedDept !== 'all' ? selectedDept : null,
+  ].filter(Boolean).join(' · ')
 
   const stats = useMemo(() => {
     const byCategory = countBy(filtered, (r) => r.category)
@@ -217,11 +270,23 @@ export default function Home() {
     }
   }, [filtered])
 
-  function handleSelectMonth(m) {
-    setSelectedMonth(m)
+  function resetAnalysisState() {
     setAnalysis('')
     setAnalysisError(null)
     setSaveMsg(null)
+  }
+  function handleSelectMonth(m) {
+    setSelectedMonth(m)
+    resetAnalysisState()
+  }
+  function handleSelectYear(y) {
+    setSelectedYear(y)
+    setSelectedMonth('all')  // 切年时清月份(因为新年下可能没有原来的月)
+    resetAnalysisState()
+  }
+  function handleSelectDept(d) {
+    setSelectedDept(d)
+    resetAnalysisState()
   }
 
   async function handleAnalyze() {
@@ -278,32 +343,43 @@ export default function Home() {
 
   const monthBtn = (active) =>
     `rounded-md px-3 py-1.5 text-sm transition-colors ${
-      active ? 'bg-blue-600 text-white' : 'border border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+      active ? 'bg-emerald-600 text-white' : 'border border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
     }`
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 text-gray-800">
+    <main className="px-6 py-8 text-slate-800">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-2 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">货代 NCR 品质分析看板</h1>
-          <Link href="/reports" className="text-sm text-blue-600 hover:underline">
-            历史报告 →
-          </Link>
+        <div className="mb-1">
+          <h1 className="text-2xl font-bold tracking-tight">品质分析看板</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {loading ? '加载中…' : `当前范围:${rangeLabel} · 共 ${filtered.length} 条记录`}
+          </p>
         </div>
-        <p className="mb-4 text-sm text-gray-500">
-          {loading ? '加载中…' : `当前范围:${rangeLabel} · 共 ${filtered.length} 条记录`}
-        </p>
 
         {!loading && !error && (
-          <div className="mb-6 flex flex-wrap gap-2">
-            <button onClick={() => handleSelectMonth('all')} className={monthBtn(selectedMonth === 'all')}>
-              全部(近 6 个月)
-            </button>
-            {months.map((m) => (
-              <button key={m} onClick={() => handleSelectMonth(m)} className={monthBtn(selectedMonth === m)}>
-                {m}
-              </button>
-            ))}
+          <div className="mb-6 space-y-2">
+            {years.length > 1 && (
+              <FilterRow label="年度">
+                <button onClick={() => handleSelectYear('all')} className={monthBtn(selectedYear === 'all')}>全部年度</button>
+                {years.map((y) => (
+                  <button key={y} onClick={() => handleSelectYear(y)} className={monthBtn(selectedYear === y)}>{y}</button>
+                ))}
+              </FilterRow>
+            )}
+            <FilterRow label="月份">
+              <button onClick={() => handleSelectMonth('all')} className={monthBtn(selectedMonth === 'all')}>全部月份</button>
+              {months.map((m) => (
+                <button key={m} onClick={() => handleSelectMonth(m)} className={monthBtn(selectedMonth === m)}>{m}</button>
+              ))}
+            </FilterRow>
+            {depts.length > 0 && (
+              <FilterRow label="部门">
+                <button onClick={() => handleSelectDept('all')} className={monthBtn(selectedDept === 'all')}>全部部门</button>
+                {depts.map((d) => (
+                  <button key={d} onClick={() => handleSelectDept(d)} className={monthBtn(selectedDept === d)}>{d}</button>
+                ))}
+              </FilterRow>
+            )}
           </div>
         )}
 
@@ -314,10 +390,10 @@ export default function Home() {
         {!loading && !error && (
           <>
             <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-              <StatCard label="NCR 总数" value={filtered.length} />
-              <StatCard label="S4 重大案件" value={stats.s4} accent="text-red-600" />
-              <StatCard label="未结案" value={stats.openCount} accent="text-blue-600" />
-              <StatCard label="累计经济损失" value={`¥${stats.totalLoss.toLocaleString()}`} accent="text-orange-600" />
+              <StatCard label="NCR 总数" value={filtered.length} icon={FileBarChart} bar="bg-emerald-500" />
+              <StatCard label="S4 重大案件" value={stats.s4} accent="text-red-600" icon={AlertOctagon} bar="bg-red-500" />
+              <StatCard label="未结案" value={stats.openCount} accent="text-blue-600" icon={Clock} bar="bg-blue-500" />
+              <StatCard label="累计经济损失" value={`¥${stats.totalLoss.toLocaleString()}`} accent="text-orange-600" icon={Wallet} bar="bg-orange-500" />
             </div>
 
             <div className="lg:grid lg:grid-cols-3 lg:items-start lg:gap-6">
@@ -327,13 +403,24 @@ export default function Home() {
                   <ChartCard title="① 问题类型分布">
                     <ResponsiveContainer width="100%" height={260}>
                       <PieChart>
-                        <Pie data={stats.problemData} dataKey="value" nameKey="name" outerRadius={70} label={(e) => e.value}>
+                        <Pie data={stats.problemData} dataKey="value" nameKey="name" outerRadius={75} innerRadius={35} paddingAngle={2} stroke="white" strokeWidth={2} label={(e) => e.value} labelLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}>
                           {stats.problemData.map((_, i) => (
                             <Cell key={i} fill={COLORS[i % COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip />
-                        <Legend />
+                        <Legend
+                          content={({ payload }) => (
+                            <ul className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-xs text-slate-600">
+                              {payload?.map((entry, i) => (
+                                <li key={i} className="inline-flex items-center gap-1.5">
+                                  <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                  <span>{entry.value}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </ChartCard>
@@ -341,11 +428,11 @@ export default function Home() {
                   <ChartCard title="② 各航线异常数">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={stats.routeData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" interval={0} tick={{ fontSize: 11 }} />
-                        <YAxis allowDecimals={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+                        <XAxis dataKey="name" interval={0} tickLine={false} axisLine={false} tick={AXIS_TICK} />
+                        <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={AXIS_TICK} width={32} />
                         <Tooltip />
-                        <Bar dataKey="value" name="异常数" fill="#3b82f6" />
+                        <Bar dataKey="value" name="异常数" fill="#6366f1" />
                       </BarChart>
                     </ResponsiveContainer>
                   </ChartCard>
@@ -353,9 +440,9 @@ export default function Home() {
                   <ChartCard title="③ 责任部门分布">
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={stats.deptData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} angle={-15} textAnchor="end" height={50} />
-                        <YAxis allowDecimals={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+                        <XAxis dataKey="name" tickLine={false} axisLine={false} tick={AXIS_TICK} interval={0} angle={-15} textAnchor="end" height={50} />
+                        <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={AXIS_TICK} width={32} />
                         <Tooltip />
                         <Bar dataKey="value" name="异常数" fill="#10b981" />
                       </BarChart>
@@ -366,11 +453,11 @@ export default function Home() {
                     <ChartCard title="④ 月度趋势">
                       <ResponsiveContainer width="100%" height={260}>
                         <LineChart data={stats.monthData} margin={{ top: 5, right: 25, left: 0, bottom: 5 }}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" interval={0} tick={{ fontSize: 11 }} />
-                          <YAxis allowDecimals={false} />
+                          <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+                          <XAxis dataKey="name" interval={0} tickLine={false} axisLine={false} tick={AXIS_TICK} />
+                          <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={AXIS_TICK} width={32} />
                           <Tooltip />
-                          <Line type="monotone" dataKey="value" name="异常数" stroke="#ef4444" strokeWidth={2} />
+                          <Line type="monotone" dataKey="value" name="异常数" stroke="#10b981" strokeWidth={2} />
                         </LineChart>
                       </ResponsiveContainer>
                     </ChartCard>
@@ -378,29 +465,30 @@ export default function Home() {
                 </div>
 
                 <h2 className="mb-3 mt-8 text-lg font-semibold">原始记录</h2>
-                <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+                <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
                   <table className="min-w-full text-sm">
-                    <thead className="bg-gray-100 text-left text-gray-600">
+                    <colgroup><col className="w-28" /><col className="w-20" /><col className="w-16" /><col className="w-28" /><col className="w-28" /><col className="w-16" /><col className="w-20" /><col /><col className="w-28" /><col className="w-16" /></colgroup>
+                    <thead className="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                       <tr>
-                        <th className="px-3 py-2">发生日期</th>
-                        <th className="px-3 py-2">分类</th>
-                        <th className="px-3 py-2">严重度</th>
-                        <th className="px-3 py-2">问题类型</th>
-                        <th className="px-3 py-2">部门</th>
-                        <th className="px-3 py-2">领域</th>
-                        <th className="px-3 py-2">客户</th>
-                        <th className="px-3 py-2">事件概要</th>
-                        <th className="px-3 py-2 text-right">经济损失</th>
-                        <th className="px-3 py-2">状态</th>
+                        <th className="whitespace-nowrap px-3 py-2">发生日期</th>
+                        <th className="whitespace-nowrap px-3 py-2">分类</th>
+                        <th className="whitespace-nowrap px-3 py-2">严重度</th>
+                        <th className="whitespace-nowrap px-3 py-2">问题类型</th>
+                        <th className="whitespace-nowrap px-3 py-2">部门</th>
+                        <th className="whitespace-nowrap px-3 py-2">领域</th>
+                        <th className="whitespace-nowrap px-3 py-2">客户</th>
+                        <th className="whitespace-nowrap px-3 py-2">事件概要</th>
+                        <th className="whitespace-nowrap px-3 py-2 text-right">经济损失</th>
+                        <th className="whitespace-nowrap px-3 py-2">状态</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filtered.map((r) => (
-                        <tr key={r.id} className="border-t border-gray-100 hover:bg-gray-50">
+                        <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50">
                           <td className="whitespace-nowrap px-3 py-2">{r.occur_date}</td>
                           <td className="whitespace-nowrap px-3 py-2">{r.category}</td>
                           <td className="px-3 py-2">
-                            <span className={`rounded px-2 py-0.5 text-xs font-medium ${severityStyle[r.severity] || 'bg-gray-100 text-gray-600'}`}>
+                            <span className={`rounded px-2 py-0.5 text-xs font-medium ${severityStyle[r.severity] || 'bg-slate-100 text-slate-600'}`}>
                               {r.severity}
                             </span>
                           </td>
@@ -408,12 +496,16 @@ export default function Home() {
                           <td className="whitespace-nowrap px-3 py-2">{r.department}</td>
                           <td className="whitespace-nowrap px-3 py-2">{r.transport_mode}</td>
                           <td className="whitespace-nowrap px-3 py-2">{r.customer || '—'}</td>
-                          <td className="px-3 py-2">{r.summary}</td>
+                          <td className="px-3 py-2">
+                        <Link href={`/ncr/${r.id}`} className="text-blue-700 hover:underline">
+                          {r.summary}
+                        </Link>
+                      </td>
                           <td className="whitespace-nowrap px-3 py-2 text-right">
                             {r.economic_loss != null ? `¥${Number(r.economic_loss).toLocaleString()}` : '—'}
                           </td>
                           <td className="px-3 py-2">
-                            <span className={`rounded px-2 py-0.5 text-xs ${r.status === 'open' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
+                            <span className={`rounded px-2 py-0.5 text-xs ${r.status === 'open' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
                               {r.status}
                             </span>
                           </td>
@@ -426,7 +518,7 @@ export default function Home() {
 
               {/* 右列:AI 分析(吸顶) */}
               <div className="mt-6 lg:col-span-1 lg:mt-0 lg:sticky lg:top-8 lg:max-h-[calc(100vh_-_4rem)] lg:overflow-y-auto">
-                <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+                <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                   <button
                     type="button"
                     onClick={() => analysis && setHideReport((v) => !v)}
@@ -435,20 +527,20 @@ export default function Home() {
                   >
                     AI 品质分析 · {rangeLabel}
                     {analysis && (
-                      <span className="ml-2 text-sm font-normal text-gray-400">{hideReport ? '▶ 展开' : '▼ 收起'}</span>
+                      <span className="ml-2 text-sm font-normal text-slate-400">{hideReport ? '▶ 展开' : '▼ 收起'}</span>
                     )}
                   </button>
                   <div className="mb-4 flex flex-wrap gap-2">
                     <button
                       onClick={() => setShowRaw((v) => !v)}
-                      className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50"
+                      className="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-600 transition-colors hover:bg-slate-50"
                     >
                       {showRaw ? '隐藏数据' : '查看发给 AI 的数据'}
                     </button>
                     <button
                       onClick={handleAnalyze}
                       disabled={analyzing || filtered.length === 0}
-                      className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                      className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
                     >
                       {analyzing ? '分析中…' : '开始分析'}
                     </button>
@@ -456,16 +548,16 @@ export default function Home() {
                       <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="rounded-md border border-green-600 px-3 py-2 text-sm text-green-700 transition-colors hover:bg-green-50 disabled:opacity-50"
+                        className="rounded-md border border-emerald-600 px-3 py-2 text-sm text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-50"
                       >
                         {saving ? '保存中…' : '保存报告'}
                       </button>
                     )}
                   </div>
-                  {saveMsg && <p className="mb-3 text-sm text-green-700">{saveMsg}</p>}
+                  {saveMsg && <p className="mb-3 text-sm text-emerald-700">{saveMsg}</p>}
 
                   {showRaw && (
-                    <pre className="mb-4 max-h-96 overflow-auto whitespace-pre-wrap rounded bg-gray-900 p-4 text-xs leading-relaxed text-gray-100">
+                    <pre className="mb-4 max-h-96 overflow-auto whitespace-pre-wrap rounded bg-slate-900 p-4 text-xs leading-relaxed text-slate-100">
                       {buildStatsText(filtered, stats, rangeLabel)}
                     </pre>
                   )}
@@ -474,7 +566,7 @@ export default function Home() {
                     <div className="rounded bg-red-50 p-3 text-sm text-red-700">分析出错:{analysisError}</div>
                   )}
                   {analyzing && (
-                    <p className="text-sm text-gray-500">AI 正在分析,请稍候(约 5~15 秒)…</p>
+                    <p className="text-sm text-slate-500">AI 正在分析,请稍候(约 5~15 秒)…</p>
                   )}
                   {analysis && !hideReport && (
                     <article className="prose prose-sm max-w-none">
@@ -482,10 +574,10 @@ export default function Home() {
                     </article>
                   )}
                   {analysis && hideReport && (
-                    <p className="text-sm text-gray-400">报告已隐藏,点「展开报告」查看。</p>
+                    <p className="text-sm text-slate-400">报告已隐藏,点「展开报告」查看。</p>
                   )}
                   {!analysis && !analyzing && !analysisError && (
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-slate-400">
                       点击「开始分析」,让 AI 基于{rangeLabel}的数据生成趋势 / 根因 / 改进建议报告。
                     </p>
                   )}

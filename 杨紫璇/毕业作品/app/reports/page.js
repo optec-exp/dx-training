@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import { FileText } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { Spinner, EmptyState } from '@/lib/ui'
 
 export default function ReportsPage() {
   const [reports, setReports] = useState([])
@@ -63,31 +65,28 @@ export default function ReportsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8 text-gray-800">
+    <main className="min-h-screen bg-slate-50 p-8 text-slate-800">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold">历史分析报告</h1>
           <Link href="/" className="text-sm text-blue-600 hover:underline">
-            ← 返回看板
           </Link>
         </div>
 
-        {loading && <p className="text-sm text-gray-500">加载中…</p>}
+        {loading && <div className="flex items-center gap-2 text-sm text-slate-500"><Spinner /> 加载中…</div>}
         {error && <div className="rounded bg-red-50 p-4 text-red-700">读取出错:{error}</div>}
 
         {!loading && !error && reports.length === 0 && (
-          <p className="text-sm text-gray-500">
-            还没有保存的报告。去看板分析后点「保存报告」,这里就会出现。
-          </p>
+          <EmptyState icon={FileText} title="还没有保存的报告" hint="去看板做 AI 分析后点「保存报告」,这里就会出现。" />
         )}
 
         {!loading && !error && reports.length > 0 && (
-          <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-            <span className="text-sm text-gray-600">勾选两份或更多报告进行 AI 对比(已选 {selectedIds.length})</span>
+          <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <span className="text-sm text-slate-600">勾选两份或更多报告进行 AI 对比(已选 {selectedIds.length})</span>
             <button
               onClick={handleCompare}
               disabled={selectedIds.length < 2 || comparing}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
             >
               {comparing ? '对比中…' : 'AI 对比所选'}
             </button>
@@ -98,7 +97,7 @@ export default function ReportsPage() {
                   setCompareResult('')
                   setCompareError(null)
                 }}
-                className="text-sm text-gray-500 hover:underline"
+                className="text-sm text-slate-500 hover:underline"
               >
                 清除选择
               </button>
@@ -110,7 +109,7 @@ export default function ReportsPage() {
           <div className="mb-4 rounded bg-red-50 p-3 text-sm text-red-700">对比出错:{compareError}</div>
         )}
         {comparing && (
-          <p className="mb-4 text-sm text-gray-500">AI 正在对比两期报告,请稍候…</p>
+          <p className="mb-4 text-sm text-slate-500">AI 正在对比两期报告,请稍候…</p>
         )}
         {compareResult && (
           <div className="mb-6 rounded-lg border border-blue-200 bg-white p-6 shadow-sm">
@@ -125,7 +124,7 @@ export default function ReportsPage() {
           {reports.map((r) => {
             const checked = selectedIds.includes(r.id)
             return (
-              <div key={r.id} className="rounded-lg border border-gray-200 bg-white shadow-sm">
+              <div key={r.id} className="rounded-lg border border-slate-200 bg-white shadow-sm">
                 <div className="flex items-center gap-3 p-4">
                   <input
                     type="checkbox"
@@ -138,13 +137,13 @@ export default function ReportsPage() {
                     className="flex flex-1 items-center justify-between text-left"
                   >
                     <span className="font-medium">{r.title}</span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-slate-400">
                       {new Date(r.created_at).toLocaleString('zh-CN')} {openId === r.id ? '▼' : '▶'}
                     </span>
                   </button>
                 </div>
                 {openId === r.id && (
-                  <div className="border-t border-gray-100 p-4">
+                  <div className="border-t border-slate-100 p-4">
                     <article className="prose prose-sm max-w-none">
                       <ReactMarkdown>{r.analysis_result}</ReactMarkdown>
                     </article>
