@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Pencil, Trash2, X as XIcon, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { Pencil, Trash2, X as XIcon, CheckCircle2, AlertTriangle, FileText, Send } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { getStageStatus, SLA_LABELS, recomputeAllDues } from '@/lib/sla'
 import { confirmToast, toast, Spinner } from '@/lib/ui'
+import { notifySlack } from '@/lib/slack'
 
 const severityStyle = {
   S4: 'bg-red-100 text-red-700',
@@ -286,14 +287,23 @@ export default function NCRDetailPage() {
     if (!closingCategory) { setStageError('请选择根本原因类别'); return }
     confirmToast('确认结案?', async () => {
       setSavingStage('closing'); setStageError(null)
+      const closedAt = new Date().toISOString()
       try {
         const { error } = await supabase.from('ncr_records').update({
           status: 'closed',
-          closed_at: new Date().toISOString(),
+          closed_at: closedAt,
           root_cause_category: closingCategory,
         }).eq('id', id)
         if (error) throw new Error(error.message)
         toast.success('NCR 已结案')
+        notifySlack('ncr_closed', {
+          id,
+          closed_at_text: new Date(closedAt).toLocaleString('zh-CN'),
+          severity: record.severity,
+          department: record.department,
+          root_cause_category: closingCategory,
+          summary: record.summary,
+        })
         await load()
       } catch (err) { setStageError(err.message); toast.error(err.message) }
       finally { setSavingStage(null) }
@@ -604,6 +614,30 @@ export default function NCRDetailPage() {
                 {savingStage === 'prevDone' ? '保存中…' : '⑥ 标记预防措施已完成'}
               </button>
             )}
+
+            {/* 不符合项报告生成(预防措施制定完成即可出) */}
+            <div className="mt-4 rounded-md border border-emerald-200 bg-white p-3">
+              <div className="mb-2 text-xs font-medium text-emerald-700">📄 生成不符合项报告</div>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={`/ncr/${id}/report/internal`}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  <FileText size={14} /> 社内审计版(完整)
+                </Link>
+                <Link
+                  href={`/ncr/${id}/report/external`}
+                  target="_blank"
+                  rel="noopener"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  <Send size={14} /> 社外版(提交客户)
+                </Link>
+              </div>
+              <p className="mt-2 text-xs text-slate-500">在新页打开,顶部可一键打印/导出 PDF</p>
+            </div>
           </div>
         )}
       </section>

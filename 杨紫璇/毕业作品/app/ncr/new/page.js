@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getOwner, calcAllDues } from '@/lib/sla'
 import { toast } from '@/lib/ui'
+import { notifySlack } from '@/lib/slack'
 
 const CATEGORIES = ['客户案件', '内部']
 const MODES = ['空运', '海运']
@@ -96,9 +97,23 @@ export default function NewNCRPage() {
         status: 'open',
         source: 'manual',
       }
-      const { error } = await supabase.from('ncr_records').insert(payload)
+      const { data: inserted, error } = await supabase
+        .from('ncr_records')
+        .insert(payload)
+        .select('id')
+        .single()
       if (error) throw new Error(error.message)
       toast.success('已录入新 NCR')
+      if (form.severity === 'S4' && inserted?.id) {
+        notifySlack('ncr_created_s4', {
+          id: inserted.id,
+          occur_at_text: form.occur_at ? form.occur_at.replace('T', ' ') : '',
+          department: form.department,
+          customer: form.customer,
+          problem_type: form.problem_type,
+          summary: form.summary,
+        })
+      }
       router.push('/')
     } catch (err) {
       setError(err.message)

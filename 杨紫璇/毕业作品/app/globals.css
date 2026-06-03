@@ -32,3 +32,18 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* 报告打印样式 */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  body {
+    background: #fff !important;
+  }
+  .report-paper {
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}

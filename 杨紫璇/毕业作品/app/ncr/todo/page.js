@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Clock } from 'lucide-react'
 import { isOverdue, getCurrentStage, getStageStatus, SLA_LABELS } from '@/lib/sla'
-import { Spinner, EmptyState, FilterRow, FilterButton } from '@/lib/ui'
+import { Spinner, EmptyState, FilterRow, FilterButton, toast } from '@/lib/ui'
 
 const severityStyle = {
   S4: 'bg-red-100 text-red-700',
@@ -40,6 +40,26 @@ export default function TodoPage() {
   const [error, setError] = useState(null)
   const [selectedSeverity, setSelectedSeverity] = useState('all')
   const [selectedDept, setSelectedDept] = useState('all')
+  const [scanning, setScanning] = useState(false)
+
+  async function handleScan() {
+    setScanning(true)
+    try {
+      const res = await fetch('/api/sla-scan', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || '扫描失败')
+      const total = data.overdue + data.due_soon
+      if (total === 0) {
+        toast.success(`SLA 巡检完成 · 共扫 ${data.scanned} 条 · 均在期内 ✓`)
+      } else {
+        toast.warning(`SLA 巡检 · 🔴${data.overdue} 已超期 · 🟡${data.due_soon} 24h 内到期 · 已推送 Slack`)
+      }
+    } catch (err) {
+      toast.error('巡检失败:' + err.message)
+    } finally {
+      setScanning(false)
+    }
+  }
 
   useEffect(() => {
     async function load() {
@@ -90,6 +110,15 @@ export default function TodoPage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold">NCR 待办列表(未结案)</h1>
+          <button
+            onClick={handleScan}
+            disabled={scanning}
+            className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            title="扫描所有未结案 NCR 的 SLA 状态,把超期/即将到期清单推送到 Slack"
+          >
+            {scanning ? <Spinner /> : <Clock size={16} />}
+            {scanning ? '巡检中…' : '立即扫描 SLA'}
+          </button>
         </div>
 
         {!loading && !error && (

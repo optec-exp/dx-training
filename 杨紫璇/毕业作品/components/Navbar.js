@@ -15,6 +15,8 @@ const items = [
 
 export default function Navbar() {
   const pathname = usePathname()
+  // 报告页(/ncr/:id/report/...)是独立打印视图,不显示全局导航
+  if (pathname?.includes('/report/')) return null
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
