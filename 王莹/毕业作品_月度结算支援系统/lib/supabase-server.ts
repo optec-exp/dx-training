@@ -8,5 +8,9 @@ export function getSupabaseAdmin(): SupabaseClient {
   if (!url || !key) {
     throw new Error("缺少 NEXT_PUBLIC_SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY 环境变量");
   }
-  return createClient(url, key, { auth: { persistSession: false } });
+  // db.schema = 'settlement'：本系统所有表都在独立 schema，与同 project 内其它作品隔离。
+  return createClient(url, key, {
+    auth: { persistSession: false },
+    db: { schema: "settlement" },
+  });
 }

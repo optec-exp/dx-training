@@ -5,9 +5,14 @@
 --   2) 其余为本系统读写的业务表。
 --   3) 金额一律存"原币种"金额；Kintone 已换算的日元/人民币仅毛利核算用。
 --   4) company: 'EXPRESS'(空+海) | 'TRADING'(EC)；region: '日本'|'中国'|'EC'。
+--   5) 全部对象建在独立 schema `settlement`，与同 project 内其它作品(33/41)隔离；
+--      将来上生产可一条 `pg_dump --schema=settlement` 整体迁出。
+--      ⚠ 请在 Supabase SQL Editor 中【一次性整段执行本文件】(search_path 为会话级)。
 -- ============================================================================
 
-create extension if not exists pgcrypto;  -- gen_random_uuid()
+create schema if not exists settlement;
+create extension if not exists pgcrypto;            -- gen_random_uuid()（PG13+ 已内置，留作兼容）
+set search_path to settlement, public;              -- 以下所有表/索引均落在 settlement schema
 
 -- ============================================================================
 -- 一、Kintone 只读镜像表（快照）
@@ -401,3 +406,15 @@ create table if not exists exchange_rates (
   对人民币汇率 numeric(18,6)
 );
 create index if not exists idx_rate_period on exchange_rates(期间, 币种);
+
+-- ============================================================================
+-- 三、授权（自建 schema 需手动授权；本系统仅用 service_role 访问）
+--   只授权 service_role，anon/authenticated 完全不开放（财务数据，纵深防御）。
+--   表已启用 RLS，service_role 绕过 RLS，故服务端读写不受影响。
+-- ============================================================================
+grant usage on schema settlement to service_role;
+grant all privileges on all tables in schema settlement to service_role;
+grant all privileges on all sequences in schema settlement to service_role;
+-- 将来新建的表/序列也自动授权
+alter default privileges in schema settlement grant all on tables to service_role;
+alter default privileges in schema settlement grant all on sequences to service_role;
