@@ -6,6 +6,11 @@
 
 ## 2026-06-05
 
+### 主题优化：数据简洁易读 + 异常一眼可见
+- **改了什么**：refine 配色(中性底/白卡片/蓝强调)；新增状态药丸(.pill-green/amber/red)、异常整行高亮(.flag 红底+左色条)、负数自动红(.neg)、表格斑马纹+等宽数字。对账/风控/同步排查状态改药丸+异常整行。
+- **文件**：`app/globals.css`(重写+工具类)、`app/reconciliation/page.tsx`、`app/risk/page.tsx`、`app/sync-check/page.tsx`
+- **验证**：全部页面 200；sync-check 异常整行(flag)生效。✅（风控药丸需2026-06数据,2026-05在加成率生效前不显示）
+
 ### ⑦资金·应收账龄（/treasury）
 - **改了什么**：请求入金未入金→ar_ap_aging，按账龄分桶+超期+Top10客户。应付/预测/投资 P1。
 - **文件**：`scripts/sync-ar.mjs`(新)、`lib/treasury.ts`(新)、`app/treasury/page.tsx`(新)

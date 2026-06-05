@@ -45,12 +45,12 @@ export default async function SyncCheckPage({ searchParams }: { searchParams: Pr
               {report.rows.slice(0, 120).map((r) => {
                 const rb = Math.abs(Number(r.收入差异)) > 1, cb = Math.abs(Number(r.成本差异)) > 1;
                 return (
-                  <tr key={r.opt_no} style={rb || cb ? { background: "#fef2f2" } : undefined}>
+                  <tr key={r.opt_no} className={rb || cb ? "flag" : undefined}>
                     <td>{r.opt_no}</td>
                     <td className="num">{fmt(r.案件收入)}</td><td className="num">{fmt(r.入金合计)}</td>
-                    <td className="num" style={{ color: rb ? "var(--red)" : "var(--muted)" }}>{fmt(r.收入差异)}</td>
+                    <td className={"num" + (rb ? " neg" : "")}>{fmt(r.收入差异)}</td>
                     <td className="num">{fmt(r.案件成本)}</td><td className="num">{fmt(r.支付合计)}</td>
-                    <td className="num" style={{ color: cb ? "var(--red)" : "var(--muted)" }}>{fmt(r.成本差异)}</td>
+                    <td className={"num" + (cb ? " neg" : "")}>{fmt(r.成本差异)}</td>
                   </tr>
                 );
               })}

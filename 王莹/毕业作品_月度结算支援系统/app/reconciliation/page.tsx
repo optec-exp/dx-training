@@ -17,11 +17,11 @@ interface ReconResp {
   result: { rows: ReconRow[]; summary: { matched: number; diff: number; missing: number; total: number } };
 }
 
-const STATUS_STYLE: Record<string, { color: string; icon: string }> = {
-  匹配: { color: "var(--green)", icon: "✅" },
-  金额差异: { color: "var(--amber)", icon: "⚠️" },
-  待人工核对: { color: "var(--amber)", icon: "🔍" },
-  缺账单或漏录: { color: "var(--red)", icon: "🟡" },
+const STATUS_STYLE: Record<string, { cls: string; icon: string }> = {
+  匹配: { cls: "pill-green", icon: "✓" },
+  金额差异: { cls: "pill-amber", icon: "⚠" },
+  待人工核对: { cls: "pill-amber", icon: "🔍" },
+  缺账单或漏录: { cls: "pill-red", icon: "●" },
 };
 
 export default function ReconciliationPage() {
@@ -84,15 +84,15 @@ export default function ReconciliationPage() {
             </thead>
             <tbody>
               {data.result.rows.map((r) => (
-                <tr key={r.opt_no}>
+                <tr key={r.opt_no} className={r.status !== "匹配" ? "flag" : undefined}>
                   <td>{r.opt_no}</td>
                   <td style={{ color: "var(--muted)", fontSize: 12 }}>{r.kintone供应商 || "—"}</td>
                   <td className="num">{yen(r.billAmount, r.币种)}</td>
                   <td className="num">{yen(r.kintoneAmount, r.币种)}</td>
-                  <td className="num">{r.diff == null ? "—" : r.diff.toLocaleString()}</td>
-                  <td style={{ color: STATUS_STYLE[r.status].color }}>
-                    {STATUS_STYLE[r.status].icon} {r.status}
-                    {r.note && <span style={{ color: "var(--muted)", fontSize: 11 }}> · {r.note}</span>}
+                  <td className={"num" + (r.diff && r.diff !== 0 ? " neg" : "")}>{r.diff == null ? "—" : r.diff.toLocaleString()}</td>
+                  <td>
+                    <span className={`pill ${STATUS_STYLE[r.status].cls}`}>{STATUS_STYLE[r.status].icon} {r.status}</span>
+                    {r.note && <span style={{ color: "var(--muted)", fontSize: 11 }}> {r.note}</span>}
                   </td>
                 </tr>
               ))}
