@@ -6,6 +6,12 @@
 
 ## 2026-06-05
 
+### 利润报表小组显示重组（OS / JP DESK展开中日 / 通関）
+- **改了什么**：小组×4维度表从原始 team 列表，重组为 OS / JP DESK(展开 JP DESK中国=GC+EC+JapanDesk×13/24、JP DESK日本=TCC+JapanDesk×11/24) / 通関 / 其它独立小组。
+- **文件**：`lib/profit.ts`(新增 buildGroups + GroupRow + groups 字段)、`app/profit/page.tsx`(表格按 groups 渲染，缩进展开)
+- **验证**：/profit 200，结构正确；数值守恒(OS+JP DESK+通関=全社56,786,247)，与经营概览中/日一致。✅
+- **待办**：整体改浅色主题（王莹要求，最后再做）。
+
 ### 统一月份选择器
 - **改了什么**：/sync、/reconciliation 的月份文本框 → 原生月份选择器 `<input type="month">`（/profit 已有 MonthPicker）。
 - **文件**：`app/sync/page.tsx`、`app/reconciliation/page.tsx`

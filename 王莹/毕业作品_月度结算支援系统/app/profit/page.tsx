@@ -122,21 +122,21 @@ export default async function ProfitPage({
               </tr>
             </thead>
             <tbody>
-              {report.teams.map((t) => {
-                const maxTotal = Math.max(...report!.teams.map((x) => x.total), 1);
-                return (
-                  <tr key={t.team}>
-                    <td>{t.team}</td>
-                    <td className="num strong">{yen(t.total)}</td>
+              {(() => {
+                const maxTotal = Math.max(...report!.groups.filter((g) => !g.indent).map((x) => x.total), 1);
+                return report!.groups.map((g, i) => (
+                  <tr key={i} style={g.indent ? { color: "var(--muted)" } : undefined}>
+                    <td style={g.indent ? { paddingLeft: 24 } : undefined}>{g.name}</td>
+                    <td className="num strong">{yen(g.total)}</td>
                     {DIMS.map((d) => (
-                      <td key={d} className="num">{yen(t[d])}</td>
+                      <td key={d} className="num">{yen(g[d])}</td>
                     ))}
                     <td>
-                      <div className="bar" style={{ width: `${(t.total / maxTotal) * 100}%` }} />
+                      {!g.indent && <div className="bar" style={{ width: `${(g.total / maxTotal) * 100}%` }} />}
                     </td>
                   </tr>
-                );
-              })}
+                ));
+              })()}
             </tbody>
           </table>
 

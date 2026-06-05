@@ -116,16 +116,66 @@ export interface TeamProfit {
   输出: number;
   输入: number;
 }
+// 小组报表展示分组：OS / JP DESK(展开中日) / 通関 / 其它独立。
+export interface GroupRow {
+  name: string;
+  total: number;
+  見積: number;
+  国别: number;
+  输出: number;
+  输入: number;
+  indent?: boolean; // JP DESK 中日明细行缩进
+}
+
 export interface ProfitReport {
   month: string;
   caseCount: number;
   teams: TeamProfit[];
+  groups: GroupRow[];
   china: number;
   japan: number;
   total: number;
   jpdesk: { profit: number; cn: number; jp: number; cnHeads: number; jpHeads: number };
   sumGrossProfit: number;
   unallocated: { amount: number; cases: { opt_no: string; short: number; reason: string }[] };
+}
+
+const JPDESK_TEAMS = ["TCC", "GC", "EC", "Japan Desk"]; // 归入 JP DESK 分组
+
+// 构建小组展示分组：OS / JP DESK(中/日) / 通関 / 其它
+function buildGroups(map: Map<Team, TeamProfit>, cn: number, jp: number): GroupRow[] {
+  const z = (): GroupRow => ({ name: "", total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0 });
+  const addInto = (g: GroupRow, t?: TeamProfit, f = 1) => {
+    if (!t) return;
+    g.total += t.total * f; g.見積 += t.見積 * f; g.国别 += t.国别 * f; g.输出 += t.输出 * f; g.输入 += t.输入 * f;
+  };
+  const heads = cn + jp || 1;
+  const out: GroupRow[] = [];
+
+  // OS
+  if (map.get("OS")) { const g = z(); g.name = "OS"; addInto(g, map.get("OS")); out.push(g); }
+
+  // JP DESK（GC/EC/Japan Desk×13 → 中国；TCC/Japan Desk×11 → 日本）
+  const jd = map.get("Japan Desk");
+  const cnRow = z(); cnRow.name = "├ JP DESK中国"; cnRow.indent = true;
+  addInto(cnRow, map.get("GC")); addInto(cnRow, map.get("EC")); addInto(cnRow, jd, cn / heads);
+  const jpRow = z(); jpRow.name = "├ JP DESK日本"; jpRow.indent = true;
+  addInto(jpRow, map.get("TCC")); addInto(jpRow, jd, jp / heads);
+  if (cnRow.total || jpRow.total) {
+    const parent = z(); parent.name = "JP DESK";
+    for (const k of ["total", "見積", "国别", "输出", "输入"] as const) parent[k] = cnRow[k] + jpRow[k];
+    out.push(parent, cnRow, jpRow);
+  }
+
+  // 通関
+  if (map.get("通关")) { const g = z(); g.name = "通関"; addInto(g, map.get("通关")); out.push(g); }
+
+  // 其它独立小组（Project / 物流開発 等）
+  for (const t of map.values()) {
+    if (t.team === "OS" || t.team === "通关" || JPDESK_TEAMS.includes(t.team)) continue;
+    const g = z(); g.name = t.team; addInto(g, t); out.push(g);
+  }
+  return out;
 }
 
 // jpdeskHeads：JP DESK 中日人数（月度，将来从 headcounts 表读）。
@@ -184,6 +234,7 @@ export function computeProfitReport(
     month,
     caseCount: cases.length,
     teams,
+    groups: buildGroups(map, jpdeskHeads.cn, jpdeskHeads.jp),
     china,
     japan,
     total: china + japan,
