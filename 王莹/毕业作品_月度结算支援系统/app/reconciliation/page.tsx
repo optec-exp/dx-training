@@ -61,7 +61,7 @@ export default function ReconciliationPage() {
       <div style={{ display: "flex", gap: 12, alignItems: "center", margin: "20px 0", flexWrap: "wrap" }}>
         <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
         <label>利润月：</label>
-        <input value={month} onChange={(e) => setMonth(e.target.value)} style={{ padding: "8px 12px", background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text)", width: 110 }} />
+        <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} style={{ padding: "8px 12px", background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text)" }} />
         <button className="btn primary" disabled={busy} onClick={run}>{busy ? "AI 解析对账中…" : "解析并对账"}</button>
       </div>
 

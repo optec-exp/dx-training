@@ -6,6 +6,11 @@
 
 ## 2026-06-05
 
+### 统一月份选择器
+- **改了什么**：/sync、/reconciliation 的月份文本框 → 原生月份选择器 `<input type="month">`（/profit 已有 MonthPicker）。
+- **文件**：`app/sync/page.tsx`、`app/reconciliation/page.tsx`
+- **验证**：两页 HTTP 200，HTML 含 `type="month"`。✅
+
 ### 协作规则确立
 - 约定：改动前先讲计划；改完记录到本文件；能自动验证的直接验证、需人工的给出验证方法。
 
