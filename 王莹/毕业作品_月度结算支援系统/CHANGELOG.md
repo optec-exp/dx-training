@@ -13,6 +13,7 @@
 - **铺开**：图表加到 /profit(中日净利环形+业务小组净利柱状)、/treasury(账龄柱状)、/settlement(币种残高柱状)；**表格全部保留**（图表是增加）。通用组件 `app/_components/Charts.tsx`(BarCard/PieCard)。验证三页 200+图表渲染。✅
 
 ### 对照设计补缺口（进行中）
+- **⑦应付账龄**：支付未払→ar_ap_aging(类型=应付)；/treasury 同时展示 应收+应付(账龄柱状+超期+Top10)。文件 `scripts/sync-ap.mjs`、`lib/treasury.ts`(getPayablesAging)、`app/treasury/page.tsx`。应付759笔¥99M/超期194笔¥38M。✅（预测/信用/投资仍P1）
 - **⑤利润报表 全社多维度**：服务类型/国别/顾客/Business Scope/Mode/出发/到达 7 维直接按案件毛利汇总(各取Top)。文件 `lib/profit.ts`(computeDimensions)、`app/profit/page.tsx`。✅（业务范围字段未同步，暂缺）
 - **⑤小组损益P&L**：业务部门(OS/JP DESK中/JP DESK日/通関)毛利−自身贩管费=净利；管理部门(成本中心)单独列只贩管费；部门→小组映射可调(GC課→JP DESK中国等);役員不计入小组。文件 `lib/sga.ts`(getSgaByDept)、`lib/profit.ts`(buildGroupPL)、`app/profit/page.tsx`。验证净利 OS1488万/JPDESK中647万/JPDESK日2430万/通関50万。✅
 - **⑧风控异常面板**：从"仅加成率"扩展为统一面板——负毛利/异常大额(>3×均值)/重复成本/长期挂账(90+)+加成率。文件 `lib/risk-panel.ts`(新)、`app/risk/page.tsx`。验证2026-05检出 负毛利3/异常大额13/重复3/挂账6客户。✅

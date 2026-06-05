@@ -11,11 +11,14 @@ export interface AgingReport {
 
 const BUCKET_ORDER = ["0-30", "31-60", "61-90", "90+"];
 
-export async function getReceivablesAging(): Promise<AgingReport> {
+export async function getReceivablesAging(): Promise<AgingReport> { return getAging("应收"); }
+export async function getPayablesAging(): Promise<AgingReport> { return getAging("应付"); }
+
+async function getAging(类型: "应收" | "应付"): Promise<AgingReport> {
   const sb = getSupabaseAdmin();
   const rows: Record<string, unknown>[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await sb.from("ar_ap_aging").select("*").eq("类型", "应收").range(from, from + 999);
+    const { data, error } = await sb.from("ar_ap_aging").select("*").eq("类型", 类型).range(from, from + 999);
     if (error) throw new Error(`读取 ar_ap_aging 失败: ${error.message}`);
     rows.push(...((data ?? []) as Record<string, unknown>[]));
     if (!data || data.length < 1000) break;
