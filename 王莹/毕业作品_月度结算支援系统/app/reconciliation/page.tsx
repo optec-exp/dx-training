@@ -30,10 +30,23 @@ export default function ReconciliationPage() {
   const [busy, setBusy] = useState(false);
   const [data, setData] = useState<ReconResp | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [expl, setExpl] = useState<{ opt_no: string; 疑因: string; 建议: string }[] | null>(null);
+  const [explBusy, setExplBusy] = useState(false);
+
+  async function explain() {
+    if (!data) return;
+    setExplBusy(true); setExpl(null);
+    try {
+      const rows = data.result.rows.filter((r) => r.status !== "匹配");
+      const res = await fetch("/api/reconcile/explain", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rows }) });
+      const j = await res.json();
+      setExpl(j.explanations || []);
+    } catch { setExpl([]); } finally { setExplBusy(false); }
+  }
 
   async function run() {
     if (!file) { setError("请先选择账单 PDF"); return; }
-    setBusy(true); setError(null); setData(null);
+    setBusy(true); setError(null); setData(null); setExpl(null);
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -75,9 +88,20 @@ export default function ReconciliationPage() {
             <Kpi label="🟡 缺账单/漏录" value={data.result.summary.missing} color="var(--red)" />
             <Kpi label="共计" value={data.result.summary.total} />
           </div>
-          <p style={{ color: "var(--muted)", fontSize: 13 }}>
+          <p style={{ color: "var(--muted)", fontSize: 13, display: "flex", gap: 12, alignItems: "center" }}>
             账单：{data.bill.供应商}｜{data.bill.币种}｜{data.bill.类型}｜{data.bill.行数} 行
+            {(data.result.summary.diff + data.result.summary.missing) > 0 &&
+              <button className="btn" disabled={explBusy} onClick={explain}>{explBusy ? "AI 解读中…" : "🤖 AI 解读差异"}</button>}
           </p>
+          {expl && expl.length > 0 && (
+            <div className="card" style={{ marginBottom: 12 }}>
+              <div style={{ fontWeight: 650, marginBottom: 8 }}>AI 差异疑因建议</div>
+              <table className="report-table" style={{ boxShadow: "none", border: "none", margin: 0 }}>
+                <thead><tr><th>OPT</th><th>疑因</th><th>建议</th></tr></thead>
+                <tbody>{expl.map((e, i) => (<tr key={i}><td>{e.opt_no}</td><td>{e.疑因}</td><td style={{ color: "var(--muted)" }}>{e.建议}</td></tr>))}</tbody>
+              </table>
+            </div>
+          )}
           <table className="report-table">
             <thead>
               <tr><th>OPT 编号</th><th>匹配供应商</th><th className="num">账单金额</th><th className="num">Kintone 金额</th><th className="num">差额</th><th>状态</th></tr>

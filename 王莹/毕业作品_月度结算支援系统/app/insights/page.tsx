@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function InsightsPage() {
   const [month, setMonth] = useState("2026-05");
+  const [范围, set范围] = useState("全社");
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState<string>("");
   const [facts, setFacts] = useState<string>("");
@@ -12,7 +13,7 @@ export default function InsightsPage() {
   async function run() {
     setBusy(true); setError(null); setText(""); setFacts("");
     try {
-      const res = await fetch("/api/insights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month }) });
+      const res = await fetch("/api/insights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month, 范围 }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       setText(data.text); setFacts(data.facts);
@@ -27,7 +28,10 @@ export default function InsightsPage() {
       <p style={{ color: "var(--muted)" }}>汇总当月利润/净利/加成率数据，由 AI 生成中日双语经营点评（数据用代码算，AI 只做解读）。</p>
       <div style={{ display: "flex", gap: 12, alignItems: "center", margin: "16px 0" }}>
         <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} style={{ padding: "8px 12px", background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text)" }} />
-        <button className="btn primary" disabled={busy} onClick={run}>{busy ? "AI 生成中…" : "生成经营点评"}</button>
+        <select value={范围} onChange={(e) => set范围(e.target.value)} style={{ padding: "8px 12px", background: "var(--panel-2)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text)" }}>
+          <option>全社</option><option>中国</option><option>日本</option>
+        </select>
+        <button className="btn primary" disabled={busy} onClick={run}>{busy ? "AI 生成中…" : "生成经营汇报"}</button>
       </div>
 
       {error && <div className="warn-box" style={{ borderColor: "var(--red)", color: "var(--red)" }}>{error}</div>}

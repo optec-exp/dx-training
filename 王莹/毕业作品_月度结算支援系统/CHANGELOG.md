@@ -13,6 +13,7 @@
 - **铺开**：图表加到 /profit(中日净利环形+业务小组净利柱状)、/treasury(账龄柱状)、/settlement(币种残高柱状)；**表格全部保留**（图表是增加）。通用组件 `app/_components/Charts.tsx`(BarCard/PieCard)。验证三页 200+图表渲染。✅
 
 ### 对照设计补缺口（进行中）
+- **⑨累计YTD+部门汇报+对账差异疑因**：insights 加 范围(全社/中/日)选择 + 累计YTD(同年≤当月汇总)；对账页加"AI解读差异"按钮(/api/reconcile/explain 给疑因+建议)。文件 `app/api/insights/route.ts`、`app/insights/page.tsx`、`app/api/reconcile/explain/route.ts`、`app/reconciliation/page.tsx`。验证中国区YTD汇报+差异疑因(金额录入错误/漏录)。✅（导出Doc/Slack按王莹要求暂放）
 - **⑥决算现金净额勾稽**：入金/出金/贩管费出金 按币种现金口径(实际收付款日,遍历子表)→现金净额 vs 残高差额 → settlement_checks；/settlement 加现金勾稽区(差异提示药丸)。文件 `scripts/sync-settlement-cash.mjs`、`lib/settlement.ts`(getCashRecon)、`app/settlement/page.tsx`。2026-05 EUR平/其余有差异(提示用)。✅
 - **内控·审计日志**：关账/解锁/预算/人数等写操作记入 audit_logs；/close 页显示近 15 条。文件 `lib/audit.ts`、`app/api/{close,budget,headcount}/route.ts`、`app/close/page.tsx`。验证"关账→月结"已记录。✅（快照冻结仍 P1）
 - **⑦应付账龄**：支付未払→ar_ap_aging(类型=应付)；/treasury 同时展示 应收+应付(账龄柱状+超期+Top10)。文件 `scripts/sync-ap.mjs`、`lib/treasury.ts`(getPayablesAging)、`app/treasury/page.tsx`。应付759笔¥99M/超期194笔¥38M。✅（预测/信用/投资仍P1）
