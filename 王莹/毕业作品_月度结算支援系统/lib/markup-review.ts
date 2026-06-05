@@ -14,6 +14,7 @@ export interface MarkupRow {
 }
 export interface MarkupReport {
   month: string;
+  active: boolean; // 加成率标准 2026-06 起生效；之前的月份不审查
   tolerance: number;
   rows: MarkupRow[]; // 仅"在标准表范围内"的案件（含需审查与正常）
   flagged: MarkupRow[]; // 需审查（超标）
@@ -21,8 +22,14 @@ export interface MarkupReport {
   counts: { total: number; inScope: number; flagged: number };
 }
 
+// 加成率标准生效起始月（之前月份不审查）。
+export const MARKUP_ACTIVE_FROM = "2026-06";
+
 export async function getMarkupReport(month: string): Promise<MarkupReport> {
   const sb = getSupabaseAdmin();
+  if (month < MARKUP_ACTIVE_FROM) {
+    return { month, active: false, tolerance: MARKUP_TOLERANCE, rows: [], flagged: [], avgByScope: [], counts: { total: 0, inScope: 0, flagged: 0 } };
+  }
   const { data, error } = await sb
     .from("kc_cases")
     .select("opt_no,business_scope,服务类型,obc_within_6h,毛利_日元,成本_日元,売上_日元")
@@ -57,6 +64,7 @@ export async function getMarkupReport(month: string): Promise<MarkupReport> {
   rows.sort((a, b) => Math.abs(b.偏离 ?? 0) - Math.abs(a.偏离 ?? 0));
   return {
     month,
+    active: true,
     tolerance: MARKUP_TOLERANCE,
     rows,
     flagged,

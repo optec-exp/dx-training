@@ -21,7 +21,10 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
         <span style={{ color: "var(--muted)", fontSize: 13 }}>加成率 = 利润 / 成本；相对标准偏离超 ±{report ? (report.tolerance * 100).toFixed(0) : 10}% 标红</span>
       </div>
       {err && <div className="placeholder">读取失败：{err}</div>}
-      {report && (
+      {report && !report.active && (
+        <div className="warn-box">加成率标准自 <b>2026-06</b> 起生效，{month} 在此之前，不进行加成率审查。请选择 2026-06 及之后的月份。</div>
+      )}
+      {report && report.active && (
         <>
           <div className="kpi-row">
             <Kpi label="🚩 需审查" value={report.counts.flagged} color="var(--red)" />

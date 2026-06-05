@@ -6,10 +6,12 @@
 
 ## 2026-06-05
 
-### 浅色主题
-- **改了什么**：全局配色变量改为浅色（白底深字蓝色强调），调整按钮/警示框/标红行的硬编码深色。
-- **文件**：`app/globals.css`(:root 变量+.btn.primary+.warn-box)、`app/risk/page.tsx`(标红行背景)
-- **验证**：所有页面(首页/profit/risk/insights/reconciliation/sync) HTTP 200。需浏览器确认观感。
+### 专业仪表盘主题 + 加成率6月生效
+- **改了什么**：
+  - 主题升级为专业财务仪表盘风格（白卡片+柔和阴影+靛蓝强调+表格悬停/卡片化+留白+字号层级）。
+  - 加成率审查仅 **2026-06** 起生效；之前月份 /risk 显示提示、不审查。
+- **文件**：`app/globals.css`(整体重写)、`lib/markup-review.ts`(MARKUP_ACTIVE_FROM)、`app/risk/page.tsx`(未生效提示)
+- **验证**：全部页面 200；/risk?month=2026-05 显示"标准自2026-06生效不审查"。✅
 
 ### AI 洞察·月度经营点评（/insights）
 - **改了什么**：新增 /insights——汇总利润/净利/贩管费/加成率数据 → Gemini 生成中日双语经营点评(代码算数,AI解读)。
