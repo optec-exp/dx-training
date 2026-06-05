@@ -7,24 +7,22 @@ export const MARKUP_TOLERANCE = 0.10; // "大幅"容差：相对目标偏离 ±1
 // OBC 为条件单值：按"是否 6 小时内提货"取 150% / 100%。
 type Target = { fixed: number } | { obc: { within6h: number; after: number } };
 
-// key = `${business_scope}|${服务类型}`（服务类型含 AOG 前缀时按实际字段对齐）
+// key = `${business_scope}|${服务类型}`（服务类型用真实值 ECO/NFO/OBC/Parts Procurement）
 export const MARKUP_TABLE: Record<string, Target> = {
-  // Aerospace
   "Aerospace|ECO": { fixed: 0.40 },
-  "Aerospace|AOG_NFO": { fixed: 0.55 },
-  "Aerospace|AOG_OBC": { obc: { within6h: 1.50, after: 1.00 } },
+  "Aerospace|NFO": { fixed: 0.55 },
+  "Aerospace|OBC": { obc: { within6h: 1.50, after: 1.00 } },
   "Aerospace|Parts Procurement": { fixed: 0.35 },
-  // Ship Spares
   "Ship Spares|ECO": { fixed: 0.40 },
   "Ship Spares|NFO": { fixed: 0.45 },
   "Ship Spares|OBC": { obc: { within6h: 1.50, after: 1.00 } },
-  // Other
   "Other|ECO": { fixed: 0.45 },
   "Other|NFO": { fixed: 0.55 },
   "Other|OBC": { obc: { within6h: 1.50, after: 1.00 } },
 };
 
-// 取标准目标值。范围外（表中无）返回 null → 不审查（但仍计算实际加成率）。
+// 取标准目标值。范围外（表中无）返回 null → 不审查。
+// OBC 需"是否6小时内提货"，该字段暂未找到 → obcWithin6h 为 null 时返回 null（OBC 审查挂起）。
 export function getTargetMarkup(
   businessScope: string,
   serviceType: string,
@@ -33,6 +31,7 @@ export function getTargetMarkup(
   const t = MARKUP_TABLE[`${businessScope}|${serviceType}`];
   if (!t) return null;
   if ("fixed" in t) return t.fixed;
+  if (obcWithin6h == null) return null; // OBC 缺 6h 字段 → 挂起
   return obcWithin6h ? t.obc.within6h : t.obc.after;
 }
 

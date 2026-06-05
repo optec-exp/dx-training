@@ -6,6 +6,17 @@
 
 ## 2026-06-05
 
+### 加成率审查（风控页 /risk）
+- **改了什么**：新增 /risk 风控页——单票加成率(利润/成本) vs 标准表(Business Scope×服务类型,±10%相对容差)标红；各大类月度平均加成率。
+- **文件**：`lib/markup.ts`(键改真实服务类型,OBC缺6h挂起)、`lib/markup-review.ts`(新)、`app/risk/page.tsx`(新)
+- **验证**：/risk 200，2026-05：标准内26票/需审查25/总209；平均 Other22.2%/Aerospace407.8%。✅
+- **发现**：单票加成率方差大+容差紧→几乎都标红；实务或宜在月均/大类层面审查（待王莹定）。
+
+### JP DESK 折叠明细
+- **改了什么**：小组表 JP DESK 行可点击折叠/展开中日明细。
+- **文件**：`app/_components/GroupTable.tsx`(新,客户端)、`app/profit/page.tsx`(改用 GroupTable)
+- **验证**：/profit 200，▾ 折叠图标在，点击可收起 JP DESK中国/日本。✅
+
 ### 利润报表小组显示重组（OS / JP DESK展开中日 / 通関）
 - **改了什么**：小组×4维度表从原始 team 列表，重组为 OS / JP DESK(展开 JP DESK中国=GC+EC+JapanDesk×13/24、JP DESK日本=TCC+JapanDesk×11/24) / 通関 / 其它独立小组。
 - **文件**：`lib/profit.ts`(新增 buildGroups + GroupRow + groups 字段)、`app/profit/page.tsx`(表格按 groups 渲染，缩进展开)

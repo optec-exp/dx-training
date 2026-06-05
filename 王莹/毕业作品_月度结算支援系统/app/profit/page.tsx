@@ -3,6 +3,7 @@ import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
 import { computeProfitReport, type ProfitReport } from "@/lib/profit";
 import { getSgaForMonth, type SgaAgg } from "@/lib/sga";
 import MonthPicker from "@/app/_components/MonthPicker";
+import GroupTable from "@/app/_components/GroupTable";
 
 export const dynamic = "force-dynamic";
 
@@ -109,36 +110,8 @@ export default async function ProfitPage({
             </div>
           )}
 
-          <h3>小组 × 4 维度（日元）</h3>
-          <table className="report-table">
-            <thead>
-              <tr>
-                <th>小组</th>
-                <th className="num">合计</th>
-                {DIMS.map((d) => (
-                  <th key={d} className="num">{d}</th>
-                ))}
-                <th style={{ width: "26%" }}>占比</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                const maxTotal = Math.max(...report!.groups.filter((g) => !g.indent).map((x) => x.total), 1);
-                return report!.groups.map((g, i) => (
-                  <tr key={i} style={g.indent ? { color: "var(--muted)" } : undefined}>
-                    <td style={g.indent ? { paddingLeft: 24 } : undefined}>{g.name}</td>
-                    <td className="num strong">{yen(g.total)}</td>
-                    {DIMS.map((d) => (
-                      <td key={d} className="num">{yen(g[d])}</td>
-                    ))}
-                    <td>
-                      {!g.indent && <div className="bar" style={{ width: `${(g.total / maxTotal) * 100}%` }} />}
-                    </td>
-                  </tr>
-                ));
-              })()}
-            </tbody>
-          </table>
+          <h3>小组 × 4 维度（日元）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 可折叠中日明细</span></h3>
+          <GroupTable groups={report.groups} />
 
           {report.unallocated.cases.length > 0 && (
             <div className="warn-box">
