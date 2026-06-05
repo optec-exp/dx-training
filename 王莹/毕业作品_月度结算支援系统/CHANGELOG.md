@@ -7,7 +7,8 @@
 ## 2026-06-05
 
 ### 对照设计补缺口（进行中）
-- **⑤利润报表 全社多维度**：服务类型/国别/顾客/Business Scope/Mode/出发/到达 7 维直接按案件毛利汇总(各取Top)。文件 `lib/profit.ts`(computeDimensions)、`app/profit/page.tsx`。验证 /profit 200 出现全社多维度。✅（业务范围字段未同步，暂缺）
+- **⑤利润报表 全社多维度**：服务类型/国别/顾客/Business Scope/Mode/出发/到达 7 维直接按案件毛利汇总(各取Top)。文件 `lib/profit.ts`(computeDimensions)、`app/profit/page.tsx`。✅（业务范围字段未同步，暂缺）
+- **⑧风控异常面板**：从"仅加成率"扩展为统一面板——负毛利/异常大额(>3×均值)/重复成本/长期挂账(90+)+加成率。文件 `lib/risk-panel.ts`(新)、`app/risk/page.tsx`。验证2026-05检出 负毛利3/异常大额13/重复3/挂账6客户。✅
 
 ### 补齐占位模块（人数/预算/关账录入）+ 移除重复①账单
 - **改了什么**：

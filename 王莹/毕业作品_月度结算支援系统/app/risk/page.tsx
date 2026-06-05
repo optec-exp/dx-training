@@ -1,4 +1,5 @@
 import { getMarkupReport } from "@/lib/markup-review";
+import { getRiskPanel, type RiskPanel } from "@/lib/risk-panel";
 import { getAvailableMonths } from "@/lib/data";
 import MonthPicker from "@/app/_components/MonthPicker";
 
@@ -10,17 +11,44 @@ const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
 export default async function RiskPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
   const months = await getAvailableMonths();
   const month = (await searchParams).month || months[0] || "2026-05";
-  let report = null, err: string | null = null;
-  try { report = await getMarkupReport(month); } catch (e) { err = e instanceof Error ? e.message : String(e); }
+  let report = null, panel: RiskPanel | null = null, err: string | null = null;
+  try { report = await getMarkupReport(month); panel = await getRiskPanel(month); } catch (e) { err = e instanceof Error ? e.message : String(e); }
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑧ 风控 · 加成率审查</h1>
+      <h1 style={{ marginTop: 0 }}>⑧ 风控异常面板</h1>
       <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
         <MonthPicker value={month} basePath="/risk" />
-        <span style={{ color: "var(--muted)", fontSize: 13 }}>加成率 = 利润 / 成本；相对标准偏离超 ±{report ? (report.tolerance * 100).toFixed(0) : 10}% 标红</span>
+        <span style={{ color: "var(--muted)", fontSize: 13 }}>异常检测：负毛利 / 异常大额 / 重复成本 / 长期挂账 / 加成率审查</span>
       </div>
       {err && <div className="placeholder">读取失败：{err}</div>}
+
+      {panel && (
+        <>
+          <div className="kpi-row">
+            <Kpi label="🔴 负毛利票" value={panel.负毛利.length} color={panel.负毛利.length ? "var(--red)" : undefined} />
+            <Kpi label="🟠 异常大额(>3×均值)" value={panel.异常大额.length} color={panel.异常大额.length ? "var(--amber)" : undefined} />
+            <Kpi label="🔁 重复成本" value={panel.重复成本.length} color={panel.重复成本.length ? "var(--amber)" : undefined} />
+            <Kpi label="⏳ 长期挂账客户(90+)" value={panel.长期挂账.length} color={panel.长期挂账.length ? "var(--red)" : undefined} />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16, marginTop: 12 }}>
+            <Section title="负毛利票（毛利 < 0）">
+              <MiniTable head={["OPT", "大类", "毛利", "成本"]} rows={panel.负毛利.slice(0, 12).map((r) => [r.opt_no, r.business_scope, <span key="g" className="neg">{yen(r.毛利)}</span>, yen(r.成本)])} empty={panel.负毛利.length === 0} />
+            </Section>
+            <Section title="异常大额（成本 > 3× 当月均值）">
+              <MiniTable head={["OPT", "成本", "倍数"]} rows={panel.异常大额.slice(0, 12).map((r) => [r.opt_no, yen(r.成本), r.倍数 + "×"])} empty={panel.异常大额.length === 0} />
+            </Section>
+            <Section title="重复成本（同 OPT+供应商+金额 多次）">
+              <MiniTable head={["OPT", "供应商", "金额", "次数"]} rows={panel.重复成本.slice(0, 12).map((r) => [r.opt_no, r.供应商, yen(r.金额), <span key="n" className="neg">{r.次数}</span>])} empty={panel.重复成本.length === 0} />
+            </Section>
+            <Section title="长期挂账（应收 90+ 超期 · 按客户）">
+              <MiniTable head={["客户", "应收金额"]} rows={panel.长期挂账.slice(0, 12).map((r) => [r.客户, <span key="a" className="neg">{yen(r.金额)}</span>])} empty={panel.长期挂账.length === 0} />
+            </Section>
+          </div>
+          <h3 style={{ marginTop: 28 }}>加成率审查</h3>
+        </>
+      )}
       {report && !report.active && (
         <div className="warn-box">加成率标准自 <b>2026-06</b> 起生效，{month} 在此之前，不进行加成率审查。请选择 2026-06 及之后的月份。</div>
       )}
@@ -71,4 +99,27 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
 
 function Kpi({ label, value, color }: { label: string; value: number; color?: string }) {
   return <div className="kpi"><div className="kpi-label">{label}</div><div className="kpi-value" style={color ? { color } : undefined}>{value}</div></div>;
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="card" style={{ padding: 14 }}>
+      <div style={{ fontWeight: 650, marginBottom: 8 }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function MiniTable({ head, rows, empty }: { head: string[]; rows: React.ReactNode[][]; empty: boolean }) {
+  if (empty) return <div style={{ color: "var(--green)", fontSize: 13 }}>✓ 无异常</div>;
+  return (
+    <table style={{ width: "100%", borderCollapse: "collapse", fontVariantNumeric: "tabular-nums", fontSize: 13 }}>
+      <thead><tr>{head.map((h, i) => <th key={i} style={{ textAlign: i === 0 ? "left" : "right", color: "var(--muted)", fontWeight: 600, fontSize: 11, padding: "2px 6px" }}>{h}</th>)}</tr></thead>
+      <tbody>
+        {rows.map((r, i) => (
+          <tr key={i}>{r.map((c, j) => <td key={j} style={{ textAlign: j === 0 ? "left" : "right", padding: "3px 6px" }}>{c}</td>)}</tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }
