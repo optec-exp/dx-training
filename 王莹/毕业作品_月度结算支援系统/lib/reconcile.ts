@@ -25,6 +25,20 @@ export interface ReconResult {
 const latin = (s: string) => (s || "").toUpperCase().replace(/[^A-Z]/g, "");
 const TOLERANCE = 1;
 
+// 供应商映射记忆：账单供应商 ↔ Kintone 供应商
+export async function getSupplierMappings(): Promise<{ 账单供应商: string; kintone供应商: string }[]> {
+  const sb = getSupabaseAdmin();
+  const { data } = await sb.from("supplier_mappings").select("账单供应商,kintone供应商").limit(500);
+  return (data ?? []) as { 账单供应商: string; kintone供应商: string }[];
+}
+export async function addSupplierMapping(账单供应商: string, kintone供应商: string): Promise<void> {
+  if (!账单供应商 || !kintone供应商 || latin(账单供应商) === latin(kintone供应商)) return;
+  const sb = getSupabaseAdmin();
+  const { data } = await sb.from("supplier_mappings").select("id").eq("账单供应商", 账单供应商).eq("kintone供应商", kintone供应商).limit(1);
+  if (data && data.length) return; // 去重
+  await sb.from("supplier_mappings").insert({ 账单供应商, kintone供应商 });
+}
+
 export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   // 账单侧按 OPT 聚合
   const billByOpt = new Map<string, number>();
@@ -51,14 +65,17 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   }
 
   const billLatin = latin(bill.供应商);
+  // 供应商映射记忆：账单供应商 → 可接受的 Kintone 供应商(latin)
+  const maps = await getSupplierMappings();
+  const mappedLatins = new Set(maps.filter((m) => latin(m.账单供应商) === billLatin).map((m) => latin(m.kintone供应商)));
   const rows: ReconRow[] = [];
   let matched = 0, diffN = 0, missing = 0, manual = 0;
   for (const [opt, bAmt] of billByOpt) {
     const lines = kcByOpt.get(opt) || [];
     let row: ReconRow;
 
-    // 一级：供应商模糊匹配
-    const supLines = billLatin ? lines.filter((l) => { const kl = latin(l.供应商); return kl && (kl.includes(billLatin) || billLatin.includes(kl)); }) : [];
+    // 一级：供应商模糊匹配 OR 映射记忆命中
+    const supLines = billLatin ? lines.filter((l) => { const kl = latin(l.供应商); return kl && (kl.includes(billLatin) || billLatin.includes(kl) || mappedLatins.has(kl)); }) : [];
     if (supLines.length) {
       const kAmt = supLines.reduce((s, l) => s + l.金额, 0);
       const diff = bAmt - kAmt;

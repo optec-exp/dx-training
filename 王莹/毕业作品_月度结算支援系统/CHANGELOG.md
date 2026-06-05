@@ -6,6 +6,11 @@
 
 ## 逐页细节优化
 
+### ②对账页优化-批3b（供应商映射记忆）
+- **改了什么**：新表 supplier_mappings(王莹建)；对账匹配时除模糊匹配外，命中映射也算匹配；提供"供应商映射记忆"折叠区(列表+手动登记 账单供应商→Kintone供应商)。
+- **文件**：`lib/reconcile.ts`(getSupplierMappings/addSupplierMapping+reconcileBill集成)、`app/api/supplier-mappings`、`app/_components/SupplierMappings.tsx`、`app/reconciliation/page.tsx`
+- **验证**：登记AGX EXPRESS→AGX EXPRESS PHILS.,INC.读取OK。✅ → **②对账页优化全部完成**。
+
 ### ②对账页优化-批3a（账单历史/差异钻取）
 - **改了什么**：① **已上传账单历史**(从bills读,折叠,带Storage原件签名链接📄) ② **差异钻取**(工作台点OPT→展开该票Kintone成本明细)。
 - **文件**：`lib/reconcile.ts`(getUploadedBills+签名URL/getCostLinesByOpt)、`app/api/bills`、`app/_components/{BillHistory,ReconWorkbench}.tsx`、`app/reconciliation/page.tsx`
