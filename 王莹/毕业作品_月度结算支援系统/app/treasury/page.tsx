@@ -1,5 +1,6 @@
 import { getReceivablesAging, getPayablesAging, type AgingReport } from "@/lib/treasury";
 import { BarCard } from "@/app/_components/Charts";
+import InvestmentPanel from "@/app/_components/InvestmentPanel";
 
 export const dynamic = "force-dynamic";
 const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
@@ -14,8 +15,28 @@ export default async function TreasuryPage() {
       <h1 style={{ marginTop: 0 }}>⑦ 资金管理 · 应收 / 应付账龄</h1>
       <p style={{ color: "var(--muted)" }}>未收/未付按账龄分桶（基准日 2026-06-05）。资金预测 / 信用额度 / 闲置投资为 P1。</p>
       {err && <div className="placeholder">读取失败：{err}</div>}
-      {ar && <AgingBlock title="应收账龄" report={ar} labelName="客户" accent="var(--accent)" />}
-      {ap && <AgingBlock title="应付账龄" report={ap} labelName="供应商" accent="var(--amber)" />}
+      {ar && ap && (
+        <div style={{ marginTop: 24 }}>
+          <h3 style={{ marginTop: 0 }}>资金净头寸（应收 − 应付）</h3>
+          <div className="kpi-row">
+            <div className="kpi primary"><div className="kpi-label">净头寸</div><div className="kpi-value">{yen(ar.total - ap.total)}</div></div>
+            <div className="kpi tinted"><div className="kpi-label">应收合计</div><div className="kpi-value" style={{ fontSize: 20, color: "var(--accent)" }}>{yen(ar.total)}</div></div>
+            <div className="kpi"><div className="kpi-label">应付合计</div><div className="kpi-value" style={{ fontSize: 20, color: "var(--amber)" }}>{yen(ap.total)}</div></div>
+            <div className="kpi"><div className="kpi-label">超期净敞口</div><div className="kpi-value" style={{ fontSize: 20, color: "var(--red)" }}>{yen(ar.overdueAmt - ap.overdueAmt)}</div></div>
+          </div>
+          <table className="report-table" style={{ maxWidth: 600 }}>
+            <thead><tr><th>账龄</th><th className="num">应收</th><th className="num">应付</th><th className="num">净头寸</th></tr></thead>
+            <tbody>
+              {ar.buckets.map((b, i) => {
+                const apAmt = ap.buckets[i]?.amt || 0;
+                return <tr key={b.bucket}><td>{b.bucket}</td><td className="num">{yen(b.amt)}</td><td className="num">{yen(apAmt)}</td><td className={"num strong" + (b.amt - apAmt < 0 ? " neg" : "")}>{yen(b.amt - apAmt)}</td></tr>;
+              })}
+            </tbody>
+          </table>
+          <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>按账龄估算现金流入(应收)减流出(应付)。</p>
+        </div>
+      )}
+      <InvestmentPanel />
     </div>
   );
 }

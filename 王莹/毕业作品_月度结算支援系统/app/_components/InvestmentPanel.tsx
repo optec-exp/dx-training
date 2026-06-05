@@ -1,0 +1,52 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+interface Inv { id: string; 品种: string; 投资额: number; 币种: string; 收益率: number; 到期日: string | null; 流动性: string; 状态: string }
+const yen = (n: number) => Math.round(n).toLocaleString("ja-JP");
+
+export default function InvestmentPanel() {
+  const [rows, setRows] = useState<Inv[]>([]);
+  const [f, setF] = useState({ 品种: "", 投资额: "", 币种: "JPY", 收益率: "", 到期日: "", 流动性: "可赎回" });
+  const [busy, setBusy] = useState(false);
+
+  async function load() { const r = await fetch("/api/investment").then((x) => x.json()).catch(() => ({ rows: [] })); setRows(r.rows || []); }
+  useEffect(() => { load(); }, []);
+
+  async function save() {
+    if (!f.品种 || !f.投资额) return;
+    setBusy(true);
+    try { await fetch("/api/investment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) }); setF({ 品种: "", 投资额: "", 币种: "JPY", 收益率: "", 到期日: "", 流动性: "可赎回" }); load(); }
+    finally { setBusy(false); }
+  }
+
+  const total = rows.reduce((s, r) => s + (Number(r.投资额) || 0), 0);
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      <h3 style={{ marginTop: 0 }}>闲置资金投资台账</h3>
+      <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 12 }}>
+        <I label="品种" v={f.品种} set={(x) => setF({ ...f, 品种: x })} w={140} />
+        <I label="投资额" v={f.投资额} set={(x) => setF({ ...f, 投资额: x })} w={120} type="number" />
+        <I label="币种" v={f.币种} set={(x) => setF({ ...f, 币种: x })} w={70} />
+        <I label="收益率%" v={f.收益率} set={(x) => setF({ ...f, 收益率: x })} w={80} type="number" />
+        <I label="到期日" v={f.到期日} set={(x) => setF({ ...f, 到期日: x })} w={140} type="date" />
+        <I label="流动性" v={f.流动性} set={(x) => setF({ ...f, 流动性: x })} w={100} />
+        <button className="btn primary" disabled={busy} onClick={save}>{busy ? "…" : "添加"}</button>
+      </div>
+      <table className="report-table" style={{ maxWidth: 820 }}>
+        <thead><tr><th>品种</th><th className="num">投资额</th><th>币种</th><th className="num">收益率</th><th>到期日</th><th>流动性</th></tr></thead>
+        <tbody>
+          {rows.map((r) => (<tr key={r.id}><td>{r.品种}</td><td className="num strong">{yen(r.投资额)}</td><td>{r.币种}</td><td className="num">{r.收益率}%</td><td>{r.到期日 || "—"}</td><td>{r.流动性}</td></tr>))}
+          {rows.length === 0 && <tr><td colSpan={6} style={{ color: "var(--muted)" }}>暂无，录入闲置资金投资</td></tr>}
+          {rows.length > 0 && <tr><td className="strong">合计</td><td className="num strong">{yen(total)}</td><td colSpan={4} /></tr>}
+        </tbody>
+      </table>
+      <style>{`.inp2{padding:7px 10px;background:var(--panel);border:1px solid var(--border);border-radius:8px;color:var(--text)}`}</style>
+    </div>
+  );
+}
+
+function I({ label, v, set, w, type = "text" }: { label: string; v: string; set: (x: string) => void; w: number; type?: string }) {
+  return <label style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 12, color: "var(--muted)" }}>{label}<input className="inp2" type={type} value={v} onChange={(e) => set(e.target.value)} style={{ width: w }} /></label>;
+}
