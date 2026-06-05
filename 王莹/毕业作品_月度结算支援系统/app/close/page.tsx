@@ -9,6 +9,7 @@ interface Status {
   锁定状态: string;
   正式锁账日: string;
   审计?: { 时间: string; 用户: string; 动作: string; 对象类型: string; 对象id: string }[];
+  快照?: { 冻结时间: string } | null;
 }
 const STATE_PILL: Record<string, string> = { 进行中: "pill-gray", 月结: "pill-amber", 正式锁账: "pill-green" };
 
@@ -62,6 +63,7 @@ export default function ClosePage() {
             </div>
             <div style={{ color: "var(--muted)", fontSize: 13, marginBottom: 14 }}>
               正式锁账日（M+2 月 1 日，宽限 1 个月）：<b>{s.正式锁账日}</b>
+              {s.快照 && <span className="pill pill-green" style={{ marginLeft: 12 }}>❄ 快照已冻结 {s.快照.冻结时间?.replace("T", " ").slice(0, 16)}</span>}
             </div>
             <div style={{ display: "flex", gap: 10 }}>
               <button className="btn" disabled={busy || s.锁定状态 !== "进行中"} onClick={() => setState("月结")}>月结（软关账）</button>
