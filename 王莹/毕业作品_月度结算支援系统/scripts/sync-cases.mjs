@@ -33,6 +33,12 @@ const CASE_APPS = [
 ];
 
 const str = (f) => (f && f.value != null && typeof f.value !== "object" ? String(f.value) : "");
+// Kintone DATETIME 为 UTC(...Z)，业务口径为 JST(+9h)；DATE 无时间则原样取。
+function jstDate(v) {
+  if (!v) return null;
+  if (!v.includes("T")) return v.slice(0, 10);
+  return new Date(new Date(v).getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+}
 const num = (f) => {
   if (!f || f.value == null || f.value === "") return null;
   const n = parseFloat(f.value);
@@ -64,8 +70,7 @@ async function fetchMonth(app) {
 }
 
 function mapCase(app, r) {
-  const t = str(r[app.timeField]);
-  const date = t ? t.slice(0, 10) : null;
+  const date = jstDate(str(r[app.timeField]));
   return {
     opt_no: str(r["当社案件番号"]),
     company: app.company,
