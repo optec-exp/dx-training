@@ -146,16 +146,16 @@ export async function setReviewStatus(id: string, 状态: string, 复核备注 =
 }
 
 // 持久化对账结果（bills + bill_lines + reconciliations）。
-// 把账单 PDF 存入 Storage(settlement-bills)，返回存储路径（原件存档/内控留存）。
-export async function uploadBillFile(base64: string, 供应商: string, month: string): Promise<string | null> {
+// 把账单原件存入 Storage(settlement-bills)，返回存储路径（原件存档/内控留存）。
+export async function uploadBillFile(bytes: Buffer, 供应商: string, month: string, ext = "pdf", mime = "application/pdf"): Promise<string | null> {
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const safe = (供应商 || "bill").replace(/[^\w一-鿿]/g, "_").slice(0, 30);
-    const path = `${month}/${safe}_${Date.now()}.pdf`;
+    const path = `${month}/${safe}_${Date.now()}.${ext}`;
     const res = await fetch(`${url}/storage/v1/object/settlement-bills/${encodeURIComponent(path)}`, {
       method: "POST",
-      headers: { apikey: key as string, Authorization: `Bearer ${key}`, "Content-Type": "application/pdf" },
-      body: Buffer.from(base64, "base64"),
+      headers: { apikey: key as string, Authorization: `Bearer ${key}`, "Content-Type": mime },
+      body: bytes,
     });
     return res.ok ? path : null;
   } catch { return null; }

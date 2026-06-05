@@ -6,6 +6,11 @@
 
 ## 逐页细节优化
 
+### ②对账页优化-批2（Excel/批量/拖拽/进度）
+- **改了什么**：① 支持 **Excel(.xlsx)** 账单(SheetJS解析→文本→Gemini parseBillText) ② **批量上传**多张(客户端逐个POST) ③ **拖拽上传**区 ④ **逐文件进度**(等待/解析中/完成/失败)+多结果折叠展示+全局AI解读差异。
+- **文件**：`lib/gemini.ts`(parseBillText+callParse重构)、`app/api/reconcile/route.ts`(多文件+Excel)、`lib/reconcile.ts`(uploadBillFile通用)、`app/reconciliation/page.tsx`(重写上传UI)、package.json(xlsx)
+- **验证**：单/多PDF对账OK；造测试.xlsx解析成功(Lau Chun Wah/HKD/2行全匹配)。✅
+
 ### ②对账页优化-批1（缺账单清单/去重/工作台折叠筛选备注）
 - **改了什么**：① **缺账单清单**(放对账页,可折叠,按供应商分组+展开明细,显示齐全率/缺账单笔数金额)——即遗漏账单提醒 ② **去重**(持久化时同月同OPT先删再插+清理现有21条重复) ③ **差异工作台**改可折叠+月/状态筛选+复核备注(prompt)+撤销按钮(已标记行显示)。
 - **文件**：`lib/reconcile.ts`(getMissingBills+持久化去重)、`app/api/missing-bills`、`app/_components/{Collapsible,MissingBills,ReconWorkbench}.tsx`、`app/api/reconcile/review`(收备注)、`app/reconciliation/page.tsx`

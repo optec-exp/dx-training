@@ -75,10 +75,19 @@ export async function generateText(prompt: string): Promise<string> {
 }
 
 export async function parseBillPdf(base64: string): Promise<ParsedBill> {
+  return callParse([{ inline_data: { mime_type: "application/pdf", data: base64 } }, { text: PROMPT }]);
+}
+
+// Excel/文本账单：解析出的表格文本喂给 AI（同 schema）。
+export async function parseBillText(text: string): Promise<ParsedBill> {
+  return callParse([{ text: `${PROMPT}\n\n账单内容（从 Excel 提取的表格文本）：\n${text}` }]);
+}
+
+async function callParse(parts: unknown[]): Promise<ParsedBill> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("缺少 GEMINI_API_KEY");
   const body = JSON.stringify({
-    contents: [{ parts: [{ inline_data: { mime_type: "application/pdf", data: base64 } }, { text: PROMPT }] }],
+    contents: [{ parts }],
     generationConfig: { responseMimeType: "application/json", responseSchema: SCHEMA, temperature: 0 },
   });
 
