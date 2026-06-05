@@ -6,6 +6,11 @@
 
 ## 2026-06-05
 
+### AI 洞察·月度经营点评（/insights）
+- **改了什么**：新增 /insights——汇总利润/净利/贩管费/加成率数据 → Gemini 生成中日双语经营点评(代码算数,AI解读)。
+- **文件**：`lib/gemini.ts`(加 generateText+降级)、`app/api/insights/route.ts`(新)、`app/insights/page.tsx`(新)
+- **验证**：/insights 200，生成专业中日双语点评，AI 自动抓出"事業活動費负值"异常+加成率风险+管理建议。✅
+
 ### 加成率审查（风控页 /risk）
 - **改了什么**：新增 /risk 风控页——单票加成率(利润/成本) vs 标准表(Business Scope×服务类型,±10%相对容差)标红；各大类月度平均加成率。
 - **文件**：`lib/markup.ts`(键改真实服务类型,OBC缺6h挂起)、`lib/markup-review.ts`(新)、`app/risk/page.tsx`(新)

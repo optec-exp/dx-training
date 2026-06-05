@@ -49,6 +49,31 @@ const PROMPT = `这是一张国际货代的成本账单（供应商/快递员费
 - lines：每行明细，opt_no 取 Job No.(OPT编号)，金额取该行 TOTAL（原币种数值，去掉货币符号和千分位逗号）
 只返回 JSON。`;
 
+// 纯文本生成（月报点评等），同样带降级重试。
+export async function generateText(prompt: string): Promise<string> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("缺少 GEMINI_API_KEY");
+  const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } });
+  let lastErr = "";
+  for (const model of MODELS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text as string;
+        throw new Error("Gemini 未返回内容");
+      }
+      lastErr = `${res.status} ${await res.text()}`;
+      if (res.status === 503 || res.status === 429) { await new Promise((r) => setTimeout(r, 1500)); continue; }
+      break;
+    }
+  }
+  throw new Error(`Gemini 生成失败（已重试/降级）：${lastErr}`);
+}
+
 export async function parseBillPdf(base64: string): Promise<ParsedBill> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("缺少 GEMINI_API_KEY");
