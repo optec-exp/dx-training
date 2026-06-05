@@ -79,6 +79,7 @@ function mapCase(app, r) {
     "納品完了日": date,
     "利润月": date ? date.slice(0, 7) : null,
     "对应小组": str(r["チーム案件判断"]),
+    "提单号": str(r["MAWB"]),                          // 提单号兜底匹配键（MAWB=真实运单号）
     "服务类型": str(r["Transport_Type"]),
     business_scope: str(r["Business_Scope"]),
     "国别": str(r["顧客国コード"]),

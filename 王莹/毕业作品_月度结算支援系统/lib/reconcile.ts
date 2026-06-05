@@ -23,6 +23,7 @@ export interface ReconResult {
 }
 
 const latin = (s: string) => (s || "").toUpperCase().replace(/[^A-Z]/g, "");
+const norm = (s: string) => (s || "").toUpperCase().replace(/[^0-9A-Z]/g, ""); // 提单号归一(保留数字,去横杠空格)
 const TOLERANCE = 1;
 
 // 供应商映射记忆：账单供应商 ↔ Kintone 供应商
@@ -40,13 +41,42 @@ export async function addSupplierMapping(账单供应商: string, kintone供应�
 }
 
 export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
-  // 账单侧按 OPT 聚合
-  const billByOpt = new Map<string, number>();
-  for (const ln of bill.lines) billByOpt.set(ln.opt_no, (billByOpt.get(ln.opt_no) || 0) + ln.金额);
-  const opts = [...billByOpt.keys()];
-
-  // Kintone 侧：这些 OPT、同币种的成本明细（保留单行，供两级匹配）
   const sb = getSupabaseAdmin();
+
+  // 账单侧按单号聚合，并记录每个键的提单号
+  const billByKey = new Map<string, { amount: number; 提单号: string }>();
+  for (const ln of bill.lines) {
+    const cur = billByKey.get(ln.opt_no) || { amount: 0, 提单号: "" };
+    cur.amount += ln.金额;
+    if (!cur.提单号 && ln.提单号) cur.提单号 = ln.提单号;
+    billByKey.set(ln.opt_no, cur);
+  }
+
+  // 提单号→OPT 映射（kc_cases.提单号=MAWB），用于兜底解析"账单单号非OPT"
+  const blToOpt = new Map<string, string>();
+  for (let from = 0; ; from += 1000) {
+    const { data } = await sb.from("kc_cases").select("opt_no,提单号").not("提单号", "is", null).range(from, from + 999);
+    const rows = (data ?? []) as { opt_no: string; 提单号: string }[];
+    for (const r of rows) {
+      const n = norm(r.提单号);
+      if (n && norm(r.opt_no) !== n && !blToOpt.has(n)) blToOpt.set(n, r.opt_no);
+    }
+    if (rows.length < 1000) break;
+  }
+
+  // 解析每个账单键的真实 OPT：直命 OR 提单号兜底（账单单号本身/账单提单号 命中 MAWB→OPT）
+  const resolved = new Map<string, { amount: number; viaBL: boolean; 原单号: string }>();
+  for (const [key, v] of billByKey) {
+    const hit = blToOpt.get(norm(key)) || (v.提单号 ? blToOpt.get(norm(v.提单号)) : undefined);
+    const realOpt = hit || key;
+    const viaBL = !!hit;
+    const cur = resolved.get(realOpt);
+    if (cur) { cur.amount += v.amount; cur.viaBL = cur.viaBL || viaBL; }
+    else resolved.set(realOpt, { amount: v.amount, viaBL, 原单号: key });
+  }
+  const opts = [...resolved.keys()];
+
+  // Kintone 侧：这些(真实) OPT、同币种的成本明细（保留单行，供两级匹配）
   const kc: { opt_no: string; 供应商: string; 金额_原币: number }[] = [];
   for (let i = 0; i < opts.length; i += 100) {
     const { data, error } = await sb
@@ -70,8 +100,11 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   const mappedLatins = new Set(maps.filter((m) => latin(m.账单供应商) === billLatin).map((m) => latin(m.kintone供应商)));
   const rows: ReconRow[] = [];
   let matched = 0, diffN = 0, missing = 0, manual = 0;
-  for (const [opt, bAmt] of billByOpt) {
+  for (const [opt, info] of resolved) {
+    const bAmt = info.amount;
     const lines = kcByOpt.get(opt) || [];
+    const blNote = info.viaBL ? `经提单号匹配(账单号${info.原单号})` : "";
+    const add = (n?: string) => [blNote, n].filter(Boolean).join("；") || undefined;
     let row: ReconRow;
 
     // 一级：供应商模糊匹配 OR 映射记忆命中
@@ -80,19 +113,19 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
       const kAmt = supLines.reduce((s, l) => s + l.金额, 0);
       const diff = bAmt - kAmt;
       const ok = Math.abs(diff) < TOLERANCE;
-      row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: supLines[0].供应商, 币种: bill.币种, billAmount: bAmt, kintoneAmount: kAmt, diff, status: ok ? "匹配" : "金额差异" };
+      row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: supLines[0].供应商, 币种: bill.币种, billAmount: bAmt, kintoneAmount: kAmt, diff, status: ok ? "匹配" : "金额差异", note: add() };
       if (ok) matched++; else diffN++;
     } else {
       // 二级兜底：按金额在该 OPT+币种 内找唯一匹配
       const hit = lines.filter((l) => Math.abs(l.金额 - bAmt) < TOLERANCE);
       if (hit.length === 1) {
-        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: hit[0].供应商, 币种: bill.币种, billAmount: bAmt, kintoneAmount: hit[0].金额, diff: 0, status: "匹配", note: "按金额匹配，供应商推定" };
+        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: hit[0].供应商, 币种: bill.币种, billAmount: bAmt, kintoneAmount: hit[0].金额, diff: 0, status: "匹配", note: add("按金额匹配，供应商推定") };
         matched++;
       } else if (hit.length > 1) {
-        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "待人工核对", note: `${hit.length} 笔同额候选` };
+        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "待人工核对", note: add(`${hit.length} 笔同额候选`) };
         manual++;
       } else {
-        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "Kintone无对应", note: lines.length ? "该票同币种成本无金额匹配" : "Kintone无此成本(可能漏录,或账单单号非OPT)" };
+        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "Kintone无对应", note: add(lines.length ? "该票同币种成本无金额匹配" : "Kintone无此成本(可能漏录,或账单单号非OPT)") };
         missing++;
       }
     }
@@ -100,7 +133,7 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   }
   const order: Record<ReconStatus, number> = { 金额差异: 0, 待人工核对: 1, Kintone无对应: 2, 匹配: 3 };
   rows.sort((a, b) => order[a.status] - order[b.status]);
-  return { 供应商: bill.供应商, 币种: bill.币种, rows, summary: { matched, diff: diffN, missing: missing + manual, total: billByOpt.size } };
+  return { 供应商: bill.供应商, 币种: bill.币种, rows, summary: { matched, diff: diffN, missing: missing + manual, total: resolved.size } };
 }
 
 // 缺账单清单：该利润月 Kintone 成本(OPT+供应商) 中尚未匹配到账单的，按供应商分组。

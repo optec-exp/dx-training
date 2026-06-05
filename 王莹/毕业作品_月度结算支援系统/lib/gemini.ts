@@ -6,6 +6,7 @@ const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-lates
 
 export interface ParsedBillLine {
   opt_no: string;
+  提单号?: string;
   routing?: string;
   date?: string;
   金额: number;
@@ -31,6 +32,7 @@ const SCHEMA = {
         type: "object",
         properties: {
           opt_no: { type: "string", description: "Job No.，即 OPT 编号" },
+          提单号: { type: "string", description: "该行的提单号/运单号(MAWB/HAWB/AWB/BL No.)，没有就留空" },
           routing: { type: "string" },
           date: { type: "string" },
           金额: { type: "number", description: "该行 TOTAL 金额（原币种数值）" },
@@ -46,7 +48,7 @@ const PROMPT = `这是一张国际货代的成本账单（供应商/快递员费
 - 供应商：Courier Full Name 或收款人名称
 - 币种：Subtotal 处标注的货币代码
 - 类型：只有 1 个 Job No. 为"单票"，多个为"SOA"
-- lines：每行明细，opt_no 取 Job No.(OPT编号)，金额取该行 TOTAL（原币种数值，去掉货币符号和千分位逗号）
+- lines：每行明细，opt_no 取 Job No.(OPT编号)，提单号取该行的 MAWB/HAWB/AWB/B/L No.(运单号，没有就留空)，金额取该行 TOTAL（原币种数值，去掉货币符号和千分位逗号）
 只返回 JSON。`;
 
 // 纯文本生成（月报点评等），同样带降级重试。
