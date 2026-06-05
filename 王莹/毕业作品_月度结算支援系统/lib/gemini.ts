@@ -1,7 +1,8 @@
 // Gemini 免费层：多模态读账单 PDF → responseSchema 结构化。
 // 将来换 Claude API：只替换本文件。
 
-const MODEL = "gemini-2.5-flash"; // 文档解析；免费层约 20/天
+// 主模型 + 降级备用（过载/限流时自动切换）。
+const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"];
 
 export interface ParsedBillLine {
   opt_no: string;
@@ -51,20 +52,30 @@ const PROMPT = `这是一张国际货代的成本账单（供应商/快递员费
 export async function parseBillPdf(base64: string): Promise<ParsedBill> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error("缺少 GEMINI_API_KEY");
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ inline_data: { mime_type: "application/pdf", data: base64 } }, { text: PROMPT }] }],
-        generationConfig: { responseMimeType: "application/json", responseSchema: SCHEMA, temperature: 0 },
-      }),
+  const body = JSON.stringify({
+    contents: [{ parts: [{ inline_data: { mime_type: "application/pdf", data: base64 } }, { text: PROMPT }] }],
+    generationConfig: { responseMimeType: "application/json", responseSchema: SCHEMA, temperature: 0 },
+  });
+
+  let lastErr = "";
+  for (const model of MODELS) {
+    // 同一模型对 503/429 再重试一次（短暂过载多为瞬时）
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error("Gemini 未返回内容");
+        return JSON.parse(text) as ParsedBill;
+      }
+      lastErr = `${res.status} ${await res.text()}`;
+      if (res.status === 503 || res.status === 429) { await new Promise((r) => setTimeout(r, 1500)); continue; }
+      break; // 非过载错误：换下一个模型
     }
-  );
-  if (!res.ok) throw new Error(`Gemini 解析失败: ${res.status} ${await res.text()}`);
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error("Gemini 未返回内容");
-  return JSON.parse(text) as ParsedBill;
+  }
+  throw new Error(`Gemini 解析失败（已重试/降级）：${lastErr}`);
 }

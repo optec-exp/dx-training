@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
 import { computeProfitReport, type ProfitReport } from "@/lib/profit";
 import { getSgaForMonth, type SgaAgg } from "@/lib/sga";
+import MonthPicker from "@/app/_components/MonthPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -32,14 +33,16 @@ export default async function ProfitPage({
   return (
     <div>
       <h1 style={{ marginTop: 0 }}>⑤ 利润报表</h1>
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
+        <MonthPicker value={month} basePath="/profit" />
+        <span style={{ color: "var(--muted)", fontSize: 12 }}>已同步：</span>
         {months.map((m) => (
           <Link
             key={m}
             href={`/profit?month=${m}`}
             className="card"
             style={{
-              padding: "6px 14px",
+              padding: "4px 12px",
               borderColor: m === month ? "var(--accent)" : "var(--border)",
               color: m === month ? "var(--accent)" : "var(--muted)",
             }}
@@ -50,6 +53,12 @@ export default async function ProfitPage({
       </div>
 
       {err && <div className="placeholder">读取失败：{err}</div>}
+
+      {report && report.caseCount === 0 && (
+        <div className="warn-box">
+          {month} 暂无案件数据。请先到 <a href="/sync" style={{ color: "var(--accent)" }}>同步页</a> 同步该月。
+        </div>
+      )}
 
       {report && (
         <>

@@ -4,11 +4,13 @@ import { useState } from "react";
 
 interface ReconRow {
   opt_no: string;
+  kintone供应商: string | null;
   币种: string;
   billAmount: number;
   kintoneAmount: number | null;
   diff: number | null;
-  status: "匹配" | "金额差异" | "缺账单或漏录";
+  status: "匹配" | "金额差异" | "缺账单或漏录" | "待人工核对";
+  note?: string;
 }
 interface ReconResp {
   bill: { 供应商: string; 币种: string; 类型: string; 行数: number };
@@ -18,6 +20,7 @@ interface ReconResp {
 const STATUS_STYLE: Record<string, { color: string; icon: string }> = {
   匹配: { color: "var(--green)", icon: "✅" },
   金额差异: { color: "var(--amber)", icon: "⚠️" },
+  待人工核对: { color: "var(--amber)", icon: "🔍" },
   缺账单或漏录: { color: "var(--red)", icon: "🟡" },
 };
 
@@ -77,16 +80,20 @@ export default function ReconciliationPage() {
           </p>
           <table className="report-table">
             <thead>
-              <tr><th>OPT 编号</th><th className="num">账单金额</th><th className="num">Kintone 金额</th><th className="num">差额</th><th>状态</th></tr>
+              <tr><th>OPT 编号</th><th>匹配供应商</th><th className="num">账单金额</th><th className="num">Kintone 金额</th><th className="num">差额</th><th>状态</th></tr>
             </thead>
             <tbody>
               {data.result.rows.map((r) => (
                 <tr key={r.opt_no}>
                   <td>{r.opt_no}</td>
+                  <td style={{ color: "var(--muted)", fontSize: 12 }}>{r.kintone供应商 || "—"}</td>
                   <td className="num">{yen(r.billAmount, r.币种)}</td>
                   <td className="num">{yen(r.kintoneAmount, r.币种)}</td>
                   <td className="num">{r.diff == null ? "—" : r.diff.toLocaleString()}</td>
-                  <td style={{ color: STATUS_STYLE[r.status].color }}>{STATUS_STYLE[r.status].icon} {r.status}</td>
+                  <td style={{ color: STATUS_STYLE[r.status].color }}>
+                    {STATUS_STYLE[r.status].icon} {r.status}
+                    {r.note && <span style={{ color: "var(--muted)", fontSize: 11 }}> · {r.note}</span>}
+                  </td>
                 </tr>
               ))}
             </tbody>
