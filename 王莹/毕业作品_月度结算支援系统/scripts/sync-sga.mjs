@@ -71,7 +71,7 @@ for (const [label, id, token] of APPS) {
     for (const row of sub) {
       const d = v(row.value?.["部署名"]);
       const amt = parseFloat(v(row.value?.["部署按分費用JPY"])) || 0;
-      if (!d && amt === 0) continue;
+      if (!amt) continue; // 只抓有按分费用的行，金额=0 忽略
       const region = deptRegion(d);
       rows.push({ source_app: String(id), 期间: ym, region, 部门: d, 费用类型: fee, 是否除外: isExcluded, 金额: amt, 分摊到小组: d });
       if (!isExcluded) {
