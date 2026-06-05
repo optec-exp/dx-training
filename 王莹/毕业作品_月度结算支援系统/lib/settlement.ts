@@ -13,8 +13,14 @@ export interface SettlementReport {
   byCurrency: { 币种: string; 差额: number; count: number }[];
 }
 
+export interface CashReconRow { 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string }
+export async function getCashRecon(month: string): Promise<CashReconRow[]> {
+  const sb = getSupabaseAdmin();
+  const { data } = await sb.from("settlement_checks").select("*").eq("利润月", month);
+  return ((data ?? []) as unknown as CashReconRow[]).sort((a, b) => Math.abs(b.差异) - Math.abs(a.差异));
+}
+
 // 月度决算·银行残高（残高差额 = 期末 − 期初，按币种汇总）。
-// 注：完整勾稽还需"现金净额(入金−出金)"按币种比对，待现金流同步(P1)。
 export async function getSettlement(month: string): Promise<SettlementReport> {
   const sb = getSupabaseAdmin();
   const { data, error } = await sb.from("kc_bank_balance").select("*").eq("月份", month);

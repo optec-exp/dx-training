@@ -1,4 +1,4 @@
-import { getSettlement } from "@/lib/settlement";
+import { getSettlement, getCashRecon, type CashReconRow } from "@/lib/settlement";
 import { getAvailableMonths } from "@/lib/data";
 import MonthPicker from "@/app/_components/MonthPicker";
 import { BarCard } from "@/app/_components/Charts";
@@ -9,8 +9,8 @@ const fmt = (n: number | null) => (n == null ? "—" : Math.round(n).toLocaleStr
 export default async function SettlementPage({ searchParams }: { searchParams: Promise<{ month?: string }> }) {
   const months = await getAvailableMonths();
   const month = (await searchParams).month || months[0] || "2026-05";
-  let report = null, err: string | null = null;
-  try { report = await getSettlement(month); } catch (e) { err = e instanceof Error ? e.message : String(e); }
+  let report = null, cash: CashReconRow[] = [], err: string | null = null;
+  try { report = await getSettlement(month); cash = await getCashRecon(month); } catch (e) { err = e instanceof Error ? e.message : String(e); }
 
   return (
     <div>
@@ -52,9 +52,26 @@ export default async function SettlementPage({ searchParams }: { searchParams: P
               ))}
             </tbody>
           </table>
-          <div className="warn-box" style={{ borderColor: "var(--border)", background: "var(--panel-2)", color: "var(--muted)" }}>
-            完整勾稽（残高差额 vs 现金净额=入金−出金，按币种）需现金流同步，列为 P1。本页先提供银行残高侧监控。
-          </div>
+          {cash.length > 0 && (
+            <>
+              <h3>现金勾稽 · 残高差额 vs 现金净额（按币种）</h3>
+              <table className="report-table">
+                <thead><tr><th>币种</th><th className="num">残高差额</th><th className="num">入金</th><th className="num">出金</th><th className="num">现金净额</th><th className="num">差异</th><th>状态</th></tr></thead>
+                <tbody>
+                  {cash.map((c) => (
+                    <tr key={c.币种} className={c.状态 !== "平" ? "flag" : undefined}>
+                      <td>{c.币种}</td>
+                      <td className="num">{fmt(c.残高差额)}</td><td className="num">{fmt(c.入金合计)}</td><td className="num">{fmt(c.出金合计)}</td>
+                      <td className="num">{fmt(c.现金净额)}</td>
+                      <td className={"num strong" + (c.差异 !== 0 ? " neg" : "")}>{fmt(c.差异)}</td>
+                      <td><span className={`pill ${c.状态 === "平" ? "pill-green" : "pill-amber"}`}>{c.状态}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>口径=实际收付款日（现金制）。差异仅提示、不阻断关账（银行账户未必涵盖全部业务现金，差异需人工排查）。</p>
+            </>
+          )}
         </>
       )}
     </div>

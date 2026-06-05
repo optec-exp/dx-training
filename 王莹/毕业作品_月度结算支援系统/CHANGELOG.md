@@ -13,6 +13,7 @@
 - **铺开**：图表加到 /profit(中日净利环形+业务小组净利柱状)、/treasury(账龄柱状)、/settlement(币种残高柱状)；**表格全部保留**（图表是增加）。通用组件 `app/_components/Charts.tsx`(BarCard/PieCard)。验证三页 200+图表渲染。✅
 
 ### 对照设计补缺口（进行中）
+- **⑥决算现金净额勾稽**：入金/出金/贩管费出金 按币种现金口径(实际收付款日,遍历子表)→现金净额 vs 残高差额 → settlement_checks；/settlement 加现金勾稽区(差异提示药丸)。文件 `scripts/sync-settlement-cash.mjs`、`lib/settlement.ts`(getCashRecon)、`app/settlement/page.tsx`。2026-05 EUR平/其余有差异(提示用)。✅
 - **内控·审计日志**：关账/解锁/预算/人数等写操作记入 audit_logs；/close 页显示近 15 条。文件 `lib/audit.ts`、`app/api/{close,budget,headcount}/route.ts`、`app/close/page.tsx`。验证"关账→月结"已记录。✅（快照冻结仍 P1）
 - **⑦应付账龄**：支付未払→ar_ap_aging(类型=应付)；/treasury 同时展示 应收+应付(账龄柱状+超期+Top10)。文件 `scripts/sync-ap.mjs`、`lib/treasury.ts`(getPayablesAging)、`app/treasury/page.tsx`。应付759笔¥99M/超期194笔¥38M。✅（预测/信用/投资仍P1）
 - **⑤利润报表 全社多维度**：服务类型/国别/顾客/Business Scope/Mode/出发/到达 7 维直接按案件毛利汇总(各取Top)。文件 `lib/profit.ts`(computeDimensions)、`app/profit/page.tsx`。✅（业务范围字段未同步，暂缺）
