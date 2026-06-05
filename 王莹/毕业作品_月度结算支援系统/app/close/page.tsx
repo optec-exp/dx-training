@@ -8,6 +8,7 @@ interface Status {
   同步差异: number;
   锁定状态: string;
   正式锁账日: string;
+  审计?: { 时间: string; 用户: string; 动作: string; 对象类型: string; 对象id: string }[];
 }
 const STATE_PILL: Record<string, string> = { 进行中: "pill-gray", 月结: "pill-amber", 正式锁账: "pill-green" };
 
@@ -71,6 +72,23 @@ export default function ClosePage() {
           <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 12 }}>
             说明：硬性规则"拿全所有成本才能关账"——缺账单/差异清零后方宜月结。正式锁账后快照冻结、修改需解锁（快照冻结为 P1）。
           </p>
+
+          {s.审计 && s.审计.length > 0 && (
+            <>
+              <h3>内控审计日志（近 15 条）</h3>
+              <table className="report-table" style={{ maxWidth: 720 }}>
+                <thead><tr><th>时间</th><th>用户</th><th>动作</th><th>对象</th></tr></thead>
+                <tbody>
+                  {s.审计.map((a, i) => (
+                    <tr key={i}>
+                      <td style={{ fontSize: 12 }}>{a.时间?.replace("T", " ").slice(0, 16)}</td>
+                      <td>{a.用户}</td><td>{a.动作}</td><td style={{ color: "var(--muted)" }}>{a.对象类型}/{a.对象id}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
         </>
       )}
     </div>

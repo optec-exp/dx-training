@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { logAudit } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export async function POST(req: NextRequest) {
       { 期间, 部门小组: "JP DESK日本", region: "日本", 人数: Number(jp) || 0, 来源: "手工" },
     ]);
     if (error) throw new Error(error.message);
+    await logAudit("人数录入", "headcount", 期间, { 期间, cn, jp });
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });

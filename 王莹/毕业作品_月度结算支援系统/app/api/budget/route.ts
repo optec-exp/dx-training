@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { listBudgets } from "@/lib/budget";
+import { logAudit } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
       { 期间, 报表对象, 项目: "净利", 金额: Number(净利) || 0 },
     ]);
     if (error) throw new Error(error.message);
+    await logAudit("预算录入", "budget", `${期间}/${报表对象}`, { 期间, 报表对象, 毛利, 贩管费, 净利 });
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
