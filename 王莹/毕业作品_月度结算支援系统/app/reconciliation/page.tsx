@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ReconWorkbench from "@/app/_components/ReconWorkbench";
+import MissingBills from "@/app/_components/MissingBills";
 
 interface ReconRow {
   opt_no: string;
@@ -126,6 +127,7 @@ export default function ReconciliationPage() {
         </>
       )}
 
+      <MissingBills />
       <ReconWorkbench />
     </div>
   );

@@ -6,6 +6,11 @@
 
 ## 逐页细节优化
 
+### ②对账页优化-批1（缺账单清单/去重/工作台折叠筛选备注）
+- **改了什么**：① **缺账单清单**(放对账页,可折叠,按供应商分组+展开明细,显示齐全率/缺账单笔数金额)——即遗漏账单提醒 ② **去重**(持久化时同月同OPT先删再插+清理现有21条重复) ③ **差异工作台**改可折叠+月/状态筛选+复核备注(prompt)+撤销按钮(已标记行显示)。
+- **文件**：`lib/reconcile.ts`(getMissingBills+持久化去重)、`app/api/missing-bills`、`app/_components/{Collapsible,MissingBills,ReconWorkbench}.tsx`、`app/api/reconcile/review`(收备注)、`app/reconciliation/page.tsx`
+- **验证**：缺账单齐全率3%/缺669行¥45M(税関/IATA/paild);工作台折叠+筛选+撤销;重复清理41→20。✅
+
 ### 首页经营驾驶舱优化
 - **改了什么**：① KPI 环比箭头(净利最新月vs上月) ② 趋势图加净利率双轴(右轴) ③ 关键预警行(负毛利/超期应收/对账待处理) ④ KPI 图标+万元单位 ⑤ **期间选择器**：默认**财年累计(4月起)**，支持单月/多月/季度(Q1-Q4)。
 - **文件**：`lib/dashboard.ts`(重写:财年/期间聚合/环比/预警)、`app/_components/PeriodPicker.tsx`(新)、`app/_components/DashboardCharts.tsx`(净利率双轴)、`app/page.tsx`(重写)

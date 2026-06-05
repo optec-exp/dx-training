@@ -86,7 +86,53 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   return { 供应商: bill.供应商, 币种: bill.币种, rows, summary: { matched, diff: diffN, missing: missing + manual, total: billByOpt.size } };
 }
 
-export interface PendingRecon { id: string; opt_no: string; 供应商: string; 账单金额_原币: number; kintone金额_原币: number | null; 差额: number | null; 差异类型: string; 状态: string; 利润月: string }
+// 缺账单清单：该利润月 Kintone 成本(OPT+供应商) 中尚未匹配到账单的，按供应商分组。
+export interface MissingGroup { 供应商: string; 笔数: number; 金额: number; 币种: string; items: { opt_no: string; 费用科目: string; 币种: string; 金额: number }[] }
+export interface MissingReport { 齐全率: number; 成本行数: number; 缺账单行数: number; 缺账单金额: number; groups: MissingGroup[] }
+
+export async function getMissingBills(month: string): Promise<MissingReport> {
+  const sb = getSupabaseAdmin();
+  // 该月案件 OPT
+  const opts: string[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data } = await sb.from("kc_cases").select("opt_no").eq("利润月", month).range(from, from + 999);
+    const rows = (data ?? []) as { opt_no: string }[];
+    opts.push(...rows.map((r) => r.opt_no));
+    if (rows.length < 1000) break;
+  }
+  if (opts.length === 0) return { 齐全率: 1, 成本行数: 0, 缺账单行数: 0, 缺账单金额: 0, groups: [] };
+
+  // Kintone 成本明细
+  const lines: { opt_no: string; 供应商: string; 费用科目: string; 原币种: string; 金额_原币: number }[] = [];
+  for (let i = 0; i < opts.length; i += 100) {
+    const { data } = await sb.from("kc_cost_lines").select("opt_no,供应商,费用科目,原币种,金额_原币").in("opt_no", opts.slice(i, i + 100));
+    lines.push(...((data ?? []) as typeof lines));
+  }
+  // 已匹配账单的 (opt_no + 供应商latin)
+  const { data: recon } = await sb.from("reconciliations").select("opt_no,供应商,差异类型").eq("利润月", month);
+  const matched = new Set<string>();
+  for (const r of (recon ?? []) as { opt_no: string; 供应商: string; 差异类型: string }[]) {
+    if (r.差异类型 === "匹配" || r.差异类型 === "金额差异") matched.add(`${r.opt_no}|${latin(r.供应商)}`);
+  }
+
+  const grp = new Map<string, MissingGroup>();
+  let 缺行 = 0, 缺额 = 0;
+  for (const l of lines) {
+    if (matched.has(`${l.opt_no}|${latin(l.供应商)}`)) continue;
+    缺行++; 缺额 += Number(l.金额_原币) || 0;
+    const g = grp.get(l.供应商) || { 供应商: l.供应商, 笔数: 0, 金额: 0, 币种: l.原币种, items: [] };
+    g.笔数++; g.金额 += Number(l.金额_原币) || 0;
+    if (g.items.length < 50) g.items.push({ opt_no: l.opt_no, 费用科目: l.费用科目, 币种: l.原币种, 金额: Number(l.金额_原币) || 0 });
+    grp.set(l.供应商, g);
+  }
+  return {
+    齐全率: lines.length ? (lines.length - 缺行) / lines.length : 1,
+    成本行数: lines.length, 缺账单行数: 缺行, 缺账单金额: 缺额,
+    groups: [...grp.values()].sort((a, b) => b.金额 - a.金额),
+  };
+}
+
+export interface PendingRecon { id: string; opt_no: string; 供应商: string; 账单金额_原币: number; kintone金额_原币: number | null; 差额: number | null; 差异类型: string; 状态: string; 利润月: string; 复核备注?: string }
 export async function getPendingReconciliations(month?: string): Promise<PendingRecon[]> {
   const sb = getSupabaseAdmin();
   let q = sb.from("reconciliations").select("*").neq("差异类型", "匹配").order("利润月", { ascending: false });
@@ -126,5 +172,8 @@ export async function persistReconciliation(bill: ParsedBill, result: ReconResul
 
   await sb.from("bill_lines").insert(bill.lines.map((l) => ({ bill_id: billId, opt_no: l.opt_no, 供应商: bill.供应商, 原币种: bill.币种, 金额_原币: l.金额, 匹配状态: "已对账" })));
   const typeMap: Record<string, string> = { 匹配: "匹配", 金额差异: "金额差异", 缺账单或漏录: "缺账单", 待人工核对: "无OPT待人工" };
+  // 去重：同利润月同OPT的旧对账记录先删，重传即替换、不累积
+  const optList = [...new Set(result.rows.map((r) => r.opt_no))];
+  for (let i = 0; i < optList.length; i += 100) await sb.from("reconciliations").delete().eq("利润月", month).in("opt_no", optList.slice(i, i + 100));
   await sb.from("reconciliations").insert(result.rows.map((r) => ({ opt_no: r.opt_no, 供应商: r.kintone供应商 || r.供应商, kintone金额_原币: r.kintoneAmount, 账单金额_原币: r.billAmount, 差额: r.diff, 差异类型: typeMap[r.status], 状态: r.status === "匹配" ? "已解决" : "待复核", 利润月: month })));
 }

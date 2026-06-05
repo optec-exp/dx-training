@@ -11,9 +11,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { id, 状态 } = (await req.json()) as { id: string; 状态: string };
+    const { id, 状态, 备注 } = (await req.json()) as { id: string; 状态: string; 备注?: string };
     if (!id || !状态) return NextResponse.json({ error: "缺少 id/状态" }, { status: 400 });
-    await setReviewStatus(id, 状态);
+    await setReviewStatus(id, 状态, 备注 || "");
     await logAudit(`差异复核→${状态}`, "reconciliation", id, { id, 状态 });
     return NextResponse.json({ ok: true });
   } catch (e) {
