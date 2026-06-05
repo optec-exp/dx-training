@@ -5,7 +5,7 @@
 const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"];
 
 export interface ParsedBillLine {
-  opt_no: string;
+  opt_no?: string;
   提单号?: string;
   routing?: string;
   date?: string;
@@ -22,8 +22,8 @@ export interface ParsedBill {
 const SCHEMA = {
   type: "object",
   properties: {
-    供应商: { type: "string", description: "Courier Full Name / 收款人 / 供应商名" },
-    币种: { type: "string", description: "Subtotal 标注的货币代码，如 HKD/USD/JPY" },
+    供应商: { type: "string", description: "出具这张账单的公司=向我方收费的承运商(账单落款/抬头/FROM/公司LOGO处)。注意：不是 TO/收件方/开票抬头/客户" },
+    币种: { type: "string", description: "费用货币代码，如 RMB/CNY/HKD/USD/JPY" },
     类型: { type: "string", enum: ["单票", "SOA"] },
     账单日期: { type: "string" },
     lines: {
@@ -31,24 +31,27 @@ const SCHEMA = {
       items: {
         type: "object",
         properties: {
-          opt_no: { type: "string", description: "Job No.，即 OPT 编号" },
-          提单号: { type: "string", description: "该行的提单号/运单号(MAWB/HAWB/AWB/BL No.)，没有就留空" },
+          opt_no: { type: "string", description: "该行的 OPT 编号(形如 OPTxxxxxxx)。可能在品名/业务编号/Job No等任意列,按编号规律识别;无则留空" },
+          提单号: { type: "string", description: "该行的运单号/提单号(MAWB NO./HAWB/AWB/BL No./运单号,如 205-33595601),可能在运单号或MAWB列;无则留空" },
           routing: { type: "string" },
           date: { type: "string" },
-          金额: { type: "number", description: "该行 TOTAL 金额（原币种数值）" },
+          金额: { type: "number", description: "该行的总价/总运费/TOTAL(原币种数值,去符号和千分位)" },
         },
-        required: ["opt_no", "金额"],
+        required: ["金额"],
       },
     },
   },
   required: ["供应商", "币种", "类型", "lines"],
 };
 
-const PROMPT = `这是一张国际货代的成本账单（供应商/快递员费用清单）。提取结构化数据：
-- 供应商：Courier Full Name 或收款人名称
-- 币种：Subtotal 处标注的货币代码
-- 类型：只有 1 个 Job No. 为"单票"，多个为"SOA"
-- lines：每行明细，opt_no 取 Job No.(OPT编号)，提单号取该行的 MAWB/HAWB/AWB/B/L No.(运单号，没有就留空)，金额取该行 TOTAL（原币种数值，去掉货币符号和千分位逗号）
+const PROMPT = `这是一张国际货代的成本账单（供应商向我方收费）。提取结构化数据：
+- 供应商：**出具/落款这张账单的公司**（公司抬头、LOGO、"收入费用确认书"的 FROM、落款方），即向我方开票收费的承运商。**绝不要取 TO/收件方/开票抬头/客户 那个公司名**。
+- 币种：费用货币代码（RMB/CNY/HKD/USD/JPY 等）。
+- 类型：只对应 1 票货（1 个 OPT/运单号）为"单票"，多票为"SOA"。
+- lines：每行费用明细：
+  - opt_no：该行的 OPT 编号（形如 OPTxxxxxxx）。**编号可能写在"品名/业务编号"等任意列里，请按"OPT+数字"的规律识别，不要受列名限制**；若整票只有一个 OPT/业务编号在表头，则每行都用它；没有 OPT 就留空。
+  - 提单号：该行的运单号/提单号（"运单号"列或"MAWB NO."，形如 205-33595601）；单票时表头的 MAWB 用于每行；没有就留空。
+  - 金额：该行 总价/总运费/TOTAL（原币种数值，去货币符号和千分位逗号）。
 只返回 JSON。`;
 
 // 纯文本生成（月报点评等），同样带降级重试。
