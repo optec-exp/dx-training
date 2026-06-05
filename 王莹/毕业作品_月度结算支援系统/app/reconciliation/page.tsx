@@ -7,11 +7,11 @@ import BillHistory from "@/app/_components/BillHistory";
 import SupplierMappings from "@/app/_components/SupplierMappings";
 import Collapsible from "@/app/_components/Collapsible";
 
-interface ReconRow { opt_no: string; kintone供应商: string | null; 币种: string; billAmount: number; kintoneAmount: number | null; diff: number | null; status: "匹配" | "金额差异" | "缺账单或漏录" | "待人工核对"; note?: string }
+interface ReconRow { opt_no: string; kintone供应商: string | null; 币种: string; billAmount: number; kintoneAmount: number | null; diff: number | null; status: "匹配" | "金额差异" | "Kintone无对应" | "待人工核对"; note?: string }
 interface FileResult { filename: string; status: "等待" | "解析中" | "完成" | "失败"; bill?: { 供应商: string; 币种: string; 类型: string; 行数: number }; rows?: ReconRow[]; summary?: { matched: number; diff: number; missing: number; total: number }; error?: string }
 
 const STATUS: Record<string, { cls: string; icon: string }> = {
-  匹配: { cls: "pill-green", icon: "✓" }, 金额差异: { cls: "pill-amber", icon: "⚠" }, 待人工核对: { cls: "pill-amber", icon: "🔍" }, 缺账单或漏录: { cls: "pill-red", icon: "●" },
+  匹配: { cls: "pill-green", icon: "✓" }, 金额差异: { cls: "pill-amber", icon: "⚠" }, 待人工核对: { cls: "pill-amber", icon: "🔍" }, Kintone无对应: { cls: "pill-red", icon: "●" },
 };
 const yen = (n: number | null, c: string) => (n == null ? "—" : `${c} ${n.toLocaleString()}`);
 

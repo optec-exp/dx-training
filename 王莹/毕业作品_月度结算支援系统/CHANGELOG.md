@@ -6,6 +6,13 @@
 
 ## 逐页细节优化
 
+### ②对账页修正（标签误导：账单单号非OPT被标"缺账单"）
+- **问题**：账单单号是货代自有号(如STYAE26050423/205-33595601)非OPT，按OPT匹配不到Kintone成本，却被标"缺账单"(语义应为Kintone有成本无账单)。
+- **改了什么**：差异状态"缺账单或漏录"→**"Kintone无对应"**；持久化差异类型"缺账单"→"漏录或同步异常"；note提示"可能漏录,或账单单号非OPT"；一次性脚本清理旧标签7行。
+- **文件**：`lib/reconcile.ts`、`app/reconciliation/page.tsx`、`scripts/fix-recon-label.mjs`
+- **验证**：工作台类型分布 金额差异1+漏录或同步异常7，不再出现"缺账单"。✅
+- **待定**：提单号(MAWB/HAWB)兜底匹配——需确认账单与Kintone是否都有提单号。
+
 ### ②对账页优化-批3b（供应商映射记忆）
 - **改了什么**：新表 supplier_mappings(王莹建)；对账匹配时除模糊匹配外，命中映射也算匹配；提供"供应商映射记忆"折叠区(列表+手动登记 账单供应商→Kintone供应商)。
 - **文件**：`lib/reconcile.ts`(getSupplierMappings/addSupplierMapping+reconcileBill集成)、`app/api/supplier-mappings`、`app/_components/SupplierMappings.tsx`、`app/reconciliation/page.tsx`

@@ -3,7 +3,7 @@ import type { ParsedBill } from "./gemini";
 
 // 对账：账单 vs Kintone 成本(kc_cost_lines)。
 // 一级：OPT+供应商(模糊)+币种；二级兜底(无供应商名)：OPT+币种 内按金额找唯一匹配。
-export type ReconStatus = "匹配" | "金额差异" | "缺账单或漏录" | "待人工核对";
+export type ReconStatus = "匹配" | "金额差异" | "Kintone无对应" | "待人工核对";
 export interface ReconRow {
   opt_no: string;
   供应商: string;
@@ -92,13 +92,13 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
         row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "待人工核对", note: `${hit.length} 笔同额候选` };
         manual++;
       } else {
-        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "缺账单或漏录", note: lines.length ? "该票同币种成本无金额匹配" : "该票该币种无成本" };
+        row = { opt_no: opt, 供应商: bill.供应商, kintone供应商: null, 币种: bill.币种, billAmount: bAmt, kintoneAmount: null, diff: null, status: "Kintone无对应", note: lines.length ? "该票同币种成本无金额匹配" : "Kintone无此成本(可能漏录,或账单单号非OPT)" };
         missing++;
       }
     }
     rows.push(row);
   }
-  const order: Record<ReconStatus, number> = { 金额差异: 0, 待人工核对: 1, 缺账单或漏录: 2, 匹配: 3 };
+  const order: Record<ReconStatus, number> = { 金额差异: 0, 待人工核对: 1, Kintone无对应: 2, 匹配: 3 };
   rows.sort((a, b) => order[a.status] - order[b.status]);
   return { 供应商: bill.供应商, 币种: bill.币种, rows, summary: { matched, diff: diffN, missing: missing + manual, total: billByOpt.size } };
 }
@@ -220,7 +220,7 @@ export async function persistReconciliation(bill: ParsedBill, result: ReconResul
   const billId = (billRow as { id: string }).id;
 
   await sb.from("bill_lines").insert(bill.lines.map((l) => ({ bill_id: billId, opt_no: l.opt_no, 供应商: bill.供应商, 原币种: bill.币种, 金额_原币: l.金额, 匹配状态: "已对账" })));
-  const typeMap: Record<string, string> = { 匹配: "匹配", 金额差异: "金额差异", 缺账单或漏录: "缺账单", 待人工核对: "无OPT待人工" };
+  const typeMap: Record<string, string> = { 匹配: "匹配", 金额差异: "金额差异", Kintone无对应: "漏录或同步异常", 待人工核对: "无OPT待人工" };
   // 去重：同利润月同OPT的旧对账记录先删，重传即替换、不累积
   const optList = [...new Set(result.rows.map((r) => r.opt_no))];
   for (let i = 0; i < optList.length; i += 100) await sb.from("reconciliations").delete().eq("利润月", month).in("opt_no", optList.slice(i, i + 100));
