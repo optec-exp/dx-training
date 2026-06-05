@@ -6,6 +6,11 @@
 
 ## 2026-06-05
 
+### ④三App同步排查（/sync-check）
+- **改了什么**：按 OPT 比对 案件App收入/成本 vs 请求入金/支付App合计，检测同步bug；总额概览+逐票差异(差异排前标红)。
+- **文件**：`scripts/sync-check.mjs`(新)、`lib/sync-check-data.ts`(新)、`app/sync-check/page.tsx`(新)
+- **验证**：2026-05 排查209票；收入不一致1票、成本不一致56票(未月结正常)；/sync-check 200。✅
+
 ### ⑥决算·银行残高（/settlement）
 - **改了什么**：同步银行残高→kc_bank_balance；/settlement 按币种汇总残高差额 + 银行×币种明细。
 - **文件**：`scripts/sync-bank.mjs`(新)、`lib/settlement.ts`(新)、`app/settlement/page.tsx`(新)
