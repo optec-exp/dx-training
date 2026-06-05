@@ -6,6 +6,11 @@
 
 ## 2026-06-05
 
+### 图表可视化 + 现代仪表盘样式（样板：首页经营驾驶舱）
+- **改了什么**：引入 recharts(免费开源)；首页改为经营驾驶舱——渐变/彩色 KPI 卡 + 经营趋势折线(3月) + 中日净利环形 + 小组利润柱状 + 贩管费5类环形。同步 2026-03/04 供趋势。
+- **文件**：`lib/dashboard.ts`(新)、`app/_components/DashboardCharts.tsx`(新)、`app/page.tsx`(重写)、`app/globals.css`(渐变KPI)、package.json(recharts)
+- **验证**：首页 200，4 图表渲染无错误。✅　**样板待王莹确认后铺到各页**。
+
 ### 对照设计补缺口（进行中）
 - **⑤利润报表 全社多维度**：服务类型/国别/顾客/Business Scope/Mode/出发/到达 7 维直接按案件毛利汇总(各取Top)。文件 `lib/profit.ts`(computeDimensions)、`app/profit/page.tsx`。✅（业务范围字段未同步，暂缺）
 - **⑧风控异常面板**：从"仅加成率"扩展为统一面板——负毛利/异常大额(>3×均值)/重复成本/长期挂账(90+)+加成率。文件 `lib/risk-panel.ts`(新)、`app/risk/page.tsx`。验证2026-05检出 负毛利3/异常大额13/重复3/挂账6客户。✅

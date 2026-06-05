@@ -58,6 +58,10 @@ h3 { font-size: 14px; font-weight: 650; margin: 28px 0 10px; color: #374151; }
 .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px 18px; box-shadow: var(--shadow); }
 .kpi-label { color: var(--muted); font-size: 12px; }
 .kpi-value { font-size: 25px; font-weight: 700; margin-top: 5px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kpi.primary { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); border: none; color: #fff; }
+.kpi.primary .kpi-label { color: #dbeafe; }
+.kpi.primary .kpi-value { color: #fff; }
+.kpi.tinted { background: var(--accent-soft); border-color: #dbe5ff; }
 
 /* 表格 */
 .report-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; font-variant-numeric: tabular-nums; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }

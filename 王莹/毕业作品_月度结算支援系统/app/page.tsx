@@ -1,27 +1,47 @@
 import Link from "next/link";
-import { MODULES, MODULE_GROUPS } from "@/lib/modules";
+import { MODULES } from "@/lib/modules";
+import { getDashboard } from "@/lib/dashboard";
+import DashboardCharts from "@/app/_components/DashboardCharts";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
+
+export default async function Home() {
+  let data = null, err: string | null = null;
+  try { data = await getDashboard(); } catch (e) { err = e instanceof Error ? e.message : String(e); }
+
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>经营驾驶舱</h1>
-      <p style={{ color: "var(--muted)" }}>
-        国际货代月度结算支援系统 · Kintone（只读）× Supabase × AI。点击进入各模块。
-      </p>
-      {MODULE_GROUPS.map((g) => (
-        <section key={g} style={{ marginTop: 24 }}>
-          <h3 style={{ color: "var(--muted)", fontWeight: 500 }}>{g}</h3>
-          <div className="cards">
-            {MODULES.filter((m) => m.group === g).map((m) => (
-              <Link key={m.slug} href={`/${m.slug}`} className="card">
-                <div className="no">{m.no}</div>
-                <div className="title">{m.title}</div>
-                <div className="desc">{m.desc}</div>
-              </Link>
-            ))}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+        <h1 style={{ marginTop: 0 }}>经营驾驶舱</h1>
+        {data && <span style={{ color: "var(--muted)", fontSize: 13 }}>当前月份 {data.current}</span>}
+      </div>
+
+      {err && <div className="placeholder">读取失败：{err}</div>}
+
+      {data && (
+        <>
+          <div className="kpi-row">
+            <div className="kpi primary"><div className="kpi-label">全社净利（{data.current}）</div><div className="kpi-value">{yen(data.全社净利)}</div></div>
+            <div className="kpi tinted"><div className="kpi-label">中国净利</div><div className="kpi-value" style={{ color: "var(--accent)" }}>{yen(data.中国净利)}</div></div>
+            <div className="kpi tinted"><div className="kpi-label">日本净利</div><div className="kpi-value" style={{ color: "var(--accent)" }}>{yen(data.日本净利)}</div></div>
+            <div className="kpi"><div className="kpi-label">应收超期</div><div className="kpi-value" style={{ color: "var(--red)" }}>{yen(data.应收超期)}</div></div>
           </div>
-        </section>
-      ))}
+
+          <DashboardCharts data={data} />
+        </>
+      )}
+
+      <h3>功能模块</h3>
+      <div className="cards">
+        {MODULES.map((m) => (
+          <Link key={m.slug} href={`/${m.slug}`} className="card">
+            <div className="no">{m.no}</div>
+            <div className="title">{m.title}</div>
+            <div className="desc">{m.desc}</div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
