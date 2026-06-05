@@ -9,7 +9,8 @@
 ### 图表可视化 + 现代仪表盘样式（样板：首页经营驾驶舱）
 - **改了什么**：引入 recharts(免费开源)；首页改为经营驾驶舱——渐变/彩色 KPI 卡 + 经营趋势折线(3月) + 中日净利环形 + 小组利润柱状 + 贩管费5类环形。同步 2026-03/04 供趋势。
 - **文件**：`lib/dashboard.ts`(新)、`app/_components/DashboardCharts.tsx`(新)、`app/page.tsx`(重写)、`app/globals.css`(渐变KPI)、package.json(recharts)
-- **验证**：首页 200，4 图表渲染无错误。✅　**样板待王莹确认后铺到各页**。
+- **验证**：首页 200，4 图表渲染无错误。✅
+- **铺开**：图表加到 /profit(中日净利环形+业务小组净利柱状)、/treasury(账龄柱状)、/settlement(币种残高柱状)；**表格全部保留**（图表是增加）。通用组件 `app/_components/Charts.tsx`(BarCard/PieCard)。验证三页 200+图表渲染。✅
 
 ### 对照设计补缺口（进行中）
 - **⑤利润报表 全社多维度**：服务类型/国别/顾客/Business Scope/Mode/出发/到达 7 维直接按案件毛利汇总(各取Top)。文件 `lib/profit.ts`(computeDimensions)、`app/profit/page.tsx`。✅（业务范围字段未同步，暂缺）

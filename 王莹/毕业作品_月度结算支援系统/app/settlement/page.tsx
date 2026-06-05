@@ -1,6 +1,7 @@
 import { getSettlement } from "@/lib/settlement";
 import { getAvailableMonths } from "@/lib/data";
 import MonthPicker from "@/app/_components/MonthPicker";
+import { BarCard } from "@/app/_components/Charts";
 
 export const dynamic = "force-dynamic";
 const fmt = (n: number | null) => (n == null ? "—" : Math.round(n).toLocaleString("ja-JP"));
@@ -32,6 +33,10 @@ export default async function SettlementPage({ searchParams }: { searchParams: P
                 <div className="kpi-value" style={{ color: c.差额 >= 0 ? "var(--green)" : "var(--red)" }}>{fmt(c.差额)}</div>
               </div>
             ))}
+          </div>
+
+          <div style={{ maxWidth: 600, marginTop: 16 }}>
+            <BarCard title="各币种残高差额（绿增红减）" data={report.byCurrency as unknown as Record<string, unknown>[]} xKey="币种" barKey="差额" colorByValue />
           </div>
 
           <h3>银行 × 币种 明细</h3>

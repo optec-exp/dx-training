@@ -6,6 +6,7 @@ import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
 import MonthPicker from "@/app/_components/MonthPicker";
 import GroupTable from "@/app/_components/GroupTable";
+import { PieCard, BarCard } from "@/app/_components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -99,6 +100,11 @@ export default async function ProfitPage({
               ))}
             </tbody>
           </table>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 16, marginTop: 16 }}>
+            <PieCard title="净利 · 中日占比" data={[{ name: "中国", value: Math.round(report.china - (sga?.china ?? 0)) }, { name: "日本", value: Math.round(report.japan - (sga?.japan ?? 0)) }]} />
+            {groupPL && <BarCard title="业务小组净利" data={groupPL.business.map((b) => ({ 小组: b.小组, 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" barKey="净利" colorByValue />}
+          </div>
 
           {budget && (budget.毛利 != null || budget.贩管费 != null || budget.净利 != null) && (
             <>

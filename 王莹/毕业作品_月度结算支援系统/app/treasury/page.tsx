@@ -1,4 +1,5 @@
 import { getReceivablesAging } from "@/lib/treasury";
+import { BarCard } from "@/app/_components/Charts";
 
 export const dynamic = "force-dynamic";
 const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
@@ -22,6 +23,10 @@ export default async function TreasuryPage() {
             <Kpi label="超期金额" value={yen(report.overdueAmt)} color="var(--red)" />
             <Kpi label="超期笔数" value={String(report.overdueCount)} color="var(--red)" />
             <Kpi label="应收笔数" value={String(report.count)} />
+          </div>
+
+          <div style={{ maxWidth: 560, marginTop: 16 }}>
+            <BarCard title="应收账龄分布（金额）" data={report.buckets as unknown as Record<string, unknown>[]} xKey="bucket" barKey="amt" />
           </div>
 
           <h3>账龄分布</h3>
