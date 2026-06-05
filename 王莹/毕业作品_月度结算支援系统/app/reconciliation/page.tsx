@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReconWorkbench from "@/app/_components/ReconWorkbench";
 
 interface ReconRow {
   opt_no: string;
@@ -124,6 +125,8 @@ export default function ReconciliationPage() {
           </table>
         </>
       )}
+
+      <ReconWorkbench />
     </div>
   );
 }

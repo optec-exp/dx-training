@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseBillPdf } from "@/lib/gemini";
-import { reconcileBill, persistReconciliation } from "@/lib/reconcile";
+import { reconcileBill, persistReconciliation, uploadBillFile } from "@/lib/reconcile";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
     const base64 = Buffer.from(await file.arrayBuffer()).toString("base64");
     const bill = await parseBillPdf(base64);
     const result = await reconcileBill(bill);
-    await persistReconciliation(bill, result, month);
+    const filePath = await uploadBillFile(base64, bill.供应商, month);
+    await persistReconciliation(bill, result, month, filePath);
 
     return NextResponse.json({
       bill: { 供应商: bill.供应商, 币种: bill.币种, 类型: bill.类型, 行数: bill.lines.length },

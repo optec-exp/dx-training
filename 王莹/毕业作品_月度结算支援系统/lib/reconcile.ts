@@ -86,12 +86,40 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   return { 供应商: bill.供应商, 币种: bill.币种, rows, summary: { matched, diff: diffN, missing: missing + manual, total: billByOpt.size } };
 }
 
+export interface PendingRecon { id: string; opt_no: string; 供应商: string; 账单金额_原币: number; kintone金额_原币: number | null; 差额: number | null; 差异类型: string; 状态: string; 利润月: string }
+export async function getPendingReconciliations(month?: string): Promise<PendingRecon[]> {
+  const sb = getSupabaseAdmin();
+  let q = sb.from("reconciliations").select("*").neq("差异类型", "匹配").order("利润月", { ascending: false });
+  if (month) q = q.eq("利润月", month);
+  const { data } = await q.limit(200);
+  return (data ?? []) as unknown as PendingRecon[];
+}
+export async function setReviewStatus(id: string, 状态: string, 复核备注 = ""): Promise<void> {
+  const sb = getSupabaseAdmin();
+  await sb.from("reconciliations").update({ 状态, 复核备注, 复核人: "财务", updated_at: new Date().toISOString() }).eq("id", id);
+}
+
 // 持久化对账结果（bills + bill_lines + reconciliations）。
-export async function persistReconciliation(bill: ParsedBill, result: ReconResult, month: string): Promise<void> {
+// 把账单 PDF 存入 Storage(settlement-bills)，返回存储路径（原件存档/内控留存）。
+export async function uploadBillFile(base64: string, 供应商: string, month: string): Promise<string | null> {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const safe = (供应商 || "bill").replace(/[^\w一-鿿]/g, "_").slice(0, 30);
+    const path = `${month}/${safe}_${Date.now()}.pdf`;
+    const res = await fetch(`${url}/storage/v1/object/settlement-bills/${encodeURIComponent(path)}`, {
+      method: "POST",
+      headers: { apikey: key as string, Authorization: `Bearer ${key}`, "Content-Type": "application/pdf" },
+      body: Buffer.from(base64, "base64"),
+    });
+    return res.ok ? path : null;
+  } catch { return null; }
+}
+
+export async function persistReconciliation(bill: ParsedBill, result: ReconResult, month: string, 原始文件URL: string | null = null): Promise<void> {
   const sb = getSupabaseAdmin();
   const { data: billRow, error: be } = await sb
     .from("bills")
-    .insert({ 类型: bill.类型, 供应商: bill.供应商, 账单日期: bill.账单日期 || null, 原币种: bill.币种, 账单总额_原币: bill.lines.reduce((s, l) => s + l.金额, 0), 利润月: month, 解析状态: "已解析" })
+    .insert({ 类型: bill.类型, 供应商: bill.供应商, 账单日期: bill.账单日期 || null, "原始文件url": 原始文件URL, 原币种: bill.币种, 账单总额_原币: bill.lines.reduce((s, l) => s + l.金额, 0), 利润月: month, 解析状态: "已解析" })
     .select("id").single();
   if (be) throw new Error(`写 bills 失败: ${be.message}`);
   const billId = (billRow as { id: string }).id;

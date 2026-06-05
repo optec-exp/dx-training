@@ -13,6 +13,7 @@
 - **铺开**：图表加到 /profit(中日净利环形+业务小组净利柱状)、/treasury(账龄柱状)、/settlement(币种残高柱状)；**表格全部保留**（图表是增加）。通用组件 `app/_components/Charts.tsx`(BarCard/PieCard)。验证三页 200+图表渲染。✅
 
 ### 对照设计补缺口（进行中）
+- **②对账 复核状态 + 原件存档**：差异工作台从持久化 reconciliations 读待复核，人工标记(无误/代理改单/撤销,留审计)；账单 PDF 存入 Storage 桶 settlement-bills，路径记入 bills.原始文件url。文件 `lib/reconcile.ts`(getPending/setReviewStatus/uploadBillFile)、`app/api/reconcile/review`、`app/_components/ReconWorkbench.tsx`、`app/api/reconcile/route.ts`。验证6条待处理可标记+原件存档成功。✅
 - **⑨累计YTD+部门汇报+对账差异疑因**：insights 加 范围(全社/中/日)选择 + 累计YTD(同年≤当月汇总)；对账页加"AI解读差异"按钮(/api/reconcile/explain 给疑因+建议)。文件 `app/api/insights/route.ts`、`app/insights/page.tsx`、`app/api/reconcile/explain/route.ts`、`app/reconciliation/page.tsx`。验证中国区YTD汇报+差异疑因(金额录入错误/漏录)。✅（导出Doc/Slack按王莹要求暂放）
 - **⑥决算现金净额勾稽**：入金/出金/贩管费出金 按币种现金口径(实际收付款日,遍历子表)→现金净额 vs 残高差额 → settlement_checks；/settlement 加现金勾稽区(差异提示药丸)。文件 `scripts/sync-settlement-cash.mjs`、`lib/settlement.ts`(getCashRecon)、`app/settlement/page.tsx`。2026-05 EUR平/其余有差异(提示用)。✅
 - **内控·快照冻结**：正式锁账时冻结该期利润聚合(全社/中/日 毛利贩管费净利)到 period_snapshots，保证历史可复现；/close 显示"❄快照已冻结"。文件 `lib/close.ts`(setCloseStatus+getSnapshot)、`app/api/close`、`app/close/page.tsx`。验证锁账冻结全社净利4061万。✅
