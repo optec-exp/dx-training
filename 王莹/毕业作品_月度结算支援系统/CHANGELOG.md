@@ -6,6 +6,13 @@
 
 ## 逐页细节优化
 
+### ②对账页修两Bug-原件无法查看 + 单票/SOA误判
+- **Bug1 原件无法查看**：① 上传路径含中文供应商名→Supabase Storage 报 InvalidKey(不接受非ASCII key)，原始文件url 存成 null；② 即便ASCII，签名时 `encodeURIComponent(path)` 把 `/` 编码成 `%2F`，签进URL导致下载400。
+  - 修：上传文件名只取供应商英文/数字(无则"bill")；上传与签名都用 raw path(不整体编码,路径已ASCII安全)。
+  - 文件：`lib/reconcile.ts`(uploadBillFile safe名 + getUploadedBills签名)。验证：中文供应商上传→路径ASCII→下载200 ✅。
+- **Bug2 单票/SOA误判**：旧版靠AI按Job No数量猜，不准。改为**确定性判定**：账单覆盖的不同 OPT/提单号 >1→SOA，否则单票。
+  - 文件：`app/api/reconcile/route.ts`。验证：2个OPT账单→SOA ✅。
+
 ### ②对账页修Bug-成本同步口径错误（漏成本导致账单对不上）
 - **问题**：kc_cost_lines 旧版接「支付App·取引日(付款日)」现金口径，只覆盖"当月已付款"成本→利润月在本月但付款日不在本月/未付款的成本缺失，账单对不上。量化：旧726行 vs 案件支払テーブル(利润月)874行，漏约148行。
 - **根因排查**：kc_payments 表无人读写(死表)；kc_cost_lines 仅②对账+⑧风控读，改源安全。

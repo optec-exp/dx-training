@@ -196,7 +196,7 @@ export async function getUploadedBills(month?: string): Promise<UploadedBill[]> 
     let 原件链接: string | null = null;
     if (path) {
       try {
-        const r = await fetch(`${url}/storage/v1/object/sign/settlement-bills/${encodeURIComponent(path)}`, {
+        const r = await fetch(`${url}/storage/v1/object/sign/settlement-bills/${path}`, {
           method: "POST", headers: { apikey: key as string, Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ expiresIn: 3600 }),
         });
         if (r.ok) { const j = await r.json(); 原件链接 = `${url}/storage/v1${j.signedURL}`; }
@@ -232,9 +232,10 @@ export async function setReviewStatus(id: string, 状态: string, 复核备注 =
 export async function uploadBillFile(bytes: Buffer, 供应商: string, month: string, ext = "pdf", mime = "application/pdf"): Promise<string | null> {
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const safe = (供应商 || "bill").replace(/[^\w一-鿿]/g, "_").slice(0, 30);
+    // Storage 不接受非 ASCII object key → 只取供应商名里的英文/数字，无则用 bill
+    const safe = ((供应商 || "").match(/[A-Za-z0-9]+/g) || []).join("_").slice(0, 30) || "bill";
     const path = `${month}/${safe}_${Date.now()}.${ext}`;
-    const res = await fetch(`${url}/storage/v1/object/settlement-bills/${encodeURIComponent(path)}`, {
+    const res = await fetch(`${url}/storage/v1/object/settlement-bills/${path}`, {
       method: "POST",
       headers: { apikey: key as string, Authorization: `Bearer ${key}`, "Content-Type": mime },
       body: bytes,

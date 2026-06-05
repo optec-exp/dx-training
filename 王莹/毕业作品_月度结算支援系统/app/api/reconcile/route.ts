@@ -27,6 +27,9 @@ export async function POST(req: NextRequest) {
         const buf = Buffer.from(await file.arrayBuffer());
         const isExcel = /\.xlsx?$/i.test(file.name) || file.type.includes("sheet") || file.type.includes("excel");
         const bill = isExcel ? await parseBillText(excelToText(buf)) : await parseBillPdf(buf.toString("base64"));
+        // 类型确定性判定（不依赖 AI 猜）：账单覆盖的不同 OPT/提单号 >1 → SOA，否则单票
+        const shipments = new Set(bill.lines.map((l) => l.opt_no || l.提单号 || "").filter(Boolean));
+        bill.类型 = shipments.size > 1 ? "SOA" : "单票";
         const result = await reconcileBill(bill);
         const ext = isExcel ? "xlsx" : "pdf";
         const mime = isExcel ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "application/pdf";
