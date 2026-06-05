@@ -168,6 +168,40 @@ export interface ProfitReport {
 
 const JPDESK_TEAMS = ["TCC", "GC", "EC", "Japan Desk"]; // 归入 JP DESK 分组
 
+// 小组损益（业务部门 P&L + 管理部门只贩管费）。部门→利润小组映射（可调）。
+const DEPT_TO_GROUP: Record<string, string> = {
+  OS課: "OS",
+  GC課: "JP DESK中国", "Japan Desk課": "JP DESK中国", EC室: "JP DESK中国",
+  TCC課: "JP DESK日本", 業務課: "JP DESK日本",
+  通関課: "通関",
+};
+const BIZ_GROUPS = ["OS", "JP DESK中国", "JP DESK日本", "通関"];
+
+export interface GroupPL {
+  business: { 小组: string; 毛利: number; 贩管费: number; 净利: number }[];
+  mgmt: { 部门: string; 贩管费: number }[];
+}
+export function buildGroupPL(groups: GroupRow[], sgaByDept: Map<string, number>): GroupPL {
+  const gp = new Map<string, number>();
+  for (const g of groups) {
+    const name = g.name.replace(/^├ /, "");
+    if (BIZ_GROUPS.includes(name)) gp.set(name, g.total);
+  }
+  const sgaByGroup = new Map<string, number>();
+  const mgmt: { 部门: string; 贩管费: number }[] = [];
+  for (const [dept, amt] of sgaByDept) {
+    const grp = DEPT_TO_GROUP[dept];
+    if (grp) sgaByGroup.set(grp, (sgaByGroup.get(grp) || 0) + amt);
+    else mgmt.push({ 部门: dept, 贩管费: amt });
+  }
+  const business = BIZ_GROUPS.map((小组) => {
+    const 毛利 = gp.get(小组) || 0, 贩管费 = sgaByGroup.get(小组) || 0;
+    return { 小组, 毛利, 贩管费, 净利: 毛利 - 贩管费 };
+  });
+  mgmt.sort((a, b) => b.贩管费 - a.贩管费);
+  return { business, mgmt };
+}
+
 // 构建小组展示分组：OS / JP DESK(中/日) / 通関 / 其它
 function buildGroups(map: Map<Team, TeamProfit>, cn: number, jp: number): GroupRow[] {
   const z = (): GroupRow => ({ name: "", total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0 });

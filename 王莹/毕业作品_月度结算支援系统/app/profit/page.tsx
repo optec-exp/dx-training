@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
-import { computeProfitReport, computeDimensions, type ProfitReport, type DimBreakdown } from "@/lib/profit";
-import { getSgaForMonth, type SgaAgg } from "@/lib/sga";
+import { computeProfitReport, computeDimensions, buildGroupPL, type ProfitReport, type DimBreakdown, type GroupPL } from "@/lib/profit";
+import { getSgaForMonth, getSgaByDept, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
 import MonthPicker from "@/app/_components/MonthPicker";
@@ -26,6 +26,7 @@ export default async function ProfitPage({
   let sga: SgaAgg | null = null;
   let budget: BudgetData | null = null;
   let dims: DimBreakdown[] | null = null;
+  let groupPL: GroupPL | null = null;
   let err: string | null = null;
   try {
     const cases = await getCasesForMonth(month);
@@ -34,6 +35,7 @@ export default async function ProfitPage({
     dims = computeDimensions(cases);
     sga = await getSgaForMonth(month);
     budget = await getBudget(month, "全社");
+    groupPL = buildGroupPL(report.groups, await getSgaByDept(month));
   } catch (e) {
     err = e instanceof Error ? e.message : String(e);
   }
@@ -139,6 +141,37 @@ export default async function ProfitPage({
 
           <h3>小组 × 4 维度（日元）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 可折叠中日明细</span></h3>
           <GroupTable groups={report.groups} />
+
+          {groupPL && (
+            <>
+              <h3>小组损益 · 业务部门 P&amp;L（净利 = 毛利 − 自身贩管费）</h3>
+              <table className="report-table" style={{ maxWidth: 760 }}>
+                <thead><tr><th>业务小组</th><th className="num">毛利</th><th className="num">贩管费</th><th className="num">净利</th></tr></thead>
+                <tbody>
+                  {groupPL.business.map((b) => (
+                    <tr key={b.小组}>
+                      <td>{b.小组}</td>
+                      <td className="num">{yen(b.毛利)}</td>
+                      <td className="num">{yen(b.贩管费)}</td>
+                      <td className={"num strong" + (b.净利 < 0 ? " neg" : "")}>{yen(b.净利)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {groupPL.mgmt.length > 0 && (
+                <>
+                  <h3>管理部门（成本中心 · 只列贩管费）</h3>
+                  <table className="report-table" style={{ maxWidth: 520 }}>
+                    <thead><tr><th>部门</th><th className="num">贩管费</th></tr></thead>
+                    <tbody>
+                      {groupPL.mgmt.map((m) => (<tr key={m.部门}><td>{m.部门}</td><td className="num strong neg">{yen(m.贩管费)}</td></tr>))}
+                    </tbody>
+                  </table>
+                </>
+              )}
+              <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务小组映射可调（OS課→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関）；役員関連費用不计入小组。</p>
+            </>
+          )}
 
           {dims && (
             <>

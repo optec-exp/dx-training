@@ -12,6 +12,21 @@ export interface SgaAgg {
 
 const FEE5 = ["人件費", "事業活動費", "事業維持費", "人材·IT投資", "役員関連費用"];
 
+// 按部门聚合贩管费（非除外），用于小组损益。
+export async function getSgaByDept(month: string): Promise<Map<string, number>> {
+  const sb = getSupabaseAdmin();
+  const map = new Map<string, number>();
+  for (let from = 0; ; from += 1000) {
+    // 小组层不列役員関連費用（DESIGN）
+    const { data, error } = await sb.from("sg_a_lines").select("部门,金额").eq("期间", month).eq("是否除外", false).neq("费用类型", "役員関連費用").range(from, from + 999);
+    if (error) throw new Error(error.message);
+    const rows = (data ?? []) as Record<string, unknown>[];
+    for (const r of rows) map.set(String(r["部门"]), (map.get(String(r["部门"])) || 0) + (Number(r["金额"]) || 0));
+    if (rows.length < 1000) break;
+  }
+  return map;
+}
+
 export async function getSgaForMonth(month: string): Promise<SgaAgg> {
   const sb = getSupabaseAdmin();
   // PostgREST 默认上限 1000 行，sg_a_lines 一个月可能数千行 → 分页拉全量。
