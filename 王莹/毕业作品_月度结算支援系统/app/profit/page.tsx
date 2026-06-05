@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
 import { computeProfitReport, type ProfitReport } from "@/lib/profit";
 import { getSgaForMonth, type SgaAgg } from "@/lib/sga";
+import { getJpdeskHeads } from "@/lib/headcount";
+import { getBudget, type BudgetData } from "@/lib/budget";
 import MonthPicker from "@/app/_components/MonthPicker";
 import GroupTable from "@/app/_components/GroupTable";
 
@@ -22,11 +24,14 @@ export default async function ProfitPage({
 
   let report: ProfitReport | null = null;
   let sga: SgaAgg | null = null;
+  let budget: BudgetData | null = null;
   let err: string | null = null;
   try {
     const cases = await getCasesForMonth(month);
-    report = computeProfitReport(cases, month);
+    const heads = await getJpdeskHeads(month);
+    report = computeProfitReport(cases, month, heads);
     sga = await getSgaForMonth(month);
+    budget = await getBudget(month, "全社");
   } catch (e) {
     err = e instanceof Error ? e.message : String(e);
   }
@@ -90,6 +95,26 @@ export default async function ProfitPage({
               ))}
             </tbody>
           </table>
+
+          {budget && (budget.毛利 != null || budget.贩管费 != null || budget.净利 != null) && (
+            <>
+              <h3>预实对比（全社）</h3>
+              <table className="report-table" style={{ maxWidth: 680 }}>
+                <thead><tr><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
+                <tbody>
+                  {([["毛利", report.total, budget.毛利], ["贩管费", sga?.total ?? 0, budget.贩管费], ["净利", report.total - (sga?.total ?? 0), budget.净利]] as [string, number, number | null][]).map(([k, act, bud]) => (
+                    <tr key={k}>
+                      <td>{k}</td>
+                      <td className="num">{yen(act)}</td>
+                      <td className="num">{bud == null ? "—" : yen(bud)}</td>
+                      <td className={"num" + (bud != null && act - bud < 0 ? " neg" : "")}>{bud == null ? "—" : yen(act - bud)}</td>
+                      <td className="num">{bud ? ((act / bud) * 100).toFixed(0) + "%" : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
 
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
             JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：Japan Desk 課{" "}

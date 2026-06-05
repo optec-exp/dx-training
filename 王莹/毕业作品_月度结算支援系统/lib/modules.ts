@@ -9,8 +9,7 @@ export interface ModuleDef {
 
 export const MODULES: ModuleDef[] = [
   // 核心闭环
-  { slug: "bills",          no: "①", title: "账单 AI 解析",   desc: "上传成本账单 PDF/Excel → 结构化入库", group: "核心闭环" },
-  { slug: "reconciliation", no: "②", title: "对账 / 差异工作台", desc: "Kintone 成本 vs 账单自动比对 + 重复检测", group: "核心闭环" },
+  { slug: "reconciliation", no: "②", title: "对账 / 差异工作台", desc: "上传账单 PDF → AI 解析 → 与 Kintone 成本自动比对", group: "核心闭环" },
   { slug: "close",          no: "③", title: "关账 / 锁账",     desc: "缺账单门禁 + 月结→正式锁账状态机", group: "核心闭环" },
   { slug: "sync-check",     no: "④", title: "三 App 同步排查", desc: "案件 ⟷ 入金/支付 逐票核对", group: "核心闭环" },
   { slug: "settlement",     no: "⑥", title: "月度决算勾稽",     desc: "银行残高 ⟷ 现金流（按币种）", group: "核心闭环" },

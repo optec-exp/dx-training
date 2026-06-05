@@ -6,6 +6,15 @@
 
 ## 2026-06-05
 
+### 补齐占位模块（人数/预算/关账录入）+ 移除重复①账单
+- **改了什么**：
+  - 移除导航重复的"①账单"（对账页已覆盖账单解析）。
+  - **人数录入** /headcount：JP DESK 中日人数录入→利润报表拆分读取（去掉硬编码 13/11）。
+  - **预算录入** /budget：全社/中/日 毛利·贩管费·净利预算→利润报表"预实对比+达成率"。
+  - **关账** /close：对账齐全率/同步差异/关账状态(进行中→月结→正式锁账,M+2月1日)+月结/锁账/解锁。
+- **文件**：`lib/modules.ts`、`lib/headcount.ts`+`lib/budget.ts`+`lib/close.ts`、`app/{headcount,budget,close}/page.tsx`、`app/api/{headcount,budget,close}/*`、`app/profit/page.tsx`(预实+人数接入)
+- **验证**：三页 200；人数/预算 POST ok；利润页出现预实对比+达成率；关账状态(对账40/缺4/同步差异57,正式锁账日2026-07-01)。✅
+
 ### 主题优化：数据简洁易读 + 异常一眼可见
 - **改了什么**：refine 配色(中性底/白卡片/蓝强调)；新增状态药丸(.pill-green/amber/red)、异常整行高亮(.flag 红底+左色条)、负数自动红(.neg)、表格斑马纹+等宽数字。对账/风控/同步排查状态改药丸+异常整行。
 - **文件**：`app/globals.css`(重写+工具类)、`app/reconciliation/page.tsx`、`app/risk/page.tsx`、`app/sync-check/page.tsx`
