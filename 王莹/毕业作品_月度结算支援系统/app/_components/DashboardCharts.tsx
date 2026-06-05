@@ -4,6 +4,10 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianG
 import type { DashboardData } from "@/lib/dashboard";
 
 const PIE = ["#2563eb", "#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#fb7185"];
+// 5 类贩管费固定配色（按类别名，不随月份变）
+const SGA_COLORS: Record<string, string> = {
+  人件費: "#2563eb", 事業活動費: "#60a5fa", 事業維持費: "#34d399", "人材·IT投資": "#fbbf24", 役員関連費用: "#f472b6",
+};
 const man = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
 const wan = (n: number) => (n / 10000).toFixed(0) + "万";
 
@@ -59,7 +63,7 @@ export default function DashboardCharts({ data }: { data: DashboardData }) {
       <Card title="贩管费 · 5 类占比">
         <PieChart>
           <Pie data={data.pie贩管费} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={85}>
-            {data.pie贩管费.map((_, i) => <Cell key={i} fill={PIE[i % PIE.length]} />)}
+            {data.pie贩管费.map((d, i) => <Cell key={i} fill={SGA_COLORS[d.name] || PIE[i % PIE.length]} />)}
           </Pie>
           <Tooltip formatter={(v: number) => man(v)} />
           <Legend />

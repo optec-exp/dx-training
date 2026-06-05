@@ -90,7 +90,8 @@ export async function getDashboard(selected?: string[]): Promise<DashboardData> 
     环比净利, 负毛利数, 对账待处理,
     trend: fyMonths.map((m) => { const f = fig.get(m); return { month: m, 毛利: Math.round(f?.毛利 || 0), 贩管费: Math.round(f?.贩管费 || 0), 净利: Math.round(f?.净利 || 0), 净利率: f && f.毛利 ? +((f.净利 / f.毛利) * 100).toFixed(1) : 0 }; }),
     pie中日: [{ name: "中国", value: Math.round(agg.中国净) }, { name: "日本", value: Math.round(agg.日本净) }],
-    pie贩管费: [...cat].filter(([, v]) => v > 0).map(([name, value]) => ({ name, value: Math.round(value) })),
+    // 始终输出全部 5 类（缺的=0），颜色由前端按类别名固定
+    pie贩管费: ["人件費", "事業活動費", "事業維持費", "人材·IT投資", "役員関連費用"].map((name) => ({ name, value: Math.max(0, Math.round(cat.get(name) || 0)) })),
     小组: [...grp].map(([name, 利润]) => ({ name, 利润: Math.round(利润) })),
   };
 }
