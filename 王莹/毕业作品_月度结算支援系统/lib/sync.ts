@@ -70,7 +70,7 @@ export async function syncCases(month: string): Promise<{ total: number; perApp:
         "納品完了日": date, "利润月": date ? date.slice(0, 7) : null,
         "对应小组": str(r["チーム案件判断"]), "服务类型": str(r["Transport_Type"]), business_scope: str(r["Business_Scope"]),
         "国别": str(r["顧客国コード"]), "顾客": str(r["顧客名"]), mode: str(r["Mode"]),
-        "出发": str(r["出発地域"]), "到达": str(r["到着地域"]),
+        "出发": str(r["出発地域"]), "到达": str(r["到着地域"]), "业务范围": str(r["業務範囲"]),
         "見積team": app.appType === "ec" ? null : str(r["見積チーム"]), "輸出team": str(r["輸出対応チーム"]), "輸入team": str(r["輸入対応チーム"]),
         "自社通関費_日元": num(r["請求合計"]), "自社通関費_人民币": num(r["元換算請求合計"]),
         "売上_日元": num(r["円換算売上合計"]), "売上_人民币": num(r["元換算売上合計"]),

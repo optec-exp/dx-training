@@ -86,6 +86,7 @@ function mapCase(app, r) {
     mode: str(r["Mode"]),
     "出发": str(r["出発地域"]),
     "到达": str(r["到着地域"]),
+    "业务范围": str(r["業務範囲"]),
     "見積team": app.appType === "ec" ? null : str(r["見積チーム"]),
     "輸出team": str(r["輸出対応チーム"]),
     "輸入team": str(r["輸入対応チーム"]),

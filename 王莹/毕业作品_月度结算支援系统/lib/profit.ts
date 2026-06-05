@@ -28,13 +28,14 @@ export interface CaseRow {
   mode?: string | null;
   出发?: string | null;
   到达?: string | null;
+  业务范围?: string | null;
 }
 
 // 全社多维度明细（其余维度直接按案件毛利汇总，非按分）。
 export interface DimBreakdown { dim: string; rows: { value: string; 毛利: number; count: number }[] }
 const DIM_FIELDS: [string, keyof CaseRow][] = [
   ["服务类型", "服务类型"], ["国别", "国别"], ["顾客", "顾客"],
-  ["Business Scope", "business_scope"], ["Mode", "mode"], ["出发", "出发"], ["到达", "到达"],
+  ["Business Scope", "business_scope"], ["业务范围", "业务范围"], ["Mode", "mode"], ["出发", "出发"], ["到达", "到达"],
 ];
 export function computeDimensions(rows: CaseRow[]): DimBreakdown[] {
   return DIM_FIELDS.map(([dim, field]) => {
