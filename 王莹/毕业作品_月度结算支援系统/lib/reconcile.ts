@@ -132,6 +132,38 @@ export async function getMissingBills(month: string): Promise<MissingReport> {
   };
 }
 
+// 已上传账单历史 + 原件签名链接
+export interface UploadedBill { id: string; 供应商: string; 类型: string; 原币种: string; 账单总额_原币: number; 利润月: string; created_at: string; 原件链接: string | null }
+export async function getUploadedBills(month?: string): Promise<UploadedBill[]> {
+  const sb = getSupabaseAdmin();
+  let q = sb.from("bills").select("*").order("created_at", { ascending: false }).limit(100);
+  if (month) q = q.eq("利润月", month);
+  const { data } = await q;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const out: UploadedBill[] = [];
+  for (const b of (data ?? []) as Record<string, unknown>[]) {
+    const path = b["原始文件url"] as string | null;
+    let 原件链接: string | null = null;
+    if (path) {
+      try {
+        const r = await fetch(`${url}/storage/v1/object/sign/settlement-bills/${encodeURIComponent(path)}`, {
+          method: "POST", headers: { apikey: key as string, Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ expiresIn: 3600 }),
+        });
+        if (r.ok) { const j = await r.json(); 原件链接 = `${url}/storage/v1${j.signedURL}`; }
+      } catch { /* */ }
+    }
+    out.push({ id: String(b["id"]), 供应商: String(b["供应商"] ?? ""), 类型: String(b["类型"] ?? ""), 原币种: String(b["原币种"] ?? ""), 账单总额_原币: Number(b["账单总额_原币"]) || 0, 利润月: String(b["利润月"] ?? ""), created_at: String(b["created_at"] ?? ""), 原件链接 });
+  }
+  return out;
+}
+
+// 某 OPT 的 Kintone 成本明细（差异钻取）
+export async function getCostLinesByOpt(opt: string): Promise<{ 供应商: string; 费用科目: string; 原币种: string; 金额_原币: number }[]> {
+  const sb = getSupabaseAdmin();
+  const { data } = await sb.from("kc_cost_lines").select("供应商,费用科目,原币种,金额_原币").eq("opt_no", opt);
+  return (data ?? []) as { 供应商: string; 费用科目: string; 原币种: string; 金额_原币: number }[];
+}
+
 export interface PendingRecon { id: string; opt_no: string; 供应商: string; 账单金额_原币: number; kintone金额_原币: number | null; 差额: number | null; 差异类型: string; 状态: string; 利润月: string; 复核备注?: string }
 export async function getPendingReconciliations(month?: string): Promise<PendingRecon[]> {
   const sb = getSupabaseAdmin();

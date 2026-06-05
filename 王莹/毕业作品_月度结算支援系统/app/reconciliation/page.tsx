@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ReconWorkbench from "@/app/_components/ReconWorkbench";
 import MissingBills from "@/app/_components/MissingBills";
+import BillHistory from "@/app/_components/BillHistory";
 import Collapsible from "@/app/_components/Collapsible";
 
 interface ReconRow { opt_no: string; kintone供应商: string | null; 币种: string; billAmount: number; kintoneAmount: number | null; diff: number | null; status: "匹配" | "金额差异" | "缺账单或漏录" | "待人工核对"; note?: string }
@@ -127,6 +128,7 @@ export default function ReconciliationPage() {
 
       <MissingBills />
       <ReconWorkbench />
+      <BillHistory />
     </div>
   );
 }

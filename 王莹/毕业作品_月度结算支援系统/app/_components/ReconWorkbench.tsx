@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import Collapsible from "./Collapsible";
 
 interface Row { id: string; opt_no: string; 供应商: string; 账单金额_原币: number; kintone金额_原币: number | null; 差额: number | null; 差异类型: string; 状态: string; 利润月: string; 复核备注?: string }
@@ -12,6 +12,14 @@ export default function ReconWorkbench() {
   const [loaded, setLoaded] = useState(false);
   const [fMonth, setFMonth] = useState("");
   const [fState, setFState] = useState("待处理");
+  const [drill, setDrill] = useState<string | null>(null);
+  const [lines, setLines] = useState<{ 供应商: string; 费用科目: string; 原币种: string; 金额_原币: number }[]>([]);
+
+  async function drillOpt(opt: string) {
+    if (drill === opt) { setDrill(null); return; }
+    const d = await fetch(`/api/bills?opt=${opt}`).then((x) => x.json()).catch(() => ({ lines: [] }));
+    setLines(d.lines || []); setDrill(opt);
+  }
 
   const load = useCallback(async () => {
     const r = await fetch("/api/reconcile/review").then((x) => x.json()).catch(() => ({ rows: [] }));
@@ -42,8 +50,11 @@ export default function ReconWorkbench() {
           <thead><tr><th>利润月</th><th>OPT</th><th>供应商</th><th className="num">账单</th><th className="num">Kintone</th><th className="num">差额</th><th>类型</th><th>状态</th><th>备注</th><th>操作</th></tr></thead>
           <tbody>
             {filtered.map((r) => (
-              <tr key={r.id} className={r.状态 === "待复核" ? "flag" : undefined}>
-                <td>{r.利润月}</td><td>{r.opt_no}</td><td style={{ fontSize: 12, color: "var(--muted)" }}>{r.供应商}</td>
+              <Fragment key={r.id}>
+              <tr className={r.状态 === "待复核" ? "flag" : undefined}>
+                <td>{r.利润月}</td>
+                <td style={{ cursor: "pointer", color: "var(--accent)" }} onClick={() => drillOpt(r.opt_no)} title="点击看该票 Kintone 成本明细">{drill === r.opt_no ? "▾ " : "▸ "}{r.opt_no}</td>
+                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.供应商}</td>
                 <td className="num">{yen(r.账单金额_原币)}</td><td className="num">{yen(r.kintone金额_原币)}</td>
                 <td className={"num" + (r.差额 ? " neg" : "")}>{yen(r.差额)}</td>
                 <td>{r.差异类型}</td>
@@ -58,6 +69,15 @@ export default function ReconWorkbench() {
                   ) : <button className="btn" style={btn} onClick={() => mark(r.id, "待复核")}>↺ 撤销</button>}
                 </td>
               </tr>
+              {drill === r.opt_no && (
+                <tr><td colSpan={10} style={{ background: "var(--panel-2)" }}>
+                  <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4 }}>OPT {r.opt_no} · Kintone 成本明细（{lines.length} 笔）</div>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
+                    <tbody>{lines.map((l, i) => (<tr key={i}><td style={{ padding: "2px 6px" }}>{l.供应商}</td><td style={{ padding: "2px 6px" }}>{l.费用科目}</td><td style={{ padding: "2px 6px", textAlign: "right" }}>{l.原币种} {Math.round(l.金额_原币).toLocaleString()}</td></tr>))}</tbody>
+                  </table>
+                </td></tr>
+              )}
+              </Fragment>
             ))}
           </tbody>
         </table>

@@ -6,6 +6,11 @@
 
 ## 逐页细节优化
 
+### ②对账页优化-批3a（账单历史/差异钻取）
+- **改了什么**：① **已上传账单历史**(从bills读,折叠,带Storage原件签名链接📄) ② **差异钻取**(工作台点OPT→展开该票Kintone成本明细)。
+- **文件**：`lib/reconcile.ts`(getUploadedBills+签名URL/getCostLinesByOpt)、`app/api/bills`、`app/_components/{BillHistory,ReconWorkbench}.tsx`、`app/reconciliation/page.tsx`
+- **验证**：5张账单带原件链接;OPT2606708钻取18笔成本。✅（供应商映射记忆需新表,待王莹建表）
+
 ### ②对账页优化-批2（Excel/批量/拖拽/进度）
 - **改了什么**：① 支持 **Excel(.xlsx)** 账单(SheetJS解析→文本→Gemini parseBillText) ② **批量上传**多张(客户端逐个POST) ③ **拖拽上传**区 ④ **逐文件进度**(等待/解析中/完成/失败)+多结果折叠展示+全局AI解读差异。
 - **文件**：`lib/gemini.ts`(parseBillText+callParse重构)、`app/api/reconcile/route.ts`(多文件+Excel)、`lib/reconcile.ts`(uploadBillFile通用)、`app/reconciliation/page.tsx`(重写上传UI)、package.json(xlsx)
