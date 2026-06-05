@@ -97,6 +97,7 @@ const res = await fetch(`${SUPA}/rest/v1/kc_cases?select=*&利润月=eq.${ym}&li
 });
 const rows = await res.json();
 const cases = rows.map((r) => ({
+  opt_no: r.opt_no,
   appType: r.business_line === "EC" ? "ec" : r.business_line.toLowerCase(),
   country: r["国别"],
   expTeam: r["輸出team"] || "",
@@ -110,6 +111,7 @@ const cases = rows.map((r) => ({
 const team = {}; // team → {total, 見積,国别,输出,输入}
 const ensure = (t) => (team[t] ??= { total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0 });
 let totalAlloc = 0, unalloc = 0, unallocCases = 0;
+const offenders = [];
 for (const c of cases) {
   let caseAlloc = 0;
   for (const a of distribute(c)) {
@@ -119,7 +121,16 @@ for (const c of cases) {
     caseAlloc += a.jpy;
   }
   const short = c.gpJpy - caseAlloc;
-  if (Math.abs(short) > 1) { unalloc += short; unallocCases += 1; }
+  if (Math.abs(short) > 1) {
+    unalloc += short; unallocCases += 1;
+    offenders.push({
+      opt: c.opt_no, gp: c.gpJpy, alloc: caseAlloc, short,
+      見積: `${c.mitsumoriTeam}→${normTeam(c.mitsumoriTeam) ?? "✗无法识别"}`,
+      輸出: `${c.expTeam}→${isEmpty(c.expTeam) ? "(空)" : normTeam(c.expTeam) ?? "✗无法识别"}`,
+      輸入: `${c.impTeam}→${isEmpty(c.impTeam) ? "(空)" : normTeam(c.impTeam) ?? "✗无法识别"}`,
+      国别: c.country,
+    });
+  }
 }
 const sumGP = cases.reduce((s, c) => s + c.gpJpy, 0);
 const fmt = (n) => Math.round(n).toLocaleString("ja-JP");
@@ -145,3 +156,10 @@ console.log(`中国合计: ${fmt(china)}   日本合计: ${fmt(japan)}   全社:
 console.log(`\n验证：Σ毛利_日元 = ${fmt(sumGP)}   已按分 = ${fmt(totalAlloc)}   未分配 = ${fmt(unalloc)}（${unallocCases} 票，team字段无法识别）`);
 const gap = sumGP - totalAlloc - unalloc;
 console.log(Math.abs(gap) < 1 ? "✅ 守恒：已按分 + 未分配 = Σ毛利（未分配=数据质量提示，非算法丢钱）" : `⚠️ 仍有缺口 ${fmt(gap)}，需检查`);
+if (offenders.length) {
+  console.log(`\n=== 未分配明细（${offenders.length} 票）===`);
+  for (const o of offenders) {
+    console.log(`OPT ${o.opt}  毛利 ${fmt(o.gp)}  已分 ${fmt(o.alloc)}  未分配 ${fmt(o.short)}  国别=${o.国别}`);
+    console.log(`   見積:${o.見積}  輸出:${o.輸出}  輸入:${o.輸入}`);
+  }
+}
