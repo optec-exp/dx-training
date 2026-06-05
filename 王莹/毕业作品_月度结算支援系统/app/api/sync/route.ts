@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncCases, syncSga } from "@/lib/sync";
+import { syncCases, syncSga, syncCheck } from "@/lib/sync";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
     const result: Record<string, unknown> = { ok: true, month };
     if (type === "cases" || type === "all") result.cases = await syncCases(month);
     if (type === "sga" || type === "all") result.sga = await syncSga(month);
+    if (type === "check" || type === "all") result.check = await syncCheck(month); // ④同步排查(依赖案件已同步)
     return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });

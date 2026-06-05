@@ -6,6 +6,12 @@
 
 ## 逐页细节优化
 
+### ④同步排查页优化-网页刷新/默认差异展开一致折叠/筛选/分类/法人/钻取
+- **优化点(王莹定1-6+默认差异展开·一致折叠)**：① 网页一键「↻重新排查」(原需终端跑脚本)；② 筛选(法人EXPRESS/TRADING+搜OPT)；③ 点OPT钻取入金/支付明细(实时读Kintone定位差异在哪条)；④ 法人区分(空海/EC药丸)；⑤ 差异分类(🔴收入差异=需排查 / 🟠成本差异=未月结正常)；⑥ 折叠布局；默认只展开差异、一致行折叠进Collapsible(去掉旧的120条硬上限)。
+- **改了什么**：lib/sync.ts 加 syncCheck()(移植sync-check.mjs逻辑:案件売上/成本 vs Kintone入金/支付按OPT) + getSyncCheckDetail()(钻取)；/api/sync 加 type=check；新建 /api/sync-check(GET月报/GET?opt钻取)；sync-check页重建为客户端 SyncCheckView 组件；/sync页加「同步排查④」按钮。
+- **文件**：`lib/sync.ts`、`app/api/sync/route.ts`、`app/api/sync-check/route.ts`、`app/_components/SyncCheckView.tsx`、`app/sync-check/page.tsx`、`app/sync/page.tsx`
+- **验证**：重新排查→209票/收入差异1/成本差异54；钻取OPT2607070→11条(5入金+6支付,见负数冲销)。✅ 120条问题=旧版slice(0,120)硬上限,已随折叠去除。
+
 ### ②对账页修三Bug-供应商取错/运单号没提/品名OPT错未纠正（基于真实账单样本)
 - **根因(读真实账单 山东上星5.xlsx + OPT2606046.PDF 确认)**：① AI 供应商取了"TO/开票抬头/客户"(山东上星)而非"出具方/FROM"(上海天艳=真承运商=与Kintone一致)；② 账单有"运单号"列(205-...)但AI没提取为提单号；③ 账单品名OPT可能填错(R3品名写OPT2606046,但运单号205-33595601实属OPT2606164)，旧逻辑先按品名OPT聚合→把1980错并入OPT2606046成假差异3650。
 - **改了什么**：①提示词:供应商取出具方/落款/FROM(非TO/抬头/客户);opt_no按"OPT+数字"规律从任意列(含品名)识别;提单号含"运单号/MAWB列";单票表头OPT/MAWB应用到每行;opt_no改可空。②reconcileBill:改**逐行解析**,运单号(提单号)命中MAWB→OPT**优先**(可纠正写错的品名OPT),再按真实OPT聚合(替代旧的先按品名OPT聚合)。
