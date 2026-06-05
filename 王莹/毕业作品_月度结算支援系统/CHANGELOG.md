@@ -6,6 +6,13 @@
 
 ## 逐页细节优化
 
+### ②对账页修Bug-成本同步口径错误（漏成本导致账单对不上）
+- **问题**：kc_cost_lines 旧版接「支付App·取引日(付款日)」现金口径，只覆盖"当月已付款"成本→利润月在本月但付款日不在本月/未付款的成本缺失，账单对不上。量化：旧726行 vs 案件支払テーブル(利润月)874行，漏约148行。
+- **根因排查**：kc_payments 表无人读写(死表)；kc_cost_lines 仅②对账+⑧风控读，改源安全。
+- **改了什么**：sync-payments.mjs 改为读「案件App(AIR/SEA/EC)的支払テーブル子表 · 按利润月(請求日/纳品完了日)」権責口径，覆盖全部应付成本(不论是否已付)。字段：支払先_0/支払項目/支払通貨/支払額_税込/円換算·元換算支払額；排除項目種別≠支払的行。
+- **文件**：`scripts/sync-payments.mjs`
+- **验证**：重跑 2026-05 → 874行/202票(AIR778+SEA53+EC43)，比旧版多148行。✅ 已清空全部bills/bill_lines/reconciliations/Storage 供重传测试。
+
 ### ②对账页优化-提单号兜底匹配（账单单号非OPT时用MAWB桥接）
 - **改了什么**：① kc_cases 加列 `提单号`(同步自 Kintone `MAWB`，王莹已建列) ② sync-cases 灌 MAWB ③ 账单 AI 解析多提取 `提单号`(MAWB/HAWB/AWB/BL) ④ reconcileBill 建 `提单号→OPT` 映射，账单单号非OPT时用账单单号/提单号解析真实OPT再比成本，标注"经提单号匹配(账单号X)"。
 - **文件**：`db/schema.sql`、`scripts/sync-cases.mjs`、`lib/gemini.ts`、`lib/reconcile.ts`(norm归一+blToOpt桥+resolved解析)
