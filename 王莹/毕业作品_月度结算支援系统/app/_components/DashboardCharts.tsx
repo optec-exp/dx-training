@@ -21,16 +21,18 @@ function Card({ title, children, h = 260 }: { title: string; children: React.Rea
 export default function DashboardCharts({ data }: { data: DashboardData }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16, marginTop: 16 }}>
-      <Card title="经营趋势（毛利 / 贩管费 / 净利）">
-        <LineChart data={data.trend} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
+      <Card title="经营趋势（金额 + 净利率）">
+        <LineChart data={data.trend} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" />
-          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#6b7585" }} />
-          <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={48} />
-          <Tooltip formatter={(v: number) => man(v)} />
+          <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#6b7585" }} tickFormatter={(m: string) => m.slice(5)} />
+          <YAxis yAxisId="L" tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={46} />
+          <YAxis yAxisId="R" orientation="right" tickFormatter={(v: number) => v + "%"} tick={{ fontSize: 11, fill: "#16a34a" }} width={40} />
+          <Tooltip formatter={(v: number, n: string) => (n === "净利率" ? v + "%" : man(v))} />
           <Legend />
-          <Line type="monotone" dataKey="毛利" stroke="#60a5fa" strokeWidth={2} dot={{ r: 3 }} />
-          <Line type="monotone" dataKey="贩管费" stroke="#fbbf24" strokeWidth={2} dot={{ r: 3 }} />
-          <Line type="monotone" dataKey="净利" stroke="#2563eb" strokeWidth={2.5} dot={{ r: 4 }} />
+          <Line yAxisId="L" type="monotone" dataKey="毛利" stroke="#60a5fa" strokeWidth={2} dot={{ r: 3 }} />
+          <Line yAxisId="L" type="monotone" dataKey="贩管费" stroke="#fbbf24" strokeWidth={2} dot={{ r: 3 }} />
+          <Line yAxisId="L" type="monotone" dataKey="净利" stroke="#2563eb" strokeWidth={2.5} dot={{ r: 4 }} />
+          <Line yAxisId="R" type="monotone" dataKey="净利率" stroke="#16a34a" strokeWidth={2} strokeDasharray="5 3" dot={{ r: 3 }} />
         </LineChart>
       </Card>
 
