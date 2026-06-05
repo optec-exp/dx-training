@@ -47,7 +47,7 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
             </thead>
             <tbody>
               {report.rows.map((r) => (
-                <tr key={r.opt_no} style={r.需审查 ? { background: "#3a181833" } : undefined}>
+                <tr key={r.opt_no} style={r.需审查 ? { background: "#fee2e2" } : undefined}>
                   <td>{r.opt_no}</td><td>{r.business_scope}</td><td>{r.服务类型}</td>
                   <td className="num">{yen(r.收入)}</td><td className="num">{yen(r.成本)}</td>
                   <td className="num strong">{pct(r.加成率)}</td><td className="num">{pct(r.标准)}</td>
