@@ -6,6 +6,11 @@
 
 ## 2026-06-05
 
+### ⑦资金·应收账龄（/treasury）
+- **改了什么**：请求入金未入金→ar_ap_aging，按账龄分桶+超期+Top10客户。应付/预测/投资 P1。
+- **文件**：`scripts/sync-ar.mjs`(新)、`lib/treasury.ts`(新)、`app/treasury/page.tsx`(新)
+- **验证**：应收352笔¥266M、超期145笔¥126.65M；/treasury 200。✅
+
 ### ④三App同步排查（/sync-check）
 - **改了什么**：按 OPT 比对 案件App收入/成本 vs 请求入金/支付App合计，检测同步bug；总额概览+逐票差异(差异排前标红)。
 - **文件**：`scripts/sync-check.mjs`(新)、`lib/sync-check-data.ts`(新)、`app/sync-check/page.tsx`(新)
