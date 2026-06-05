@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
-import { computeProfitReport, type ProfitReport } from "@/lib/profit";
+import { computeProfitReport, computeDimensions, type ProfitReport, type DimBreakdown } from "@/lib/profit";
 import { getSgaForMonth, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
@@ -25,11 +25,13 @@ export default async function ProfitPage({
   let report: ProfitReport | null = null;
   let sga: SgaAgg | null = null;
   let budget: BudgetData | null = null;
+  let dims: DimBreakdown[] | null = null;
   let err: string | null = null;
   try {
     const cases = await getCasesForMonth(month);
     const heads = await getJpdeskHeads(month);
     report = computeProfitReport(cases, month, heads);
+    dims = computeDimensions(cases);
     sga = await getSgaForMonth(month);
     budget = await getBudget(month, "全社");
   } catch (e) {
@@ -137,6 +139,30 @@ export default async function ProfitPage({
 
           <h3>小组 × 4 维度（日元）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 可折叠中日明细</span></h3>
           <GroupTable groups={report.groups} />
+
+          {dims && (
+            <>
+              <h3>全社多维度（毛利 · 直接汇总 · 各取 Top）</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
+                {dims.map((d) => (
+                  <div key={d.dim} className="card" style={{ padding: 14 }}>
+                    <div style={{ fontWeight: 650, marginBottom: 6 }}>{d.dim}</div>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontVariantNumeric: "tabular-nums" }}>
+                      <tbody>
+                        {d.rows.map((r) => (
+                          <tr key={r.value}>
+                            <td style={{ padding: "3px 0", color: "var(--text)" }}>{r.value}</td>
+                            <td style={{ padding: "3px 0", textAlign: "right", fontWeight: 600 }}>{yen(r.毛利)}</td>
+                            <td style={{ padding: "3px 0 3px 10px", textAlign: "right", color: "var(--muted)", fontSize: 12 }}>{r.count}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {report.unallocated.cases.length > 0 && (
             <div className="warn-box">

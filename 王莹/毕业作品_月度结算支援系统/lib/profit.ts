@@ -21,6 +21,32 @@ export interface CaseRow {
   見積team: string | null;
   毛利_日元: number | null;
   自社通関費_日元: number | null;
+  // 全社多维度直接汇总用（非按分）
+  服务类型?: string | null;
+  business_scope?: string | null;
+  顾客?: string | null;
+  mode?: string | null;
+  出发?: string | null;
+  到达?: string | null;
+}
+
+// 全社多维度明细（其余维度直接按案件毛利汇总，非按分）。
+export interface DimBreakdown { dim: string; rows: { value: string; 毛利: number; count: number }[] }
+const DIM_FIELDS: [string, keyof CaseRow][] = [
+  ["服务类型", "服务类型"], ["国别", "国别"], ["顾客", "顾客"],
+  ["Business Scope", "business_scope"], ["Mode", "mode"], ["出发", "出发"], ["到达", "到达"],
+];
+export function computeDimensions(rows: CaseRow[]): DimBreakdown[] {
+  return DIM_FIELDS.map(([dim, field]) => {
+    const m = new Map<string, { 毛利: number; count: number }>();
+    for (const r of rows) {
+      const key = String((r[field] as string) || "(空)");
+      const gp = Number(r.毛利_日元) || 0;
+      const e = m.get(key) || { 毛利: 0, count: 0 };
+      e.毛利 += gp; e.count++; m.set(key, e);
+    }
+    return { dim, rows: [...m].map(([value, v]) => ({ value, ...v })).sort((a, b) => b.毛利 - a.毛利).slice(0, 12) };
+  });
 }
 
 interface Case {
