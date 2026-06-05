@@ -37,10 +37,17 @@ create table if not exists kc_cases (
   mode              text,
   出发              text,
   到达              text,
-  收入合计_原币     numeric(18,2),
-  成本合计_原币     numeric(18,2),
-  毛利_日元         numeric(18,2),
-  毛利_人民币       numeric(18,2),
+  見積team          text,                          -- 見積チーム（按分:見積維度）
+  輸出team          text,                          -- 輸出対応チーム（按分:输出维度）
+  輸入team          text,                          -- 輸入対応チーム（按分:输入维度）
+  自社通関費_日元   numeric(18,2),                 -- 請求合計（已含在毛利内，先分给通关小组）
+  自社通関費_人民币 numeric(18,2),                 -- 元換算請求合計
+  売上_日元         numeric(18,2),                 -- 円換算売上合計
+  売上_人民币       numeric(18,2),                 -- 元換算売上合計
+  成本_日元         numeric(18,2),                 -- 円換算費用合計
+  成本_人民币       numeric(18,2),                 -- 元換算費用合計
+  毛利_日元         numeric(18,2),                 -- 円換算粗利益
+  毛利_人民币       numeric(18,2),                 -- 元換算粗利益
   synced_at         timestamptz default now(),
   unique (opt_no)
 );
