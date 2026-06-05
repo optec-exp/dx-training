@@ -24,6 +24,16 @@ export interface ReconResult {
 
 const latin = (s: string) => (s || "").toUpperCase().replace(/[^A-Z]/g, "");
 const norm = (s: string) => (s || "").toUpperCase().replace(/[^0-9A-Z]/g, ""); // 提单号归一(保留数字,去横杠空格)
+// 币种归一：RMB/人民币/元 与 CNY 视为同一；円/日元 与 JPY 同一；避免"RMB≠CNY"误判
+const normCur = (c: string) => {
+  const u = (c || "").toUpperCase().trim();
+  if (/(RMB|CNY|人民[币幣]|元)/.test(u)) return "CNY";
+  if (/(JPY|日元|円|日圓)/.test(u)) return "JPY";
+  if (/(USD|美元|美金)/.test(u)) return "USD";
+  if (/(HKD|港[币幣元])/.test(u)) return "HKD";
+  if (/(EUR|欧元|歐元)/.test(u)) return "EUR";
+  return u;
+};
 const TOLERANCE = 1;
 
 // 供应商映射记忆：账单供应商 ↔ Kintone 供应商
@@ -76,16 +86,17 @@ export async function reconcileBill(bill: ParsedBill): Promise<ReconResult> {
   }
   const opts = [...resolved.keys()];
 
-  // Kintone 侧：这些(真实) OPT、同币种的成本明细（保留单行，供两级匹配）
+  // Kintone 侧：这些(真实) OPT 的成本明细（保留单行，供两级匹配）。币种用归一比较(RMB=CNY)，不在DB端精确过滤。
+  const wantCur = normCur(bill.币种);
   const kc: { opt_no: string; 供应商: string; 金额_原币: number }[] = [];
   for (let i = 0; i < opts.length; i += 100) {
     const { data, error } = await sb
       .from("kc_cost_lines")
-      .select("opt_no,供应商,金额_原币")
-      .in("opt_no", opts.slice(i, i + 100))
-      .eq("原币种", bill.币种);
+      .select("opt_no,供应商,金额_原币,原币种")
+      .in("opt_no", opts.slice(i, i + 100));
     if (error) throw new Error(`读取 kc_cost_lines 失败: ${error.message}`);
-    kc.push(...((data ?? []) as typeof kc));
+    kc.push(...((data ?? []) as { opt_no: string; 供应商: string; 金额_原币: number; 原币种: string }[])
+      .filter((r) => normCur(r.原币种) === wantCur));
   }
   const kcByOpt = new Map<string, { 供应商: string; 金额: number }[]>();
   for (const r of kc) {

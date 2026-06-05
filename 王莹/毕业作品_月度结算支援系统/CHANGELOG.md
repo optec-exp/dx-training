@@ -6,6 +6,13 @@
 
 ## 逐页细节优化
 
+### ②对账页修Bug-币种字符串不一致(RMB≠CNY)导致漏匹配
+- **问题**：账单解析币种为"RMB"，Kintone成本原币种为"CNY"(同一货币不同写法)，reconcileBill 用 `.eq(原币种,账单币种)` 精确过滤→取不到成本→全部上海天艳RMB账单误判"漏录或同步异常"。
+- **改了什么**：加 `normCur()` 币种归一(RMB/人民币/元↔CNY；円/日元↔JPY；港币↔HKD等)；kc_cost_lines 不在DB端按币种过滤，改取回后用归一比较。
+- **文件**：`lib/reconcile.ts`
+- **验证**：上海天艳RMB1980账单(提单号205-33595601)→桥接OPT2606164→匹配KintoneCNY1980 ✅。
+- **另查实**：OPT2606046显示3650=账单两行(1670+1980)加总，非编造(bill_lines实有两行);但1980行OPT被AI标错(实为OPT2606164)→属AI解析串号,待定。
+
 ### ②对账页修两Bug-原件无法查看 + 单票/SOA误判
 - **Bug1 原件无法查看**：① 上传路径含中文供应商名→Supabase Storage 报 InvalidKey(不接受非ASCII key)，原始文件url 存成 null；② 即便ASCII，签名时 `encodeURIComponent(path)` 把 `/` 编码成 `%2F`，签进URL导致下载400。
   - 修：上传文件名只取供应商英文/数字(无则"bill")；上传与签名都用 raw path(不整体编码,路径已ASCII安全)。
