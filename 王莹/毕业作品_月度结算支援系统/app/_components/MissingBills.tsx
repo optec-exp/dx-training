@@ -8,7 +8,7 @@ interface Group { 供应商: string; 笔数: number; 金额: number; 币种: str
 interface Report { 齐全率: number; 成本行数: number; 缺账单行数: number; 缺账单金额: number; groups: Group[] }
 const yen = (n: number) => Math.round(n).toLocaleString("ja-JP");
 
-export default function MissingBills() {
+export default function MissingBills({ refresh = 0 }: { refresh?: number }) {
   const [month, setMonth] = useState("2026-05");
   const [r, setR] = useState<Report | null>(null);
   const [busy, setBusy] = useState(false);
@@ -19,7 +19,7 @@ export default function MissingBills() {
     try { const d = await fetch(`/api/missing-bills?month=${month}`).then((x) => x.json()); setR(d.error ? null : d); }
     finally { setBusy(false); }
   }, [month]);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); }, [load, refresh]);
 
   const qlRate = r ? Math.round(r.齐全率 * 100) : 0;
 

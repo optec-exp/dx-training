@@ -6,6 +6,12 @@
 
 ## 逐页细节优化
 
+### ②对账页优化-AI解读回写工作台 + 对账后自动刷新
+- **问题**：①对账完成后,缺账单/工作台/账单历史不自动刷新(挂载时拉一次,上传后仍是旧数据);②AI解读差异只飘在顶部面板,没同步进工作台对应行。
+- **改了什么**：①页面加 `refresh` 计数,run()/explain() 后自增,传入三个子组件作 useEffect 依赖→自动重拉;②`saveAiExplanation()` 把AI疑因/建议回写到该OPT待复核行的复核备注;explain路由带month并回写。
+- **文件**：`lib/reconcile.ts`、`app/api/reconcile/explain/route.ts`、`app/reconciliation/page.tsx`、`app/_components/{ReconWorkbench,MissingBills,BillHistory}.tsx`
+- **验证**：上传产生3650漏录→工作台即时出现→AI解读→工作台备注变"🤖AI疑因：Kintone漏录；建议…" ✅
+
 ### ②对账页修Bug-币种字符串不一致(RMB≠CNY)导致漏匹配
 - **问题**：账单解析币种为"RMB"，Kintone成本原币种为"CNY"(同一货币不同写法)，reconcileBill 用 `.eq(原币种,账单币种)` 精确过滤→取不到成本→全部上海天艳RMB账单误判"漏录或同步异常"。
 - **改了什么**：加 `normCur()` 币种归一(RMB/人民币/元↔CNY；円/日元↔JPY；港币↔HKD等)；kc_cost_lines 不在DB端按币种过滤，改取回后用归一比较。

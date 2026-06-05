@@ -6,10 +6,10 @@ import Collapsible from "./Collapsible";
 interface Bill { id: string; 供应商: string; 类型: string; 原币种: string; 账单总额_原币: number; 利润月: string; created_at: string; 原件链接: string | null }
 const yen = (n: number) => Math.round(n).toLocaleString("ja-JP");
 
-export default function BillHistory() {
+export default function BillHistory({ refresh = 0 }: { refresh?: number }) {
   const [rows, setRows] = useState<Bill[]>([]);
   const [loaded, setLoaded] = useState(false);
-  useEffect(() => { fetch("/api/bills").then((x) => x.json()).then((d) => { setRows(d.rows || []); setLoaded(true); }).catch(() => setLoaded(true)); }, []);
+  useEffect(() => { fetch("/api/bills").then((x) => x.json()).then((d) => { setRows(d.rows || d.bills || []); setLoaded(true); }).catch(() => setLoaded(true)); }, [refresh]);
   if (!loaded) return null;
   return (
     <Collapsible title="已上传账单历史" right={<span style={{ color: "var(--muted)", fontSize: 13 }}>{rows.length} 张</span>}>

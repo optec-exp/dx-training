@@ -7,7 +7,7 @@ interface Row { id: string; opt_no: string; 供应商: string; 账单金额_原�
 const yen = (n: number | null) => (n == null ? "—" : Math.round(n).toLocaleString("ja-JP"));
 const STATE: Record<string, string> = { 待复核: "pill-amber", 确认无误: "pill-green", 待代理改单: "pill-red", 已解决: "pill-green" };
 
-export default function ReconWorkbench() {
+export default function ReconWorkbench({ refresh = 0 }: { refresh?: number }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [fMonth, setFMonth] = useState("");
@@ -25,7 +25,7 @@ export default function ReconWorkbench() {
     const r = await fetch("/api/reconcile/review").then((x) => x.json()).catch(() => ({ rows: [] }));
     setRows(r.rows || []); setLoaded(true);
   }, []);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); }, [load, refresh]);
 
   async function mark(id: string, 状态: string) {
     const 备注 = 状态 === "待复核" ? "" : (window.prompt("复核备注（可选）") || "");

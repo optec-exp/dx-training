@@ -23,6 +23,7 @@ export default function ReconciliationPage() {
   const [drag, setDrag] = useState(false);
   const [expl, setExpl] = useState<{ opt_no: string; 疑因: string; 建议: string }[] | null>(null);
   const [explBusy, setExplBusy] = useState(false);
+  const [refresh, setRefresh] = useState(0); // 对账/解读后通知下方组件刷新
 
   function addFiles(list: FileList | null) {
     if (!list) return;
@@ -50,13 +51,18 @@ export default function ReconciliationPage() {
       setResults([...out]);
     }
     setBusy(false);
+    setRefresh((x) => x + 1); // 对账完成 → 刷新缺账单/工作台/账单历史
   }
 
   async function explain() {
     const rows = results.flatMap((r) => r.rows || []).filter((r) => r.status !== "匹配");
     if (!rows.length) return;
     setExplBusy(true); setExpl(null);
-    try { const j = await fetch("/api/reconcile/explain", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rows }) }).then((x) => x.json()); setExpl(j.explanations || []); }
+    try {
+      const j = await fetch("/api/reconcile/explain", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rows, month }) }).then((x) => x.json());
+      setExpl(j.explanations || []);
+      setRefresh((x) => x + 1); // 解读已回写工作台备注 → 刷新
+    }
     catch { setExpl([]); } finally { setExplBusy(false); }
   }
 
@@ -127,9 +133,9 @@ export default function ReconciliationPage() {
         </Collapsible>
       ))}
 
-      <MissingBills />
-      <ReconWorkbench />
-      <BillHistory />
+      <MissingBills refresh={refresh} />
+      <ReconWorkbench refresh={refresh} />
+      <BillHistory refresh={refresh} />
       <SupplierMappings />
     </div>
   );

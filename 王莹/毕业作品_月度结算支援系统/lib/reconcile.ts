@@ -237,6 +237,13 @@ export async function setReviewStatus(id: string, 状态: string, 复核备注 =
   const sb = getSupabaseAdmin();
   await sb.from("reconciliations").update({ 状态, 复核备注, 复核人: "财务", updated_at: new Date().toISOString() }).eq("id", id);
 }
+// AI 解读差异 → 回写到工作台对应行的备注（仅未人工处理的待复核行，不覆盖人工备注）
+export async function saveAiExplanation(opt_no: string, month: string, 疑因: string, 建议: string): Promise<void> {
+  if (!opt_no) return;
+  const sb = getSupabaseAdmin();
+  await sb.from("reconciliations").update({ 复核备注: `🤖AI疑因：${疑因}；建议：${建议}` })
+    .eq("opt_no", opt_no).eq("利润月", month).eq("状态", "待复核");
+}
 
 // 持久化对账结果（bills + bill_lines + reconciliations）。
 // 把账单原件存入 Storage(settlement-bills)，返回存储路径（原件存档/内控留存）。
