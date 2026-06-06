@@ -249,7 +249,7 @@ export default async function ProfitPage({
           {groupPL && (
             <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16, marginTop: 8, alignItems: "start" }}>
               <GroupedBarCard title="业务小组 毛利/贩管费/净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 毛利: Math.round(b.毛利), 贩管费: Math.round(b.贩管费), 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" bars={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "贩管费", name: "贩管费", color: "#fbbf24" }, { key: "净利", name: "净利", color: "#34d399" }]} />
-              {groupPL.mgmt.length > 0 && <HBarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} catKey="部门" valKey="贩管费" />}
+              {groupPL.mgmt.length > 0 && <BarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} xKey="部门" barKey="贩管费" tilt />}
             </div>
           )}
           {fyYtd && (

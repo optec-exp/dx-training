@@ -17,12 +17,12 @@ function Frame({ title, children, h = 240 }: { title: string; children: React.Re
   );
 }
 
-export function BarCard({ title, data, xKey, barKey, colorByValue }: { title: string; data: Record<string, unknown>[]; xKey: string; barKey: string; colorByValue?: boolean }) {
+export function BarCard({ title, data, xKey, barKey, colorByValue, tilt }: { title: string; data: Record<string, unknown>[]; xKey: string; barKey: string; colorByValue?: boolean; tilt?: boolean }) {
   return (
-    <Frame title={title}>
-      <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 0 }}>
+    <Frame title={title} h={tilt ? 300 : 240}>
+      <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: tilt ? 36 : 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" />
-        <XAxis dataKey={xKey} tick={{ fontSize: 11, fill: "#6b7585" }} />
+        <XAxis dataKey={xKey} tick={{ fontSize: tilt ? 10 : 11, fill: "#6b7585" }} interval={tilt ? 0 : "preserveEnd"} angle={tilt ? -35 : 0} textAnchor={tilt ? "end" : "middle"} height={tilt ? 64 : undefined} />
         <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={48} />
         <Tooltip formatter={(v: number) => man(v)} />
         <Bar dataKey={barKey} radius={[6, 6, 0, 0]}>
