@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState, Fragment } from "react";
 import Collapsible from "./Collapsible";
 import { LineCard } from "./Charts";
 
-interface BankRow { 银行: string; 币种: string; 期初残高: number | null; 期末残高: number | null; 残高差额: number | null; 円換算残高: number | null; 対象法人: string | null }
-interface Constituent { 入金EXP: number; 入金TRD: number; 业务出金EXP: number; 业务出金TRD: number; 贩管费出金: number }
-interface CashRow { 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string; 构成?: Constituent | null }
+interface BankRow { 银行: string; 币种: string; 口座番号: string | null; 期初残高: number | null; 期末残高: number | null; 残高差额: number | null; 円換算残高: number | null; 対象法人: string | null }
+interface Constituent { 业务出金: number; 贩管费出金: number }
+interface CashRow { 法人: string; 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string; 构成?: Constituent | null }
 interface Report { rows: BankRow[]; byCurrency: { 币种: string; 差额: number; count: number }[]; byLegal: { 法人: string; 残高差额: number; 円換算残高: number; count: number }[]; 円換算残高合计: number }
 interface Data { settlement: Report; cash: CashRow[]; trend: { 月份: string; 残高差额: number; 现金净额: number }[] }
 
@@ -18,7 +18,7 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [drill, setDrill] = useState<string | null>(null);
+  const [drill, setDrill] = useState<string | null>(null); // 现金勾稽钻取键 法人|币种
 
   const load = useCallback(async () => {
     setLoading(true); setErr(null);
@@ -87,12 +87,12 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
 
           <Collapsible title="银行 × 币种 明细" defaultOpen={false} right={<span style={{ color: "var(--muted)", fontSize: 13 }}>{rep.rows.length} 账户</span>}>
             <table className="report-table" style={{ boxShadow: "none", margin: 0 }}>
-              <thead><tr><th>法人</th><th>银行</th><th>币种</th><th className="num">上月末</th><th className="num">本月末</th><th className="num">残高差额</th><th className="num">円換算残高</th></tr></thead>
+              <thead><tr><th>法人</th><th>银行</th><th>口座番号</th><th>币种</th><th className="num">上月末</th><th className="num">本月末</th><th className="num">残高差额</th><th className="num">円換算残高</th></tr></thead>
               <tbody>
                 {rep.rows.map((r, i) => (
                   <tr key={i}>
                     <td><span className="pill pill-gray" style={{ fontSize: 11 }}>{r.対象法人 || "—"}</span></td>
-                    <td>{r.银行}</td><td>{r.币种}</td>
+                    <td>{r.银行}</td><td style={{ fontSize: 12, color: "var(--muted)" }}>{r.口座番号 || "—"}</td><td>{r.币种}</td>
                     <td className="num">{fmt(r.期初残高)}</td><td className="num">{fmt(r.期末残高)}</td>
                     <td className="num strong" style={{ color: (Number(r.残高差额) || 0) >= 0 ? "var(--green)" : "var(--red)" }}>{fmt(r.残高差额)}</td>
                     <td className="num">¥{fmt(r.円換算残高)}</td>
@@ -104,36 +104,41 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
 
           {cash.length > 0 && (
             <>
-              <h3 style={{ marginTop: 20 }}>现金勾稽 · 残高差额 vs 现金净额（按币种，点币种看构成）</h3>
+              <h3 style={{ marginTop: 20 }}>现金勾稽 · 残高差额 vs 现金净额（按法人 × 币种，点行看出金构成）</h3>
               <table className="report-table">
-                <thead><tr><th>币种</th><th className="num">残高差额</th><th className="num">入金</th><th className="num">出金</th><th className="num">现金净额</th><th className="num">差异</th><th>状态</th></tr></thead>
+                <thead><tr><th>法人</th><th>币种</th><th className="num">残高差额</th><th className="num">入金</th><th className="num">出金</th><th className="num">现金净额</th><th className="num">差异</th><th>状态</th></tr></thead>
                 <tbody>
-                  {cash.map((c) => (
-                    <Fragment key={c.币种}>
+                  {cash.map((c) => {
+                    const key = `${c.法人}|${c.币种}`;
+                    return (
+                    <Fragment key={key}>
                       <tr className={c.状态 !== "平" ? "flag" : undefined}>
-                        <td style={{ cursor: "pointer", color: "var(--accent)" }} onClick={() => setDrill(drill === c.币种 ? null : c.币种)}>{drill === c.币种 ? "▾ " : "▸ "}{c.币种}</td>
+                        <td><span className="pill pill-gray" style={{ fontSize: 11 }}>{c.法人}</span></td>
+                        <td style={{ cursor: "pointer", color: "var(--accent)" }} onClick={() => setDrill(drill === key ? null : key)}>{drill === key ? "▾ " : "▸ "}{c.币种}</td>
                         <td className="num">{fmt(c.残高差额)}</td><td className="num">{fmt(c.入金合计)}</td><td className="num">{fmt(c.出金合计)}</td>
                         <td className="num">{fmt(c.现金净额)}</td>
                         <td className={"num strong" + (c.差异 !== 0 ? " neg" : "")}>{fmt(c.差异)}</td>
                         <td><span className={`pill ${c.状态 === "平" ? "pill-green" : "pill-amber"}`}>{c.状态}</span></td>
                       </tr>
-                      {drill === c.币种 && c.构成 && (
-                        <tr><td colSpan={7} style={{ background: "var(--panel-2)" }}>
-                          <table style={{ width: "100%", maxWidth: 520, borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
+                      {drill === key && c.构成 && (
+                        <tr><td colSpan={8} style={{ background: "var(--panel-2)" }}>
+                          <table style={{ width: "100%", maxWidth: 460, borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
                             <tbody>
-                              <tr><td style={dtd}>入金 · EXP</td><td style={dtdR}>{fmt(c.构成.入金EXP)}</td><td style={dtd}>入金 · TRD</td><td style={dtdR}>{fmt(c.构成.入金TRD)}</td></tr>
-                              <tr><td style={dtd}>业务出金 · EXP</td><td style={dtdR}>{fmt(c.构成.业务出金EXP)}</td><td style={dtd}>业务出金 · TRD</td><td style={dtdR}>{fmt(c.构成.业务出金TRD)}</td></tr>
-                              <tr><td style={dtd}>贩管费出金（共通）</td><td style={dtdR}>{fmt(c.构成.贩管费出金)}</td><td style={dtd}>现金净额</td><td style={{ ...dtdR, fontWeight: 700 }}>{fmt(c.现金净额)}</td></tr>
+                              <tr><td style={dtd}>入金</td><td style={dtdR}>{fmt(c.入金合计)}</td></tr>
+                              <tr><td style={dtd}>业务出金（请求支付）</td><td style={dtdR}>−{fmt(c.构成.业务出金)}</td></tr>
+                              <tr><td style={dtd}>贩管费出金</td><td style={dtdR}>−{fmt(c.构成.贩管费出金)}</td></tr>
+                              <tr><td style={{ ...dtd, fontWeight: 700 }}>现金净额</td><td style={{ ...dtdR, fontWeight: 700 }}>{fmt(c.现金净额)}</td></tr>
                             </tbody>
                           </table>
-                          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>现金净额 = (入金EXP+入金TRD) − (业务出金EXP+业务出金TRD) − 贩管费出金</div>
+                          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>现金净额 = 入金 − 业务出金 − 贩管费出金（{c.法人}）</div>
                         </td></tr>
                       )}
                     </Fragment>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
-              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>口径=实际收付款日（现金制）。<b>差异仅提示、不阻断关账</b>——银行账户未必涵盖全部业务现金（如非业务往来、跨币种调拨、汇率折算），差异需人工排查。</p>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>口径=实际收付款日（现金制），按法人 EXP/TRD 各自勾稽（贩管费：日本+中国→EXP，EC→TRD）。<b>差异仅提示、不阻断关账</b>——银行账户未必涵盖全部业务现金（非业务往来、跨币种调拨、汇率折算），差异需人工排查。</p>
             </>
           )}
         </>

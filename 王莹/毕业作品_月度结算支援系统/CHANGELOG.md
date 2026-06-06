@@ -6,6 +6,13 @@
 
 ## 逐页细节优化
 
+### ⑥月度决算-现金勾稽改按法人×币种(贩管费分法人) + 银行明细加口座番号
+- **王莹反馈**：① 现金勾稽要区分法人各自显示；② 贩管费不是共通的、要分法人；③ 银行明细加口座番号便于区分账户。
+- **建列(王莹跑)**：kc_bank_balance 加 口座番号；settlement_checks 加 法人。
+- **改了什么**：syncSettlementCash 改为按 **法人(EXP/TRD)×币种** 勾稽——入金/业务出金/残高差额按法人(請求入金/支付EXP+银行対象法人=EXP, EC=TRD)，**贩管费按App来源分法人(日本+中国→EXP, EC→TRD)**；构成改{业务出金,贩管费出金};syncBank加口座番号。getCashRecon加法人(法人→币种排序,不平置顶);BankRow加口座番号。SettlementView:现金勾稽加法人列+点行看出金构成(入金−业务出金−贩管费),银行明细加口座番号列。
+- **文件**：lib/sync.ts、lib/settlement.ts、app/_components/SettlementView.tsx
+- **验证**：现金勾稽7行法人×币种(EXP CNY/HKD/JPY/USD/EUR+TRD JPY/USD);EXP JPY贩管费14,295,810/TRD JPY贩管费0;口座番号显示。✅
+
 ### ⑥月度决算优化(改名+网页刷新/法人/円換算残高/构成钻取/趋势) + ⑦円換算残高趋势
 - **改名**：模块⑥「月度决算勾稽」→「月度决算」(modules.ts + 页标题)。
 - **建列(王莹跑)**：kc_bank_balance 加 円換算残高/対象法人；settlement_checks 加 构成 jsonb。

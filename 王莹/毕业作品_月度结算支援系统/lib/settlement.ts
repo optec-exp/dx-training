@@ -3,6 +3,7 @@ import { getSupabaseAdmin } from "./supabase-server";
 export interface BankRow {
   银行: string;
   币种: string;
+  口座番号: string | null;
   期初残高: number | null;
   期末残高: number | null;
   残高差额: number | null;
@@ -17,14 +18,14 @@ export interface SettlementReport {
   円換算残高合计: number;
 }
 
-export interface CashConstituent { 入金EXP: number; 入金TRD: number; 业务出金EXP: number; 业务出金TRD: number; 贩管费出金: number }
-export interface CashReconRow { 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string; 构成?: CashConstituent | null }
+export interface CashConstituent { 业务出金: number; 贩管费出金: number }
+export interface CashReconRow { 法人: string; 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string; 构成?: CashConstituent | null }
 export async function getCashRecon(month: string): Promise<CashReconRow[]> {
   const sb = getSupabaseAdmin();
   const { data } = await sb.from("settlement_checks").select("*").eq("利润月", month);
   return ((data ?? []) as unknown as CashReconRow[])
-    // 不平排前
-    .sort((a, b) => (b.状态 !== "平" ? 1 : 0) - (a.状态 !== "平" ? 1 : 0) || Math.abs(b.差异) - Math.abs(a.差异));
+    // 法人→币种排序，不平排前
+    .sort((a, b) => (b.状态 !== "平" ? 1 : 0) - (a.状态 !== "平" ? 1 : 0) || (a.法人 || "").localeCompare(b.法人 || "") || (a.币种 || "").localeCompare(b.币种 || ""));
 }
 
 // 月度决算·银行残高（残高差额 = 期末 − 期初，按币种/法人汇总）。

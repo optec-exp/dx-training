@@ -210,7 +210,7 @@ export async function syncBank(month: string): Promise<{ rows: number }> {
   const key = month.replace("-", "");
   const records = await fetchKintone(envOrThrow("KINTONE_APP_BANK_BALANCE_ID"), envOrThrow("KINTONE_APP_BANK_BALANCE_TOKEN"), `年月 = "${key}"`);
   const rows = records.map((r) => ({
-    "银行": str(r["銀行"]), "币种": str(r["通貨"]), "月份": month,
+    "银行": str(r["銀行"]), "币种": str(r["通貨"]), "月份": month, "口座番号": str(r["口座番号"]),
     "期初残高": num(r["前月末残高"]), "期末残高": num(r["残高"]), "残高差额": num(r["差額"]),
     "円換算残高": num(r["円換算残高"]), "対象法人": str(r["対象法人"]),
   }));
@@ -223,21 +223,21 @@ export async function syncBank(month: string): Promise<{ rows: number }> {
   return { rows: rows.length };
 }
 
-// ========== ⑥ 决算现金勾稽同步（现金口径=实际收付款日；入金/业务出金按法人 EXP/TRD，贩管费出金单列）==========
+// ========== ⑥ 决算现金勾稽同步（现金口径=实际收付款日；按 法人(EXP/TRD)×币种）==========
+// 法人映射：EXP=請求入金/支付EXP + 日本/中国贩管费；TRD=EC入金/支付EC + EC贩管费。
 type LF = "EXP" | "TRD";
-export async function syncSettlementCash(month: string): Promise<{ 币种数: number; 有差异: number }> {
+export async function syncSettlementCash(month: string): Promise<{ 行数: number; 有差异: number }> {
   const inMonth = (d?: string) => !!d && String(d).slice(0, 7) === month;
-  const 入金 = new Map<string, { EXP: number; TRD: number }>();
-  const 业务出金 = new Map<string, { EXP: number; TRD: number }>();
-  const 贩管费出金 = new Map<string, number>();
-  const addLF = (m: Map<string, { EXP: number; TRD: number }>, cur: string, lf: LF, val: number) => { const e = m.get(cur) || { EXP: 0, TRD: 0 }; e[lf] += val; m.set(cur, e); };
+  const k = (lf: LF, cur: string) => `${lf}|${cur}`;
+  const 入金 = new Map<string, number>(), 业务出金 = new Map<string, number>(), 贩管费出金 = new Map<string, number>();
+  const add = (m: Map<string, number>, lf: LF, cur: string, val: number) => m.set(k(lf, cur), (m.get(k(lf, cur)) || 0) + val);
 
-  // 入金：請求入金 入金テーブル.入金日 在月内 → 入金額(原币)，按 請求通貨；EXP/EC=法人
+  // 入金：請求入金 入金テーブル.入金日 在月内 → 入金額(原币)，按 請求通貨
   for (const [lf, idEnv, tokEnv] of [["EXP", "KINTONE_APP_EXP_RECEIPTS_ID", "KINTONE_APP_EXP_RECEIPTS_TOKEN"], ["TRD", "KINTONE_APP_EC_RECEIPTS_ID", "KINTONE_APP_EC_RECEIPTS_TOKEN"]] as [LF, string, string][]) {
     for (const rec of await fetchKintone(envOrThrow(idEnv), envOrThrow(tokEnv), "")) {
       const cur = str(rec["請求通貨_0"]) || str(rec["請求通貨"]) || "JPY";
       for (const row of (rec["入金テーブル"]?.value as { value: KRecord }[]) || []) {
-        if (inMonth(str(row.value?.["入金日"]))) addLF(入金, cur, lf, num(row.value?.["入金額"]) || 0);
+        if (inMonth(str(row.value?.["入金日"]))) add(入金, lf, cur, num(row.value?.["入金額"]) || 0);
       }
     }
   }
@@ -246,35 +246,41 @@ export async function syncSettlementCash(month: string): Promise<{ 币种数: nu
     for (const rec of await fetchKintone(envOrThrow(idEnv), envOrThrow(tokEnv), "")) {
       const cur = str(rec["支払通貨_0"]) || str(rec["支払通貨"]) || "JPY";
       for (const row of (rec["支払履歴"]?.value as { value: KRecord }[]) || []) {
-        if (inMonth(str(row.value?.["支払日履歴"]))) addLF(业务出金, cur, lf, num(row.value?.["支払額履歴"]) || 0);
+        if (inMonth(str(row.value?.["支払日履歴"]))) add(业务出金, lf, cur, num(row.value?.["支払額履歴"]) || 0);
       }
     }
   }
-  // 贩管费出金：支払日 在月内 → 費用(原币)，按 通貨（不分法人）
+  // 贩管费出金：支払日 在月内 → 費用(原币)，按 通貨；日本/中国贩管费=EXP，EC贩管费=TRD
+  const SGA_LF: Record<string, LF> = { KINTONE_APP_SGA_JP_ID: "EXP", KINTONE_APP_SGA_CN_ID: "EXP", KINTONE_APP_SGA_EC_ID: "TRD" };
   for (const app of SGA_APPS) {
+    const lf = SGA_LF[app.idEnv] || "EXP";
     for (const rec of await fetchKintone(envOrThrow(app.idEnv), envOrThrow(app.tokEnv), `販管キー = "${month.replace("-", "")}"`)) {
-      if (inMonth(str(rec["支払日"]))) 贩管费出金.set(str(rec["通貨"]) || "JPY", (贩管费出金.get(str(rec["通貨"]) || "JPY") || 0) + (num(rec["費用"]) || 0));
+      if (inMonth(str(rec["支払日"]))) add(贩管费出金, lf, str(rec["通貨"]) || "JPY", num(rec["費用"]) || 0);
     }
   }
-  // 残高差额 by币种（从已同步 kc_bank_balance）
+  // 残高差额 by 法人×币种（从已同步 kc_bank_balance）
   const sb = getSupabaseAdmin();
-  const { data: bank } = await sb.from("kc_bank_balance").select("币种,残高差额").eq("月份", month);
+  const { data: bank } = await sb.from("kc_bank_balance").select("币种,残高差额,対象法人").eq("月份", month);
   const 残高 = new Map<string, number>();
-  for (const b of (bank ?? []) as { 币种: string; 残高差额: number }[]) 残高.set(b.币种, (残高.get(b.币种) || 0) + (Number(b.残高差额) || 0));
+  for (const b of (bank ?? []) as { 币种: string; 残高差额: number; 対象法人: string }[]) {
+    const lf = (b.対象法人 === "TRD" ? "TRD" : "EXP") as LF;
+    add(残高, lf, b.币种, Number(b.残高差额) || 0);
+  }
 
-  const curs = new Set([...入金.keys(), ...业务出金.keys(), ...贩管费出金.keys(), ...残高.keys()]);
-  const rows = [...curs].map((c) => {
-    const i = 入金.get(c) || { EXP: 0, TRD: 0 }, o = 业务出金.get(c) || { EXP: 0, TRD: 0 }, sga = 贩管费出金.get(c) || 0;
-    const 入金合计 = i.EXP + i.TRD, 出金合计 = o.EXP + o.TRD + sga, net = 入金合计 - 出金合计, bal = 残高.get(c) || 0, diff = bal - net;
+  const keys = new Set([...入金.keys(), ...业务出金.keys(), ...贩管费出金.keys(), ...残高.keys()]);
+  const rows = [...keys].map((key) => {
+    const [lf, cur] = key.split("|");
+    const i = 入金.get(key) || 0, biz = 业务出金.get(key) || 0, sga = 贩管费出金.get(key) || 0;
+    const 出金合计 = biz + sga, net = i - 出金合计, bal = 残高.get(key) || 0, diff = bal - net;
     return {
-      "利润月": month, "币种": c, "残高差额": Math.round(bal), "入金合计": Math.round(入金合计), "出金合计": Math.round(出金合计),
+      "利润月": month, "法人": lf, "币种": cur, "残高差额": Math.round(bal), "入金合计": Math.round(i), "出金合计": Math.round(出金合计),
       "现金净额": Math.round(net), "差异": Math.round(diff), "状态": Math.abs(diff) < 1 ? "平" : "有差异",
-      "构成": { 入金EXP: Math.round(i.EXP), 入金TRD: Math.round(i.TRD), 业务出金EXP: Math.round(o.EXP), 业务出金TRD: Math.round(o.TRD), 贩管费出金: Math.round(sga) },
+      "构成": { 业务出金: Math.round(biz), 贩管费出金: Math.round(sga) },
     };
   });
   await sb.from("settlement_checks").delete().eq("利润月", month);
   if (rows.length) { const { error } = await sb.from("settlement_checks").insert(rows); if (error) throw new Error(`写 settlement_checks 失败: ${error.message}`); }
-  return { 币种数: rows.length, 有差异: rows.filter((r) => r.状态 !== "平").length };
+  return { 行数: rows.length, 有差异: rows.filter((r) => r.状态 !== "平").length };
 }
 
 // ④ 钻取：某 OPT 的 入金/支付 明细记录（实时读 Kintone，定位差异在哪条）
