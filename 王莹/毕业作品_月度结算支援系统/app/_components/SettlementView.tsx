@@ -121,20 +121,47 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
                         <td className={"num strong" + (c.差异 !== 0 ? " neg" : "")}>{fmt(c.差异)}</td>
                         <td><span className={`pill ${c.状态 === "平" ? "pill-green" : "pill-amber"}`}>{c.状态}</span></td>
                       </tr>
-                      {drill === key && c.构成 && (
+                      {drill === key && c.构成 && (() => {
+                        // 合并：rep.rows(该法人×币种各账户残高差额) + 构成.账户(各账户转入/转出)
+                        const accts = (rep?.rows || []).filter((r) => (r.対象法人 || "EXP") === c.法人 && r.币种 === c.币种);
+                        const mv = new Map((c.构成?.账户 || []).map((a) => [a.口座番号, a]));
+                        const merged = accts.map((r) => { const m = mv.get(r.口座番号 || ""); return { 银行: r.银行, 口座番号: r.口座番号 || "—", 残高差额: Number(r.残高差额) || 0, 转入: m?.转入 || 0, 转出: m?.转出 || 0 }; });
+                        return (
                         <tr><td colSpan={9} style={{ background: "var(--panel-2)" }}>
-                          <table style={{ width: "100%", maxWidth: 460, borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
-                            <tbody>
-                              <tr><td style={dtd}>入金</td><td style={dtdR}>{fmt(c.入金合计)}</td></tr>
-                              <tr><td style={dtd}>业务出金（请求支付）</td><td style={dtdR}>−{fmt(c.构成.业务出金)}</td></tr>
-                              <tr><td style={dtd}>贩管费出金</td><td style={dtdR}>−{fmt(c.构成.贩管费出金)}</td></tr>
-                              <tr><td style={dtd}>内部资金移动（转入−转出）</td><td style={dtdR}>{fmt(c.构成.内部移动 || 0)}</td></tr>
-                              <tr><td style={{ ...dtd, fontWeight: 700 }}>残高差额（应≈现金净额+内部移动）</td><td style={{ ...dtdR, fontWeight: 700 }}>{fmt(c.残高差额)}</td></tr>
-                            </tbody>
-                          </table>
-                          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>差异 = 残高差额 − 现金净额 − 内部移动 = {fmt(c.差异)}（{c.法人}）。残差归因：汇率折算 / 手续费 / 非业务往来。</div>
+                          <div style={{ display: "flex", gap: 24, flexWrap: "wrap", alignItems: "flex-start" }}>
+                            <div>
+                              <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>① 现金流构成（{c.法人} {c.币种}，入金/出金仅到法人×币种）</div>
+                              <table style={{ borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums", minWidth: 280 }}>
+                                <tbody>
+                                  <tr><td style={dtd}>入金</td><td style={dtdR}>{fmt(c.入金合计)}</td></tr>
+                                  <tr><td style={dtd}>业务出金（请求支付）</td><td style={dtdR}>−{fmt(c.构成!.业务出金)}</td></tr>
+                                  <tr><td style={dtd}>贩管费出金</td><td style={dtdR}>−{fmt(c.构成!.贩管费出金)}</td></tr>
+                                  <tr><td style={dtd}>资金移动·转入</td><td style={{ ...dtdR, color: "var(--green)" }}>+{fmt(c.构成!.转入 || 0)}</td></tr>
+                                  <tr><td style={dtd}>资金移动·转出</td><td style={{ ...dtdR, color: "var(--red)" }}>−{fmt(c.构成!.转出 || 0)}</td></tr>
+                                  <tr><td style={{ ...dtd, fontWeight: 700 }}>残高差额</td><td style={{ ...dtdR, fontWeight: 700 }}>{fmt(c.残高差额)}</td></tr>
+                                  <tr><td style={{ ...dtd, color: "var(--amber)" }}>差异（残差）</td><td style={{ ...dtdR, color: "var(--amber)" }}>{fmt(c.差异)}</td></tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            <div>
+                              <div style={{ fontSize: 11, color: "var(--muted)", marginBottom: 4 }}>② 各银行账户（残高差额 + 资金移动按账户）</div>
+                              <table style={{ borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
+                                <thead><tr><th style={dth}>账户</th><th style={dthR}>残高差额</th><th style={dthR}>移动转入</th><th style={dthR}>移动转出</th><th style={dthR}>账户残差</th></tr></thead>
+                                <tbody>
+                                  {merged.map((a, i) => (
+                                    <tr key={i}><td style={dtd}>{a.银行}·{a.口座番号}</td><td style={dtdR}>{fmt(a.残高差额)}</td>
+                                    <td style={{ ...dtdR, color: a.转入 ? "var(--green)" : undefined }}>{a.转入 ? "+" + fmt(a.转入) : "—"}</td>
+                                    <td style={{ ...dtdR, color: a.转出 ? "var(--red)" : undefined }}>{a.转出 ? "−" + fmt(a.转出) : "—"}</td>
+                                    <td style={dtdR}>{fmt(a.残高差额 - (a.转入 - a.转出))}</td></tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 6 }}>差异 = 残高差额 − 现金净额 − 内部移动 = {fmt(c.差异)}。⚠️ 入金/出金 Kintone 不记银行账户，无法按账户拆；账户残差归因 入金/出金/汇率/手续费。</div>
                         </td></tr>
-                      )}
+                        );
+                      })()}
                     </Fragment>
                     );
                   })}
@@ -151,3 +178,5 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
 const sel = { padding: "6px 10px", background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text)", fontSize: 13 } as const;
 const dtd = { padding: "3px 8px", color: "var(--muted)" };
 const dtdR = { padding: "3px 8px", textAlign: "right" as const, fontVariantNumeric: "tabular-nums" as const };
+const dth = { padding: "3px 8px", textAlign: "left" as const, color: "var(--muted)", fontWeight: 600, fontSize: 11 };
+const dthR = { padding: "3px 8px", textAlign: "right" as const, color: "var(--muted)", fontWeight: 600, fontSize: 11 };

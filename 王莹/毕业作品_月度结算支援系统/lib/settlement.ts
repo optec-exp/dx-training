@@ -18,7 +18,8 @@ export interface SettlementReport {
   円換算残高合计: number;
 }
 
-export interface CashConstituent { 业务出金: number; 贩管费出金: number; 内部移动?: number }
+export interface AcctMove { 银行: string; 口座番号: string; 转入: number; 转出: number }
+export interface CashConstituent { 业务出金: number; 贩管费出金: number; 内部移动?: number; 转入?: number; 转出?: number; 账户?: AcctMove[] }
 export interface CashReconRow { 法人: string; 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string; 构成?: CashConstituent | null }
 export async function getCashRecon(month: string): Promise<CashReconRow[]> {
   const sb = getSupabaseAdmin();
