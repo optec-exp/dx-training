@@ -51,6 +51,22 @@ export function HBarCard({ title, data, catKey, valKey }: { title: string; data:
   );
 }
 
+// 分组柱状图（每类别多根柱，如小组×毛利/贩管费/净利）。
+export function GroupedBarCard({ title, data, xKey, bars, h }: { title: string; data: Record<string, unknown>[]; xKey: string; bars: { key: string; name: string; color: string }[]; h?: number }) {
+  return (
+    <Frame title={title} h={h ?? 260}>
+      <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" />
+        <XAxis dataKey={xKey} tick={{ fontSize: 11, fill: "#6b7585" }} />
+        <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={48} />
+        <Tooltip formatter={(v: number) => man(v)} />
+        <Legend />
+        {bars.map((b) => <Bar key={b.key} dataKey={b.key} name={b.name} fill={b.color} radius={[4, 4, 0, 0]} />)}
+      </BarChart>
+    </Frame>
+  );
+}
+
 export function LineCard({ title, data, xKey, lines, h }: { title: string; data: Record<string, unknown>[]; xKey: string; lines: { key: string; name: string; color: string }[]; h?: number }) {
   return (
     <Frame title={title} h={h ?? 240}>

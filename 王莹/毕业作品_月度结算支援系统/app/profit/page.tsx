@@ -8,7 +8,7 @@ import PeriodSelect from "@/app/_components/PeriodSelect";
 import GroupTable from "@/app/_components/GroupTable";
 import GroupPLTable from "@/app/_components/GroupPLTable";
 import Collapsible from "@/app/_components/Collapsible";
-import { PieCard, BarCard, LineCard, HBarCard } from "@/app/_components/Charts";
+import { PieCard, BarCard, LineCard, HBarCard, GroupedBarCard } from "@/app/_components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -130,11 +130,10 @@ export default async function ProfitPage({
     </table>
   );
 
-  const bullet = (label: string, actual: number, budget: number | null, lowerBetter = false) => {
+  const bullet = (label: string, actual: number, budget: number | null, mode: "higher" | "neutral" = "higher") => {
     const rate = budget ? actual / budget : null;
-    const good = rate == null ? true : lowerBetter ? rate <= 1 : rate >= 1;
     const fillW = rate == null ? 0 : Math.min(100, Math.max(0, rate * 100));
-    const color = rate == null ? "var(--border)" : good ? "var(--green)" : "var(--red)";
+    const color = rate == null ? "var(--border)" : mode === "neutral" ? "var(--accent)" : rate >= 1 ? "var(--green)" : "var(--amber)";
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
         <div style={{ width: 56, fontSize: 13, color: "var(--text)", fontWeight: 600 }}>{label}</div>
@@ -149,13 +148,13 @@ export default async function ProfitPage({
     );
   };
 
-  // 业务小组净利 全年累计（JP DESK 合并）
-  const jpNet = (fyGroups.get("JP DESK中国")?.净利 || 0) + (fyGroups.get("JP DESK日本")?.净利 || 0);
-  const jpNetBud = fyGroupBudgets["JP DESK"]?.净利 ?? ((fyGroupBudgets["JP DESK中国"]?.净利 != null || fyGroupBudgets["JP DESK日本"]?.净利 != null) ? (fyGroupBudgets["JP DESK中国"]?.净利 || 0) + (fyGroupBudgets["JP DESK日本"]?.净利 || 0) : null);
-  const bizFY: [string, number, number | null][] = [
-    ["OS", fyGroups.get("OS")?.净利 || 0, fyGroupBudgets["OS"]?.净利 ?? null],
-    ["JP DESK", jpNet, jpNetBud],
-    ["通関", fyGroups.get("通関")?.净利 || 0, fyGroupBudgets["通関"]?.净利 ?? null],
+  // 业务小组 全年累计（毛利/贩管费/净利 · JP DESK 合并中日）
+  const jpAct: M3 = { 毛利: (fyGroups.get("JP DESK中国")?.毛利 || 0) + (fyGroups.get("JP DESK日本")?.毛利 || 0), 贩管费: (fyGroups.get("JP DESK中国")?.贩管费 || 0) + (fyGroups.get("JP DESK日本")?.贩管费 || 0), 净利: (fyGroups.get("JP DESK中国")?.净利 || 0) + (fyGroups.get("JP DESK日本")?.净利 || 0) };
+  const mergeBud = (k: keyof BudgetData) => fyGroupBudgets["JP DESK"]?.[k] ?? ((fyGroupBudgets["JP DESK中国"]?.[k] != null || fyGroupBudgets["JP DESK日本"]?.[k] != null) ? (fyGroupBudgets["JP DESK中国"]?.[k] || 0) + (fyGroupBudgets["JP DESK日本"]?.[k] || 0) : null);
+  const bizFYFull: { 小组: string; act: M3; bud: BudgetData }[] = [
+    { 小组: "OS", act: fyGroups.get("OS") || Z3(), bud: fyGroupBudgets["OS"] ?? NB },
+    { 小组: "JP DESK", act: jpAct, bud: { 毛利: mergeBud("毛利"), 贩管费: mergeBud("贩管费"), 净利: mergeBud("净利") } },
+    { 小组: "通関", act: fyGroups.get("通関") || Z3(), bud: fyGroupBudgets["通関"] ?? NB },
   ];
   // 管理部门贩管费 全年累计（按中日）
   const mgmtFY = (["中国", "日本"] as const).map((r) => {
@@ -196,9 +195,9 @@ export default async function ProfitPage({
             <div className="card" style={{ padding: 16, marginTop: 4 }}>
               <div style={{ fontWeight: 650, marginBottom: 4 }}>全年累计达成率 <span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}>· 财年初~最新月 累计实绩 vs 全年预算（不随上方期间变）</span></div>
               {bullet("毛利", fyYtd.毛利, fyBudget?.毛利 ?? null)}
-              {bullet("贩管费", fyYtd.贩管费, fyBudget?.贩管费 ?? null, true)}
+              {bullet("贩管费", fyYtd.贩管费, fyBudget?.贩管费 ?? null, "neutral")}
               {bullet("净利", fyYtd.净利, fyBudget?.净利 ?? null)}
-              <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>贩管费越低越好（≤100% 绿）；毛利/净利越高越好（≥100% 绿）。全年预算 = 财年 12 个月预算之和，未录全则偏低。</div>
+              <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>毛利/净利 达标≥100%绿；贩管费看与预算的精度（蓝）。全年预算 = 财年各月预算之和，未录全则不准。</div>
             </div>
           )}
           {sga && (<><h3 style={{ marginTop: 16 }}>预实对比（本期间）</h3>{predict([["全社", { 毛利: report.total, 贩管费: sga.total, 净利: report.total - sga.total }, budget]])}<p style={{ color: "var(--muted)", fontSize: 12 }}>预算手工录入（<a href="/budget" style={{ color: "var(--accent)" }}>预算录入页</a>）；未录显 —。</p></>)}
@@ -239,8 +238,8 @@ export default async function ProfitPage({
           )}
           {fyYtd && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 14 }}>
-              <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇨🇳 中国 · 全年累计达成</div>{bullet("毛利", fyYtdCN.毛利, fyBudgetCN?.毛利 ?? null)}{bullet("贩管费", fyYtdCN.贩管费, fyBudgetCN?.贩管费 ?? null, true)}{bullet("净利", fyYtdCN.净利, fyBudgetCN?.净利 ?? null)}</div>
-              <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇯🇵 日本 · 全年累计达成</div>{bullet("毛利", fyYtdJP.毛利, fyBudgetJP?.毛利 ?? null)}{bullet("贩管费", fyYtdJP.贩管费, fyBudgetJP?.贩管费 ?? null, true)}{bullet("净利", fyYtdJP.净利, fyBudgetJP?.净利 ?? null)}</div>
+              <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇨🇳 中国 · 全年累计达成</div>{bullet("毛利", fyYtdCN.毛利, fyBudgetCN?.毛利 ?? null)}{bullet("贩管费", fyYtdCN.贩管费, fyBudgetCN?.贩管费 ?? null, "neutral")}{bullet("净利", fyYtdCN.净利, fyBudgetCN?.净利 ?? null)}</div>
+              <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇯🇵 日本 · 全年累计达成</div>{bullet("毛利", fyYtdJP.毛利, fyBudgetJP?.毛利 ?? null)}{bullet("贩管费", fyYtdJP.贩管费, fyBudgetJP?.贩管费 ?? null, "neutral")}{bullet("净利", fyYtdJP.净利, fyBudgetJP?.净利 ?? null)}</div>
             </div>
           )}
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：Japan Desk 課 {yen(report.jpdesk.profit)} → 中国 {yen(report.jpdesk.cn)} + 日本 {yen(report.jpdesk.jp)}{sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}</p>
@@ -248,15 +247,24 @@ export default async function ProfitPage({
           {/* ═══════════ 小组 ═══════════ */}
           {Sec("小组")}
           {groupPL && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 8, alignItems: "start" }}>
-              <BarCard title="业务小组净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" barKey="净利" colorByValue />
-              <div className="card" style={{ padding: 14 }}>
-                <div style={{ fontWeight: 650, marginBottom: 6 }}>业务小组净利 · 全年累计达成</div>
-                {bizFY.map(([g, net, bud]) => <div key={g}>{bullet(g, net, bud)}</div>)}
-                <div className="card" style={{ padding: 0, marginTop: 10, background: "none", border: "none", boxShadow: "none" }}>
-                  <div style={{ fontWeight: 650, marginBottom: 6, marginTop: 8 }}>管理部门贩管费 · 全年累计达成（越低越好）</div>
-                  {mgmtFY.filter((m) => m.has).map((m) => <div key={m.region}>{bullet(`${m.region}管理`, m.sum, m.bud, true)}</div>)}
+            <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16, marginTop: 8, alignItems: "start" }}>
+              <GroupedBarCard title="业务小组 毛利/贩管费/净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 毛利: Math.round(b.毛利), 贩管费: Math.round(b.贩管费), 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" bars={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "贩管费", name: "贩管费", color: "#fbbf24" }, { key: "净利", name: "净利", color: "#34d399" }]} />
+              {groupPL.mgmt.length > 0 && <BarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} xKey="部门" barKey="贩管费" />}
+            </div>
+          )}
+          {fyYtd && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginTop: 14 }}>
+              {bizFYFull.map((g) => (
+                <div key={g.小组} className="card" style={{ padding: 14 }}>
+                  <div style={{ fontWeight: 650, marginBottom: 6 }}>{g.小组} · 全年累计达成</div>
+                  {bullet("毛利", g.act.毛利, g.bud.毛利)}
+                  {bullet("贩管费", g.act.贩管费, g.bud.贩管费, "neutral")}
+                  {bullet("净利", g.act.净利, g.bud.净利)}
                 </div>
+              ))}
+              <div className="card" style={{ padding: 14 }}>
+                <div style={{ fontWeight: 650, marginBottom: 6 }}>管理部门贩管费 · 全年累计达成</div>
+                {mgmtFY.filter((m) => m.has).map((m) => <div key={m.region}>{bullet(`${m.region}管理`, m.sum, m.bud, "neutral")}</div>)}
               </div>
             </div>
           )}
