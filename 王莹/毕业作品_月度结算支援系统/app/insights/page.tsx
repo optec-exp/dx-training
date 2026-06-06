@@ -3,16 +3,18 @@
 import { useEffect, useState } from "react";
 
 interface BiItem { zh: string; ja: string }
+interface Segment { name: string; zh: string; ja: string }
 interface Report {
   summary_zh: string; summary_ja: string;
   overview_zh: string; overview_ja: string;
+  segments?: Segment[];
   highlights: BiItem[]; risks: BiItem[]; suggestions: BiItem[];
 }
 
 export default function InsightsPage() {
   const [months, setMonths] = useState<string[]>([]);
   const [month, setMonth] = useState("2026-05");
-  const [范围, set范围] = useState<"全社" | "中国" | "日本">("全社");
+  const [范围, set范围] = useState<"综合" | "全社" | "中国" | "日本">("综合");
   const [期间, set期间] = useState<"单月" | "财年累计">("单月");
   const [busy, setBusy] = useState(false);
   const [report, setReport] = useState<Report | null>(null);
@@ -42,7 +44,8 @@ export default function InsightsPage() {
   function plainText() {
     if (!report) return "";
     const sec = (t: string, items: BiItem[]) => items.length ? `\n【${t}】\n` + items.map((i) => `· ${i.zh}\n  ${i.ja}`).join("\n") : "";
-    return `${范围} ${期间 === "财年累计" ? `财年累计（截至 ${month}）` : month} ${期间 === "财年累计" ? "财年累计" : "月度"}经营汇报\n\n摘要：${report.summary_zh} / ${report.summary_ja}\n\n${report.overview_zh}\n${report.overview_ja}\n${sec("亮点", report.highlights)}${sec("风险", report.risks)}${sec("建议", report.suggestions)}`.trim();
+    const segs = report.segments && report.segments.length ? `\n【分部点评】\n` + report.segments.map((s) => `· ${s.name}：${s.zh}\n  ${s.ja}`).join("\n") : "";
+    return `${范围} ${期间 === "财年累计" ? `财年累计（截至 ${month}）` : month} ${期间 === "财年累计" ? "财年累计" : "月度"}经营汇报\n\n摘要：${report.summary_zh} / ${report.summary_ja}\n\n${report.overview_zh}\n${report.overview_ja}\n${segs}${sec("亮点", report.highlights)}${sec("风险", report.risks)}${sec("建议", report.suggestions)}`.trim();
   }
   async function copy() { try { await navigator.clipboard.writeText(plainText()); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* ignore */ } }
 
@@ -55,8 +58,8 @@ export default function InsightsPage() {
           {months.length === 0 && <option value={month}>{month}</option>}
           {months.map((m) => <option key={m} value={m}>{m}</option>)}
         </select>
-        <select value={范围} onChange={(e) => set范围(e.target.value as "全社" | "中国" | "日本")} style={sel}>
-          <option>全社</option><option>中国</option><option>日本</option>
+        <select value={范围} onChange={(e) => set范围(e.target.value as "综合" | "全社" | "中国" | "日本")} style={sel}>
+          <option>综合</option><option>全社</option><option>中国</option><option>日本</option>
         </select>
         <select value={期间} onChange={(e) => set期间(e.target.value as "单月" | "财年累计")} style={sel}>
           <option>单月</option><option>财年累计</option>
@@ -80,6 +83,21 @@ export default function InsightsPage() {
             <div style={{ lineHeight: 1.7 }}>{report.overview_zh}</div>
             <div style={{ lineHeight: 1.7, color: "var(--muted)", marginTop: 6 }}>{report.overview_ja}</div>
           </div>
+
+          {report.segments && report.segments.length > 0 && (
+            <div className="card" style={{ padding: 16 }}>
+              <div style={{ fontWeight: 650, marginBottom: 10 }}>分部点评 · 法人 / 业务小组</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10 }}>
+                {report.segments.map((s, i) => (
+                  <div key={i} style={{ borderLeft: "3px solid var(--accent)", padding: "4px 10px", background: "var(--panel)", borderRadius: 6 }}>
+                    <div style={{ fontWeight: 650, fontSize: 13, marginBottom: 2 }}>{s.name}</div>
+                    <div style={{ fontSize: 13, lineHeight: 1.5 }}>{s.zh}</div>
+                    <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5 }}>{s.ja}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 14 }}>
             <BiList title="✨ 亮点" items={report.highlights} color="var(--green)" />
