@@ -52,14 +52,16 @@ export function HBarCard({ title, data, catKey, valKey }: { title: string; data:
 }
 
 // 分组柱状图（每类别多根柱，如小组×毛利/贩管费/净利）。
-export function GroupedBarCard({ title, data, xKey, bars, h }: { title: string; data: Record<string, unknown>[]; xKey: string; bars: { key: string; name: string; color: string }[]; h?: number }) {
+export function GroupedBarCard({ title, data, xKey, bars, h, count }: { title: string; data: Record<string, unknown>[]; xKey: string; bars: { key: string; name: string; color: string }[]; h?: number; count?: boolean }) {
+  const yFmt = count ? (n: number) => String(Math.round(n)) : wan;
+  const tFmt = count ? (n: number) => `${Math.round(n)} 件` : man;
   return (
     <Frame title={title} h={h ?? 260}>
       <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" />
         <XAxis dataKey={xKey} tick={{ fontSize: 11, fill: "#6b7585" }} />
-        <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={48} />
-        <Tooltip formatter={(v: number) => man(v)} />
+        <YAxis tickFormatter={yFmt} allowDecimals={false} tick={{ fontSize: 12, fill: "#6b7585" }} width={count ? 32 : 48} />
+        <Tooltip formatter={(v: number) => tFmt(v)} />
         <Legend />
         {bars.map((b) => <Bar key={b.key} dataKey={b.key} name={b.name} fill={b.color} radius={[4, 4, 0, 0]} />)}
       </BarChart>

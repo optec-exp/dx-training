@@ -44,7 +44,7 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
 
           {trend.length > 1 && (
             <div style={{ marginTop: 12, maxWidth: 560 }}>
-              <GroupedBarCard title="多月异常趋势（案件级）" data={trend as unknown as Record<string, unknown>[]} xKey="month"
+              <GroupedBarCard title="多月异常趋势（案件数）" data={trend as unknown as Record<string, unknown>[]} xKey="month" count
                 bars={[{ key: "负毛利", name: "负毛利", color: "#ef4444" }, { key: "异常大额", name: "异常大额", color: "#f59e0b" }]} h={200} />
             </div>
           )}
@@ -52,13 +52,13 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16, marginTop: 12 }}>
             {report?.active && report.flagged.length > 0 && (
               <Section title="🚩 加成率超标（偏离标准）">
-                <MiniTable head={["OPT", "大类", "加成率", "标准", "偏离"]} rows={report.flagged.slice(0, 12).map((r) => [r.opt_no, r.business_scope, pct(r.加成率), pct(r.标准), <span key="d" className="neg">{r.偏离 == null ? "—" : (r.偏离 * 100).toFixed(0) + "%"}</span>])} empty={false} />
+                <MiniTable head={["案件番号", "大类", "加成率", "标准", "偏离"]} rows={report.flagged.slice(0, 12).map((r) => [r.opt_no, r.business_scope, pct(r.加成率), pct(r.标准), <span key="d" className="neg">{r.偏离 == null ? "—" : (r.偏离 * 100).toFixed(0) + "%"}</span>])} empty={false} />
               </Section>
             )}
-            <Section title="负毛利票（毛利 < 0 · 点 OPT 下钻）"><NegTable rows={panel.负毛利} /></Section>
-            <Section title="异常大额（成本 > 3× 当月均值 · 点 OPT 下钻）"><BigTable rows={panel.异常大额} /></Section>
-            <Section title="重复成本（Kintone 成本层 · 同 OPT+供应商+金额）">
-              <MiniTable head={["OPT", "供应商", "金额", "次数"]} rows={panel.重复成本.slice(0, 12).map((r) => [r.opt_no, r.供应商, yen(r.金额), <span key="n" className="neg">{r.次数}</span>])} empty={panel.重复成本.length === 0} />
+            <Section title="负毛利票（毛利 < 0 · 点案件番号下钻）"><NegTable rows={panel.负毛利} /></Section>
+            <Section title="异常大额（成本 > 3× 当月均值 · 点案件番号下钻）"><BigTable rows={panel.异常大额} /></Section>
+            <Section title="重复成本（Kintone 成本层 · 同 案件番号+供应商+金额）">
+              <MiniTable head={["案件番号", "供应商", "金额", "次数"]} rows={panel.重复成本.slice(0, 12).map((r) => [r.opt_no, r.供应商, yen(r.金额), <span key="n" className="neg">{r.次数}</span>])} empty={panel.重复成本.length === 0} />
             </Section>
             <Section title="重复账单（账单层 · 同 供应商+提单号+金额+币种）">
               <MiniTable head={["供应商", "提单号", "金额", "币", "次数"]} rows={panel.重复账单.slice(0, 12).map((r) => [r.供应商, r.提单号, Math.round(r.金额).toLocaleString(), r.币种, <span key="n" className="neg">{r.次数}</span>])} empty={panel.重复账单.length === 0} />
@@ -108,7 +108,7 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
                 </table>
                 <h4>审查明细（按偏离排序，🚩=超标）</h4>
                 <table className="report-table">
-                  <thead><tr><th>OPT 编号</th><th>大类</th><th>服务类型</th><th className="num">收入</th><th className="num">成本</th><th className="num">加成率</th><th className="num">标准</th><th className="num">偏离</th><th>状态</th></tr></thead>
+                  <thead><tr><th>案件番号</th><th>大类</th><th>服务类型</th><th className="num">收入</th><th className="num">成本</th><th className="num">加成率</th><th className="num">标准</th><th className="num">偏离</th><th>状态</th></tr></thead>
                   <tbody>
                     {report.rows.map((r) => (
                       <tr key={r.opt_no} className={r.需审查 ? "flag" : undefined}>

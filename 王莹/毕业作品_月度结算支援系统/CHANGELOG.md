@@ -6,6 +6,12 @@
 
 ## 逐页细节优化
 
+### ⑧风控-王莹反馈三修(OPT改案件番号/趋势图去¥/下钻不移位)
+- **王莹反馈**：①页面所有"OPT"改"案件番号";②多月异常趋势是案件数,用¥羊角符号不合适;③案件展开下钻时表头标记位置移位。
+- **改了什么**：① risk页所有列头/说明 OPT→案件番号(加成率超标/负毛利/异常大额/重复成本/审查明细);② GroupedBarCard加count prop(Tooltip"N件"+Y轴纯整数allowDecimals=false),趋势图传count;③ RiskAnomalies下钻改为整行colSpan明细行(原塞在第一td致列宽重算移位)+表tableLayout:fixed固定列宽,DrillRow用useEffect取数。
+- **文件**：app/risk/page.tsx、app/_components/{Charts,RiskAnomalies}.tsx
+- **验证**：/risk 200;下钻API OPT2606708返18条明细+案件概要;改动文件tsc无新错误。✅
+
 ### ⑧风控异常面板全优化(加成率汇入/海外代理差异趋势/重复账单/异常下钻/多月趋势/坏账处理)
 - **王莹指示**：5项全优化 + 长期挂账增加坏账处理(Kintone无此功能,本系统实现,标记坏账的从挂账剔除进坏账卡片)。
 - **改了什么**：
