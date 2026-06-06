@@ -220,14 +220,14 @@ export async function syncAging(refDate: string): Promise<{ 应收: number; 应�
     for (const rec of await fetchKintone(envOrThrow(idEnv), envOrThrow(tokEnv), `円換算差額未入金 > 1`)) {
       const amt = num(rec["円換算差額未入金"]) || 0; if (amt <= 1) continue;
       const b = bucketOf(str(rec["支払期日"]));
-      rows.push({ "期间": refDate, "类型": "应收", "客户供应商": str(rec["顧客名"]), "金额": amt, "账龄桶": b.账龄桶, "是否超期": b.超期, "预计收付日": b.due });
+      rows.push({ "期间": refDate, "类型": "应收", "客户供应商": str(rec["顧客名"]), "金额": amt, "账龄桶": b.账龄桶, "是否超期": b.超期, "预计收付日": b.due, "原币种": str(rec["請求通貨_0"]) || str(rec["請求通貨"]) || "JPY", "原币金额": num(rec["差額未入金"]) || 0 });
     }
   }
   for (const [idEnv, tokEnv] of [["KINTONE_APP_EXP_PAYMENTS_ID", "KINTONE_APP_EXP_PAYMENTS_TOKEN"], ["KINTONE_APP_EC_PAYMENTS_ID", "KINTONE_APP_EC_PAYMENTS_TOKEN"]]) {
     for (const rec of await fetchKintone(envOrThrow(idEnv), envOrThrow(tokEnv), `円換算差額未払金 > 1`)) {
       const amt = num(rec["円換算差額未払金"]) || 0; if (amt <= 1) continue;
       const b = bucketOf(str(rec["支払期日"]));
-      rows.push({ "期间": refDate, "类型": "应付", "客户供应商": str(rec["支払先"]), "金额": amt, "账龄桶": b.账龄桶, "是否超期": b.超期, "预计收付日": b.due });
+      rows.push({ "期间": refDate, "类型": "应付", "客户供应商": str(rec["支払先"]), "金额": amt, "账龄桶": b.账龄桶, "是否超期": b.超期, "预计收付日": b.due, "原币种": str(rec["支払通貨_0"]) || str(rec["支払通貨"]) || "JPY", "原币金额": num(rec["差額未払金"]) || 0 });
     }
   }
   const sb = getSupabaseAdmin();

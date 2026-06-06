@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface Inv { id: string; 品种: string; 投资额: number; 币种: string; 收益率: number; 到期日: string | null; 流动性: string; 状态: string }
-interface Advice { hsbcUsd: number; 已投USD: number; 近期净现金流USD: number; 可投USD: number; 笔数: number; 起投: number; 状态: string; 文案: string }
+interface Advice { hsbcUsd: number; 已投USD: number; usd应收: number; usd应付: number; usd净流入: number; 可投USD: number; 笔数: number; 起投: number; 状态: string; 文案: string }
 const yen = (n: number) => Math.round(n).toLocaleString("ja-JP");
 const usd = (n: number) => "$" + Math.round(n).toLocaleString();
 
@@ -39,7 +39,7 @@ export default function InvestmentPanel() {
           <div className="kpi-row" style={{ marginBottom: 8 }}>
             <div className="kpi"><div className="kpi-label">HSBC USD 余额</div><div className="kpi-value" style={{ fontSize: 20 }}>{usd(advice.hsbcUsd)}</div></div>
             <div className="kpi"><div className="kpi-label">已投资(USD)</div><div className="kpi-value" style={{ fontSize: 20 }}>{usd(advice.已投USD)}</div></div>
-            <div className="kpi"><div className="kpi-label">未来应收应付净流入</div><div className="kpi-value" style={{ fontSize: 20, color: advice.近期净现金流USD >= 0 ? "var(--green)" : "var(--red)" }}>{usd(advice.近期净现金流USD)}</div></div>
+            <div className="kpi"><div className="kpi-label">未来 USD 净流入<span style={{ fontSize: 10 }}>（应收{usd(advice.usd应收)}−应付{usd(advice.usd应付)}）</span></div><div className="kpi-value" style={{ fontSize: 20, color: advice.usd净流入 >= 0 ? "var(--green)" : "var(--red)" }}>{usd(advice.usd净流入)}</div></div>
             <div className="kpi primary"><div className="kpi-label">建议可投额度</div><div className="kpi-value" style={{ color: adviceColor }}>{usd(advice.可投USD)}</div></div>
           </div>
           <div style={{ fontSize: 13, color: adviceColor, fontWeight: 600 }}>💡 {advice.文案}</div>
