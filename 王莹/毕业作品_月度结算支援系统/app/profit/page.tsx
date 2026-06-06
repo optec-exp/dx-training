@@ -4,7 +4,7 @@ import { getSgaForMonth, getSgaByDept, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
 import { getMarkupReport, type MarkupReport } from "@/lib/markup-review";
-import PeriodPicker from "@/app/_components/PeriodPicker";
+import PeriodSelect from "@/app/_components/PeriodSelect";
 import GroupTable from "@/app/_components/GroupTable";
 import GroupPLTable from "@/app/_components/GroupPLTable";
 import Collapsible from "@/app/_components/Collapsible";
@@ -117,9 +117,9 @@ export default async function ProfitPage({
   return (
     <div>
       <h1 style={{ marginTop: 0 }}>⑤ 利润报表</h1>
-      <div style={{ marginBottom: 16 }}>
-        <PeriodPicker available={available} selected={selected} basePath="/profit" />
-        <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 6 }}>期间：<b>{periodLabel}</b>（默认财年累计，可选季度/单月/多选）</div>
+      <div style={{ marginBottom: 16, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <PeriodSelect available={available} selected={selected} basePath="/profit" />
+        <span style={{ color: "var(--muted)", fontSize: 12 }}>期间：<b>{periodLabel}</b></span>
       </div>
 
       {err && <div className="placeholder">读取失败：{err}</div>}
