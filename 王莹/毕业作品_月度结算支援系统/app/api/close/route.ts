@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCloseStatus, setCloseStatus, getSnapshot } from "@/lib/close";
+import { getCloseStatus, setCloseStatus, getSnapshot, detectPostCloseChange } from "@/lib/close";
 import { logAudit, getRecentAudit } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
     const status = await getCloseStatus(month);
     const 审计 = await getRecentAudit(15);
     const 快照 = await getSnapshot(month);
-    return NextResponse.json({ ...status, 审计, 快照 });
+    const 变更 = await detectPostCloseChange(month);
+    return NextResponse.json({ ...status, 审计, 快照, 变更 });
   } catch (e) { return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 }); }
 }
 
