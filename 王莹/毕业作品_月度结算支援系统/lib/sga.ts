@@ -71,6 +71,6 @@ export async function getSgaForMonth(month: string): Promise<SgaAgg> {
     japan,
     byCategory,
     yakuin,
-    unmappedNonZero: [...unmapped].filter(([, a]) => Math.abs(a) > 0.5).map(([部门, 金额]) => ({ 部门, 金额 })),
+    unmappedNonZero: [...unmapped].filter(([, a]) => Math.abs(a) > 0.5).map(([部门, 金额]) => ({ 部门: 部门.trim() || "(未填部署名)", 金额 })),
   };
 }

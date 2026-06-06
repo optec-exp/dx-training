@@ -199,7 +199,7 @@ export function buildGroupPL(groups: GroupRow[], sgaByDept: Map<string, number>)
   for (const [dept, amt] of sgaByDept) {
     const grp = DEPT_TO_GROUP[dept];
     if (grp) sgaByGroup.set(grp, (sgaByGroup.get(grp) || 0) + amt);
-    else mgmt.push({ 部门: dept, 贩管费: amt, 地域: mgmtRegion(dept) });
+    else mgmt.push({ 部门: dept.trim() || "(未分配部门)", 贩管费: amt, 地域: mgmtRegion(dept) }); // 空部署名=Kintone未填，标出待修
   }
   const business = BIZ_GROUPS.map((小组) => {
     const 毛利 = gp.get(小组) || 0, 贩管费 = sgaByGroup.get(小组) || 0;
