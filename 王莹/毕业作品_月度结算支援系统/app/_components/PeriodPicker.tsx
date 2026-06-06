@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 
 // 期间选择：累计(财年4月起) / 季度 / 各月多选。
-export default function PeriodPicker({ available, selected }: { available: string[]; selected: string[] }) {
+export default function PeriodPicker({ available, selected, basePath = "/" }: { available: string[]; selected: string[]; basePath?: string }) {
   const router = useRouter();
-  const go = (months: string[] | null) => router.push(months && months.length ? `/?months=${months.join(",")}` : "/");
+  const go = (months: string[] | null) => router.push(months && months.length ? `${basePath}?months=${months.join(",")}` : basePath);
 
   // 财年（取最新选定/可用月）
   const latest = (selected.length ? selected : available).slice(-1)[0] || "2026-05";

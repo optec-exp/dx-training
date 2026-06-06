@@ -25,13 +25,15 @@ export interface MarkupReport {
 // 加成率标准生效起始月（之前月份不审查）。
 export const MARKUP_ACTIVE_FROM = "2026-06";
 
-export async function getMarkupReport(month: string): Promise<MarkupReport> {
+export async function getMarkupReport(month: string | string[]): Promise<MarkupReport> {
   const sb = getSupabaseAdmin();
-  const active = month >= MARKUP_ACTIVE_FROM; // 审查(超标标记)自此月起生效；平均加成率始终计算
+  const months = Array.isArray(month) ? month : [month];
+  const label = months.length === 1 ? months[0] : `${months[0]}~${months[months.length - 1]}`;
+  const active = months.every((m) => m >= MARKUP_ACTIVE_FROM); // 审查(超标标记)：所选全部月份生效才标
   const { data, error } = await sb
     .from("kc_cases")
     .select("opt_no,business_scope,服务类型,obc_within_6h,毛利_日元,成本_日元,売上_日元")
-    .eq("利润月", month);
+    .in("利润月", months);
   if (error) throw new Error(`读取 kc_cases 失败: ${error.message}`);
 
   const rows: MarkupRow[] = [];
@@ -63,7 +65,7 @@ export async function getMarkupReport(month: string): Promise<MarkupReport> {
 
   rows.sort((a, b) => Math.abs(b.偏离 ?? 0) - Math.abs(a.偏离 ?? 0));
   return {
-    month,
+    month: label,
     active,
     tolerance: MARKUP_TOLERANCE,
     rows,

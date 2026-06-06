@@ -1,11 +1,10 @@
-import Link from "next/link";
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
 import { computeProfitReport, computeDimensions, buildGroupPL, type ProfitReport, type DimBreakdown, type GroupPL } from "@/lib/profit";
 import { getSgaForMonth, getSgaByDept, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
 import { getMarkupReport, type MarkupReport } from "@/lib/markup-review";
-import MonthPicker from "@/app/_components/MonthPicker";
+import PeriodPicker from "@/app/_components/PeriodPicker";
 import GroupTable from "@/app/_components/GroupTable";
 import Collapsible from "@/app/_components/Collapsible";
 import { PieCard, BarCard, LineCard } from "@/app/_components/Charts";
@@ -13,17 +12,46 @@ import { PieCard, BarCard, LineCard } from "@/app/_components/Charts";
 export const dynamic = "force-dynamic";
 
 const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
-
-const DIMS = ["見積", "国别", "输出", "输入"] as const;
 const FEE5 = ["人件費", "事業活動費", "事業維持費", "人材·IT投資", "役員関連費用"] as const;
+
+// 多月聚合辅助
+function sumSga(list: SgaAgg[]): SgaAgg {
+  const byCategory: Record<string, number> = {}; const unmapped = new Map<string, number>();
+  let total = 0, china = 0, japan = 0, yakuin = 0;
+  for (const s of list) {
+    total += s.total; china += s.china; japan += s.japan; yakuin += s.yakuin;
+    for (const [k, v] of Object.entries(s.byCategory)) byCategory[k] = (byCategory[k] || 0) + v;
+    for (const u of s.unmappedNonZero) unmapped.set(u.部门, (unmapped.get(u.部门) || 0) + u.金额);
+  }
+  return { total, china, japan, yakuin, byCategory, unmappedNonZero: [...unmapped].map(([部门, 金额]) => ({ 部门, 金额 })) };
+}
+function sumBudget(list: BudgetData[]): BudgetData {
+  const out: BudgetData = { 毛利: null, 贩管费: null, 净利: null };
+  for (const b of list) for (const k of ["毛利", "贩管费", "净利"] as const) if (b[k] != null) out[k] = (out[k] || 0) + (b[k] as number);
+  return out;
+}
+function mergeDept(list: Map<string, number>[]): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const m of list) for (const [k, v] of m) out.set(k, (out.get(k) || 0) + v);
+  return out;
+}
 
 export default async function ProfitPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string }>;
+  searchParams: Promise<{ months?: string; month?: string }>;
 }) {
-  const months = await getAvailableMonths();
-  const month = (await searchParams).month || months[0] || "2026-05";
+  const available = await getAvailableMonths(); // 最新在前
+  const sp = await searchParams;
+  const latest = available[0] || "2026-05";
+  // 财年(4月起)月份
+  const fyOf = (m: string) => { const [y, mm] = m.split("-").map(Number); return mm >= 4 ? y : y - 1; };
+  const fy = fyOf(latest);
+  const fyMonths = Array.from({ length: 12 }, (_, i) => { const mo = 4 + i, y = mo <= 12 ? fy : fy + 1, mm = mo <= 12 ? mo : mo - 12; return `${y}-${String(mm).padStart(2, "0")}`; });
+  const defaultMonths = fyMonths.filter((m) => available.includes(m) && m <= latest);
+  const selected = ((sp.months ? sp.months.split(",").filter(Boolean) : sp.month ? [sp.month] : defaultMonths)).filter((m) => available.includes(m)).sort();
+  const periodLabel = selected.length === 0 ? "无" : selected.length === 1 ? selected[0] : `${selected[0]} ~ ${selected[selected.length - 1]}（${selected.length}个月累计）`;
+  const headMonth = selected[selected.length - 1] || latest;
 
   let report: ProfitReport | null = null;
   let sga: SgaAgg | null = null;
@@ -35,18 +63,17 @@ export default async function ProfitPage({
   let trend: { 月份: string; 毛利: number; 净利: number }[] = [];
   let err: string | null = null;
   try {
-    const cases = await getCasesForMonth(month);
-    const heads = await getJpdeskHeads(month);
-    report = computeProfitReport(cases, month, heads);
+    const cases = (await Promise.all(selected.map(getCasesForMonth))).flat();
+    report = computeProfitReport(cases, headMonth, await getJpdeskHeads(headMonth));
     dims = computeDimensions(cases);
-    sga = await getSgaForMonth(month);
-    budget = await getBudget(month, "全社");
-    budgetCN = await getBudget(month, "中国");
-    budgetJP = await getBudget(month, "日本");
-    groupPL = buildGroupPL(report.groups, await getSgaByDept(month));
-    markup = await getMarkupReport(month);
-    // 多月趋势：各月 毛利/净利
-    trend = (await Promise.all(months.map(async (m) => {
+    sga = sumSga(await Promise.all(selected.map(getSgaForMonth)));
+    budget = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "全社"))));
+    budgetCN = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "中国"))));
+    budgetJP = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "日本"))));
+    groupPL = buildGroupPL(report.groups, mergeDept(await Promise.all(selected.map(getSgaByDept))));
+    markup = await getMarkupReport(selected);
+    // 多月趋势：财年各月 毛利/净利
+    trend = (await Promise.all(available.map(async (m) => {
       try {
         const cs = await getCasesForMonth(m);
         const rp = computeProfitReport(cs, m, await getJpdeskHeads(m));
@@ -61,30 +88,16 @@ export default async function ProfitPage({
   return (
     <div>
       <h1 style={{ marginTop: 0 }}>⑤ 利润报表</h1>
-      <div style={{ display: "flex", gap: 8, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
-        <MonthPicker value={month} basePath="/profit" />
-        <span style={{ color: "var(--muted)", fontSize: 12 }}>已同步：</span>
-        {months.map((m) => (
-          <Link
-            key={m}
-            href={`/profit?month=${m}`}
-            className="card"
-            style={{
-              padding: "4px 12px",
-              borderColor: m === month ? "var(--accent)" : "var(--border)",
-              color: m === month ? "var(--accent)" : "var(--muted)",
-            }}
-          >
-            {m}
-          </Link>
-        ))}
+      <div style={{ marginBottom: 16 }}>
+        <PeriodPicker available={available} selected={selected} basePath="/profit" />
+        <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 6 }}>期间：<b>{periodLabel}</b>（默认财年累计，可选季度/单月/多选）</div>
       </div>
 
       {err && <div className="placeholder">读取失败：{err}</div>}
 
       {report && report.caseCount === 0 && (
         <div className="warn-box">
-          {month} 暂无案件数据。请先到 <a href="/sync" style={{ color: "var(--accent)" }}>同步页</a> 同步该月。
+          {periodLabel} 暂无案件数据。请先到 <a href="/sync" style={{ color: "var(--accent)" }}>同步页</a> 同步。
         </div>
       )}
 
@@ -183,7 +196,7 @@ export default async function ProfitPage({
             <div style={{ marginTop: 16 }}>
             <Collapsible title="加成率审查（Markup = 利润 / 成本）" defaultOpen={false}
               right={markup.active ? <span className={`pill ${markup.counts.flagged ? "pill-red" : "pill-green"}`}>{markup.counts.flagged ? `${markup.counts.flagged} 超标` : "✓ 无超标"}</span> : <span className="pill pill-gray">审查 2026-06 起生效</span>}>
-              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 0 }}>全部案件都算加成率与平均；仅标准表范围内（{markup.counts.inScope} 票）做 ±{(markup.tolerance * 100).toFixed(0)}% 偏离审查。{!markup.active && "（本月在生效月前，只算平均、不标超标）"} 明细见 <a href={`/risk?month=${month}`} style={{ color: "var(--accent)" }}>⑧ 风控</a>。</p>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 0 }}>全部案件都算加成率与平均；仅标准表范围内（{markup.counts.inScope} 票）做 ±{(markup.tolerance * 100).toFixed(0)}% 偏离审查。{!markup.active && "（本月在生效月前，只算平均、不标超标）"} 明细见 <a href={`/risk?month=${headMonth}`} style={{ color: "var(--accent)" }}>⑧ 风控</a>。</p>
               <table className="report-table" style={{ maxWidth: 520, boxShadow: "none", margin: 0 }}>
                 <thead><tr><th>Business Scope（大类）</th><th className="num">平均加成率</th><th className="num">案件数</th></tr></thead>
                 <tbody>

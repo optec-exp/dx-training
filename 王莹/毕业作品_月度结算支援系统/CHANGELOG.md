@@ -12,6 +12,11 @@
 - **验证**：/profit 200;贩管费5类构成/毛利净利趋势/预实(全社中国日本)/小组4维度/全社8维度 均渲染。✅ 预算源=budgets表手工录入(/budget),当前全社为占位测试值。
 - **待续**：③ 期间选择(财年累计/季度)。
 
+### ⑤利润报表优化-批3(期间选择 财年累计/季度/多选,全页聚合)
+- **改了什么**：③ 用 PeriodPicker(加basePath)替代单月选择，支持 财年累计(默认,4月起)/季度Q1-Q4/单月/多选;整页按选定月份**聚合**——合并各月案件后 computeProfitReport/computeDimensions(按分天然累计),sumSga/sumBudget/mergeDept 求和合并,getMarkupReport 改接受月份数组(.in查询),JP DESK人数用最新选定月,趋势仍按财年各月。
+- **文件**：app/profit/page.tsx、app/_components/PeriodPicker.tsx(basePath)、lib/markup-review.ts(月份数组)
+- **验证**：默认财年累计(FY2026=04/05,03属上财年正确排除);单月净利¥40,572,980→03+04+05累计¥160,270,656正确聚合;季度/多选/单月均200。✅ **⑤利润报表6项优化全部完成**。
+
 ### ⑤利润报表优化-批2(加成率审查纳入本页)
 - **改了什么**：① 加成率审查概览折叠区(各大类平均加成率+案件数,超标数药丸,链接⑧风控明细);② markup-review.getMarkupReport 改为**平均加成率始终计算**(全部案件,设计§202),审查超标标记才受生效月(2026-06)门禁——2026-05也能看平均、⑧风控同样受益。
 - **文件**：app/profit/page.tsx、lib/markup-review.ts
