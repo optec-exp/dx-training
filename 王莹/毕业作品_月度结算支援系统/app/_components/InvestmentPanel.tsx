@@ -21,10 +21,22 @@ export default function InvestmentPanel() {
   }
 
   const total = rows.reduce((s, r) => s + (Number(r.投资额) || 0), 0);
+  const wYield = total ? rows.reduce((s, r) => s + (Number(r.投资额) || 0) * (Number(r.收益率) || 0), 0) / total : 0;
+  const daysTo = (d: string | null) => d ? Math.floor((new Date(d + "T00:00:00+09:00").getTime() - Date.now()) / 86400000) : 999999;
+  const soon = rows.filter((r) => { const dd = daysTo(r.到期日); return dd >= 0 && dd <= 30; });
+  const soonAmt = soon.reduce((s, r) => s + (Number(r.投资额) || 0), 0);
 
   return (
     <div style={{ marginTop: 24 }}>
       <h3 style={{ marginTop: 0 }}>闲置资金投资台账</h3>
+      {rows.length > 0 && (
+        <div className="kpi-row" style={{ marginBottom: 12 }}>
+          <div className="kpi primary"><div className="kpi-label">投资总额</div><div className="kpi-value">¥{yen(total)}</div></div>
+          <div className="kpi"><div className="kpi-label">加权收益率</div><div className="kpi-value" style={{ fontSize: 20, color: "var(--green)" }}>{wYield.toFixed(2)}%</div></div>
+          <div className="kpi"><div className="kpi-label">近30天到期</div><div className="kpi-value" style={{ fontSize: 20, color: soon.length ? "var(--amber)" : undefined }}>¥{yen(soonAmt)}</div></div>
+          <div className="kpi"><div className="kpi-label">笔数</div><div className="kpi-value">{rows.length}</div></div>
+        </div>
+      )}
       <div style={{ display: "flex", gap: 8, alignItems: "flex-end", flexWrap: "wrap", marginBottom: 12 }}>
         <I label="品种" v={f.品种} set={(x) => setF({ ...f, 品种: x })} w={140} />
         <I label="投资额" v={f.投资额} set={(x) => setF({ ...f, 投资额: x })} w={120} type="number" />
@@ -37,7 +49,7 @@ export default function InvestmentPanel() {
       <table className="report-table" style={{ maxWidth: 820 }}>
         <thead><tr><th>品种</th><th className="num">投资额</th><th>币种</th><th className="num">收益率</th><th>到期日</th><th>流动性</th></tr></thead>
         <tbody>
-          {rows.map((r) => (<tr key={r.id}><td>{r.品种}</td><td className="num strong">{yen(r.投资额)}</td><td>{r.币种}</td><td className="num">{r.收益率}%</td><td>{r.到期日 || "—"}</td><td>{r.流动性}</td></tr>))}
+          {rows.map((r) => { const dd = daysTo(r.到期日); const near = dd >= 0 && dd <= 30; return (<tr key={r.id}><td>{r.品种}</td><td className="num strong">{yen(r.投资额)}</td><td>{r.币种}</td><td className="num">{r.收益率}%</td><td style={near ? { color: "var(--amber)", fontWeight: 600 } : undefined}>{r.到期日 || "—"}{near && ` (${dd}天)`}</td><td>{r.流动性}</td></tr>); })}
           {rows.length === 0 && <tr><td colSpan={6} style={{ color: "var(--muted)" }}>暂无，录入闲置资金投资</td></tr>}
           {rows.length > 0 && <tr><td className="strong">合计</td><td className="num strong">{yen(total)}</td><td colSpan={4} /></tr>}
         </tbody>

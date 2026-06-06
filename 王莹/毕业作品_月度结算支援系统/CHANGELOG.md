@@ -6,6 +6,12 @@
 
 ## 逐页细节优化
 
+### ⑦资金管理优化(现金流滚动预测/投资增强/AR-AP双栏柱状/网页同步)
+- **王莹定2/3/4**：现金流预测、投资台账增强、应收应付双栏+柱状+网页同步。建列(王莹跑):ar_ap_aging 加 预计收付日 date。
+- **改了什么**：① syncAging(AR+AP含预计收付日=支払期日)+/api/sync type=aging(refDate)+AgingSyncButton网页同步;② getCashflowForecast按预计收付日归月(已逾期/各月/未定),应收−应付=净流入+累计→表+LineCard;③ 应收/应付双栏(AgingBlock账龄柱状+Top10);④ InvestmentPanel加汇总卡(总额/加权收益率/近30天到期)+到期高亮。
+- **文件**：lib/sync.ts、lib/treasury.ts、app/api/sync、app/_components/{AgingSyncButton,InvestmentPanel}.tsx、app/treasury/page.tsx
+- **验证**：同步应收362(超期146)/应付777(超期199);预测已逾期净+88.8M/06月+76.6M/07月+13.9M累计正确。✅
+
 ### ⑤利润报表优化-批1(折叠分区/贩管费5类图/毛利净利趋势/预实扩展中日)
 - **改了什么**：⑥ 长页折叠(小组×4维度/小组损益+管理部门/全社8维度 用 Collapsible)；⑤ 贩管费5类饼图(Math.max(0)夹负值)；④ 毛利/净利月度趋势 LineCard(多月,Promise.all算各月);② 预实对比扩展为 全社/中国/日本(getBudget各对象,中日未录显—)。
 - **文件**：app/profit/page.tsx、app/_components/Charts.tsx(LineCard已有)
