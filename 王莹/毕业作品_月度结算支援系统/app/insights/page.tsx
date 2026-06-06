@@ -13,6 +13,7 @@ export default function InsightsPage() {
   const [months, setMonths] = useState<string[]>([]);
   const [month, setMonth] = useState("2026-05");
   const [范围, set范围] = useState<"全社" | "中国" | "日本">("全社");
+  const [期间, set期间] = useState<"单月" | "财年累计">("单月");
   const [busy, setBusy] = useState(false);
   const [report, setReport] = useState<Report | null>(null);
   const [facts, setFacts] = useState<string>("");
@@ -29,7 +30,7 @@ export default function InsightsPage() {
   async function run() {
     setBusy(true); setError(null); setReport(null); setFacts(""); setCopied(false);
     try {
-      const res = await fetch("/api/insights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month, 范围 }) });
+      const res = await fetch("/api/insights", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month, 范围, 期间 }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       setReport(data.report); setFacts(data.facts);
@@ -41,7 +42,7 @@ export default function InsightsPage() {
   function plainText() {
     if (!report) return "";
     const sec = (t: string, items: BiItem[]) => items.length ? `\n【${t}】\n` + items.map((i) => `· ${i.zh}\n  ${i.ja}`).join("\n") : "";
-    return `${范围} ${month} 月度经营汇报\n\n摘要：${report.summary_zh} / ${report.summary_ja}\n\n${report.overview_zh}\n${report.overview_ja}\n${sec("亮点", report.highlights)}${sec("风险", report.risks)}${sec("建议", report.suggestions)}`.trim();
+    return `${范围} ${期间 === "财年累计" ? `财年累计（截至 ${month}）` : month} ${期间 === "财年累计" ? "财年累计" : "月度"}经营汇报\n\n摘要：${report.summary_zh} / ${report.summary_ja}\n\n${report.overview_zh}\n${report.overview_ja}\n${sec("亮点", report.highlights)}${sec("风险", report.risks)}${sec("建议", report.suggestions)}`.trim();
   }
   async function copy() { try { await navigator.clipboard.writeText(plainText()); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* ignore */ } }
 
@@ -57,6 +58,9 @@ export default function InsightsPage() {
         <select value={范围} onChange={(e) => set范围(e.target.value as "全社" | "中国" | "日本")} style={sel}>
           <option>全社</option><option>中国</option><option>日本</option>
         </select>
+        <select value={期间} onChange={(e) => set期间(e.target.value as "单月" | "财年累计")} style={sel}>
+          <option>单月</option><option>财年累计</option>
+        </select>
         <button className="btn primary" disabled={busy} onClick={run}>{busy ? "AI 生成中…" : "生成经营汇报"}</button>
         {report && <button className="btn" onClick={copy}>{copied ? "✓ 已复制" : "复制全文"}</button>}
       </div>
@@ -66,7 +70,7 @@ export default function InsightsPage() {
       {report && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="card" style={{ borderLeft: "4px solid var(--accent)", padding: 16 }}>
-            <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4 }}>摘要 · {范围} {month}</div>
+            <div style={{ fontSize: 12, color: "var(--muted)", marginBottom: 4 }}>摘要 · {范围} · {期间 === "财年累计" ? `财年累计（截至 ${month}）` : month}</div>
             <div style={{ fontWeight: 650, fontSize: 16 }}>{report.summary_zh}</div>
             <div style={{ color: "var(--muted)", marginTop: 2 }}>{report.summary_ja}</div>
           </div>
