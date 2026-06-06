@@ -6,6 +6,14 @@
 
 ## 逐页细节优化
 
+### 数据录入三页合一 + 预算报表对象扩展(全部门)
+- **王莹问**：数据录入下的3个页面(Kintone同步/预算/月度人数)能合并吗,看起来有些空。→ 合并。
+- **改了什么**：
+  - **三页合一**：新建/data-entry,顶部共享"目标月份",3个卡片区块(①Kintone同步②预算录入③月度人数录入);modules.ts 3项→1项「✎ 数据录入」;旧路由/sync /budget /headcount 改为redirect("/data-entry")(307,保旧书签);利润报表内"同步页/预算录入页"链接改指/data-entry。
+  - **预算报表对象扩展**：/api/budget GET额外返objects候选(从最近月buildGroupPL推导:全社/中国/日本+4业务部门+9管理部门=16个);录入表单报表对象由3选项<select>改为<input list=datalist>(可选可输);填齐后利润报表/综合汇报达成率全维度铺满。
+- **文件**：app/data-entry/page.tsx(新)、app/{sync,budget,headcount}/page.tsx(改redirect)、app/api/budget/route.ts、lib/modules.ts、app/profit/page.tsx(链接)
+- **验证**：/data-entry 200,旧3路由307重定向,首页200;budget候选16个对象;改动文件tsc干净。✅
+
 ### ⑤利润报表"小组"改"业务部门" + ⑨综合补全部门 + 通用达成率
 - **王莹指示**：①全社外没预算只是没填,填了就完整→达成率做成通用;②利润报表"小组"→"业务部门"(说小组总遗漏管理部门,实指所有部门=业务部+管理部);③综合经营情况把所有部门(含管理部门)都加进去。
 - **改了什么**：

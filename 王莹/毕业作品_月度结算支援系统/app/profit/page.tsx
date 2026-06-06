@@ -171,7 +171,7 @@ export default async function ProfitPage({
 
       {report && report.caseCount === 0 && (
         <div className="warn-box">
-          {periodLabel} 暂无案件数据。请先到 <a href="/sync" style={{ color: "var(--accent)" }}>同步页</a> 同步。
+          {periodLabel} 暂无案件数据。请先到 <a href="/data-entry" style={{ color: "var(--accent)" }}>数据录入页</a> 同步。
         </div>
       )}
 
@@ -195,7 +195,7 @@ export default async function ProfitPage({
               <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>毛利/净利 达标≥100%绿；贩管费看与预算的精度（蓝）。全年预算 = 财年各月预算之和，未录全则不准。</div>
             </div>
           )}
-          {sga && (<><h3 style={{ marginTop: 16 }}>预实对比（本期间）</h3>{predict([["全社", { 毛利: report.total, 贩管费: sga.total, 净利: report.total - sga.total }, budget]])}<p style={{ color: "var(--muted)", fontSize: 12 }}>预算手工录入（<a href="/budget" style={{ color: "var(--accent)" }}>预算录入页</a>）；未录显 —。</p></>)}
+          {sga && (<><h3 style={{ marginTop: 16 }}>预实对比（本期间）</h3>{predict([["全社", { 毛利: report.total, 贩管费: sga.total, 净利: report.total - sga.total }, budget]])}<p style={{ color: "var(--muted)", fontSize: 12 }}>预算手工录入（<a href="/data-entry" style={{ color: "var(--accent)" }}>数据录入页</a>）；未录显 —。</p></>)}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 16, marginTop: 8 }}>
             {sga && <HBarCard title="贩管费 5 类（金额 · 负数=退费）" data={FEE5.map((f) => ({ 类别: f, 金额: Math.round(sga!.byCategory[f] || 0) }))} catKey="类别" valKey="金额" />}
             {trend.length >= 2 && <LineCard title="毛利 / 净利 月度趋势" data={trend as unknown as Record<string, unknown>[]} xKey="月份" lines={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "净利", name: "净利", color: "#34d399" }]} />}

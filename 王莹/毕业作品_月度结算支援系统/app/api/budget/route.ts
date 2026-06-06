@@ -2,11 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { listBudgets } from "@/lib/budget";
 import { logAudit } from "@/lib/audit";
+import { getAvailableMonths, getCasesForMonth } from "@/lib/data";
+import { computeProfitReport, buildGroupPL } from "@/lib/profit";
+import { getSgaByDept } from "@/lib/sga";
+import { getJpdeskHeads } from "@/lib/headcount";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  return NextResponse.json({ rows: await listBudgets() });
+  const rows = await listBudgets();
+  // 报表对象候选：法人 + 各业务部门 + 各管理部门（取最近已同步月份推导）
+  let objects = ["全社", "中国", "日本"];
+  try {
+    const m = (await getAvailableMonths())[0];
+    if (m) {
+      const cases = await getCasesForMonth(m);
+      if (cases.length) {
+        const r = computeProfitReport(cases, m, await getJpdeskHeads(m));
+        const gpl = buildGroupPL(r.groups, await getSgaByDept(m));
+        objects = ["全社", "中国", "日本", ...gpl.business.map((b) => b.小组), ...gpl.mgmt.map((g) => g.部门)];
+      }
+    }
+  } catch { /* 候选可选 */ }
+  return NextResponse.json({ rows, objects });
 }
 
 export async function POST(req: NextRequest) {
