@@ -63,7 +63,9 @@ export default async function ProfitPage({
   const groupBudgets: Record<string, BudgetData> = {};
   const mgmtBudgets: Record<string, number | null> = {};
   let markup: MarkupReport | null = null;
-  let trend: { 月份: string; 毛利: number; 净利: number }[] = [];
+  let trend: { 月份: string; 毛利: number; 贩管费: number; 净利: number }[] = [];
+  let fyYtd: { 毛利: number; 贩管费: number; 净利: number } | null = null;
+  let fyBudget: BudgetData | null = null;
   let err: string | null = null;
   try {
     const cases = (await Promise.all(selected.map(getCasesForMonth))).flat();
@@ -83,15 +85,19 @@ export default async function ProfitPage({
       mgmtBudgets[m.部门] = sumBudget(await Promise.all(selected.map((mo) => getBudget(mo, m.部门)))).贩管费;
     }
     markup = await getMarkupReport(selected);
-    // 多月趋势：财年各月 毛利/净利
+    // 多月趋势：财年各月 毛利/贩管费/净利
     trend = (await Promise.all(available.map(async (m) => {
       try {
         const cs = await getCasesForMonth(m);
         const rp = computeProfitReport(cs, m, await getJpdeskHeads(m));
         const sg = await getSgaForMonth(m);
-        return { 月份: m, 毛利: Math.round(rp.total), 净利: Math.round(rp.total - sg.total) };
-      } catch { return { 月份: m, 毛利: 0, 净利: 0 }; }
+        return { 月份: m, 毛利: Math.round(rp.total), 贩管费: Math.round(sg.total), 净利: Math.round(rp.total - sg.total) };
+      } catch { return { 月份: m, 毛利: 0, 贩管费: 0, 净利: 0 }; }
     }))).sort((a, b) => a.月份.localeCompare(b.月份));
+    // 全年累计达成（不随期间下拉变）：财年初~最新月 累计实绩 vs 全年预算(12月之和)
+    const fyToDate = fyMonths.filter((m) => available.includes(m) && m <= latest);
+    fyYtd = trend.filter((t) => fyToDate.includes(t.月份)).reduce((s, t) => ({ 毛利: s.毛利 + t.毛利, 贩管费: s.贩管费 + t.贩管费, 净利: s.净利 + t.净利 }), { 毛利: 0, 贩管费: 0, 净利: 0 });
+    fyBudget = sumBudget(await Promise.all(fyMonths.map((m) => getBudget(m, "全社"))));
   } catch (e) {
     err = e instanceof Error ? e.message : String(e);
   }
@@ -113,6 +119,25 @@ export default async function ProfitPage({
       }))}</tbody>
     </table>
   );
+
+  const bullet = (label: string, actual: number, budget: number | null, lowerBetter = false) => {
+    const rate = budget ? actual / budget : null;
+    const good = rate == null ? true : lowerBetter ? rate <= 1 : rate >= 1;
+    const fillW = rate == null ? 0 : Math.min(100, Math.max(0, rate * 100));
+    const color = rate == null ? "var(--border)" : good ? "var(--green)" : "var(--red)";
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+        <div style={{ width: 56, fontSize: 13, color: "var(--text)", fontWeight: 600 }}>{label}</div>
+        <div style={{ flex: 1, minWidth: 120, position: "relative", height: 18, background: "var(--panel-2)", borderRadius: 9, overflow: "hidden" }}>
+          <div style={{ width: `${fillW}%`, height: "100%", background: color, borderRadius: 9 }} />
+        </div>
+        <div style={{ width: 260, fontSize: 12, color: "var(--muted)", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+          累计 {yen(actual)} / 全年 {budget == null ? "—" : yen(budget)}
+          {rate != null && <b style={{ color, marginLeft: 6 }}>{(rate * 100).toFixed(0)}%</b>}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -141,7 +166,16 @@ export default async function ProfitPage({
 
           {/* ═══════════ 全社 ═══════════ */}
           {Sec("全社")}
-          {sga && (<><h3 style={{ marginTop: 4 }}>预实对比</h3>{predict([["全社", { 毛利: report.total, 贩管费: sga.total, 净利: report.total - sga.total }, budget]])}<p style={{ color: "var(--muted)", fontSize: 12 }}>预算手工录入（<a href="/budget" style={{ color: "var(--accent)" }}>预算录入页</a>）；未录显 —。</p></>)}
+          {fyYtd && (
+            <div className="card" style={{ padding: 16, marginTop: 4 }}>
+              <div style={{ fontWeight: 650, marginBottom: 4 }}>全年累计达成率 <span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}>· 财年初~最新月 累计实绩 vs 全年预算（不随上方期间变）</span></div>
+              {bullet("毛利", fyYtd.毛利, fyBudget?.毛利 ?? null)}
+              {bullet("贩管费", fyYtd.贩管费, fyBudget?.贩管费 ?? null, true)}
+              {bullet("净利", fyYtd.净利, fyBudget?.净利 ?? null)}
+              <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>贩管费越低越好（≤100% 绿）；毛利/净利越高越好（≥100% 绿）。全年预算 = 财年 12 个月预算之和，未录全则偏低。</div>
+            </div>
+          )}
+          {sga && (<><h3 style={{ marginTop: 16 }}>预实对比（本期间）</h3>{predict([["全社", { 毛利: report.total, 贩管费: sga.total, 净利: report.total - sga.total }, budget]])}<p style={{ color: "var(--muted)", fontSize: 12 }}>预算手工录入（<a href="/budget" style={{ color: "var(--accent)" }}>预算录入页</a>）；未录显 —。</p></>)}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 16, marginTop: 8 }}>
             {sga && <HBarCard title="贩管费 5 类（金额 · 负数=退费）" data={FEE5.map((f) => ({ 类别: f, 金额: Math.round(sga!.byCategory[f] || 0) }))} catKey="类别" valKey="金额" />}
             {trend.length >= 2 && <LineCard title="毛利 / 净利 月度趋势" data={trend as unknown as Record<string, unknown>[]} xKey="月份" lines={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "净利", name: "净利", color: "#34d399" }]} />}
