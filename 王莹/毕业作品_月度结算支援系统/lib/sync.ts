@@ -258,29 +258,54 @@ export async function syncSettlementCash(month: string): Promise<{ 行数: numbe
       if (inMonth(str(rec["支払日"]))) add(贩管费出金, lf, str(rec["通貨"]) || "JPY", num(rec["費用"]) || 0);
     }
   }
-  // 残高差额 by 法人×币种（从已同步 kc_bank_balance）
+  // 残高差额 by 法人×币种（从已同步 kc_bank_balance），并建 口座番号→法人 映射
   const sb = getSupabaseAdmin();
-  const { data: bank } = await sb.from("kc_bank_balance").select("币种,残高差额,対象法人").eq("月份", month);
+  const { data: bank } = await sb.from("kc_bank_balance").select("币种,残高差额,対象法人,口座番号").eq("月份", month);
   const 残高 = new Map<string, number>();
-  for (const b of (bank ?? []) as { 币种: string; 残高差额: number; 対象法人: string }[]) {
+  const acctLegal: { 番号: string; 法人: LF }[] = [];
+  const seenAcct = new Set<string>();
+  for (const b of (bank ?? []) as { 币种: string; 残高差额: number; 対象法人: string; 口座番号: string }[]) {
     const lf = (b.対象法人 === "TRD" ? "TRD" : "EXP") as LF;
     add(残高, lf, b.币种, Number(b.残高差额) || 0);
+    const no = (b.口座番号 || "").trim();
+    if (no && !seenAcct.has(no)) { seenAcct.add(no); acctLegal.push({ 番号: no, 法人: lf }); }
+  }
+  // 口座串(银行+口座番号+币种+用途) → 法人：匹配其中最长的、被包含的口座番号
+  acctLegal.sort((a, b) => b.番号.length - a.番号.length);
+  const legalOf = (口座str: string): LF | null => { for (const a of acctLegal) if (口座str.includes(a.番号)) return a.法人; return null; };
+
+  // ⑥ 内部资金移动净额（转入−转出）by 法人×币种：读 资金移动App(EXP/TRD)，筛 支払種別=資金移動，計算月在本月；换汇用移動先口座換算金額(实际到账额)
+  const 内部移动 = new Map<string, number>();
+  const FUND_APPS = [["KINTONE_APP_FUND_MOVE_EXP_ID", "KINTONE_APP_FUND_MOVE_EXP_TOKEN"], ["KINTONE_APP_FUND_MOVE_TRD_ID", "KINTONE_APP_FUND_MOVE_TRD_TOKEN"]];
+  let moveCount = 0;
+  for (const [idEnv, tokEnv] of FUND_APPS) {
+    const id = (process.env[idEnv] || "").trim(), tok = (process.env[tokEnv] || "").trim();
+    if (!/^\d+$/.test(id) || !tok || /[^\x20-\x7e]/.test(tok)) continue; // 未配置或占位符(非数字ID/含非ASCII的token,如 EXP 待补) → 跳过
+    for (const rec of await fetchKintone(id, tok, `支払種別 in ("資金移動")`)) {
+      const ym = (str(rec["計算"]) || "").slice(0, 7) || (str(rec["支払日キー"]).length === 6 ? `${str(rec["支払日キー"]).slice(0, 4)}-${str(rec["支払日キー"]).slice(4)}` : "");
+      if (ym !== month) continue;
+      const fromLf = legalOf(str(rec["移動元口座"])), toLf = legalOf(str(rec["移動先口座"]));
+      const fromCur = str(rec["移動元通貨"]) || "JPY", toCur = str(rec["移動先通貨"]) || "JPY";
+      const fromAmt = num(rec["移動元支払額"]) || 0, toAmt = num(rec["移動先口座換算金額"]) || num(rec["移動元支払額"]) || 0;
+      if (fromLf) { add(内部移动, fromLf, fromCur, -fromAmt); moveCount++; }
+      if (toLf) add(内部移动, toLf, toCur, toAmt);
+    }
   }
 
-  const keys = new Set([...入金.keys(), ...业务出金.keys(), ...贩管费出金.keys(), ...残高.keys()]);
+  const keys = new Set([...入金.keys(), ...业务出金.keys(), ...贩管费出金.keys(), ...残高.keys(), ...内部移动.keys()]);
   const rows = [...keys].map((key) => {
     const [lf, cur] = key.split("|");
-    const i = 入金.get(key) || 0, biz = 业务出金.get(key) || 0, sga = 贩管费出金.get(key) || 0;
-    const 出金合计 = biz + sga, net = i - 出金合计, bal = 残高.get(key) || 0, diff = bal - net;
+    const i = 入金.get(key) || 0, biz = 业务出金.get(key) || 0, sga = 贩管费出金.get(key) || 0, mv = 内部移动.get(key) || 0;
+    const 出金合计 = biz + sga, net = i - 出金合计, bal = 残高.get(key) || 0, diff = bal - net - mv;
     return {
       "利润月": month, "法人": lf, "币种": cur, "残高差额": Math.round(bal), "入金合计": Math.round(i), "出金合计": Math.round(出金合计),
       "现金净额": Math.round(net), "差异": Math.round(diff), "状态": Math.abs(diff) < 1 ? "平" : "有差异",
-      "构成": { 业务出金: Math.round(biz), 贩管费出金: Math.round(sga) },
+      "构成": { 业务出金: Math.round(biz), 贩管费出金: Math.round(sga), 内部移动: Math.round(mv) },
     };
   });
   await sb.from("settlement_checks").delete().eq("利润月", month);
   if (rows.length) { const { error } = await sb.from("settlement_checks").insert(rows); if (error) throw new Error(`写 settlement_checks 失败: ${error.message}`); }
-  return { 行数: rows.length, 有差异: rows.filter((r) => r.状态 !== "平").length };
+  return { 行数: rows.length, 有差异: rows.filter((r) => r.状态 !== "平").length, 资金移动: moveCount };
 }
 
 // ④ 钻取：某 OPT 的 入金/支付 明细记录（实时读 Kintone，定位差异在哪条）

@@ -6,6 +6,12 @@
 
 ## 逐页细节优化
 
+### ⑥月度决算-现金勾稽纳入内部资金移动(资金移动App,换汇取实际到账额)
+- **王莹反馈**：另有资金移动App(EXP/TRD各一)记录账户间移动,能区分从哪个银行到哪个银行;换汇有实际入金额。⚠️TRD token有编辑权限,**只读绝不写**。EXP token暂未拿到(占位符)。
+- **改了什么**：syncSettlementCash 读资金移动App(EXP+TRD,只GET),筛`支払種別=資金移動`+`計算`月在本月;口座串(银行+口座番号+币种+用途)用kc_bank_balance`口座番号→法人`映射(匹配最长被包含的口座番号);内部移动净额=Σ转入(移動先口座換算金額,换汇实际到账)−Σ转出(移動元支払額),by法人×币种;**差异=残高差额−现金净额−内部移动**;构成加内部移动。占位符token严格跳过(id非纯数字/token含非ASCII)。
+- **文件**：lib/sync.ts、lib/settlement.ts、app/_components/SettlementView.tsx;.env.local加KINTONE_APP_FUND_MOVE_EXP/TRD_ID/TOKEN(EXP待补)。
+- **验证**：口座→法人映射正确(みずほ3124917/楽天7082721→TRD);TRD历史移动全TRD JPY↔TRD JPY(同法人币种净零);2026-05移动0条(EXP待token)。现金勾稽表加「内部移动」列+钻取显示。✅ EXP token补上后EXP差异将收窄。
+
 ### ⑥月度决算-现金勾稽改按法人×币种(贩管费分法人) + 银行明细加口座番号
 - **王莹反馈**：① 现金勾稽要区分法人各自显示；② 贩管费不是共通的、要分法人；③ 银行明细加口座番号便于区分账户。
 - **建列(王莹跑)**：kc_bank_balance 加 口座番号；settlement_checks 加 法人。

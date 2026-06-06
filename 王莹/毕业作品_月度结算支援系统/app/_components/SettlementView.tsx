@@ -5,7 +5,7 @@ import Collapsible from "./Collapsible";
 import { LineCard } from "./Charts";
 
 interface BankRow { 银行: string; 币种: string; 口座番号: string | null; 期初残高: number | null; 期末残高: number | null; 残高差额: number | null; 円換算残高: number | null; 対象法人: string | null }
-interface Constituent { 业务出金: number; 贩管费出金: number }
+interface Constituent { 业务出金: number; 贩管费出金: number; 内部移动?: number }
 interface CashRow { 法人: string; 币种: string; 残高差额: number; 入金合计: number; 出金合计: number; 现金净额: number; 差异: number; 状态: string; 构成?: Constituent | null }
 interface Report { rows: BankRow[]; byCurrency: { 币种: string; 差额: number; count: number }[]; byLegal: { 法人: string; 残高差额: number; 円換算残高: number; count: number }[]; 円換算残高合计: number }
 interface Data { settlement: Report; cash: CashRow[]; trend: { 月份: string; 残高差额: number; 现金净额: number }[] }
@@ -106,7 +106,7 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
             <>
               <h3 style={{ marginTop: 20 }}>现金勾稽 · 残高差额 vs 现金净额（按法人 × 币种，点行看出金构成）</h3>
               <table className="report-table">
-                <thead><tr><th>法人</th><th>币种</th><th className="num">残高差额</th><th className="num">入金</th><th className="num">出金</th><th className="num">现金净额</th><th className="num">差异</th><th>状态</th></tr></thead>
+                <thead><tr><th>法人</th><th>币种</th><th className="num">残高差额</th><th className="num">入金</th><th className="num">出金</th><th className="num">现金净额</th><th className="num">内部移动</th><th className="num">差异</th><th>状态</th></tr></thead>
                 <tbody>
                   {cash.map((c) => {
                     const key = `${c.法人}|${c.币种}`;
@@ -117,20 +117,22 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
                         <td style={{ cursor: "pointer", color: "var(--accent)" }} onClick={() => setDrill(drill === key ? null : key)}>{drill === key ? "▾ " : "▸ "}{c.币种}</td>
                         <td className="num">{fmt(c.残高差额)}</td><td className="num">{fmt(c.入金合计)}</td><td className="num">{fmt(c.出金合计)}</td>
                         <td className="num">{fmt(c.现金净额)}</td>
+                        <td className="num" style={{ color: (c.构成?.内部移动 || 0) !== 0 ? "var(--accent)" : "var(--muted)" }}>{fmt(c.构成?.内部移动 || 0)}</td>
                         <td className={"num strong" + (c.差异 !== 0 ? " neg" : "")}>{fmt(c.差异)}</td>
                         <td><span className={`pill ${c.状态 === "平" ? "pill-green" : "pill-amber"}`}>{c.状态}</span></td>
                       </tr>
                       {drill === key && c.构成 && (
-                        <tr><td colSpan={8} style={{ background: "var(--panel-2)" }}>
+                        <tr><td colSpan={9} style={{ background: "var(--panel-2)" }}>
                           <table style={{ width: "100%", maxWidth: 460, borderCollapse: "collapse", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
                             <tbody>
                               <tr><td style={dtd}>入金</td><td style={dtdR}>{fmt(c.入金合计)}</td></tr>
                               <tr><td style={dtd}>业务出金（请求支付）</td><td style={dtdR}>−{fmt(c.构成.业务出金)}</td></tr>
                               <tr><td style={dtd}>贩管费出金</td><td style={dtdR}>−{fmt(c.构成.贩管费出金)}</td></tr>
-                              <tr><td style={{ ...dtd, fontWeight: 700 }}>现金净额</td><td style={{ ...dtdR, fontWeight: 700 }}>{fmt(c.现金净额)}</td></tr>
+                              <tr><td style={dtd}>内部资金移动（转入−转出）</td><td style={dtdR}>{fmt(c.构成.内部移动 || 0)}</td></tr>
+                              <tr><td style={{ ...dtd, fontWeight: 700 }}>残高差额（应≈现金净额+内部移动）</td><td style={{ ...dtdR, fontWeight: 700 }}>{fmt(c.残高差额)}</td></tr>
                             </tbody>
                           </table>
-                          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>现金净额 = 入金 − 业务出金 − 贩管费出金（{c.法人}）</div>
+                          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>差异 = 残高差额 − 现金净额 − 内部移动 = {fmt(c.差异)}（{c.法人}）。残差归因：汇率折算 / 手续费 / 非业务往来。</div>
                         </td></tr>
                       )}
                     </Fragment>
@@ -138,7 +140,7 @@ export default function SettlementView({ initialMonth, months }: { initialMonth:
                   })}
                 </tbody>
               </table>
-              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>口径=实际收付款日（现金制），按法人 EXP/TRD 各自勾稽（贩管费：日本+中国→EXP，EC→TRD）。<b>差异仅提示、不阻断关账</b>——银行账户未必涵盖全部业务现金（非业务往来、跨币种调拨、汇率折算），差异需人工排查。</p>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>口径=实际收付款日（现金制），按法人 EXP/TRD 各自勾稽（贩管费：日本+中国→EXP，EC→TRD）。<b>差异 = 残高差额 − 现金净额 − 内部资金移动</b>（内部移动含换汇/跨账户/跨法人调拨，换汇取实际到账额）。<b>差异仅提示、不阻断关账</b>，残差归因汇率折算/手续费/非业务往来。<span style={{ color: "var(--amber)" }}>⚠️ EXP 资金移动 App token 待补，补上后 EXP 差异将进一步收窄。</span></p>
             </>
           )}
         </>
