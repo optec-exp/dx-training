@@ -89,7 +89,7 @@ export default function SyncCheckView({ initialMonth, months }: { initialMonth: 
           </Collapsible>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center", margin: "14px 0 8px", flexWrap: "wrap" }}>
-            <select value={fCompany} onChange={(e) => setFCompany(e.target.value)} style={sel}><option>全部</option><option value="EXPRESS">EXPRESS（空海）</option><option value="TRADING">TRADING（EC）</option></select>
+            <select value={fCompany} onChange={(e) => setFCompany(e.target.value)} style={sel}><option value="全部">全部法人</option><option value="EXPRESS">EXP</option><option value="TRADING">TRD</option></select>
             <input placeholder="搜 OPT 编号" value={q} onChange={(e) => setQ(e.target.value)} style={{ ...sel, width: 160 }} />
             <span style={{ color: "var(--muted)", fontSize: 13 }}>差异 {diffRows.length} 票 · 一致 {sameRows.length} 票</span>
           </div>
@@ -122,7 +122,7 @@ function RowsTable({ rows, drill, detail, onDrill }: { rows: Row[]; drill: strin
           return (
             <Fragment key={r.opt_no}>
               <tr className={rb || cb ? "flag" : undefined}>
-                <td><span className="pill pill-gray" style={{ fontSize: 11 }}>{r.company === "TRADING" ? "EC" : "空海"}</span></td>
+                <td><span className="pill pill-gray" style={{ fontSize: 11 }}>{r.company === "TRADING" ? "TRD" : "EXP"}</span></td>
                 <td style={{ cursor: "pointer", color: "var(--accent)" }} onClick={() => onDrill(r.opt_no)} title="点击看入金/支付明细">{drill === r.opt_no ? "▾ " : "▸ "}{r.opt_no}</td>
                 <td className="num">{fmt(r.案件收入)}</td><td className="num">{fmt(r.入金合计)}</td>
                 <td className={"num" + (rb ? " neg" : "")} style={rb ? { color: "var(--red)", fontWeight: 600 } : undefined}>{fmt(r.收入差异)}</td>
