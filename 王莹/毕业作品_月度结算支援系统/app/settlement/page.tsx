@@ -8,7 +8,7 @@ export default async function SettlementPage() {
   const month = months[0] || "2026-05";
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑥ 月度决算</h1>
+      <h1 style={{ marginTop: 0 }}>月度决算</h1>
       <SettlementView initialMonth={month} months={months} />
     </div>
   );

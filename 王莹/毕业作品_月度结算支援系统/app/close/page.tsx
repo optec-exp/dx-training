@@ -51,7 +51,7 @@ export default function ClosePage() {
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>③ 关账 / 锁账</h1>
+      <h1 style={{ marginTop: 0 }}>关账 / 锁账</h1>
       <p style={{ color: "var(--muted)", fontSize: 13, marginTop: -4 }}>本系统负责：缺账单门禁 + 冻结当期快照（基线）+ 锁后变更侦测。记录级解锁/审批在 Kintone 侧执行，本系统只读、只侦测。</p>
       <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
         <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} style={{ padding: "8px 12px", background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--text)" }} />

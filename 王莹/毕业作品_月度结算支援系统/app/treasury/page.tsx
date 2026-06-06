@@ -17,7 +17,7 @@ export default async function TreasuryPage() {
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑦ 资金管理</h1>
+      <h1 style={{ marginTop: 0 }}>资金管理</h1>
       <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 8, flexWrap: "wrap" }}>
         <AgingSyncButton />
         <span style={{ color: "var(--muted)", fontSize: 12 }}>未收/未付按到期日(支払期日)分账龄 + 滚动现金流预测；基准日=今天</span>

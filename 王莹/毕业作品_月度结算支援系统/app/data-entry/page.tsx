@@ -13,7 +13,7 @@ export default function DataEntryPage() {
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>✎ 数据录入</h1>
+      <h1 style={{ marginTop: 0 }}>数据录入</h1>
       <p style={{ color: "var(--muted)" }}>统一的数据准备入口：Kintone 同步 + 预算录入 + 月度人数录入。三者共享下方「目标月份」。</p>
 
       <div style={{ display: "flex", gap: 12, alignItems: "center", margin: "14px 0 22px", padding: "12px 16px", background: "var(--panel-2)", borderRadius: 10, border: "1px solid var(--border)" }}>
@@ -29,10 +29,10 @@ export default function DataEntryPage() {
   );
 }
 
-function Card({ title, no, children }: { title: string; no: string; children: React.ReactNode }) {
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="card" style={{ padding: 18, marginBottom: 18 }}>
-      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}><span style={{ color: "var(--accent)", marginRight: 8 }}>{no}</span>{title}</div>
+      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 10 }}>{title}</div>
       {children}
     </div>
   );
@@ -56,10 +56,10 @@ function SyncSection({ month }: { month: string }) {
       setResult(data);
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(null); }
   }
-  const btns: [string, "cases" | "sga" | "check" | "settlement" | "all"][] = [["同步案件", "cases"], ["同步贩管费", "sga"], ["同步排查④", "check"], ["同步决算⑥", "settlement"]];
+  const btns: [string, "cases" | "sga" | "check" | "settlement" | "all"][] = [["同步案件", "cases"], ["同步贩管费", "sga"], ["同步排查", "check"], ["同步决算", "settlement"]];
 
   return (
-    <Card no="①" title="Kintone 同步">
+    <Card title="Kintone 同步">
       <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 0 }}>从 Kintone（只读）拉取 {month} 数据，写入 settlement 镜像表。Kintone 数据绝不被修改。</p>
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
         {btns.map(([label, t]) => <button key={t} className="btn" disabled={!!busy} onClick={() => run(t)}>{busy === t ? "同步中…" : label}</button>)}
@@ -102,7 +102,7 @@ function BudgetSection({ month }: { month: string }) {
   }
 
   return (
-    <Card no="②" title="预算录入">
+    <Card title="预算录入">
       <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 0 }}>录入 {month} 各报表对象的 毛利/贩管费/净利 预算。报表对象支持 <b>全社 / 中国 / 日本 / 各业务部门 / 各管理部门</b>，填齐后达成率全维度铺满。</p>
       <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
         <Field label="报表对象">
@@ -115,14 +115,16 @@ function BudgetSection({ month }: { month: string }) {
         <button className="btn primary" disabled={busy} onClick={save}>{busy ? "保存中…" : "保存"}</button>
       </div>
       {msg && <div className="warn-box" style={{ borderColor: "var(--border)", background: "var(--panel-2)", color: "var(--text)", marginTop: 12 }}>{msg}</div>}
-      <h4 style={{ marginBottom: 6 }}>已录入预算（{list.length}）</h4>
-      <table className="report-table">
-        <thead><tr><th>月份</th><th>对象</th><th className="num">毛利</th><th className="num">贩管费</th><th className="num">净利</th></tr></thead>
-        <tbody>
-          {list.map((r, i) => (<tr key={i}><td>{r.期间}</td><td>{r.报表对象}</td><td className="num">{yen(r.毛利)}</td><td className="num">{yen(r.贩管费)}</td><td className="num">{yen(r.净利)}</td></tr>))}
-          {list.length === 0 && <tr><td colSpan={5} style={{ color: "var(--muted)" }}>暂无</td></tr>}
-        </tbody>
-      </table>
+      <details style={{ marginTop: 14 }}>
+        <summary style={{ cursor: "pointer", fontWeight: 650, fontSize: 13, color: "var(--muted)" }}>已录入预算（{list.length}）</summary>
+        <table className="report-table">
+          <thead><tr><th>月份</th><th>对象</th><th className="num">毛利</th><th className="num">贩管费</th><th className="num">净利</th></tr></thead>
+          <tbody>
+            {list.map((r, i) => (<tr key={i}><td>{r.期间}</td><td>{r.报表对象}</td><td className="num">{yen(r.毛利)}</td><td className="num">{yen(r.贩管费)}</td><td className="num">{yen(r.净利)}</td></tr>))}
+            {list.length === 0 && <tr><td colSpan={5} style={{ color: "var(--muted)" }}>暂无</td></tr>}
+          </tbody>
+        </table>
+      </details>
     </Card>
   );
 }
@@ -149,7 +151,7 @@ function HeadcountSection({ month }: { month: string }) {
   }
 
   return (
-    <Card no="③" title="月度人数录入 · JP DESK 中日拆分">
+    <Card title="月度人数录入 · JP DESK 中日拆分">
       <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 0 }}>JP DESK（Japan Desk 課）利润按 {month} 中日人数拆分。未录入则默认 13 : 11。</p>
       <div style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
         <Field label="JP DESK 中国人数"><input type="number" value={cn} onChange={(e) => setCn(e.target.value)} style={{ ...inp, width: 120 }} /></Field>
@@ -157,14 +159,16 @@ function HeadcountSection({ month }: { month: string }) {
         <button className="btn primary" disabled={busy} onClick={save}>{busy ? "保存中…" : "保存"}</button>
       </div>
       {msg && <div className="warn-box" style={{ borderColor: "var(--border)", background: "var(--panel-2)", color: "var(--text)", marginTop: 12 }}>{msg}</div>}
-      <h4 style={{ marginBottom: 6 }}>已录入</h4>
-      <table className="report-table" style={{ maxWidth: 480 }}>
-        <thead><tr><th>月份</th><th className="num">中国人数</th><th className="num">日本人数</th></tr></thead>
-        <tbody>
-          {list.map((r) => (<tr key={r.期间}><td>{r.期间}</td><td className="num">{r.cn}</td><td className="num">{r.jp}</td></tr>))}
-          {list.length === 0 && <tr><td colSpan={3} style={{ color: "var(--muted)" }}>暂无（使用默认 13:11）</td></tr>}
-        </tbody>
-      </table>
+      <details style={{ marginTop: 14 }}>
+        <summary style={{ cursor: "pointer", fontWeight: 650, fontSize: 13, color: "var(--muted)" }}>已录入（{list.length}）</summary>
+        <table className="report-table" style={{ maxWidth: 480 }}>
+          <thead><tr><th>月份</th><th className="num">中国人数</th><th className="num">日本人数</th></tr></thead>
+          <tbody>
+            {list.map((r) => (<tr key={r.期间}><td>{r.期间}</td><td className="num">{r.cn}</td><td className="num">{r.jp}</td></tr>))}
+            {list.length === 0 && <tr><td colSpan={3} style={{ color: "var(--muted)" }}>暂无（使用默认 13:11）</td></tr>}
+          </tbody>
+        </table>
+      </details>
     </Card>
   );
 }

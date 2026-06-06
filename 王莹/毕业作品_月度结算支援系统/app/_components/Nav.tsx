@@ -10,7 +10,6 @@ export default function Nav() {
           <div className="group-label">{g}</div>
           {MODULES.filter((m) => m.group === g).map((m) => (
             <Link key={m.slug} href={`/${m.slug}`}>
-              <span className="no">{m.no}</span>
               <span>{m.title}</span>
             </Link>
           ))}

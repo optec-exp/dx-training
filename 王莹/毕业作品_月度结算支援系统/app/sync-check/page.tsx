@@ -8,7 +8,7 @@ export default async function SyncCheckPage() {
   const month = months[0] || "2026-05";
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>④ 三 App 同步排查</h1>
+      <h1 style={{ marginTop: 0 }}>三 App 同步排查</h1>
       <SyncCheckView initialMonth={month} months={months} />
     </div>
   );

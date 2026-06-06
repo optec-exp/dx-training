@@ -70,7 +70,7 @@ export default function ReconciliationPage() {
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>② 对账 / 差异工作台</h1>
+      <h1 style={{ marginTop: 0 }}>对账 / 差异工作台</h1>
       <p style={{ color: "var(--muted)" }}>上传供应商账单（PDF 或 Excel，可批量），AI 解析后按 OPT+供应商+币种 与 Kintone 成本自动比对。</p>
 
       <div

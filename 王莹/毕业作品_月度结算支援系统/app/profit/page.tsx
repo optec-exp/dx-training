@@ -161,7 +161,7 @@ export default async function ProfitPage({
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑤ 利润报表</h1>
+      <h1 style={{ marginTop: 0 }}>利润报表</h1>
       <div style={{ marginBottom: 16, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         <PeriodSelect available={available} selected={selected} basePath="/profit" />
         <span style={{ color: "var(--muted)", fontSize: 12 }}>期间：<b>{periodLabel}</b></span>

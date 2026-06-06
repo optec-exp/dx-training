@@ -24,7 +24,7 @@ export default async function RiskPage({ searchParams }: { searchParams: Promise
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑧ 风控异常面板</h1>
+      <h1 style={{ marginTop: 0 }}>风控异常面板</h1>
       <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
         <MonthPicker value={month} basePath="/risk" />
         <span style={{ color: "var(--muted)", fontSize: 13 }}>负毛利 / 加成率超标 / 异常大额 / 重复成本 / 重复账单 / 长期挂账·坏账 / 海外代理差异</span>

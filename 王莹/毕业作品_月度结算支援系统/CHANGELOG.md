@@ -6,6 +6,17 @@
 
 ## 逐页细节优化
 
+### 全局视觉优化：低饱和度配色 + 侧栏固定 + 去圈号 + 录入折叠
+- **王莹指示**：①已录入改可折叠(防页面过长)②所有①②③数据标签删掉③左侧导航固定不随右侧滚动④换低饱和度风格。(Supabase清理仍等全部改完再做)
+- **改了什么**：
+  - **低饱和度配色**：globals.css 主题改静谧灰蓝——accent #2563eb→#5f7896,green/amber/red 全部降饱和(沙绿/赭黄/暗玫瑰),bg/border/text 同步柔化;kpi.primary 渐变、btn.primary hover、warn-box 边框色一并调和。
+  - **侧栏固定**：.sidebar 加 position:sticky;top:0;height:100vh;overflow-y:auto → 右侧滚动时导航不动。
+  - **去圈号**：9个页面h1前缀(②③④⑤⑥⑦⑧⑨✎)、Nav的no span、首页卡片no div、data-entry卡片①②③ + 同步按钮"排查④/决算⑥"的圈号全删。
+  - **录入折叠**：data-entry 已录入预算/已录入人数 改 <details> 折叠(默认收起),页面不再变长。
+  - 顺带:insights 分部点评标题"业务小组"→"业务部门";profit/modules 链接与描述同步。
+- **文件**：app/globals.css、app/layout相关、app/_components/Nav.tsx、app/page.tsx、app/data-entry/page.tsx、9个page.tsx的h1、app/insights/page.tsx
+- **验证**：全部10+页面200,改动文件tsc干净。✅
+
 ### 数据录入三页合一 + 预算报表对象扩展(全部门)
 - **王莹问**：数据录入下的3个页面(Kintone同步/预算/月度人数)能合并吗,看起来有些空。→ 合并。
 - **改了什么**：

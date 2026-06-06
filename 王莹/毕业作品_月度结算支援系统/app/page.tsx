@@ -56,7 +56,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ m
       <div className="cards">
         {MODULES.map((m) => (
           <Link key={m.slug} href={`/${m.slug}`} className="card">
-            <div className="no">{m.no}</div>
             <div className="title">{m.title}</div>
             <div className="desc">{m.desc}</div>
           </Link>

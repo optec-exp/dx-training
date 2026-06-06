@@ -51,7 +51,7 @@ export default function InsightsPage() {
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑨ AI 洞察 · 月度经营汇报</h1>
+      <h1 style={{ marginTop: 0 }}>AI 洞察 · 月度经营汇报</h1>
       <p style={{ color: "var(--muted)" }}>汇总当月利润 + 环比 + 预实达成 + 风控/资金，由 AI 生成结构化中日双语经营点评（数据用代码算，AI 只解读）。</p>
       <div style={{ display: "flex", gap: 12, alignItems: "center", margin: "16px 0", flexWrap: "wrap" }}>
         <select value={month} onChange={(e) => setMonth(e.target.value)} style={sel}>
@@ -86,7 +86,7 @@ export default function InsightsPage() {
 
           {report.segments && report.segments.length > 0 && (
             <div className="card" style={{ padding: 16 }}>
-              <div style={{ fontWeight: 650, marginBottom: 10 }}>分部点评 · 法人 / 业务小组</div>
+              <div style={{ fontWeight: 650, marginBottom: 10 }}>分部点评 · 法人 / 业务部门</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10 }}>
                 {report.segments.map((s, i) => (
                   <div key={i} style={{ borderLeft: "3px solid var(--accent)", padding: "4px 10px", background: "var(--panel)", borderRadius: 6 }}>
