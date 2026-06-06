@@ -99,7 +99,7 @@ const FEE_MAP: Record<string, string> = {
   事業維持費: "事業維持費", 业务维持费: "事業維持費", "人材·IT投資": "人材·IT投資", 人才与IT投资: "人材·IT投資",
   役員関連費用: "役員関連費用", 税金: "税金", 对象外: "对象外",
 };
-const CN_DEPTS = new Set(["OS課", "総務人事室", "財務室", "管理部", "DX室（中国）", "海外開発室", "業務開発室", "Project室", "Japan Desk課", "業務財務室", "上海支店", "Marketing", "治理室", "GC課"]);
+const CN_DEPTS = new Set(["OS課", "総務人事室", "財務室", "管理部", "DX室（中国）", "海外開発室", "業務開発室", "物流開発室", "Project室", "Japan Desk課", "業務財務室", "上海支店", "Marketing", "治理室", "GC課"]);
 const JP_DEPTS = new Set(["TCC課", "通関課", "営業課", "業務課", "総務課"]);
 function deptRegion(d: string): string | null {
   if (CN_DEPTS.has(d)) return "中国";
@@ -123,9 +123,11 @@ export async function syncSga(month: string): Promise<{ rows: number; total: num
       const isExcluded = fee === "税金" || fee === "对象外" || checked(r["集計対象外"]) || checked(r["収入項目ですか"]);
       const sub = (r["部署按分"]?.value as { value: KRecord }[]) || [];
       for (const row of sub) {
-        const d = str(row.value?.["部署名"]);
         const amt = num(row.value?.["部署按分費用JPY"]) || 0;
         if (!amt) continue;
+        // 部署名优先；为空时回退 部署キー(去 日本/中国 前缀)——有按分费用必有部署
+        let d = str(row.value?.["部署名"]).trim();
+        if (!d) d = str(row.value?.["部署キー"]).replace(/^(日本|中国)/, "").trim();
         const region = deptRegion(d);
         out.push({ source_app: envOrThrow(app.idEnv), "期间": month, region, "部门": d, "费用类型": fee, "是否除外": isExcluded, "金额": amt, "分摊到小组": d });
         if (!isExcluded) { total += amt; if (region == null) unmapped.add(d); } else excluded += amt;

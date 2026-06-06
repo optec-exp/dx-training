@@ -31,7 +31,7 @@ const FEE_MAP = {
   税金: "税金", 对象外: "对象外",
 };
 // 部署→地域：仅按王莹清单 + （中国）后缀；清单外=未映射
-const CN_DEPTS = new Set(["OS課", "総務人事室", "財務室", "管理部", "DX室（中国）", "海外開発室", "業務開発室", "Project室", "Japan Desk課", "業務財務室", "上海支店", "Marketing", "治理室", "GC課"]);
+const CN_DEPTS = new Set(["OS課", "総務人事室", "財務室", "管理部", "DX室（中国）", "海外開発室", "業務開発室", "物流開発室", "Project室", "Japan Desk課", "業務財務室", "上海支店", "Marketing", "治理室", "GC課"]);
 const JP_DEPTS = new Set(["TCC課", "通関課", "営業課", "業務課", "総務課"]);
 function deptRegion(d) {
   if (CN_DEPTS.has(d)) return "中国";
@@ -69,9 +69,11 @@ for (const [label, id, token] of APPS) {
     const isExcluded = fee === "税金" || fee === "对象外" || checked(r["集計対象外"]) || checked(r["収入項目ですか"]);
     const sub = r["部署按分"]?.value || [];
     for (const row of sub) {
-      const d = v(row.value?.["部署名"]);
       const amt = parseFloat(v(row.value?.["部署按分費用JPY"])) || 0;
       if (!amt) continue; // 只抓有按分费用的行，金额=0 忽略
+      // 部署名优先；为空时回退 部署キー(去 日本/中国 前缀)
+      let d = String(v(row.value?.["部署名"])).trim();
+      if (!d) d = String(v(row.value?.["部署キー"])).replace(/^(日本|中国)/, "").trim();
       const region = deptRegion(d);
       rows.push({ source_app: String(id), 期间: ym, region, 部门: d, 费用类型: fee, 是否除外: isExcluded, 金额: amt, 分摊到小组: d });
       if (!isExcluded) {

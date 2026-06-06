@@ -156,13 +156,8 @@ export default async function ProfitPage({
     { 小组: "JP DESK", act: jpAct, bud: { 毛利: mergeBud("毛利"), 贩管费: mergeBud("贩管费"), 净利: mergeBud("净利") } },
     { 小组: "通関", act: fyGroups.get("通関") || Z3(), bud: fyGroupBudgets["通関"] ?? NB },
   ];
-  // 管理部门贩管费 全年累计（按中日）
-  const mgmtFY = (["中国", "日本"] as const).map((r) => {
-    const entries = [...fyMgmt].filter(([, m]) => m.地域 === r);
-    const sum = entries.reduce((s, [, m]) => s + m.贩管费, 0);
-    const bud = entries.reduce<number | null>((s, [d]) => { const b = fyMgmtBudgets[d]; return b == null ? s : (s || 0) + b; }, null);
-    return { region: r, sum, bud, has: entries.length > 0 };
-  });
+  // 管理部门贩管费 全年累计（按部门）
+  const mgmtFYDept = [...fyMgmt].map(([部门, m]) => ({ 部门, 实绩: m.贩管费, 预算: fyMgmtBudgets[部门] ?? null, 地域: m.地域 }));
 
   return (
     <div>
@@ -252,25 +247,9 @@ export default async function ProfitPage({
               {groupPL.mgmt.length > 0 && <BarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} xKey="部门" barKey="贩管费" tilt />}
             </div>
           )}
-          {fyYtd && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginTop: 14 }}>
-              {bizFYFull.map((g) => (
-                <div key={g.小组} className="card" style={{ padding: 14 }}>
-                  <div style={{ fontWeight: 650, marginBottom: 6 }}>{g.小组} · 全年累计达成</div>
-                  {bullet("毛利", g.act.毛利, g.bud.毛利)}
-                  {bullet("贩管费", g.act.贩管费, g.bud.贩管费, "neutral")}
-                  {bullet("净利", g.act.净利, g.bud.净利)}
-                </div>
-              ))}
-              <div className="card" style={{ padding: 14 }}>
-                <div style={{ fontWeight: 650, marginBottom: 6 }}>管理部门贩管费 · 全年累计达成</div>
-                {mgmtFY.filter((m) => m.has).map((m) => <div key={m.region}>{bullet(`${m.region}管理`, m.sum, m.bud, "neutral")}</div>)}
-              </div>
-            </div>
-          )}
           {groupPL && (
-            <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（毛利/贩管费/净利 + 预实）+ 管理部门" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
-              <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} />
+            <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（毛利/贩管费/净利 · 本期间预实 + 全年累计达成）+ 管理部门" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
+              <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} />
               <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务小组映射可调（OS課→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関）；役員関連費用不计入小组。预算未录显 —。</p>
             </Collapsible></div>
           )}
