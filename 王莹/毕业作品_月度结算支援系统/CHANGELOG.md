@@ -6,6 +6,19 @@
 
 ## 逐页细节优化
 
+### ⑧风控异常面板全优化(加成率汇入/海外代理差异趋势/重复账单/异常下钻/多月趋势/坏账处理)
+- **王莹指示**：5项全优化 + 长期挂账增加坏账处理(Kintone无此功能,本系统实现,标记坏账的从挂账剔除进坏账卡片)。
+- **改了什么**：
+  - **A 加成率超标汇入面板**：加成率flagged并进顶部KPI(🚩加成率超标,2026-06起生效)+专属卡片(偏离标准明细),不再孤立于页底。
+  - **B 海外代理差异趋势**：getAgentDiffTrend()从reconciliations按供应商×月统计差异笔数/差额(仅列有差异代理),表格展示;当前全匹配→显示✓无差异。
+  - **C 重复账单检测增强**：getRiskPanel加重复账单(账单层bill_lines 同供应商+提单号+金额+币种多次),与Kintone成本层重复成本并列双卡。
+  - **D 异常下钻**：负毛利/异常大额表格点OPT展开成本明细(/api/risk/drill→kc_cost_lines+案件概要 売上−成本=毛利),RiskAnomalies客户端组件。
+  - **E 多月异常趋势+折叠**：getRiskTrend()按月统计负毛利/异常大额→GroupedBarCard;加成率审查明细收进<details>折叠。
+  - **坏账处理**：新表settlement.bad_debts(王莹建);/api/bad-debt POST标记/DELETE恢复;BadDebtCards长期挂账「标记坏账」(可填备注)→写入并从挂账Set剔除→坏账卡片(合计+恢复)。
+- **文件**：lib/risk-panel.ts(重复账单/坏账排除/getAgentDiffTrend/getRiskTrend)、app/risk/page.tsx、app/_components/{RiskAnomalies,BadDebtCards}.tsx、app/api/{bad-debt,risk/drill}/route.ts
+- **建表(王莹跑)**：`create table settlement.bad_debts(id uuid pk default gen_random_uuid(),客户 text not null,金额 numeric,备注 text,标记时间 timestamptz default now())`。
+- **验证**：/risk 2026-05/06 均200;坏账POST/DELETE闭环✓(标记写入→读回→恢复删除);改动文件tsc无错误。✅
+
 ### ⑦资金管理-投资建议(HSBC USD账户+起投$100万,联动应收应付)
 - **王莹信息**：投资只用 HSBC USD 账户、起投 $100万；建议要联动应收应付。
 - **改了什么**：getInvestmentAdvice:HSBC USD余额(kc_bank_balance最新月)+已投USD+未来应收应付净流入(getCashflowForecast按汇率折USD)→净流入正=流动性充裕可投全部,净流出=扣减留存→建议可投额度+笔数(每$100万)+状态(充裕/需留存/不足)+文案;/api/investment GET返回advice;InvestmentPanel加投资能力卡(余额/已投/净流入/建议可投+文案),录入币种默认USD。
