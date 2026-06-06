@@ -221,7 +221,7 @@ export default async function ProfitPage({
             </Collapsible></div>
           )}
           <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 12 }}>校验：Σ毛利 {yen(report.sumGrossProfit)} ＝ 已按分 {yen(report.total)} ＋ 未分配 {yen(report.unallocated.amount)}{Math.abs(report.sumGrossProfit - report.total - report.unallocated.amount) < 1 ? " ✅ 守恒" : " ⚠️"}</p>
-          {report.unallocated.cases.length > 0 && (<div className="warn-box">⚠️ 未分配 {yen(report.unallocated.amount)}（{report.unallocated.cases.length} 票，团队字段缺失，不计入小组）：<ul>{report.unallocated.cases.map((c) => (<li key={c.opt_no}>{c.opt_no} — {yen(c.short)}（{c.reason}）</li>))}</ul></div>)}
+          {report.unallocated.cases.length > 0 && (<div className="warn-box">⚠️ 未分配 {yen(report.unallocated.amount)}（{report.unallocated.cases.length} 票，团队字段缺失，不计入业务部门）：<ul>{report.unallocated.cases.map((c) => (<li key={c.opt_no}>{c.opt_no} — {yen(c.short)}（{c.reason}）</li>))}</ul></div>)}
 
           {/* ═══════════ 中国 / 日本 ═══════════ */}
           {Sec("中国 / 日本（地域）")}
@@ -239,22 +239,22 @@ export default async function ProfitPage({
           )}
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：Japan Desk 課 {yen(report.jpdesk.profit)} → 中国 {yen(report.jpdesk.cn)} + 日本 {yen(report.jpdesk.jp)}{sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}</p>
 
-          {/* ═══════════ 小组 ═══════════ */}
-          {Sec("小组")}
+          {/* ═══════════ 业务部门 ═══════════ */}
+          {Sec("业务部门（业务部 + 管理部）")}
           {groupPL && (
             <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16, marginTop: 8, alignItems: "start" }}>
-              <GroupedBarCard title="业务小组 毛利/贩管费/净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 毛利: Math.round(b.毛利), 贩管费: Math.round(b.贩管费), 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" bars={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "贩管费", name: "贩管费", color: "#fbbf24" }, { key: "净利", name: "净利", color: "#34d399" }]} />
+              <GroupedBarCard title="业务部门 毛利/贩管费/净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 毛利: Math.round(b.毛利), 贩管费: Math.round(b.贩管费), 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" bars={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "贩管费", name: "贩管费", color: "#fbbf24" }, { key: "净利", name: "净利", color: "#34d399" }]} />
               {groupPL.mgmt.length > 0 && <BarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} xKey="部门" barKey="贩管费" tilt />}
             </div>
           )}
           {groupPL && (
-            <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（毛利/贩管费/净利 · 本期间预实 + 全年累计达成）+ 管理部门" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
+            <div style={{ marginTop: 16 }}><Collapsible title="业务部门损益 · 业务部 P&amp;L（毛利/贩管费/净利 · 本期间预实 + 全年累计达成）+ 管理部" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
               <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} />
-              <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务小组映射可调（OS課→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関）；役員関連費用不计入小组。预算未录显 —。</p>
+              <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务部门映射可调（OS課→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関）；役員関連費用不计入业务部门。预算未录显 —。</p>
             </Collapsible></div>
           )}
           <div style={{ marginTop: 16 }}>
-            <Collapsible title="小组 × 4 维度（見積 / 国别 / 输出 / 输入）" defaultOpen={false} right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 折叠中日</span>}>
+            <Collapsible title="业务部门 × 4 维度（見積 / 国别 / 输出 / 输入）" defaultOpen={false} right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 折叠中日</span>}>
               <GroupTable groups={report.groups} />
             </Collapsible>
           </div>

@@ -60,7 +60,7 @@ export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets, biz
       {/* 业务部门 P&L + 全年累计达成（右侧空白） */}
       <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
         <table className="report-table" style={{ flex: "1 1 520px", boxShadow: "none", margin: 0 }}>
-          <thead><tr><th>业务小组</th><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
+          <thead><tr><th>业务部门</th><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
           <tbody>
             {business.map((b) => {
               if (b.小组.startsWith("JP DESK")) {
@@ -77,7 +77,7 @@ export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets, biz
           </tbody>
         </table>
         <div style={{ flex: "1 1 320px", minWidth: 300 }}>
-          <div style={{ fontWeight: 650, marginBottom: 8, fontSize: 13 }}>业务小组 · 全年累计达成</div>
+          <div style={{ fontWeight: 650, marginBottom: 8, fontSize: 13 }}>业务部门 · 全年累计达成</div>
           {bizFY.map((g) => (
             <div key={g.小组} style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 600, marginBottom: 3 }}>{g.小组}</div>
