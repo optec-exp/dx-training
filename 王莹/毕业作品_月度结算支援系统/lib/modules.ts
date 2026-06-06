@@ -12,7 +12,7 @@ export const MODULES: ModuleDef[] = [
   { slug: "reconciliation", no: "②", title: "对账 / 差异工作台", desc: "上传账单 PDF → AI 解析 → 与 Kintone 成本自动比对", group: "核心闭环" },
   { slug: "close",          no: "③", title: "关账 / 锁账",     desc: "缺账单门禁 + 月结→正式锁账状态机", group: "核心闭环" },
   { slug: "sync-check",     no: "④", title: "三 App 同步排查", desc: "案件 ⟷ 入金/支付 逐票核对", group: "核心闭环" },
-  { slug: "settlement",     no: "⑥", title: "月度决算勾稽",     desc: "银行残高 ⟷ 现金流（按币种）", group: "核心闭环" },
+  { slug: "settlement",     no: "⑥", title: "月度决算",         desc: "银行残高 ⟷ 现金流（按币种）", group: "核心闭环" },
   // 经营分析
   { slug: "profit",         no: "⑤", title: "利润报表 / 看板", desc: "全社/中/日/小组 · 毛利·贩管费·净利·预实·加成率", group: "经营分析" },
   { slug: "treasury",       no: "⑦", title: "资金管理",         desc: "应收应付账龄 · 资金预测 · 信用 · 投资", group: "经营分析" },

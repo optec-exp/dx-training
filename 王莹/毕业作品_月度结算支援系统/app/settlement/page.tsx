@@ -14,7 +14,7 @@ export default async function SettlementPage({ searchParams }: { searchParams: P
 
   return (
     <div>
-      <h1 style={{ marginTop: 0 }}>⑥ 月度决算 · 银行残高</h1>
+      <h1 style={{ marginTop: 0 }}>⑥ 月度决算</h1>
       <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
         <MonthPicker value={month} basePath="/settlement" />
         <span style={{ color: "var(--muted)", fontSize: 13 }}>残高差额 = 本月末 − 上月末，按币种汇总</span>
