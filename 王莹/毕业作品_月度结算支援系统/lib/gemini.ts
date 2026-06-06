@@ -79,6 +79,31 @@ export async function generateText(prompt: string): Promise<string> {
   throw new Error(`Gemini 生成失败（已重试/降级）：${lastErr}`);
 }
 
+// 结构化文本生成（经营汇报等）：传入 schema，返回解析后的 JSON。带降级重试。
+export async function generateJson<T = unknown>(prompt: string, schema: Record<string, unknown>): Promise<T> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) throw new Error("缺少 GEMINI_API_KEY");
+  const body = JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", responseSchema: schema, temperature: 0.4 } });
+  let lastErr = "";
+  for (const model of MODELS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return JSON.parse(text as string) as T;
+        throw new Error("Gemini 未返回内容");
+      }
+      lastErr = `${res.status} ${await res.text()}`;
+      if (res.status === 503 || res.status === 429) { await new Promise((r) => setTimeout(r, 1500)); continue; }
+      break;
+    }
+  }
+  throw new Error(`Gemini 生成失败（已重试/降级）：${lastErr}`);
+}
+
 export async function parseBillPdf(base64: string): Promise<ParsedBill> {
   return callParse([{ inline_data: { mime_type: "application/pdf", data: base64 } }, { text: PROMPT }]);
 }

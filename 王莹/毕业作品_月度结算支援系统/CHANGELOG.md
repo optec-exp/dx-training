@@ -6,6 +6,17 @@
 
 ## 逐页细节优化
 
+### ⑨AI洞察全优化(富化事实/环比/预实/结构化双语/月份下拉/复制)
+- **王莹指示**：5项全做(①富化事实②环比上月③结构化呈现④月份下拉⑤复制导出)。
+- **改了什么**：
+  - **① 富化事实**：facts 从只有三大指标+YTD,扩为 当月+环比上月(±%)+当月预实达成率(getBudget)+YTD+【全社风控】(负毛利/异常大额/重复/长期挂账户数金额/坏账)+【加成率审查】+【资金】(现金流预测净额/HSBC可投美金)。中日法人口径只附预实+环比+YTD,风控/资金仅全社附(不分法人)。
+  - **② 环比**：prevMonth()算上月,毛利/净利环比金额+百分比。
+  - **③ 结构化双语**：gemini新增generateJson(responseSchema);schema=摘要/概述/亮点[]/风险[]/建议[]各中日双语;前端摘要卡(accent边)+概述卡+亮点/风险/建议三栏BiList。
+  - **④ 月份下拉**：GET /api/insights返available months,裸input改下拉。
+  - **⑤ 复制全文**：plainText()拼中日报告→navigator.clipboard,按钮"✓已复制"。
+- **文件**：lib/gemini.ts(generateJson)、app/api/insights/route.ts、app/insights/page.tsx
+- **验证**：GET返3月;POST全社2026-05→facts含环比-9.6%/预实103%/挂账6户/资金充裕,结构化报告(摘要+3亮点+3风险+2建议);页面200;tsc无错误。✅
+
 ### ⑧风控-王莹反馈三修(OPT改案件番号/趋势图去¥/下钻不移位)
 - **王莹反馈**：①页面所有"OPT"改"案件番号";②多月异常趋势是案件数,用¥羊角符号不合适;③案件展开下钻时表头标记位置移位。
 - **改了什么**：① risk页所有列头/说明 OPT→案件番号(加成率超标/负毛利/异常大额/重复成本/审查明细);② GroupedBarCard加count prop(Tooltip"N件"+Y轴纯整数allowDecimals=false),趋势图传count;③ RiskAnomalies下钻改为整行colSpan明细行(原塞在第一td致列宽重算移位)+表tableLayout:fixed固定列宽,DrillRow用useEffect取数。
