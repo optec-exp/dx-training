@@ -177,10 +177,16 @@ const DEPT_TO_GROUP: Record<string, string> = {
   通関課: "通関",
 };
 const BIZ_GROUPS = ["OS", "JP DESK中国", "JP DESK日本", "通関"];
+// 管理部门→地域（与同步层 JP_DEPTS 一致：総務課/営業課/業務課/通関課/TCC課=日本；其余=中国）
+const JP_MGMT = new Set(["TCC課", "通関課", "営業課", "業務課", "総務課"]);
+function mgmtRegion(dept: string): "中国" | "日本" {
+  if (JP_MGMT.has(dept)) return "日本";
+  return "中国";
+}
 
 export interface GroupPL {
   business: { 小组: string; 毛利: number; 贩管费: number; 净利: number }[];
-  mgmt: { 部门: string; 贩管费: number }[];
+  mgmt: { 部门: string; 贩管费: number; 地域: "中国" | "日本" }[];
 }
 export function buildGroupPL(groups: GroupRow[], sgaByDept: Map<string, number>): GroupPL {
   const gp = new Map<string, number>();
@@ -189,11 +195,11 @@ export function buildGroupPL(groups: GroupRow[], sgaByDept: Map<string, number>)
     if (BIZ_GROUPS.includes(name)) gp.set(name, g.total);
   }
   const sgaByGroup = new Map<string, number>();
-  const mgmt: { 部门: string; 贩管费: number }[] = [];
+  const mgmt: { 部门: string; 贩管费: number; 地域: "中国" | "日本" }[] = [];
   for (const [dept, amt] of sgaByDept) {
     const grp = DEPT_TO_GROUP[dept];
     if (grp) sgaByGroup.set(grp, (sgaByGroup.get(grp) || 0) + amt);
-    else mgmt.push({ 部门: dept, 贩管费: amt });
+    else mgmt.push({ 部门: dept, 贩管费: amt, 地域: mgmtRegion(dept) });
   }
   const business = BIZ_GROUPS.map((小组) => {
     const 毛利 = gp.get(小组) || 0, 贩管费 = sgaByGroup.get(小组) || 0;

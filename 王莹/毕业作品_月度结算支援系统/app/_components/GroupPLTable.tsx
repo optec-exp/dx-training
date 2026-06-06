@@ -4,7 +4,7 @@ import { useState, Fragment } from "react";
 
 interface Row { 小组: string; 毛利: number; 贩管费: number; 净利: number }
 interface Budget { 毛利: number | null; 贩管费: number | null; 净利: number | null }
-interface Mgmt { 部门: string; 贩管费: number }
+interface Mgmt { 部门: string; 贩管费: number; 地域: "中国" | "日本" }
 const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
 const METRICS = ["毛利", "贩管费", "净利"] as const;
 
@@ -61,21 +61,36 @@ export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets }: {
 
       {mgmt.length > 0 && (
         <>
-          <h3>管理部门（成本中心 · 只列贩管费 · 含预实）</h3>
+          <h3>管理部门（成本中心 · 只列贩管费 · 按中日分 · 含预实）</h3>
           <table className="report-table" style={{ maxWidth: 640, boxShadow: "none", margin: 0 }}>
             <thead><tr><th>部门</th><th className="num">贩管费实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
             <tbody>
-              {mgmt.map((m) => {
-                const b = mgmtBudgets[m.部门] ?? null;
-                return (
-                  <tr key={m.部门}>
-                    <td>{m.部门}</td>
-                    <td className="num strong neg">{yen(m.贩管费)}</td>
-                    <td className="num">{b == null ? "—" : yen(b)}</td>
-                    <td className={"num" + (b != null && m.贩管费 - b > 0 ? " neg" : "")}>{b == null ? "—" : yen(m.贩管费 - b)}</td>
-                    <td className="num">{b ? ((m.贩管费 / b) * 100).toFixed(0) + "%" : "—"}</td>
-                  </tr>
-                );
+              {(["中国", "日本"] as const).flatMap((region) => {
+                const list = mgmt.filter((m) => m.地域 === region);
+                if (!list.length) return [];
+                const sub = list.reduce((s, m) => s + m.贩管费, 0);
+                const subBud = list.reduce<number | null>((s, m) => { const b = mgmtBudgets[m.部门]; return b == null ? s : (s || 0) + b; }, null);
+                return [
+                  <tr key={region} style={{ background: "var(--panel-2)", borderTop: "2px solid var(--border)" }}>
+                    <td style={{ fontWeight: 700 }}>{region}管理部门 小计</td>
+                    <td className="num strong neg">{yen(sub)}</td>
+                    <td className="num">{subBud == null ? "—" : yen(subBud)}</td>
+                    <td className={"num" + (subBud != null && sub - subBud > 0 ? " neg" : "")}>{subBud == null ? "—" : yen(sub - subBud)}</td>
+                    <td className="num">{subBud ? ((sub / subBud) * 100).toFixed(0) + "%" : "—"}</td>
+                  </tr>,
+                  ...list.map((m) => {
+                    const b = mgmtBudgets[m.部门] ?? null;
+                    return (
+                      <tr key={m.部门}>
+                        <td style={{ paddingLeft: 24, color: "var(--muted)" }}>{m.部门}</td>
+                        <td className="num neg">{yen(m.贩管费)}</td>
+                        <td className="num">{b == null ? "—" : yen(b)}</td>
+                        <td className={"num" + (b != null && m.贩管费 - b > 0 ? " neg" : "")}>{b == null ? "—" : yen(m.贩管费 - b)}</td>
+                        <td className="num">{b ? ((m.贩管费 / b) * 100).toFixed(0) + "%" : "—"}</td>
+                      </tr>
+                    );
+                  }),
+                ];
               })}
             </tbody>
           </table>
