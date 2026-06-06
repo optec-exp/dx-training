@@ -171,7 +171,7 @@ const JPDESK_TEAMS = ["TCC", "GC", "EC", "Japan Desk"]; // 归入 JP DESK 分组
 
 // 小组损益（业务部门 P&L + 管理部门只贩管费）。部门→利润小组映射（可调）。
 const DEPT_TO_GROUP: Record<string, string> = {
-  OS課: "OS",
+  OS課: "OS", 物流開発室: "OS", // 物流開発=OS的子分支,贩管费并入OS,无独立预算
   GC課: "JP DESK中国", "Japan Desk課": "JP DESK中国", EC室: "JP DESK中国",
   TCC課: "JP DESK日本", 業務課: "JP DESK日本",
   通関課: "通関",
