@@ -1,5 +1,6 @@
 import { getReceivablesAging, getPayablesAging, type AgingReport } from "@/lib/treasury";
-import { BarCard } from "@/app/_components/Charts";
+import { getBankBalanceTrend } from "@/lib/settlement";
+import { BarCard, LineCard } from "@/app/_components/Charts";
 import InvestmentPanel from "@/app/_components/InvestmentPanel";
 
 export const dynamic = "force-dynamic";
@@ -7,7 +8,8 @@ const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
 
 export default async function TreasuryPage() {
   let ar: AgingReport | null = null, ap: AgingReport | null = null, err: string | null = null;
-  try { ar = await getReceivablesAging(); ap = await getPayablesAging(); }
+  let bankTrend: { 月份: string; 円換算残高: number }[] = [];
+  try { ar = await getReceivablesAging(); ap = await getPayablesAging(); bankTrend = await getBankBalanceTrend(); }
   catch (e) { err = e instanceof Error ? e.message : String(e); }
 
   return (
@@ -36,6 +38,23 @@ export default async function TreasuryPage() {
           <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>按账龄估算现金流入(应收)减流出(应付)。</p>
         </div>
       )}
+
+      <div style={{ marginTop: 24 }}>
+        <h3 style={{ marginTop: 0 }}>円換算残高 趋势（所有账户合计 · 折日元）</h3>
+        {bankTrend.length === 0 ? (
+          <div className="warn-box">暂无银行残高数据。到 <a href="/settlement" style={{ color: "var(--accent)" }}>⑥ 月度决算</a> 点「↻ 重新同步」逐月拉取。</div>
+        ) : bankTrend.length === 1 ? (
+          <div className="kpi-row">
+            <div className="kpi primary"><div className="kpi-label">{bankTrend[0].月份} 円換算残高合计</div><div className="kpi-value">{yen(bankTrend[0].円換算残高)}</div></div>
+            <div className="kpi"><div className="kpi-label">提示</div><div style={{ color: "var(--muted)", fontSize: 13, padding: "8px 0" }}>同步多个月份后显示趋势折线</div></div>
+          </div>
+        ) : (
+          <div style={{ maxWidth: 720 }}>
+            <LineCard title="" data={bankTrend as unknown as Record<string, unknown>[]} xKey="月份" lines={[{ key: "円換算残高", name: "円換算残高合计", color: "#2563eb" }]} />
+          </div>
+        )}
+      </div>
+
       <InvestmentPanel />
     </div>
   );

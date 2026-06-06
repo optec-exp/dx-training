@@ -1,6 +1,6 @@
 "use client";
 
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend, Cell as C } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend, Cell as C, LineChart, Line } from "recharts";
 
 const PALETTE = ["#2563eb", "#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#fb7185", "#22d3ee"];
 const man = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
@@ -29,6 +29,21 @@ export function BarCard({ title, data, xKey, barKey, colorByValue }: { title: st
           {data.map((d, i) => <C key={i} fill={colorByValue && Number(d[barKey]) < 0 ? "#dc2626" : PALETTE[i % PALETTE.length]} />)}
         </Bar>
       </BarChart>
+    </Frame>
+  );
+}
+
+export function LineCard({ title, data, xKey, lines, h }: { title: string; data: Record<string, unknown>[]; xKey: string; lines: { key: string; name: string; color: string }[]; h?: number }) {
+  return (
+    <Frame title={title} h={h ?? 240}>
+      <LineChart data={data} margin={{ top: 8, right: 16, left: 4, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" />
+        <XAxis dataKey={xKey} tick={{ fontSize: 11, fill: "#6b7585" }} />
+        <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={52} />
+        <Tooltip formatter={(v: number) => man(v)} />
+        {lines.length > 1 && <Legend />}
+        {lines.map((l) => <Line key={l.key} type="monotone" dataKey={l.key} name={l.name} stroke={l.color} strokeWidth={2} dot={{ r: 3 }} />)}
+      </LineChart>
     </Frame>
   );
 }

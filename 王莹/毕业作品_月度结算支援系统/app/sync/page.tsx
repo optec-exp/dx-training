@@ -8,7 +8,7 @@ export default function SyncPage() {
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function run(type: "cases" | "sga" | "check" | "all") {
+  async function run(type: "cases" | "sga" | "check" | "settlement" | "all") {
     setBusy(type);
     setError(null);
     setResult(null);
@@ -51,6 +51,9 @@ export default function SyncPage() {
         </button>
         <button className="btn" disabled={!!busy} onClick={() => run("check")}>
           {busy === "check" ? "排查中…" : "同步排查④"}
+        </button>
+        <button className="btn" disabled={!!busy} onClick={() => run("settlement")}>
+          {busy === "settlement" ? "同步中…" : "同步决算⑥"}
         </button>
         <button className="btn primary" disabled={!!busy} onClick={() => run("all")}>
           {busy === "all" ? "同步中…" : "全部同步"}

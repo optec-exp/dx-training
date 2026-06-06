@@ -6,6 +6,15 @@
 
 ## 逐页细节优化
 
+### ⑥月度决算优化(改名+网页刷新/法人/円換算残高/构成钻取/趋势) + ⑦円換算残高趋势
+- **改名**：模块⑥「月度决算勾稽」→「月度决算」(modules.ts + 页标题)。
+- **建列(王莹跑)**：kc_bank_balance 加 円換算残高/対象法人；settlement_checks 加 构成 jsonb。
+- **⑥优化(1/2/4/5/6/7+删图)**：① 网页「↻重新同步」(银行残高+现金勾稽搬进lib syncBank/syncSettlementCash)；② 现金勾稽点币种钻取构成(入金/业务出金各EXP-TRD+贩管费出金,不再实时拉)；④ 残高差额/现金净额按月趋势LineCard(≥2月显示)；⑤ 差异说明强化(银行未必全覆盖业务现金/汇率/跨币种调拨)；⑥ 空数据→刷新按钮引导；⑦ 法人维度(EXP/TRD,円換算残高+残高差额按法人KPI,银行明细带法人药丸+円換算残高)；**删掉残高差额柱状图**(与KPI重复)；现金勾稽不平置顶。页重建为客户端 SettlementView + /api/settlement(GET月报+勾稽+趋势)。
+- **⑦资金管理**：加「円換算残高」按月趋势(所有账户合计,getBankBalanceTrend);1月时显KPI,≥2月显折线。
+- **新增折线图组件** Charts.tsx LineCard。/sync页加「同步决算⑥」按钮。
+- **文件**：lib/sync.ts(syncBank/syncSettlementCash)、lib/settlement.ts(byLegal/円換算残高合计/getSettlementTrend/getBankBalanceTrend/构成)、app/api/settlement、app/_components/{SettlementView,Charts}.tsx、app/settlement/page.tsx、app/treasury/page.tsx、app/sync/page.tsx、lib/modules.ts、app/api/sync。
+- **验证**：同步→银行25账户/现金勾稽5币种4差异；円換算残高合计¥21.86亿(EXP22账户20.5亿/TRD3账户1.33亿);构成齐全;趋势3月(03¥22.9亿/04¥24.1亿/05¥21.86亿)。✅ 注:2026-05仅25账户(3/4月31),月底数据可能未全。
+
 ### ④同步排查页优化-网页刷新/默认差异展开一致折叠/筛选/分类/法人/钻取
 - **优化点(王莹定1-6+默认差异展开·一致折叠)**：① 网页一键「↻重新排查」(原需终端跑脚本)；② 筛选(法人EXPRESS/TRADING+搜OPT)；③ 点OPT钻取入金/支付明细(实时读Kintone定位差异在哪条)；④ 法人区分(空海/EC药丸)；⑤ 差异分类(🔴收入差异=需排查 / 🟠成本差异=未月结正常)；⑥ 折叠布局；默认只展开差异、一致行折叠进Collapsible(去掉旧的120条硬上限)。
 - **改了什么**：lib/sync.ts 加 syncCheck()(移植sync-check.mjs逻辑:案件売上/成本 vs Kintone入金/支付按OPT) + getSyncCheckDetail()(钻取)；/api/sync 加 type=check；新建 /api/sync-check(GET月报/GET?opt钻取)；sync-check页重建为客户端 SyncCheckView 组件；/sync页加「同步排查④」按钮。
