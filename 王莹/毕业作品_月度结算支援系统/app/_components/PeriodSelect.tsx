@@ -8,18 +8,11 @@ export default function PeriodSelect({ available, selected, basePath = "/profit"
   const sortedAvail = available.slice().sort();
   const latest = (selected.length ? selected.slice().sort() : sortedAvail).slice(-1)[0] || "2026-05";
   const fy = (() => { const [y, m] = latest.split("-").map(Number); return m >= 4 ? y : y - 1; })();
-  const Q: [string, string[]][] = [
-    ["Q1（4-6月）", [`${fy}-04`, `${fy}-05`, `${fy}-06`]],
-    ["Q2（7-9月）", [`${fy}-07`, `${fy}-08`, `${fy}-09`]],
-    ["Q3（10-12月）", [`${fy}-10`, `${fy}-11`, `${fy}-12`]],
-    ["Q4（1-3月）", [`${fy + 1}-01`, `${fy + 1}-02`, `${fy + 1}-03`]],
-  ];
   const fyMonths = Array.from({ length: 12 }, (_, i) => { const mo = 4 + i, y = mo <= 12 ? fy : fy + 1, mm = mo <= 12 ? mo : mo - 12; return `${y}-${String(mm).padStart(2, "0")}`; });
   const fyAvail = fyMonths.filter((m) => available.includes(m));
 
   const opts: { label: string; key: string }[] = [];
   if (fyAvail.length) opts.push({ label: `累计（FY${fy} 财年）`, key: fyAvail.slice().sort().join(",") });
-  for (const [q, ms] of Q) { const a = ms.filter((m) => available.includes(m)); if (a.length) opts.push({ label: q, key: a.slice().sort().join(",") }); }
   for (const m of sortedAvail) opts.push({ label: `${m} 单月`, key: m });
 
   const curKey = selected.slice().sort().join(",");

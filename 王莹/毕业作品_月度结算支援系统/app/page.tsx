@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MODULES } from "@/lib/modules";
 import { getDashboard } from "@/lib/dashboard";
 import DashboardCharts from "@/app/_components/DashboardCharts";
-import PeriodPicker from "@/app/_components/PeriodPicker";
+import PeriodSelect from "@/app/_components/PeriodSelect";
 
 export const dynamic = "force-dynamic";
 const wan = (n: number) => "¥" + (n / 10000).toLocaleString("ja-JP", { maximumFractionDigits: 0 }) + "万";
@@ -20,7 +20,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ m
         <h1 style={{ marginTop: 0 }}>经营驾驶舱</h1>
         {data && <span style={{ color: "var(--muted)", fontSize: 13 }}>期间：{data.periodLabel}</span>}
       </div>
-      {data && <div style={{ marginBottom: 16 }}><PeriodPicker available={data.available} selected={data.selected} /></div>}
+      {data && <div style={{ marginBottom: 16 }}><PeriodSelect available={data.available} selected={data.selected} basePath="/" /></div>}
 
       {err && <div className="placeholder">读取失败：{err}</div>}
 
