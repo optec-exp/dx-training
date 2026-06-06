@@ -3,49 +3,84 @@
 import { useState, Fragment } from "react";
 
 interface Row { 小组: string; 毛利: number; 贩管费: number; 净利: number }
+interface Budget { 毛利: number | null; 贩管费: number | null; 净利: number | null }
+interface Mgmt { 部门: string; 贩管费: number }
 const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
+const METRICS = ["毛利", "贩管费", "净利"] as const;
 
-export default function GroupPLTable({ business, budgets }: { business: Row[]; budgets: Record<string, number | null> }) {
+export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets }: {
+  business: Row[]; budgets: Record<string, Budget>; mgmt: Mgmt[]; mgmtBudgets: Record<string, number | null>;
+}) {
   const [open, setOpen] = useState(false);
   const jp = business.filter((b) => b.小组.startsWith("JP DESK"));
-  const jpMerged: Row | null = jp.length
-    ? { 小组: "JP DESK", 毛利: jp.reduce((s, b) => s + b.毛利, 0), 贩管费: jp.reduce((s, b) => s + b.贩管费, 0), 净利: jp.reduce((s, b) => s + b.净利, 0) }
-    : null;
-  const jpBudget = budgets["JP DESK"] ?? (jp.some((b) => budgets[b.小组] != null) ? jp.reduce((s, b) => s + (budgets[b.小组] || 0), 0) : null);
+  const jpMerged: Row = { 小组: "JP DESK", 毛利: jp.reduce((s, b) => s + b.毛利, 0), 贩管费: jp.reduce((s, b) => s + b.贩管费, 0), 净利: jp.reduce((s, b) => s + b.净利, 0) };
+  const jpBudget: Budget = Object.fromEntries(METRICS.map((m) => {
+    const own = budgets["JP DESK"]?.[m];
+    if (own != null) return [m, own];
+    const any = jp.some((c) => budgets[c.小组]?.[m] != null);
+    return [m, any ? jp.reduce((s, c) => s + (budgets[c.小组]?.[m] || 0), 0) : null];
+  })) as Budget;
 
-  const cell = (r: Row, bud: number | null, opts?: { child?: boolean; expandable?: boolean }) => (
-    <>
-      <td style={opts?.child ? { paddingLeft: 28, color: "var(--muted)" } : undefined}>
-        {opts?.expandable && <span style={{ color: "var(--accent)", marginRight: 6, cursor: "pointer" }}>{open ? "▾" : "▸"}</span>}
-        {r.小组}
-      </td>
-      <td className="num">{yen(r.毛利)}</td>
-      <td className="num">{yen(r.贩管费)}</td>
-      <td className={"num strong" + (r.净利 < 0 ? " neg" : "")}>{yen(r.净利)}</td>
-      <td className="num">{bud == null ? "—" : yen(bud)}</td>
-      <td className={"num" + (bud != null && r.净利 - bud < 0 ? " neg" : "")}>{bud == null ? "—" : yen(r.净利 - bud)}</td>
-      <td className="num">{bud ? ((r.净利 / bud) * 100).toFixed(0) + "%" : "—"}</td>
-    </>
-  );
+  const renderGroup = (r: Row, bud: Budget | undefined, opts?: { expandable?: boolean; child?: boolean; onClick?: () => void }) =>
+    METRICS.map((项, i) => {
+      const a = r[项], b = bud?.[项] ?? null;
+      return (
+        <tr key={r.小组 + 项} onClick={i === 0 ? opts?.onClick : undefined}
+          style={{ cursor: opts?.expandable && i === 0 ? "pointer" : undefined, borderTop: i === 0 && !opts?.child ? "2px solid var(--border)" : undefined, background: opts?.child ? "var(--panel-2)" : undefined }}>
+          <td style={{ paddingLeft: opts?.child ? 28 : undefined, color: i === 0 ? (opts?.child ? "var(--muted)" : "var(--text)") : "transparent" }}>
+            {i === 0 ? <>{opts?.expandable && <span style={{ color: "var(--accent)", marginRight: 6 }}>{open ? "▾" : "▸"}</span>}{r.小组}</> : "·"}
+          </td>
+          <td>{项}</td>
+          <td className={"num" + (项 === "净利" ? " strong" : "")}>{yen(a)}</td>
+          <td className="num">{b == null ? "—" : yen(b)}</td>
+          <td className={"num" + (b != null && a - b < 0 ? " neg" : "")}>{b == null ? "—" : yen(a - b)}</td>
+          <td className="num">{b ? ((a / b) * 100).toFixed(0) + "%" : "—"}</td>
+        </tr>
+      );
+    });
 
   return (
-    <table className="report-table" style={{ maxWidth: 900, boxShadow: "none", margin: 0 }}>
-      <thead><tr><th>业务小组</th><th className="num">毛利</th><th className="num">贩管费</th><th className="num">净利</th><th className="num">净利预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
-      <tbody>
-        {business.map((b) => {
-          if (b.小组.startsWith("JP DESK")) {
-            // 只在第一个 JP DESK* 位置渲染合并行 + 可展开子行
-            if (b.小组 !== jp[0].小组) return null;
-            return (
-              <Fragment key="jpdesk">
-                <tr onClick={() => setOpen((o) => !o)} style={{ cursor: "pointer" }}>{cell(jpMerged!, jpBudget, { expandable: true })}</tr>
-                {open && jp.map((c) => (<tr key={c.小组} style={{ background: "var(--panel-2)" }}>{cell(c, budgets[c.小组] ?? null, { child: true })}</tr>))}
-              </Fragment>
-            );
-          }
-          return <tr key={b.小组}>{cell(b, budgets[b.小组] ?? null)}</tr>;
-        })}
-      </tbody>
-    </table>
+    <>
+      <table className="report-table" style={{ maxWidth: 820, boxShadow: "none", margin: 0 }}>
+        <thead><tr><th>业务小组</th><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
+        <tbody>
+          {business.map((b) => {
+            if (b.小组.startsWith("JP DESK")) {
+              if (b.小组 !== jp[0].小组) return null;
+              return (
+                <Fragment key="jpdesk">
+                  {renderGroup(jpMerged, jpBudget, { expandable: true, onClick: () => setOpen((o) => !o) })}
+                  {open && jp.map((c) => <Fragment key={c.小组}>{renderGroup(c, budgets[c.小组], { child: true })}</Fragment>)}
+                </Fragment>
+              );
+            }
+            return <Fragment key={b.小组}>{renderGroup(b, budgets[b.小组])}</Fragment>;
+          })}
+        </tbody>
+      </table>
+
+      {mgmt.length > 0 && (
+        <>
+          <h3>管理部门（成本中心 · 只列贩管费 · 含预实）</h3>
+          <table className="report-table" style={{ maxWidth: 640, boxShadow: "none", margin: 0 }}>
+            <thead><tr><th>部门</th><th className="num">贩管费实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
+            <tbody>
+              {mgmt.map((m) => {
+                const b = mgmtBudgets[m.部门] ?? null;
+                return (
+                  <tr key={m.部门}>
+                    <td>{m.部门}</td>
+                    <td className="num strong neg">{yen(m.贩管费)}</td>
+                    <td className="num">{b == null ? "—" : yen(b)}</td>
+                    <td className={"num" + (b != null && m.贩管费 - b > 0 ? " neg" : "")}>{b == null ? "—" : yen(m.贩管费 - b)}</td>
+                    <td className="num">{b ? ((m.贩管费 / b) * 100).toFixed(0) + "%" : "—"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
+    </>
   );
 }
