@@ -12,6 +12,12 @@
 - **验证**：/profit 200;贩管费5类构成/毛利净利趋势/预实(全社中国日本)/小组4维度/全社8维度 均渲染。✅ 预算源=budgets表手工录入(/budget),当前全社为占位测试值。
 - **待续**：③ 期间选择(财年累计/季度)。
 
+### ⑤利润报表优化-批4(贩管费5类改横向柱状/小组损益加净利预实+JP DESK合并展开)
+- **王莹反馈**：贩管费5类饼图不适合(一大多小+负数,小切片饼图和图例都看不见)→改横向柱状;小组损益加预实;JP DESK合并再展开中日。
+- **改了什么**：① 贩管费5类 饼图→**横向柱状图HBarCard**(带金额标签,负数显红反向条,删重复的5类文字行);② 小组损益P&L改客户端 **GroupPLTable**:加 净利预算/差异/达成率列(getBudget各小组,未录显—),**JP DESK中国+日本合并成"JP DESK"行、点击展开中日子行**;③ Charts加HBarCard(LabelList金额)。
+- **文件**：app/_components/{Charts,GroupPLTable}.tsx、app/profit/page.tsx
+- **验证**：/profit P&L显示 OS/JP DESK(合并展开)/通関 + 净利预实列;贩管费横向柱状含负数事業活動費;5类文字行已删。✅
+
 ### ⑤利润报表优化-批3(期间选择 财年累计/季度/多选,全页聚合)
 - **改了什么**：③ 用 PeriodPicker(加basePath)替代单月选择，支持 财年累计(默认,4月起)/季度Q1-Q4/单月/多选;整页按选定月份**聚合**——合并各月案件后 computeProfitReport/computeDimensions(按分天然累计),sumSga/sumBudget/mergeDept 求和合并,getMarkupReport 改接受月份数组(.in查询),JP DESK人数用最新选定月,趋势仍按财年各月。
 - **文件**：app/profit/page.tsx、app/_components/PeriodPicker.tsx(basePath)、lib/markup-review.ts(月份数组)

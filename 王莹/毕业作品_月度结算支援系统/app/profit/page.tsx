@@ -6,8 +6,9 @@ import { getBudget, type BudgetData } from "@/lib/budget";
 import { getMarkupReport, type MarkupReport } from "@/lib/markup-review";
 import PeriodPicker from "@/app/_components/PeriodPicker";
 import GroupTable from "@/app/_components/GroupTable";
+import GroupPLTable from "@/app/_components/GroupPLTable";
 import Collapsible from "@/app/_components/Collapsible";
-import { PieCard, BarCard, LineCard } from "@/app/_components/Charts";
+import { PieCard, BarCard, LineCard, HBarCard } from "@/app/_components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -59,6 +60,7 @@ export default async function ProfitPage({
   let dims: DimBreakdown[] | null = null;
   let groupPL: GroupPL | null = null;
   let budgetCN: BudgetData | null = null, budgetJP: BudgetData | null = null;
+  const groupBudgets: Record<string, number | null> = {};
   let markup: MarkupReport | null = null;
   let trend: { 月份: string; 毛利: number; 净利: number }[] = [];
   let err: string | null = null;
@@ -71,6 +73,10 @@ export default async function ProfitPage({
     budgetCN = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "中国"))));
     budgetJP = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "日本"))));
     groupPL = buildGroupPL(report.groups, mergeDept(await Promise.all(selected.map(getSgaByDept))));
+    // 业务小组 净利预算（手工录入，未录显—）
+    for (const g of ["OS", "JP DESK中国", "JP DESK日本", "通関", "JP DESK"]) {
+      groupBudgets[g] = sumBudget(await Promise.all(selected.map((m) => getBudget(m, g)))).净利;
+    }
     markup = await getMarkupReport(selected);
     // 多月趋势：财年各月 毛利/净利
     trend = (await Promise.all(available.map(async (m) => {
@@ -137,7 +143,7 @@ export default async function ProfitPage({
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 16, marginTop: 16 }}>
-            {sga && <PieCard title="贩管费 5 类构成" data={FEE5.map((f) => ({ name: f, value: Math.max(0, Math.round(sga!.byCategory[f] || 0)) }))} />}
+            {sga && <HBarCard title="贩管费 5 类（金额 · 负数=退费）" data={FEE5.map((f) => ({ 类别: f, 金额: Math.round(sga!.byCategory[f] || 0) }))} catKey="类别" valKey="金额" />}
             {trend.length >= 2 && <LineCard title="毛利 / 净利 月度趋势" data={trend as unknown as Record<string, unknown>[]} xKey="月份" lines={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "净利", name: "净利", color: "#34d399" }]} />}
           </div>
 
@@ -179,12 +185,6 @@ export default async function ProfitPage({
             {sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}
           </p>
 
-          {sga && (
-            <p style={{ color: "var(--muted)", fontSize: 13 }}>
-              贩管费 5 类：
-              {FEE5.map((f) => `${f} ${yen(sga.byCategory[f] || 0)}`).join("  ｜  ")}
-            </p>
-          )}
           {sga && sga.unmappedNonZero.length > 0 && (
             <div className="warn-box">
               ⚠️ 未映射地域的贩管费（未计入中/日，请确认归属）：
@@ -219,20 +219,8 @@ export default async function ProfitPage({
           </div>
 
           {groupPL && (
-            <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（净利 = 毛利 − 自身贩管费）+ 管理部门" defaultOpen={false}>
-              <table className="report-table" style={{ maxWidth: 760 }}>
-                <thead><tr><th>业务小组</th><th className="num">毛利</th><th className="num">贩管费</th><th className="num">净利</th></tr></thead>
-                <tbody>
-                  {groupPL.business.map((b) => (
-                    <tr key={b.小组}>
-                      <td>{b.小组}</td>
-                      <td className="num">{yen(b.毛利)}</td>
-                      <td className="num">{yen(b.贩管费)}</td>
-                      <td className={"num strong" + (b.净利 < 0 ? " neg" : "")}>{yen(b.净利)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（净利 = 毛利 − 自身贩管费 · 含净利预实）+ 管理部门" defaultOpen={false} right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
+              <GroupPLTable business={groupPL.business} budgets={groupBudgets} />
               {groupPL.mgmt.length > 0 && (
                 <>
                   <h3>管理部门（成本中心 · 只列贩管费）</h3>

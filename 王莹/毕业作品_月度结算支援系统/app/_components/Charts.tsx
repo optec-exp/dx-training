@@ -1,6 +1,6 @@
 "use client";
 
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend, Cell as C, LineChart, Line } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend, Cell as C, LineChart, Line, LabelList } from "recharts";
 
 const PALETTE = ["#2563eb", "#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#fb7185", "#22d3ee"];
 const man = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
@@ -27,6 +27,24 @@ export function BarCard({ title, data, xKey, barKey, colorByValue }: { title: st
         <Tooltip formatter={(v: number) => man(v)} />
         <Bar dataKey={barKey} radius={[6, 6, 0, 0]}>
           {data.map((d, i) => <C key={i} fill={colorByValue && Number(d[barKey]) < 0 ? "#dc2626" : PALETTE[i % PALETTE.length]} />)}
+        </Bar>
+      </BarChart>
+    </Frame>
+  );
+}
+
+// 横向柱状图（带金额标签，支持负数）—— 适合"一大多小+有负值"的数据（如贩管费 5 类）。
+export function HBarCard({ title, data, catKey, valKey }: { title: string; data: Record<string, unknown>[]; catKey: string; valKey: string }) {
+  return (
+    <Frame title={title} h={Math.max(180, data.length * 46)}>
+      <BarChart layout="vertical" data={data} margin={{ top: 4, right: 84, left: 8, bottom: 4 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" horizontal={false} />
+        <XAxis type="number" tickFormatter={wan} tick={{ fontSize: 11, fill: "#6b7585" }} />
+        <YAxis type="category" dataKey={catKey} width={100} tick={{ fontSize: 12, fill: "#3b4252" }} />
+        <Tooltip formatter={(v: number) => man(v)} />
+        <Bar dataKey={valKey} radius={[0, 6, 6, 0]} isAnimationActive={false}>
+          {data.map((d, i) => <C key={i} fill={Number(d[valKey]) < 0 ? "#dc2626" : PALETTE[i % PALETTE.length]} />)}
+          <LabelList dataKey={valKey} position="right" formatter={(v: number) => man(v)} style={{ fontSize: 11, fill: "#6b7585" }} />
         </Bar>
       </BarChart>
     </Frame>
