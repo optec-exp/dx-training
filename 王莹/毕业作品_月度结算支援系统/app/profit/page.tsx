@@ -4,6 +4,7 @@ import { computeProfitReport, computeDimensions, buildGroupPL, type ProfitReport
 import { getSgaForMonth, getSgaByDept, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
+import { getMarkupReport, type MarkupReport } from "@/lib/markup-review";
 import MonthPicker from "@/app/_components/MonthPicker";
 import GroupTable from "@/app/_components/GroupTable";
 import Collapsible from "@/app/_components/Collapsible";
@@ -30,6 +31,7 @@ export default async function ProfitPage({
   let dims: DimBreakdown[] | null = null;
   let groupPL: GroupPL | null = null;
   let budgetCN: BudgetData | null = null, budgetJP: BudgetData | null = null;
+  let markup: MarkupReport | null = null;
   let trend: { 月份: string; 毛利: number; 净利: number }[] = [];
   let err: string | null = null;
   try {
@@ -42,6 +44,7 @@ export default async function ProfitPage({
     budgetCN = await getBudget(month, "中国");
     budgetJP = await getBudget(month, "日本");
     groupPL = buildGroupPL(report.groups, await getSgaByDept(month));
+    markup = await getMarkupReport(month);
     // 多月趋势：各月 毛利/净利
     trend = (await Promise.all(months.map(async (m) => {
       try {
@@ -173,6 +176,26 @@ export default async function ProfitPage({
             <div className="warn-box">
               ⚠️ 未映射地域的贩管费（未计入中/日，请确认归属）：
               {sga.unmappedNonZero.map((u) => `${u.部门} ${yen(u.金额)}`).join("、")}
+            </div>
+          )}
+
+          {markup && markup.avgByScope.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+            <Collapsible title="加成率审查（Markup = 利润 / 成本）" defaultOpen={false}
+              right={markup.active ? <span className={`pill ${markup.counts.flagged ? "pill-red" : "pill-green"}`}>{markup.counts.flagged ? `${markup.counts.flagged} 超标` : "✓ 无超标"}</span> : <span className="pill pill-gray">审查 2026-06 起生效</span>}>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 0 }}>全部案件都算加成率与平均；仅标准表范围内（{markup.counts.inScope} 票）做 ±{(markup.tolerance * 100).toFixed(0)}% 偏离审查。{!markup.active && "（本月在生效月前，只算平均、不标超标）"} 明细见 <a href={`/risk?month=${month}`} style={{ color: "var(--accent)" }}>⑧ 风控</a>。</p>
+              <table className="report-table" style={{ maxWidth: 520, boxShadow: "none", margin: 0 }}>
+                <thead><tr><th>Business Scope（大类）</th><th className="num">平均加成率</th><th className="num">案件数</th></tr></thead>
+                <tbody>
+                  {markup.avgByScope.sort((a, b) => b.avg - a.avg).map((s) => (
+                    <tr key={s.scope}><td>{s.scope}</td><td className="num strong">{(s.avg * 100).toFixed(0)}%</td><td className="num">{s.count}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+              {markup.active && markup.flagged.length > 0 && (
+                <p style={{ color: "var(--red)", fontSize: 12, marginTop: 8 }}>⚠ {markup.flagged.length} 票加成率超标（偏离标准 ±{(markup.tolerance * 100).toFixed(0)}%），到风控页逐票核对。</p>
+              )}
+            </Collapsible>
             </div>
           )}
 

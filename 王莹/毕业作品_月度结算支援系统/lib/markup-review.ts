@@ -27,9 +27,7 @@ export const MARKUP_ACTIVE_FROM = "2026-06";
 
 export async function getMarkupReport(month: string): Promise<MarkupReport> {
   const sb = getSupabaseAdmin();
-  if (month < MARKUP_ACTIVE_FROM) {
-    return { month, active: false, tolerance: MARKUP_TOLERANCE, rows: [], flagged: [], avgByScope: [], counts: { total: 0, inScope: 0, flagged: 0 } };
-  }
+  const active = month >= MARKUP_ACTIVE_FROM; // 审查(超标标记)自此月起生效；平均加成率始终计算
   const { data, error } = await sb
     .from("kc_cases")
     .select("opt_no,business_scope,服务类型,obc_within_6h,毛利_日元,成本_日元,売上_日元")
@@ -48,23 +46,25 @@ export async function getMarkupReport(month: string): Promise<MarkupReport> {
     const scope = String(r["business_scope"] ?? "");
     const svc = String(r["服务类型"] ?? "");
     const mk = actualMarkup(收入, 成本); // 利润/成本
-    const target = getTargetMarkup(scope, svc, (r["obc_within_6h"] as boolean | null) ?? null);
-    if (target == null || mk == null) continue; // 范围外/OBC挂起：不审查
+    if (mk == null) continue;
+    // 全部案件都算平均加成率（按大类）
+    const a = scopeAgg.get(scope || "(空)") || { sum: 0, count: 0 };
+    a.sum += mk; a.count++; scopeAgg.set(scope || "(空)", a);
 
+    const target = getTargetMarkup(scope, svc, (r["obc_within_6h"] as boolean | null) ?? null);
+    if (target == null) continue; // 范围外/OBC挂起：不审查（但已计入平均）
     inScope++;
-    const review = needsReview(mk, target);
+    const review = active && needsReview(mk, target); // 仅生效月才标超标
     const dev = (mk - target) / target;
     const row: MarkupRow = { opt_no: String(r["opt_no"]), business_scope: scope, 服务类型: svc, 收入, 成本, 加成率: mk, 标准: target, 偏离: dev, 需审查: review };
     rows.push(row);
     if (review) flagged.push(row);
-    const a = scopeAgg.get(scope) || { sum: 0, count: 0 };
-    a.sum += mk; a.count++; scopeAgg.set(scope, a);
   }
 
   rows.sort((a, b) => Math.abs(b.偏离 ?? 0) - Math.abs(a.偏离 ?? 0));
   return {
     month,
-    active: true,
+    active,
     tolerance: MARKUP_TOLERANCE,
     rows,
     flagged,
