@@ -12,7 +12,7 @@ export default function PeriodSelect({ available, selected, basePath = "/profit"
   const fyAvail = fyMonths.filter((m) => available.includes(m));
 
   const opts: { label: string; key: string }[] = [];
-  if (fyAvail.length) opts.push({ label: `累计（FY${fy} 财年）`, key: fyAvail.slice().sort().join(",") });
+  if (fyAvail.length) opts.push({ label: `累计（${fy}财年 · ${fy}.04~${fy + 1}.03）`, key: fyAvail.slice().sort().join(",") });
   for (const m of sortedAvail) opts.push({ label: `${m} 单月`, key: m });
 
   const curKey = selected.slice().sort().join(",");
