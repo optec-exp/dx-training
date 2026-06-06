@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { logAudit } from "@/lib/audit";
+import { getInvestmentAdvice } from "@/lib/treasury";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const sb = getSupabaseAdmin();
   const { data } = await sb.from("investments").select("*").order("到期日", { ascending: true });
-  return NextResponse.json({ rows: data ?? [] });
+  let advice = null;
+  try { advice = await getInvestmentAdvice(); } catch { advice = null; }
+  return NextResponse.json({ rows: data ?? [], advice });
 }
 
 export async function POST(req: NextRequest) {

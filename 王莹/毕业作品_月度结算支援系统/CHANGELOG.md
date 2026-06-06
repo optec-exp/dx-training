@@ -6,6 +6,12 @@
 
 ## 逐页细节优化
 
+### ⑦资金管理-投资建议(HSBC USD账户+起投$100万,联动应收应付)
+- **王莹信息**：投资只用 HSBC USD 账户、起投 $100万；建议要联动应收应付。
+- **改了什么**：getInvestmentAdvice:HSBC USD余额(kc_bank_balance最新月)+已投USD+未来应收应付净流入(getCashflowForecast按汇率折USD)→净流入正=流动性充裕可投全部,净流出=扣减留存→建议可投额度+笔数(每$100万)+状态(充裕/需留存/不足)+文案;/api/investment GET返回advice;InvestmentPanel加投资能力卡(余额/已投/净流入/建议可投+文案),录入币种默认USD。
+- **文件**：lib/treasury.ts(getInvestmentAdvice)、app/api/investment、app/_components/InvestmentPanel.tsx
+- **验证**：HSBC USD $10,930,644,未来净流入+$1.13M→充裕,建议可投$10.93M≈10笔。✅
+
 ### ⑦资金管理优化(现金流滚动预测/投资增强/AR-AP双栏柱状/网页同步)
 - **王莹定2/3/4**：现金流预测、投资台账增强、应收应付双栏+柱状+网页同步。建列(王莹跑):ar_ap_aging 加 预计收付日 date。
 - **改了什么**：① syncAging(AR+AP含预计收付日=支払期日)+/api/sync type=aging(refDate)+AgingSyncButton网页同步;② getCashflowForecast按预计收付日归月(已逾期/各月/未定),应收−应付=净流入+累计→表+LineCard;③ 应收/应付双栏(AgingBlock账龄柱状+Top10);④ InvestmentPanel加汇总卡(总额/加权收益率/近30天到期)+到期高亮。

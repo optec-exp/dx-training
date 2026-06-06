@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 
 interface Inv { id: string; 品种: string; 投资额: number; 币种: string; 收益率: number; 到期日: string | null; 流动性: string; 状态: string }
+interface Advice { hsbcUsd: number; 已投USD: number; 近期净现金流USD: number; 可投USD: number; 笔数: number; 起投: number; 状态: string; 文案: string }
 const yen = (n: number) => Math.round(n).toLocaleString("ja-JP");
+const usd = (n: number) => "$" + Math.round(n).toLocaleString();
 
 export default function InvestmentPanel() {
   const [rows, setRows] = useState<Inv[]>([]);
-  const [f, setF] = useState({ 品种: "", 投资额: "", 币种: "JPY", 收益率: "", 到期日: "", 流动性: "可赎回" });
+  const [advice, setAdvice] = useState<Advice | null>(null);
+  const [f, setF] = useState({ 品种: "", 投资额: "", 币种: "USD", 收益率: "", 到期日: "", 流动性: "可赎回" });
   const [busy, setBusy] = useState(false);
 
-  async function load() { const r = await fetch("/api/investment").then((x) => x.json()).catch(() => ({ rows: [] })); setRows(r.rows || []); }
+  async function load() { const r = await fetch("/api/investment").then((x) => x.json()).catch(() => ({ rows: [] })); setRows(r.rows || []); setAdvice(r.advice || null); }
   useEffect(() => { load(); }, []);
 
   async function save() {
@@ -26,9 +29,22 @@ export default function InvestmentPanel() {
   const soon = rows.filter((r) => { const dd = daysTo(r.到期日); return dd >= 0 && dd <= 30; });
   const soonAmt = soon.reduce((s, r) => s + (Number(r.投资额) || 0), 0);
 
+  const adviceColor = advice?.状态 === "不足" ? "var(--red)" : advice?.状态 === "需留存" ? "var(--amber)" : "var(--green)";
+
   return (
     <div style={{ marginTop: 24 }}>
-      <h3 style={{ marginTop: 0 }}>闲置资金投资台账</h3>
+      <h3 style={{ marginTop: 0 }}>闲置资金投资台账 <span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}>· HSBC USD 账户 · 起投 $1,000,000</span></h3>
+      {advice && (
+        <div className="card" style={{ padding: 16, marginBottom: 14, borderLeft: `4px solid ${adviceColor}` }}>
+          <div className="kpi-row" style={{ marginBottom: 8 }}>
+            <div className="kpi"><div className="kpi-label">HSBC USD 余额</div><div className="kpi-value" style={{ fontSize: 20 }}>{usd(advice.hsbcUsd)}</div></div>
+            <div className="kpi"><div className="kpi-label">已投资(USD)</div><div className="kpi-value" style={{ fontSize: 20 }}>{usd(advice.已投USD)}</div></div>
+            <div className="kpi"><div className="kpi-label">未来应收应付净流入</div><div className="kpi-value" style={{ fontSize: 20, color: advice.近期净现金流USD >= 0 ? "var(--green)" : "var(--red)" }}>{usd(advice.近期净现金流USD)}</div></div>
+            <div className="kpi primary"><div className="kpi-label">建议可投额度</div><div className="kpi-value" style={{ color: adviceColor }}>{usd(advice.可投USD)}</div></div>
+          </div>
+          <div style={{ fontSize: 13, color: adviceColor, fontWeight: 600 }}>💡 {advice.文案}</div>
+        </div>
+      )}
       {rows.length > 0 && (
         <div className="kpi-row" style={{ marginBottom: 12 }}>
           <div className="kpi primary"><div className="kpi-label">投资总额</div><div className="kpi-value">¥{yen(total)}</div></div>
