@@ -133,7 +133,7 @@ export default async function ProfitPage({
   const bullet = (label: string, actual: number, budget: number | null, mode: "higher" | "neutral" = "higher") => {
     const rate = budget ? actual / budget : null;
     const fillW = rate == null ? 0 : Math.min(100, Math.max(0, rate * 100));
-    const color = rate == null ? "var(--border)" : mode === "neutral" ? "var(--accent)" : rate >= 1 ? "var(--green)" : "var(--amber)";
+    const color = rate == null ? "var(--border)" : mode === "neutral" ? "linear-gradient(90deg,#8b96c8,#7079b3)" : rate >= 1 ? "linear-gradient(90deg,#5fb08a,#4e9d77)" : "linear-gradient(90deg,#d3a866,#c2925a)";
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
         <div style={{ width: 56, fontSize: 13, color: "var(--text)", fontWeight: 600 }}>{label}</div>
