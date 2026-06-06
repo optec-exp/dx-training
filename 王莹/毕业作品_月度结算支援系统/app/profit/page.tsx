@@ -2,7 +2,7 @@ import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
 import { computeProfitReport, computeDimensions, buildGroupPL, type ProfitReport, type DimBreakdown, type GroupPL } from "@/lib/profit";
 import { getSgaForMonth, getSgaByDept, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
-import { getBudget, type BudgetData } from "@/lib/budget";
+import { getBudgetsByObject, type BudgetData } from "@/lib/budget";
 import { getMarkupReport, type MarkupReport } from "@/lib/markup-review";
 import PeriodSelect from "@/app/_components/PeriodSelect";
 import GroupTable from "@/app/_components/GroupTable";
@@ -25,11 +25,6 @@ function sumSga(list: SgaAgg[]): SgaAgg {
     for (const u of s.unmappedNonZero) unmapped.set(u.部门, (unmapped.get(u.部门) || 0) + u.金额);
   }
   return { total, china, japan, yakuin, byCategory, unmappedNonZero: [...unmapped].map(([部门, 金额]) => ({ 部门, 金额 })) };
-}
-function sumBudget(list: BudgetData[]): BudgetData {
-  const out: BudgetData = { 毛利: null, 贩管费: null, 净利: null };
-  for (const b of list) for (const k of ["毛利", "贩管费", "净利"] as const) if (b[k] != null) out[k] = (out[k] || 0) + (b[k] as number);
-  return out;
 }
 function mergeDept(list: Map<string, number>[]): Map<string, number> {
   const out = new Map<string, number>();
@@ -64,40 +59,55 @@ export default async function ProfitPage({
   const mgmtBudgets: Record<string, number | null> = {};
   let markup: MarkupReport | null = null;
   let trend: { 月份: string; 毛利: number; 贩管费: number; 净利: number }[] = [];
-  let fyYtd: { 毛利: number; 贩管费: number; 净利: number } | null = null;
-  let fyBudget: BudgetData | null = null;
+  type M3 = { 毛利: number; 贩管费: number; 净利: number };
+  const Z3 = (): M3 => ({ 毛利: 0, 贩管费: 0, 净利: 0 });
+  const NB: BudgetData = { 毛利: null, 贩管费: null, 净利: null };
+  let fyYtd: M3 | null = null; const fyYtdCN = Z3(), fyYtdJP = Z3();
+  const fyGroups = new Map<string, M3>(); const fyMgmt = new Map<string, { 贩管费: number; 地域: "中国" | "日本" }>();
+  let fyBudget: BudgetData | null = null, fyBudgetCN: BudgetData | null = null, fyBudgetJP: BudgetData | null = null;
+  const fyGroupBudgets: Record<string, BudgetData> = {};
+  const fyMgmtBudgets: Record<string, number | null> = {};
+  const BIZ = ["OS", "JP DESK中国", "JP DESK日本", "通関", "JP DESK"];
   let err: string | null = null;
   try {
     const cases = (await Promise.all(selected.map(getCasesForMonth))).flat();
     report = computeProfitReport(cases, headMonth, await getJpdeskHeads(headMonth));
     dims = computeDimensions(cases);
     sga = sumSga(await Promise.all(selected.map(getSgaForMonth)));
-    budget = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "全社"))));
-    budgetCN = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "中国"))));
-    budgetJP = sumBudget(await Promise.all(selected.map((m) => getBudget(m, "日本"))));
     groupPL = buildGroupPL(report.groups, mergeDept(await Promise.all(selected.map(getSgaByDept))));
-    // 业务小组 预算（毛利/贩管费/净利，手工录入，未录显—）
-    for (const g of ["OS", "JP DESK中国", "JP DESK日本", "通関", "JP DESK"]) {
-      groupBudgets[g] = sumBudget(await Promise.all(selected.map((m) => getBudget(m, g))));
-    }
-    // 管理部门 贩管费预算
-    for (const m of groupPL.mgmt) {
-      mgmtBudgets[m.部门] = sumBudget(await Promise.all(selected.map((mo) => getBudget(mo, m.部门)))).贩管费;
-    }
     markup = await getMarkupReport(selected);
-    // 多月趋势：财年各月 毛利/贩管费/净利
-    trend = (await Promise.all(available.map(async (m) => {
+    // 本期间预算（批量一次查）
+    const selBud = await getBudgetsByObject(selected);
+    budget = selBud["全社"] ?? null; budgetCN = selBud["中国"] ?? null; budgetJP = selBud["日本"] ?? null;
+    for (const g of BIZ) groupBudgets[g] = selBud[g] ?? NB;
+    for (const m of groupPL.mgmt) mgmtBudgets[m.部门] = selBud[m.部门]?.贩管费 ?? null;
+
+    // 综合月度循环（趋势 + 各层级 FY 累计）
+    type Mo = { 月份: string; 全社: M3; 中国: M3; 日本: M3; business: { 小组: string; 毛利: number; 贩管费: number; 净利: number }[]; mgmt: { 部门: string; 贩管费: number; 地域: "中国" | "日本" }[] };
+    const monthly = (await Promise.all(available.map(async (m): Promise<Mo | null> => {
       try {
         const cs = await getCasesForMonth(m);
         const rp = computeProfitReport(cs, m, await getJpdeskHeads(m));
         const sg = await getSgaForMonth(m);
-        return { 月份: m, 毛利: Math.round(rp.total), 贩管费: Math.round(sg.total), 净利: Math.round(rp.total - sg.total) };
-      } catch { return { 月份: m, 毛利: 0, 贩管费: 0, 净利: 0 }; }
-    }))).sort((a, b) => a.月份.localeCompare(b.月份));
-    // 全年累计达成（不随期间下拉变）：财年初~最新月 累计实绩 vs 全年预算(12月之和)
+        const gpl = buildGroupPL(rp.groups, await getSgaByDept(m));
+        return { 月份: m, 全社: { 毛利: rp.total, 贩管费: sg.total, 净利: rp.total - sg.total }, 中国: { 毛利: rp.china, 贩管费: sg.china, 净利: rp.china - sg.china }, 日本: { 毛利: rp.japan, 贩管费: sg.japan, 净利: rp.japan - sg.japan }, business: gpl.business, mgmt: gpl.mgmt };
+      } catch { return null; }
+    }))).filter((x): x is Mo => x != null);
+    trend = monthly.map((x) => ({ 月份: x.月份, 毛利: Math.round(x.全社.毛利), 贩管费: Math.round(x.全社.贩管费), 净利: Math.round(x.全社.净利) })).sort((a, b) => a.月份.localeCompare(b.月份));
     const fyToDate = fyMonths.filter((m) => available.includes(m) && m <= latest);
-    fyYtd = trend.filter((t) => fyToDate.includes(t.月份)).reduce((s, t) => ({ 毛利: s.毛利 + t.毛利, 贩管费: s.贩管费 + t.贩管费, 净利: s.净利 + t.净利 }), { 毛利: 0, 贩管费: 0, 净利: 0 });
-    fyBudget = sumBudget(await Promise.all(fyMonths.map((m) => getBudget(m, "全社"))));
+    const fyM = monthly.filter((x) => fyToDate.includes(x.月份));
+    const add3 = (s: M3, v: M3) => { s.毛利 += v.毛利; s.贩管费 += v.贩管费; s.净利 += v.净利; };
+    fyYtd = Z3();
+    for (const x of fyM) {
+      add3(fyYtd, x.全社); add3(fyYtdCN, x.中国); add3(fyYtdJP, x.日本);
+      for (const b of x.business) { const e = fyGroups.get(b.小组) || Z3(); add3(e, b); fyGroups.set(b.小组, e); }
+      for (const mm of x.mgmt) { const e = fyMgmt.get(mm.部门) || { 贩管费: 0, 地域: mm.地域 }; e.贩管费 += mm.贩管费; fyMgmt.set(mm.部门, e); }
+    }
+    // FY 预算（批量一次查）
+    const fyBud = await getBudgetsByObject(fyMonths);
+    fyBudget = fyBud["全社"] ?? null; fyBudgetCN = fyBud["中国"] ?? null; fyBudgetJP = fyBud["日本"] ?? null;
+    for (const g of BIZ) fyGroupBudgets[g] = fyBud[g] ?? NB;
+    for (const [dept] of fyMgmt) fyMgmtBudgets[dept] = fyBud[dept]?.贩管费 ?? null;
   } catch (e) {
     err = e instanceof Error ? e.message : String(e);
   }
@@ -138,6 +148,22 @@ export default async function ProfitPage({
       </div>
     );
   };
+
+  // 业务小组净利 全年累计（JP DESK 合并）
+  const jpNet = (fyGroups.get("JP DESK中国")?.净利 || 0) + (fyGroups.get("JP DESK日本")?.净利 || 0);
+  const jpNetBud = fyGroupBudgets["JP DESK"]?.净利 ?? ((fyGroupBudgets["JP DESK中国"]?.净利 != null || fyGroupBudgets["JP DESK日本"]?.净利 != null) ? (fyGroupBudgets["JP DESK中国"]?.净利 || 0) + (fyGroupBudgets["JP DESK日本"]?.净利 || 0) : null);
+  const bizFY: [string, number, number | null][] = [
+    ["OS", fyGroups.get("OS")?.净利 || 0, fyGroupBudgets["OS"]?.净利 ?? null],
+    ["JP DESK", jpNet, jpNetBud],
+    ["通関", fyGroups.get("通関")?.净利 || 0, fyGroupBudgets["通関"]?.净利 ?? null],
+  ];
+  // 管理部门贩管费 全年累计（按中日）
+  const mgmtFY = (["中国", "日本"] as const).map((r) => {
+    const entries = [...fyMgmt].filter(([, m]) => m.地域 === r);
+    const sum = entries.reduce((s, [, m]) => s + m.贩管费, 0);
+    const bud = entries.reduce<number | null>((s, [d]) => { const b = fyMgmtBudgets[d]; return b == null ? s : (s || 0) + b; }, null);
+    return { region: r, sum, bud, has: entries.length > 0 };
+  });
 
   return (
     <div>
@@ -207,15 +233,33 @@ export default async function ProfitPage({
           {Sec("中国 / 日本（地域）")}
           {sga && (
             <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 16, marginTop: 4, alignItems: "start" }}>
-              <div><h3 style={{ marginTop: 0 }}>预实对比</h3>{predict([["中国", { 毛利: report.china, 贩管费: sga.china, 净利: report.china - sga.china }, budgetCN], ["日本", { 毛利: report.japan, 贩管费: sga.japan, 净利: report.japan - sga.japan }, budgetJP]])}</div>
+              <div><h3 style={{ marginTop: 0 }}>预实对比（本期间）</h3>{predict([["中国", { 毛利: report.china, 贩管费: sga.china, 净利: report.china - sga.china }, budgetCN], ["日本", { 毛利: report.japan, 贩管费: sga.japan, 净利: report.japan - sga.japan }, budgetJP]])}</div>
               <PieCard title="净利 · 中日占比" data={[{ name: "中国", value: Math.round(report.china - (sga?.china ?? 0)) }, { name: "日本", value: Math.round(report.japan - (sga?.japan ?? 0)) }]} />
+            </div>
+          )}
+          {fyYtd && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 14 }}>
+              <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇨🇳 中国 · 全年累计达成</div>{bullet("毛利", fyYtdCN.毛利, fyBudgetCN?.毛利 ?? null)}{bullet("贩管费", fyYtdCN.贩管费, fyBudgetCN?.贩管费 ?? null, true)}{bullet("净利", fyYtdCN.净利, fyBudgetCN?.净利 ?? null)}</div>
+              <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇯🇵 日本 · 全年累计达成</div>{bullet("毛利", fyYtdJP.毛利, fyBudgetJP?.毛利 ?? null)}{bullet("贩管费", fyYtdJP.贩管费, fyBudgetJP?.贩管费 ?? null, true)}{bullet("净利", fyYtdJP.净利, fyBudgetJP?.净利 ?? null)}</div>
             </div>
           )}
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：Japan Desk 課 {yen(report.jpdesk.profit)} → 中国 {yen(report.jpdesk.cn)} + 日本 {yen(report.jpdesk.jp)}{sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}</p>
 
           {/* ═══════════ 小组 ═══════════ */}
           {Sec("小组")}
-          {groupPL && <div style={{ maxWidth: 640, marginTop: 8 }}><BarCard title="业务小组净利" data={groupPL.business.map((b) => ({ 小组: b.小组, 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" barKey="净利" colorByValue /></div>}
+          {groupPL && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 8, alignItems: "start" }}>
+              <BarCard title="业务小组净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" barKey="净利" colorByValue />
+              <div className="card" style={{ padding: 14 }}>
+                <div style={{ fontWeight: 650, marginBottom: 6 }}>业务小组净利 · 全年累计达成</div>
+                {bizFY.map(([g, net, bud]) => <div key={g}>{bullet(g, net, bud)}</div>)}
+                <div className="card" style={{ padding: 0, marginTop: 10, background: "none", border: "none", boxShadow: "none" }}>
+                  <div style={{ fontWeight: 650, marginBottom: 6, marginTop: 8 }}>管理部门贩管费 · 全年累计达成（越低越好）</div>
+                  {mgmtFY.filter((m) => m.has).map((m) => <div key={m.region}>{bullet(`${m.region}管理`, m.sum, m.bud, true)}</div>)}
+                </div>
+              </div>
+            </div>
+          )}
           {groupPL && (
             <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（毛利/贩管费/净利 + 预实）+ 管理部门" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
               <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} />
