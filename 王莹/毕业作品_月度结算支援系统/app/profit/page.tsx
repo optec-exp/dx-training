@@ -6,7 +6,8 @@ import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudget, type BudgetData } from "@/lib/budget";
 import MonthPicker from "@/app/_components/MonthPicker";
 import GroupTable from "@/app/_components/GroupTable";
-import { PieCard, BarCard } from "@/app/_components/Charts";
+import Collapsible from "@/app/_components/Collapsible";
+import { PieCard, BarCard, LineCard } from "@/app/_components/Charts";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,8 @@ export default async function ProfitPage({
   let budget: BudgetData | null = null;
   let dims: DimBreakdown[] | null = null;
   let groupPL: GroupPL | null = null;
+  let budgetCN: BudgetData | null = null, budgetJP: BudgetData | null = null;
+  let trend: { 月份: string; 毛利: number; 净利: number }[] = [];
   let err: string | null = null;
   try {
     const cases = await getCasesForMonth(month);
@@ -36,7 +39,18 @@ export default async function ProfitPage({
     dims = computeDimensions(cases);
     sga = await getSgaForMonth(month);
     budget = await getBudget(month, "全社");
+    budgetCN = await getBudget(month, "中国");
+    budgetJP = await getBudget(month, "日本");
     groupPL = buildGroupPL(report.groups, await getSgaByDept(month));
+    // 多月趋势：各月 毛利/净利
+    trend = (await Promise.all(months.map(async (m) => {
+      try {
+        const cs = await getCasesForMonth(m);
+        const rp = computeProfitReport(cs, m, await getJpdeskHeads(m));
+        const sg = await getSgaForMonth(m);
+        return { 月份: m, 毛利: Math.round(rp.total), 净利: Math.round(rp.total - sg.total) };
+      } catch { return { 月份: m, 毛利: 0, 净利: 0 }; }
+    }))).sort((a, b) => a.月份.localeCompare(b.月份));
   } catch (e) {
     err = e instanceof Error ? e.message : String(e);
   }
@@ -106,24 +120,41 @@ export default async function ProfitPage({
             {groupPL && <BarCard title="业务小组净利" data={groupPL.business.map((b) => ({ 小组: b.小组, 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" barKey="净利" colorByValue />}
           </div>
 
-          {budget && (budget.毛利 != null || budget.贩管费 != null || budget.净利 != null) && (
-            <>
-              <h3>预实对比（全社）</h3>
-              <table className="report-table" style={{ maxWidth: 680 }}>
-                <thead><tr><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: 16, marginTop: 16 }}>
+            {sga && <PieCard title="贩管费 5 类构成" data={FEE5.map((f) => ({ name: f, value: Math.max(0, Math.round(sga!.byCategory[f] || 0)) }))} />}
+            {trend.length >= 2 && <LineCard title="毛利 / 净利 月度趋势" data={trend as unknown as Record<string, unknown>[]} xKey="月份" lines={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "净利", name: "净利", color: "#34d399" }]} />}
+          </div>
+
+          {sga && (
+            <div style={{ marginTop: 16 }}>
+            <Collapsible title="预实对比（全社 / 中国 / 日本）" defaultOpen>
+              <table className="report-table" style={{ maxWidth: 760, boxShadow: "none", margin: 0 }}>
+                <thead><tr><th>报表对象</th><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
                 <tbody>
-                  {([["毛利", report.total, budget.毛利], ["贩管费", sga?.total ?? 0, budget.贩管费], ["净利", report.total - (sga?.total ?? 0), budget.净利]] as [string, number, number | null][]).map(([k, act, bud]) => (
-                    <tr key={k}>
-                      <td>{k}</td>
-                      <td className="num">{yen(act)}</td>
-                      <td className="num">{bud == null ? "—" : yen(bud)}</td>
-                      <td className={"num" + (bud != null && act - bud < 0 ? " neg" : "")}>{bud == null ? "—" : yen(act - bud)}</td>
-                      <td className="num">{bud ? ((act / bud) * 100).toFixed(0) + "%" : "—"}</td>
-                    </tr>
-                  ))}
+                  {([
+                    ["全社", { 毛利: report.total, 贩管费: sga.total, 净利: report.total - sga.total }, budget],
+                    ["中国", { 毛利: report.china, 贩管费: sga.china, 净利: report.china - sga.china }, budgetCN],
+                    ["日本", { 毛利: report.japan, 贩管费: sga.japan, 净利: report.japan - sga.japan }, budgetJP],
+                  ] as [string, { 毛利: number; 贩管费: number; 净利: number }, BudgetData | null][]).flatMap(([obj, act, bud]) =>
+                    (["毛利", "贩管费", "净利"] as const).map((项, i) => {
+                      const a = act[项], b = bud?.[项] ?? null;
+                      return (
+                        <tr key={obj + 项} style={i === 0 ? { borderTop: "2px solid var(--border)" } : undefined}>
+                          <td style={{ color: i === 0 ? "var(--text)" : "transparent" }}>{i === 0 ? obj : "·"}</td>
+                          <td>{项}</td>
+                          <td className="num">{yen(a)}</td>
+                          <td className="num">{b == null ? "—" : yen(b)}</td>
+                          <td className={"num" + (b != null && a - b < 0 ? " neg" : "")}>{b == null ? "—" : yen(a - b)}</td>
+                          <td className="num">{b ? ((a / b) * 100).toFixed(0) + "%" : "—"}</td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
-            </>
+              <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 8 }}>预算手工录入（<a href="/budget" style={{ color: "var(--accent)" }}>预算录入页</a>）；中国/日本未录则显示 —。</p>
+            </Collapsible>
+            </div>
           )}
 
           <p style={{ color: "var(--muted)", fontSize: 13 }}>
@@ -145,12 +176,14 @@ export default async function ProfitPage({
             </div>
           )}
 
-          <h3>小组 × 4 维度（日元）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 可折叠中日明细</span></h3>
-          <GroupTable groups={report.groups} />
+          <div style={{ marginTop: 16 }}>
+            <Collapsible title="小组 × 4 维度（見積 / 国别 / 输出 / 输入）" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 折叠中日</span>}>
+              <GroupTable groups={report.groups} />
+            </Collapsible>
+          </div>
 
           {groupPL && (
-            <>
-              <h3>小组损益 · 业务部门 P&amp;L（净利 = 毛利 − 自身贩管费）</h3>
+            <div style={{ marginTop: 16 }}><Collapsible title="小组损益 · 业务部门 P&amp;L（净利 = 毛利 − 自身贩管费）+ 管理部门" defaultOpen={false}>
               <table className="report-table" style={{ maxWidth: 760 }}>
                 <thead><tr><th>业务小组</th><th className="num">毛利</th><th className="num">贩管费</th><th className="num">净利</th></tr></thead>
                 <tbody>
@@ -176,12 +209,11 @@ export default async function ProfitPage({
                 </>
               )}
               <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务小组映射可调（OS課→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関）；役員関連費用不计入小组。</p>
-            </>
+            </Collapsible></div>
           )}
 
           {dims && (
-            <>
-              <h3>全社多维度（毛利 · 直接汇总 · 各取 Top）</h3>
+            <div style={{ marginTop: 16 }}><Collapsible title="全社多维度（服务类型 / 国别 / 顾客 / Business Scope / 业务范围 / Mode / 出发 / 到达 · 毛利直接汇总）" defaultOpen={false}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
                 {dims.map((d) => (
                   <div key={d.dim} className="card" style={{ padding: 14 }}>
@@ -200,7 +232,7 @@ export default async function ProfitPage({
                   </div>
                 ))}
               </div>
-            </>
+            </Collapsible></div>
           )}
 
           {report.unallocated.cases.length > 0 && (
