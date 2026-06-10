@@ -53,9 +53,14 @@ export async function getInvestmentAdvice(): Promise<InvestAdvice> {
   const rows = (bank ?? []) as { 月份: string; 期末残高: number }[];
   const latest = [...new Set(rows.map((b) => b.月份))].sort().slice(-1)[0] || "";
   const hsbcUsd = rows.filter((b) => b.月份 === latest).reduce((s, b) => s + (Number(b.期末残高) || 0), 0);
-  // 已投 USD
-  const { data: inv } = await sb.from("investments").select("投资额,币种");
-  const 已投USD = (inv ?? []).filter((i) => String((i as Record<string, unknown>)["币种"]).toUpperCase() === "USD").reduce((s, i) => s + (Number((i as Record<string, unknown>)["投资额"]) || 0), 0);
+  // 已投 USD：只算未到期（在投）。HSBC 余额已含在投，已到期资金已回流，不能重复计入。
+  const today = new Date().toISOString().slice(0, 10);
+  const { data: inv } = await sb.from("investments").select("投资额,币种,到期日");
+  const invRows = (inv ?? []) as unknown as Record<string, unknown>[];
+  const 已投USD = invRows.filter((r) => {
+    const 到期 = r["到期日"] ? String(r["到期日"]) : "";
+    return String(r["币种"]).toUpperCase() === "USD" && (!到期 || 到期 >= today);
+  }).reduce((s, r) => s + (Number(r["投资额"]) || 0), 0);
   // 未来 USD 应收/应付（原币种=USD，原币金额）—— 只看美金，不折算
   const all: { 类型: string; 原币种: string; 原币金额: number }[] = [];
   for (let from = 0; ; from += 1000) {
