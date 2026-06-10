@@ -72,18 +72,16 @@ export async function getInvestmentAdvice(): Promise<InvestAdvice> {
   const isUsd = (c: string) => String(c || "").toUpperCase() === "USD";
   const usd应收 = all.filter((r) => r.类型 === "应收" && isUsd(r.原币种)).reduce((s, r) => s + (Number(r.原币金额) || 0), 0);
   const usd应付 = all.filter((r) => r.类型 === "应付" && isUsd(r.原币种)).reduce((s, r) => s + (Number(r.原币金额) || 0), 0);
-  const usd净流入 = usd应收 - usd应付;
-  // 未来净流出时需留存美金；净流入则不影响
-  const reserveUSD = usd净流入 < 0 ? -usd净流入 : 0;
+  const usd净流入 = usd应收 - usd应付; // 仅参考展示
+  // 保守口径：应付是真实必付→全额预留；应收回款时点不确定→不计入可投。
+  const reserveUSD = usd应付;
   const 可投USD = Math.max(0, hsbcUsd - 已投USD - reserveUSD);
   const 笔数 = Math.floor(可投USD / 起投门槛);
-  const 状态 = 可投USD < 起投门槛 ? "不足" : usd净流入 < 0 ? "需留存" : "充裕";
+  const 状态 = 可投USD < 起投门槛 ? "不足" : "充裕";
   const f = (n: number) => "$" + Math.round(n).toLocaleString();
   const 文案 = 状态 === "不足"
-    ? `HSBC 闲置美金 ${f(可投USD)} 未达起投门槛 $1,000,000，暂不宜新投。`
-    : 状态 === "需留存"
-      ? `未来 USD 应付>应收（需留存 ${f(reserveUSD)} 付款），扣除后可投 ${f(可投USD)} ≈ ${笔数} 笔（每笔$100万）。`
-      : `未来 USD 应收>应付（美金回流，流动性充裕），HSBC 闲置美金可投 ${f(可投USD)} ≈ ${笔数} 笔（每笔$100万）。`;
+    ? `扣除在投 ${f(已投USD)} 与需预留 USD 应付 ${f(usd应付)} 后，HSBC 闲置美金仅 ${f(可投USD)}，未达起投门槛 ${f(起投门槛)}，暂不宜新投（应收 ${f(usd应收)} 因回款时点不确定不计入）。`
+    : `扣除在投 ${f(已投USD)} 与需预留 USD 应付 ${f(usd应付)} 后，可投 ${f(可投USD)} ≈ ${笔数} 笔（每笔$100万）；应收 ${f(usd应收)} 回款后另有加投空间（回款时点不确定，本建议不计入）。`;
   return { hsbcUsd: Math.round(hsbcUsd), 已投USD: Math.round(已投USD), usd应收: Math.round(usd应收), usd应付: Math.round(usd应付), usd净流入: Math.round(usd净流入), 可投USD: Math.round(可投USD), 笔数, 起投: 起投门槛, 状态, 文案 };
 }
 

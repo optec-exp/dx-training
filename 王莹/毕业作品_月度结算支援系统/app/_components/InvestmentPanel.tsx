@@ -51,7 +51,7 @@ export default function InvestmentPanel() {
           <div className="kpi-row" style={{ marginBottom: 8 }}>
             <div className="kpi"><div className="kpi-label">HSBC USD 余额</div><div className="kpi-value" style={{ fontSize: 20 }}>{usd(advice.hsbcUsd)}</div></div>
             <div className="kpi"><div className="kpi-label">在投(USD·未到期)</div><div className="kpi-value" style={{ fontSize: 20 }}>{usd(advice.已投USD)}</div></div>
-            <div className="kpi"><div className="kpi-label">未来 USD 净流入<span style={{ fontSize: 10 }}>（应收{usd(advice.usd应收)}−应付{usd(advice.usd应付)}）</span></div><div className="kpi-value" style={{ fontSize: 20, color: advice.usd净流入 >= 0 ? "var(--green)" : "var(--red)" }}>{usd(advice.usd净流入)}</div></div>
+            <div className="kpi"><div className="kpi-label">需预留 USD 应付<span style={{ fontSize: 10 }}>（应收{usd(advice.usd应收)}回款不定·不计入）</span></div><div className="kpi-value" style={{ fontSize: 20, color: "var(--amber)" }}>−{usd(advice.usd应付)}</div></div>
             <div className="kpi primary"><div className="kpi-label">建议可投额度</div><div className="kpi-value" style={{ color: "#fff" }}>{usd(advice.可投USD)}</div></div>
           </div>
           <div style={{ fontSize: 13, color: adviceColor, fontWeight: 600 }}>💡 {advice.文案}</div>
