@@ -13,7 +13,10 @@ for (const l of readFileSync(join(root, ".env.local"), "utf8").split(/\r?\n/)) {
 }
 const KBASE = env.KINTONE_BASE_URL, SUPA = env.NEXT_PUBLIC_SUPABASE_URL, SKEY = env.SUPABASE_SERVICE_ROLE_KEY;
 const ym = process.argv[2] || "2026-05";
-const kanKey = ym.replace("-", ""); // 202605
+// 权责发生制：按【取引日(费用实际发生日)】归月，而非 販管キー(=支払日/现金口径)。
+const [Y, MO] = ym.split("-").map(Number);
+const LAST = String(new Date(Y, MO, 0).getDate()).padStart(2, "0");
+const dateFilter = `取引日 >= "${ym}-01" and 取引日 <= "${ym}-${LAST}"`;
 
 const APPS = [
   ["贩管费日本", env.KINTONE_APP_SGA_JP_ID, env.KINTONE_APP_SGA_JP_TOKEN],
@@ -46,7 +49,7 @@ const checked = (f) => Array.isArray(f?.value) && f.value.length > 0;
 async function fetchMonth(id, token) {
   const out = []; let lastId = 0;
   for (;;) {
-    const q = `販管キー = "${kanKey}" and $id > ${lastId} order by $id asc limit 500`;
+    const q = `${dateFilter} and $id > ${lastId} order by $id asc limit 500`;
     const res = await fetch(`${KBASE}/k/v1/records.json?app=${id}&query=${encodeURIComponent(q)}`, { headers: { "X-Cybozu-API-Token": token } });
     if (!res.ok) throw new Error(`Kintone ${id}: ${res.status} ${await res.text()}`);
     const { records } = await res.json();

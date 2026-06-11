@@ -110,13 +110,16 @@ function deptRegion(d: string): string | null {
 const checked = (f?: { value: unknown }) => Array.isArray(f?.value) && (f!.value as unknown[]).length > 0;
 
 export async function syncSga(month: string): Promise<{ rows: number; total: number; excluded: number; unmapped: string[] }> {
-  const kanKey = month.replace("-", "");
+  // 权责发生制：按【取引日（费用实际发生日）】归月，而非 販管キー(=支払日/现金口径)。
+  const [y, mo] = month.split("-").map(Number);
+  const lastDay = String(new Date(y, mo, 0).getDate()).padStart(2, "0");
+  const query = `取引日 >= "${month}-01" and 取引日 <= "${month}-${lastDay}"`;
   const sb = getSupabaseAdmin();
   const out: Record<string, unknown>[] = [];
   const unmapped = new Set<string>();
   let total = 0, excluded = 0;
   for (const app of SGA_APPS) {
-    const records = await fetchKintone(envOrThrow(app.idEnv), envOrThrow(app.tokEnv), `販管キー = "${kanKey}"`);
+    const records = await fetchKintone(envOrThrow(app.idEnv), envOrThrow(app.tokEnv), query);
     for (const r of records) {
       const rawFee = str(r["費用类型"]) || str(r["費用類型"]);
       const fee = FEE_MAP[rawFee] || rawFee || "(未知)";
