@@ -25,12 +25,13 @@ export function BarCard({ title, data, xKey, barKey, colorByValue, tilt, onBarCl
   };
   return (
     <Frame title={title} h={tilt ? 300 : 240}>
-      <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: tilt ? 36 : 0 }}>
+      <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: tilt ? 36 : 0 }} className={onBarClick ? "clickable-chart" : undefined}
+        onClick={onBarClick ? (s: { activeLabel?: string | number }) => { if (s && s.activeLabel != null) onBarClick(String(s.activeLabel)); } : undefined}>
         <CartesianGrid strokeDasharray="3 3" stroke="#eef0f4" />
         <XAxis dataKey={xKey} tick={{ fontSize: tilt ? 10 : 11, fill: "#6b7585" }} interval={tilt ? 0 : "preserveEnd"} angle={tilt ? -35 : 0} textAnchor={tilt ? "end" : "middle"} height={tilt ? 64 : undefined} />
         <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={48} />
-        <Tooltip formatter={(v: number) => man(v)} />
-        <Bar dataKey={barKey} radius={[6, 6, 0, 0]} cursor={onBarClick ? "pointer" : undefined} onClick={onBarClick ? (e: { payload?: Record<string, unknown> }) => { const cat = e?.payload?.[xKey]; if (cat != null) onBarClick(String(cat)); } : undefined}>
+        <Tooltip formatter={(v: number) => man(v)} cursor={{ fill: "rgba(95,120,150,0.10)" }} />
+        <Bar dataKey={barKey} radius={[6, 6, 0, 0]}>
           {data.map((d, i) => { const f = fillOf(d, i); const dim = activeCat != null && String(d[xKey]) !== activeCat; return <C key={i} fill={f} fillOpacity={dim ? 0.35 : 1} />; })}
         </Bar>
       </BarChart>

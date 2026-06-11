@@ -97,3 +97,6 @@ h3 { font-size: 14px; font-weight: 650; margin: 28px 0 10px; color: #374151; }
 .btn.primary:hover:not(:disabled) { background: #50697f; color: #fff; }
 
 input, select { font-family: inherit; font-size: 14px; }
+
+/* 可点击图表（账龄分布等）：整列任意位置可点 */
+.clickable-chart, .clickable-chart * { cursor: pointer; }
