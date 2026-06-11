@@ -1,5 +1,6 @@
 import { getSupabaseAdmin } from "./supabase-server";
 
+export interface AgingRecord { name: string; 金额: number; bucket: string; 超期: boolean; due: string | null; 原币种: string; 原币金额: number }
 export interface AgingReport {
   total: number;
   overdueAmt: number;
@@ -7,9 +8,20 @@ export interface AgingReport {
   count: number;
   buckets: { bucket: string; amt: number; count: number }[];
   topCustomers: { name: string; amt: number }[];
+  records: AgingRecord[];
 }
 
-const BUCKET_ORDER = ["0-30", "31-60", "61-90", "90+"];
+// 5 档：未到期 + 逾期 4 档（实时按"今天"重算，不碰 Kintone）
+const BUCKET_ORDER = ["未到期", "0-30", "31-60", "61-90", "90+"];
+function liveBucket(due: string | null, todayMs: number): { bucket: string; 超期: boolean } {
+  if (!due) return { bucket: "未到期", 超期: false };
+  const days = Math.floor((todayMs - new Date(due + "T00:00:00+09:00").getTime()) / 86400000);
+  if (days <= 0) return { bucket: "未到期", 超期: false };
+  if (days <= 30) return { bucket: "0-30", 超期: true };
+  if (days <= 60) return { bucket: "31-60", 超期: true };
+  if (days <= 90) return { bucket: "61-90", 超期: true };
+  return { bucket: "90+", 超期: true };
+}
 
 export async function getReceivablesAging(): Promise<AgingReport> { return getAging("应收"); }
 export async function getPayablesAging(): Promise<AgingReport> { return getAging("应付"); }
@@ -94,20 +106,27 @@ async function getAging(类型: "应收" | "应付"): Promise<AgingReport> {
     rows.push(...((data ?? []) as Record<string, unknown>[]));
     if (!data || data.length < 1000) break;
   }
+  // 今天（JST 零点）实时重算账龄，不依赖同步时存的 账龄桶/是否超期
+  const jst = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const todayMs = new Date(jst + "T00:00:00+09:00").getTime();
   const bk = new Map<string, { amt: number; count: number }>();
   const cust = new Map<string, number>();
+  const records: AgingRecord[] = [];
   let total = 0, overdueAmt = 0, overdueCount = 0;
   for (const r of rows) {
     const amt = Number(r["金额"]) || 0;
-    const bucket = String(r["账龄桶"]);
-    const over = r["是否超期"] === true;
+    const due = r["预计收付日"] ? String(r["预计收付日"]) : null;
+    const { bucket, 超期 } = liveBucket(due, todayMs);
+    const name = String(r["客户供应商"] || "(未知)");
     total += amt;
-    if (over) { overdueAmt += amt; overdueCount++; }
+    if (超期) { overdueAmt += amt; overdueCount++; }
     const b = bk.get(bucket) || { amt: 0, count: 0 }; b.amt += amt; b.count++; bk.set(bucket, b);
-    const cname = String(r["客户供应商"] || "(未知)"); cust.set(cname, (cust.get(cname) || 0) + amt);
+    cust.set(name, (cust.get(name) || 0) + amt);
+    records.push({ name, 金额: amt, bucket, 超期, due, 原币种: String(r["原币种"] || ""), 原币金额: Number(r["原币金额"]) || 0 });
   }
+  records.sort((a, b) => b.金额 - a.金额);
   return {
-    total, overdueAmt, overdueCount, count: rows.length,
+    total, overdueAmt, overdueCount, count: rows.length, records,
     buckets: BUCKET_ORDER.map((bucket) => ({ bucket, amt: bk.get(bucket)?.amt || 0, count: bk.get(bucket)?.count || 0 })),
     topCustomers: [...cust].map(([name, amt]) => ({ name, amt })).sort((a, b) => b.amt - a.amt).slice(0, 10),
   };

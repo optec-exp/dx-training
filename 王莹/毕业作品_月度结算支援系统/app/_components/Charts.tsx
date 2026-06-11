@@ -17,7 +17,12 @@ function Frame({ title, children, h = 240 }: { title: string; children: React.Re
   );
 }
 
-export function BarCard({ title, data, xKey, barKey, colorByValue, tilt }: { title: string; data: Record<string, unknown>[]; xKey: string; barKey: string; colorByValue?: boolean; tilt?: boolean }) {
+export function BarCard({ title, data, xKey, barKey, colorByValue, tilt, onBarClick, activeCat, colors }: { title: string; data: Record<string, unknown>[]; xKey: string; barKey: string; colorByValue?: boolean; tilt?: boolean; onBarClick?: (cat: string) => void; activeCat?: string | null; colors?: Record<string, string> }) {
+  const fillOf = (d: Record<string, unknown>, i: number) => {
+    if (colorByValue && Number(d[barKey]) < 0) return "#dc2626";
+    if (colors && colors[String(d[xKey])]) return colors[String(d[xKey])];
+    return PALETTE[i % PALETTE.length];
+  };
   return (
     <Frame title={title} h={tilt ? 300 : 240}>
       <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: tilt ? 36 : 0 }}>
@@ -25,8 +30,8 @@ export function BarCard({ title, data, xKey, barKey, colorByValue, tilt }: { tit
         <XAxis dataKey={xKey} tick={{ fontSize: tilt ? 10 : 11, fill: "#6b7585" }} interval={tilt ? 0 : "preserveEnd"} angle={tilt ? -35 : 0} textAnchor={tilt ? "end" : "middle"} height={tilt ? 64 : undefined} />
         <YAxis tickFormatter={wan} tick={{ fontSize: 12, fill: "#6b7585" }} width={48} />
         <Tooltip formatter={(v: number) => man(v)} />
-        <Bar dataKey={barKey} radius={[6, 6, 0, 0]}>
-          {data.map((d, i) => <C key={i} fill={colorByValue && Number(d[barKey]) < 0 ? "#dc2626" : PALETTE[i % PALETTE.length]} />)}
+        <Bar dataKey={barKey} radius={[6, 6, 0, 0]} cursor={onBarClick ? "pointer" : undefined} onClick={onBarClick ? (e: { payload?: Record<string, unknown> }) => { const cat = e?.payload?.[xKey]; if (cat != null) onBarClick(String(cat)); } : undefined}>
+          {data.map((d, i) => { const f = fillOf(d, i); const dim = activeCat != null && String(d[xKey]) !== activeCat; return <C key={i} fill={f} fillOpacity={dim ? 0.35 : 1} />; })}
         </Bar>
       </BarChart>
     </Frame>
