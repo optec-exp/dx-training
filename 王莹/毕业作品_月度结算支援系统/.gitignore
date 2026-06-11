@@ -29,3 +29,7 @@ next-env.d.ts
 
 # 上传的账单原件 / 银行流水（敏感数据）
 /uploads/
+
+# 本机启动脚本（桌面快捷方式指向，含 OS 相关，不入库）
+/start-server.vbs
+/stop-server.bat
