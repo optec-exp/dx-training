@@ -55,13 +55,13 @@ export default function AgingBlock({ title, report, labelName, accent }: { title
               <button onClick={() => setSel(null)} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 6, color: "var(--accent)", cursor: "pointer", fontSize: 12, padding: "3px 10px" }}>← 返回 Top10</button>
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontVariantNumeric: "tabular-nums", fontSize: 13 }}>
-              <thead><tr>{[labelName, "金额", "状态", "预计收付日"].map((h, i) => <th key={i} style={{ textAlign: i === 1 ? "right" : "left", color: "var(--muted)", fontWeight: 600, fontSize: 11, padding: "2px 6px" }}>{h}</th>)}</tr></thead>
+              <thead><tr>{[labelName, "金额(日元)", "原币", "预计收付日"].map((h, i) => <th key={i} style={{ textAlign: (i === 1 || i === 2) ? "right" : "left", color: "var(--muted)", fontWeight: 600, fontSize: 11, padding: "2px 6px" }}>{h}</th>)}</tr></thead>
               <tbody>
                 {view.map((r, i) => (
                   <tr key={i}>
                     <td style={{ padding: "3px 6px" }}>{r.name}</td>
                     <td style={{ padding: "3px 6px", textAlign: "right", fontWeight: 600, color: accent }}>{yen(r.金额)}</td>
-                    <td style={{ padding: "3px 6px" }}>{r.超期 ? <span className="pill pill-red">超期</span> : <span className="pill pill-green">未到期</span>}</td>
+                    <td style={{ padding: "3px 6px", textAlign: "right", color: "var(--muted)" }}>{r.原币种 && r.原币金额 ? `${r.原币种} ${Math.round(r.原币金额).toLocaleString()}` : "—"}</td>
                     <td style={{ padding: "3px 6px", color: "var(--muted)" }}>{r.due || "—"}</td>
                   </tr>
                 ))}
