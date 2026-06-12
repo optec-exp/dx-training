@@ -6,6 +6,18 @@
 
 ## 逐页细节优化
 
+### ⑤利润报表：Project 独立业务部门 + 4维度移入 + 管理部门拆分
+- **王莹指出**：业务部门损益毛利之和 ≠ 全社毛利，少了 Project 利润（Project 在 CHINA_TEAMS 计入全社毛利，但 BIZ_GROUPS 不含→被丢弃）。
+- **改了什么**：
+  - **Project 独立成业务部门一行**（不并 JP DESK）：`BIZ_GROUPS` 加 "Project"（buildGroups 已生成 Project 组，自动列出）。
+  - **Project 贩管费移出管理部门**：`DEPT_TO_GROUP` 加 `Project室→Project`，凑完整 P&L（毛利−贩管费=净利）。
+  - **4维度利润按分移入业务部门损益区 + 默认展开**：GroupTable 从独立折叠区移进「业务部 P&L」Collapsible(defaultOpen)，列 OS/JP DESK(中/日)/通関/Project。
+  - **管理部门单独成区**：GroupPLTable 加 `part: biz|mgmt|both` prop，业务部门损益只渲染业务部，管理部门拆成独立 Sec。
+  - **物流開発不动**（已取消、无数据，王莹确认）。预实对比口径不变：Project 仍计中国(地域口径)，与独立业务部门不冲突(两种切法)。
+  - bizFYFull 加 Project 全年累计行。
+- **文件**：lib/profit.ts、app/profit/page.tsx、app/_components/GroupPLTable.tsx
+- **验证(2026-05)**：全社毛利 48,833,020 = 业务部门毛利之和 48,833,020，**缺口 0**；Project 行 毛利/净利 1,120；Project室已不在管理部门；tsc 无新错误。✅
+
 ### ⑤贩管费口径修正：支払日(现金)→取引日(权责发生制)
 - **王莹指出**：利润报表贩管费原按 販管キー(=支払日,现金口径)归月,错;P&L贩管费应按权责发生制=取引日(费用实际发生日)。取引日是记录级必填字段(王莹确认无空值)。
 - **改了什么**：syncSga 抓取 query 从 `販管キー = "YYYYMM"` 改为 `取引日 >= "YYYY-MM-01" and 取引日 <= "YYYY-MM-末"`,期间=取引日月;部署按分/役員5-5/地域映射等其余不变。lib/sync.ts + scripts/sync-sga.mjs 同步改。已重新同步 2026-03/04/05。

@@ -155,6 +155,7 @@ export default async function ProfitPage({
     { 小组: "OS", act: fyGroups.get("OS") || Z3(), bud: fyGroupBudgets["OS"] ?? NB },
     { 小组: "JP DESK", act: jpAct, bud: { 毛利: mergeBud("毛利"), 贩管费: mergeBud("贩管费"), 净利: mergeBud("净利") } },
     { 小组: "通関", act: fyGroups.get("通関") || Z3(), bud: fyGroupBudgets["通関"] ?? NB },
+    { 小组: "Project", act: fyGroups.get("Project") || Z3(), bud: fyGroupBudgets["Project"] ?? NB },
   ];
   // 管理部门贩管费 全年累计（按部门）
   const mgmtFYDept = [...fyMgmt].map(([部门, m]) => ({ 部门, 实绩: m.贩管费, 预算: fyMgmtBudgets[部门] ?? null, 地域: m.地域 }));
@@ -239,25 +240,34 @@ export default async function ProfitPage({
           )}
           <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：Japan Desk 課 {yen(report.jpdesk.profit)} → 中国 {yen(report.jpdesk.cn)} + 日本 {yen(report.jpdesk.jp)}{sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}</p>
 
-          {/* ═══════════ 业务部门 ═══════════ */}
-          {Sec("业务部门（业务部 + 管理部）")}
+          {/* ═══════════ 业务部门损益 ═══════════ */}
+          {Sec("业务部门损益")}
           {groupPL && (
-            <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16, marginTop: 8, alignItems: "start" }}>
+            <div style={{ marginTop: 8, maxWidth: 780 }}>
               <GroupedBarCard title="业务部门 毛利/贩管费/净利（本期间）" data={groupPL.business.map((b) => ({ 小组: b.小组, 毛利: Math.round(b.毛利), 贩管费: Math.round(b.贩管费), 净利: Math.round(b.净利) })) as unknown as Record<string, unknown>[]} xKey="小组" bars={[{ key: "毛利", name: "毛利", color: "#2563eb" }, { key: "贩管费", name: "贩管费", color: "#fbbf24" }, { key: "净利", name: "净利", color: "#34d399" }]} />
-              {groupPL.mgmt.length > 0 && <BarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} xKey="部门" barKey="贩管费" tilt />}
             </div>
           )}
           {groupPL && (
-            <div style={{ marginTop: 16 }}><Collapsible title="业务部门损益 · 业务部 P&amp;L（毛利/贩管费/净利 · 本期间预实 + 全年累计达成）+ 管理部" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
-              <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} />
-              <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务部门映射可调（OS課→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関）；役員関連費用不计入业务部门。预算未录显 —。</p>
+            <div style={{ marginTop: 16 }}><Collapsible title="业务部 P&amp;L（毛利/贩管费/净利 · 本期间预实 + 全年累计达成）+ 4 维度利润按分" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
+              <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} part="biz" />
+              <h4 style={{ marginTop: 20, marginBottom: 4 }}>业务部门 × 4 维度利润按分（見積 / 国别 / 输出 / 输入）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 折叠中日</span></h4>
+              <GroupTable groups={report.groups} />
+              <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务部门映射可调（OS課/物流開発室→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関、Project室→Project）；役員関連費用不计入业务部门。预算未录显 —。</p>
             </Collapsible></div>
           )}
-          <div style={{ marginTop: 16 }}>
-            <Collapsible title="业务部门 × 4 维度（見積 / 国别 / 输出 / 输入）" defaultOpen={false} right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 折叠中日</span>}>
-              <GroupTable groups={report.groups} />
-            </Collapsible>
-          </div>
+
+          {/* ═══════════ 管理部门 ═══════════ */}
+          {Sec("管理部门")}
+          {groupPL && groupPL.mgmt.length > 0 && (
+            <div style={{ marginTop: 8, maxWidth: 780 }}>
+              <BarCard title="管理部门贩管费（本期间）" data={groupPL.mgmt.map((m) => ({ 部门: m.部门, 贩管费: Math.round(m.贩管费) })) as unknown as Record<string, unknown>[]} xKey="部门" barKey="贩管费" tilt />
+            </div>
+          )}
+          {groupPL && (
+            <div style={{ marginTop: 16 }}>
+              <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} part="mgmt" />
+            </div>
+          )}
         </>
       )}
     </div>

@@ -175,8 +175,9 @@ const DEPT_TO_GROUP: Record<string, string> = {
   GC課: "JP DESK中国", "Japan Desk課": "JP DESK中国", EC室: "JP DESK中国",
   TCC課: "JP DESK日本", 業務課: "JP DESK日本",
   通関課: "通関",
+  Project室: "Project", // Project 独立成业务部门,贩管费归 Project(不入管理部门)
 };
-const BIZ_GROUPS = ["OS", "JP DESK中国", "JP DESK日本", "通関"];
+const BIZ_GROUPS = ["OS", "JP DESK中国", "JP DESK日本", "通関", "Project"];
 // 管理部门→地域（与同步层 JP_DEPTS 一致：総務課/営業課/業務課/通関課/TCC課=日本；其余=中国）
 const JP_MGMT = new Set(["TCC課", "通関課", "営業課", "業務課", "総務課"]);
 function mgmtRegion(dept: string): "中国" | "日本" {

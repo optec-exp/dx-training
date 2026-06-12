@@ -25,8 +25,8 @@ function bullet(label: string, actual: number, budget: number | null, mode: "hig
   );
 }
 
-export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets, bizFY, mgmtFY }: {
-  business: Row[]; budgets: Record<string, Budget>; mgmt: Mgmt[]; mgmtBudgets: Record<string, number | null>; bizFY: BizFY[]; mgmtFY: MgmtFY[];
+export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets, bizFY, mgmtFY, part = "both" }: {
+  business: Row[]; budgets: Record<string, Budget>; mgmt: Mgmt[]; mgmtBudgets: Record<string, number | null>; bizFY: BizFY[]; mgmtFY: MgmtFY[]; part?: "biz" | "mgmt" | "both";
 }) {
   const [open, setOpen] = useState(false);
   const jp = business.filter((b) => b.小组.startsWith("JP DESK"));
@@ -58,6 +58,7 @@ export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets, biz
   return (
     <>
       {/* 业务部门 P&L + 全年累计达成（右侧空白） */}
+      {(part === "biz" || part === "both") && (
       <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
         <table className="report-table" style={{ flex: "1 1 520px", boxShadow: "none", margin: 0 }}>
           <thead><tr><th>业务部门</th><th>项目</th><th className="num">实绩</th><th className="num">预算</th><th className="num">差异</th><th className="num">达成率</th></tr></thead>
@@ -88,9 +89,10 @@ export default function GroupPLTable({ business, budgets, mgmt, mgmtBudgets, biz
           ))}
         </div>
       </div>
+      )}
 
       {/* 管理部门表 + 各部门全年累计达成（右侧空白） */}
-      {mgmt.length > 0 && (
+      {(part === "mgmt" || part === "both") && mgmt.length > 0 && (
         <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap", marginTop: 16 }}>
           <div style={{ flex: "1 1 420px" }}>
             <h3 style={{ marginTop: 0 }}>管理部门（按中日分 · 含预实）</h3>
