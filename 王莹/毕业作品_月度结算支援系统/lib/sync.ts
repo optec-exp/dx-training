@@ -125,6 +125,7 @@ export async function syncSga(month: string): Promise<{ rows: number; total: num
       const fee = FEE_MAP[rawFee] || rawFee || "(未知)";
       const isExcluded = fee === "税金" || fee === "对象外" || checked(r["集計対象外"]) || checked(r["収入項目ですか"]);
       const sub = (r["部署按分"]?.value as { value: KRecord }[]) || [];
+      let allocated = 0;
       for (const row of sub) {
         const amt = num(row.value?.["部署按分費用JPY"]) || 0;
         if (!amt) continue;
@@ -134,6 +135,15 @@ export async function syncSga(month: string): Promise<{ rows: number; total: num
         const region = deptRegion(d);
         out.push({ source_app: envOrThrow(app.idEnv), "期间": month, region, "部门": d, "费用类型": fee, "是否除外": isExcluded, "金额": amt, "分摊到小组": d });
         if (!isExcluded) { total += amt; if (region == null) unmapped.add(d); } else excluded += amt;
+        allocated += amt;
+      }
+      // 役員関連費用=公司级(无部署按分,5/5中日)→用记录级 円換算費用 兜底捞
+      if (allocated === 0 && fee === "役員関連費用") {
+        const recAmt = num(r["円換算費用"]) || 0;
+        if (recAmt !== 0) {
+          out.push({ source_app: envOrThrow(app.idEnv), "期间": month, region: null, "部门": "", "费用类型": fee, "是否除外": isExcluded, "金额": recAmt, "分摊到小组": "" });
+          if (!isExcluded) total += recAmt; else excluded += recAmt;
+        }
       }
     }
   }

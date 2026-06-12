@@ -71,6 +71,7 @@ for (const [label, id, token] of APPS) {
     const fee = FEE_MAP[rawFee] || rawFee || "(未知)";
     const isExcluded = fee === "税金" || fee === "对象外" || checked(r["集計対象外"]) || checked(r["収入項目ですか"]);
     const sub = r["部署按分"]?.value || [];
+    let allocated = 0;
     for (const row of sub) {
       const amt = parseFloat(v(row.value?.["部署按分費用JPY"])) || 0;
       if (!amt) continue; // 只抓有按分费用的行，金额=0 忽略
@@ -84,6 +85,16 @@ for (const [label, id, token] of APPS) {
         kept += amt;
       } else excluded += amt;
       appRows++;
+      allocated += amt;
+    }
+    // 役員関連費用=公司级(无部署按分,5/5中日)→用记录级 円換算費用 兜底捞
+    if (allocated === 0 && fee === "役員関連費用") {
+      const recAmt = parseFloat(v(r["円換算費用"])) || 0;
+      if (recAmt !== 0) {
+        rows.push({ source_app: String(id), 期间: ym, region: null, 部门: "", 费用类型: fee, 是否除外: isExcluded, 金额: recAmt, 分摊到小组: "" });
+        if (!isExcluded) kept += recAmt; else excluded += recAmt;
+        appRows++;
+      }
     }
   }
   console.log(`  ${label} (app=${id}): ${records.length} 记录 → ${appRows} 行`);
