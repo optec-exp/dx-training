@@ -223,12 +223,14 @@ function buildGroups(map: Map<Team, TeamProfit>, cn: number, jp: number): GroupR
   // OS
   if (map.get("OS")) { const g = z(); g.name = "OS"; addInto(g, map.get("OS")); out.push(g); }
 
-  // JP DESK（GC/EC/Japan Desk×13 → 中国；TCC/Japan Desk×11 → 日本）
-  const jd = map.get("Japan Desk");
+  // JP DESK：EC 全额→中国；TCC+GC+Japan Desk 池 按中日人数(cn:jp)拆分
   const cnRow = z(); cnRow.name = "├ JP DESK中国"; cnRow.indent = true;
-  addInto(cnRow, map.get("GC")); addInto(cnRow, map.get("EC")); addInto(cnRow, jd, cn / heads);
   const jpRow = z(); jpRow.name = "├ JP DESK日本"; jpRow.indent = true;
-  addInto(jpRow, map.get("TCC")); addInto(jpRow, jd, jp / heads);
+  addInto(cnRow, map.get("EC")); // EC 全额中国，不拆
+  for (const t of [map.get("TCC"), map.get("GC"), map.get("Japan Desk")]) {
+    addInto(cnRow, t, cn / heads);
+    addInto(jpRow, t, jp / heads);
+  }
   if (cnRow.total || jpRow.total) {
     const parent = z(); parent.name = "JP DESK";
     for (const k of ["total", "見積", "国别", "输出", "输入"] as const) parent[k] = cnRow[k] + jpRow[k];
@@ -289,12 +291,15 @@ export function computeProfitReport(
   }
 
   const teams = (TEAMS as readonly Team[]).map((t) => map.get(t)).filter((v): v is TeamProfit => !!v);
-  const jd = map.get("Japan Desk")?.total ?? 0;
   const heads = jpdeskHeads.cn + jpdeskHeads.jp || 1;
-  const jdCn = (jd * jpdeskHeads.cn) / heads;
-  const jdJp = (jd * jpdeskHeads.jp) / heads;
-  const china = CHINA_TEAMS.reduce((s, t) => s + (t === "Japan Desk" ? jdCn : map.get(t as Team)?.total ?? 0), 0);
-  const japan = JAPAN_TEAMS.reduce((s, t) => s + (map.get(t as Team)?.total ?? 0), 0) + jdJp;
+  // JP DESK：EC 全额→中国；TCC+GC+Japan Desk 池 按中日人数(cn:jp)拆分
+  const pool = (map.get("TCC")?.total ?? 0) + (map.get("GC")?.total ?? 0) + (map.get("Japan Desk")?.total ?? 0);
+  const poolCn = (pool * jpdeskHeads.cn) / heads;
+  const poolJp = (pool * jpdeskHeads.jp) / heads;
+  // 纯中国：OS/EC/Project/物流開発；纯日本：通关
+  const pureChina = ["OS", "EC", "Project", "物流開発"].reduce((s, t) => s + (map.get(t as Team)?.total ?? 0), 0);
+  const china = pureChina + poolCn;
+  const japan = (map.get("通关")?.total ?? 0) + poolJp;
   const sumGP = cases.reduce((s, c) => s + c.gpJpy, 0);
   const unalloc = unallocCases.reduce((s, u) => s + u.short, 0);
 
@@ -306,7 +311,7 @@ export function computeProfitReport(
     china,
     japan,
     total: china + japan,
-    jpdesk: { profit: jd, cn: jdCn, jp: jdJp, cnHeads: jpdeskHeads.cn, jpHeads: jpdeskHeads.jp },
+    jpdesk: { profit: pool, cn: poolCn, jp: poolJp, cnHeads: jpdeskHeads.cn, jpHeads: jpdeskHeads.jp },
     sumGrossProfit: sumGP,
     unallocated: { amount: unalloc, cases: unallocCases },
   };

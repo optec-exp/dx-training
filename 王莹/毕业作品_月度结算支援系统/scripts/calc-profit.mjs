@@ -144,14 +144,15 @@ for (const t of TEAMS) {
     `${t.padEnd(12)} ${fmt(v.total).padStart(10)} ${fmt(v.見積).padStart(10)} ${fmt(v.国别).padStart(10)} ${fmt(v.输出).padStart(10)} ${fmt(v.输入).padStart(10)}`
   );
 }
-// JP DESK 补丁：Japan Desk課利润按中日人数拆分（月度手动，将来从 headcounts 表读）。
+// JP DESK：EC 全额→中国；TCC+GC+Japan Desk 池 按中日人数拆分（月度手动，将来从 headcounts 表读）。
 const JPDESK = { cn: 13, jp: 11 }; // 2026-05：中国侧13人 / 日本侧(TCC課+業務課)11人
-const jd = team["Japan Desk"]?.total || 0;
-const jdCn = (jd * JPDESK.cn) / (JPDESK.cn + JPDESK.jp);
-const jdJp = (jd * JPDESK.jp) / (JPDESK.cn + JPDESK.jp);
-const china = CHINA_TEAMS.reduce((s, t) => s + (t === "Japan Desk" ? jdCn : team[t]?.total || 0), 0);
-const japan = JAPAN_TEAMS.reduce((s, t) => s + (team[t]?.total || 0), 0) + jdJp;
-console.log(`\nJP DESK 拆分(13:11)：Japan Desk課 ${fmt(jd)} → 中国 ${fmt(jdCn)} + 日本 ${fmt(jdJp)}`);
+const pool = (team["TCC"]?.total || 0) + (team["GC"]?.total || 0) + (team["Japan Desk"]?.total || 0);
+const poolCn = (pool * JPDESK.cn) / (JPDESK.cn + JPDESK.jp);
+const poolJp = (pool * JPDESK.jp) / (JPDESK.cn + JPDESK.jp);
+const pureChina = ["OS", "EC", "Project", "物流開発"].reduce((s, t) => s + (team[t]?.total || 0), 0);
+const china = pureChina + poolCn;
+const japan = (team["通关"]?.total || 0) + poolJp;
+console.log(`\nJP DESK 拆分(13:11)：TCC+GC+Japan Desk ${fmt(pool)} → 中国 ${fmt(poolCn)} + 日本 ${fmt(poolJp)}（EC 全额中国）`);
 console.log(`中国合计: ${fmt(china)}   日本合计: ${fmt(japan)}   全社: ${fmt(china + japan)}`);
 console.log(`\n验证：Σ毛利_日元 = ${fmt(sumGP)}   已按分 = ${fmt(totalAlloc)}   未分配 = ${fmt(unalloc)}（${unallocCases} 票，team字段无法识别）`);
 const gap = sumGP - totalAlloc - unalloc;

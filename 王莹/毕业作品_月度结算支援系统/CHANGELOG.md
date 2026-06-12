@@ -6,6 +6,17 @@
 
 ## 逐页细节优化
 
+### ⑤利润报表：JP DESK 中日拆分口径修正（EC全额中国，其余按人数拆）
+- **王莹指出**：JP DESK 下只有 EC 完全归中国，TCC+GC+Japan Desk 都要按中日人数拆分（原逻辑 GC全额中国/TCC全额日本/仅JapanDesk拆，错）。
+- **改了什么**：
+  - `computeProfitReport` china/japan：池=TCC+GC+Japan Desk 按 cn:jp(13:11) 拆；EC/OS/Project/物流開発=纯中国；通関=纯日本。`report.jpdesk` 改为池口径(profit=pool,cn=poolCn,jp=poolJp)。
+  - `buildGroups`：JP DESK中国=EC全额 + 池×cn/heads；JP DESK日本=池×jp/heads。
+  - 页面拆分说明文案 + scripts/calc-profit.mjs 同步改。
+  - CHINA_TEAMS/JAPAN_TEAMS 仍保留(用于 normTeam 团队归一,line 83-84)。
+- **影响(2026-05)**：中国毛利 23,980,341→**33,233,499**(+925万)、日本毛利 24,852,679→**15,599,521**(−925万)，全社不变(48,833,020 守恒)。主因 TCC ¥2087万原全额日本→约¥1130万移中国。
+- **文件**：lib/profit.ts、app/profit/page.tsx、scripts/calc-profit.mjs
+- **验证**：calc-profit 守恒;profit.ts tsc 0错误;/profit 200。✅
+
 ### ⑤利润报表：Project 独立业务部门 + 4维度移入 + 管理部门拆分
 - **王莹指出**：业务部门损益毛利之和 ≠ 全社毛利，少了 Project 利润（Project 在 CHINA_TEAMS 计入全社毛利，但 BIZ_GROUPS 不含→被丢弃）。
 - **改了什么**：

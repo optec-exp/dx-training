@@ -238,7 +238,7 @@ export default async function ProfitPage({
               <div className="card" style={{ padding: 14 }}><div style={{ fontWeight: 650, marginBottom: 6 }}>🇯🇵 日本 · 全年累计达成</div>{bullet("毛利", fyYtdJP.毛利, fyBudgetJP?.毛利 ?? null)}{bullet("贩管费", fyYtdJP.贩管费, fyBudgetJP?.贩管费 ?? null, "neutral")}{bullet("净利", fyYtdJP.净利, fyBudgetJP?.净利 ?? null)}</div>
             </div>
           )}
-          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：Japan Desk 課 {yen(report.jpdesk.profit)} → 中国 {yen(report.jpdesk.cn)} + 日本 {yen(report.jpdesk.jp)}{sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}</p>
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>JP DESK 拆分（{report.jpdesk.cnHeads}:{report.jpdesk.jpHeads}）：TCC+GC+Japan Desk {yen(report.jpdesk.profit)} → 中国 {yen(report.jpdesk.cn)} + 日本 {yen(report.jpdesk.jp)}（EC 全额归中国，不拆）{sga && sga.yakuin > 0 && <> ｜ 役員関連費用 {yen(sga.yakuin)} 按中日 5/5 分</>}</p>
 
           {/* ═══════════ 业务部门损益 ═══════════ */}
           {Sec("业务部门损益")}
