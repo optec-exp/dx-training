@@ -166,6 +166,16 @@ function ReportDoc({ report }: { report: MonthlyReport }) {
         )
       ),
 
+      e(
+        Text,
+        { style: { fontSize: 9, color: "#64748b", marginBottom: 8 } },
+        `自社通关合计（包含在通关小组利润中）：JPY ¥${fmt(
+          report.groupedSummaries.reduce((s, g) => s + g.kanFeeJpy, 0)
+        )}  ·  CNY ¥${fmt(
+          report.groupedSummaries.reduce((s, g) => s + g.kanFeeCny, 0)
+        )}`
+      ),
+
       e(Text, { style: styles.sectionHeading }, "各小组利润分配（按 JPY 高到低排序）"),
       e(
         View,

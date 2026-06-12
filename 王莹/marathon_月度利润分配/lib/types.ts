@@ -62,6 +62,8 @@ export interface TeamSummary {
   opExportCny: number;
   opImportJpy: number;
   opImportCny: number;
+  kanFeeJpy: number;
+  kanFeeCny: number;
 }
 
 export interface GroupedSummary {
@@ -78,6 +80,8 @@ export interface GroupedSummary {
   opExportCny: number;
   opImportJpy: number;
   opImportCny: number;
+  kanFeeJpy: number;
+  kanFeeCny: number;
   childTeams: string[];
   children: TeamSummary[] | null;
 }

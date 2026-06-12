@@ -25,7 +25,7 @@ function fmtPct(n: number): string {
   return `${(n * 100).toFixed(1)}%`;
 }
 
-type DimKey = "mitsumori" | "country" | "opExport" | "opImport";
+type DimKey = "mitsumori" | "country" | "opExport" | "opImport" | "kanFee";
 
 function dimAmount(
   s: GroupedSummary | TeamSummary,
@@ -36,12 +36,14 @@ function dimAmount(
     if (key === "mitsumori") return s.mitsumoriJpy;
     if (key === "country") return s.countryJpy;
     if (key === "opExport") return s.opExportJpy;
-    return s.opImportJpy;
+    if (key === "opImport") return s.opImportJpy;
+    return s.kanFeeJpy;
   }
   if (key === "mitsumori") return s.mitsumoriCny;
   if (key === "country") return s.countryCny;
   if (key === "opExport") return s.opExportCny;
-  return s.opImportCny;
+  if (key === "opImport") return s.opImportCny;
+  return s.kanFeeCny;
 }
 
 function dimCell(n: number, currency: Currency): string {
@@ -70,6 +72,7 @@ export function SummaryTable({
             <th className="px-4 py-3 text-right font-medium">顾客所在国</th>
             <th className="px-4 py-3 text-right font-medium">操作-輸出</th>
             <th className="px-4 py-3 text-right font-medium">操作-輸入</th>
+            <th className="px-4 py-3 text-right font-medium">自社通关</th>
             <th className="px-4 py-3 text-right font-medium">
               合计（{currency === "jpy" ? "JPY" : "CNY"}）
             </th>
@@ -80,7 +83,7 @@ export function SummaryTable({
         <tbody className="divide-y divide-slate-100">
           {report.groupedSummaries.length === 0 && (
             <tr>
-              <td className="px-4 py-8 text-center text-slate-400" colSpan={9}>
+              <td className="px-4 py-8 text-center text-slate-400" colSpan={10}>
                 本月暂无利润数据
               </td>
             </tr>
@@ -126,6 +129,9 @@ export function SummaryTable({
                   <td className="px-4 py-3 text-right tabular-nums text-slate-600">
                     {dimCell(dimAmount(g, "opImport", currency), currency)}
                   </td>
+                  <td className="px-4 py-3 text-right tabular-nums text-slate-600">
+                    {dimCell(dimAmount(g, "kanFee", currency), currency)}
+                  </td>
                   <td className="px-4 py-3 text-right tabular-nums font-semibold">
                     {fmtMoney(amount, currency)}
                   </td>
@@ -169,6 +175,9 @@ export function SummaryTable({
                         </td>
                         <td className="px-4 py-2 text-right tabular-nums text-slate-500">
                           {dimCell(dimAmount(c, "opImport", currency), currency)}
+                        </td>
+                        <td className="px-4 py-2 text-right tabular-nums text-slate-500">
+                          {dimCell(dimAmount(c, "kanFee", currency), currency)}
                         </td>
                         <td className="px-4 py-2 text-right tabular-nums">
                           {fmtMoney(cAmount, currency)}
@@ -218,6 +227,12 @@ export function SummaryTable({
               <td className="px-4 py-3 text-right tabular-nums">
                 {dimCell(
                   report.groupedSummaries.reduce((sum, g) => sum + dimAmount(g, "opImport", currency), 0),
+                  currency
+                )}
+              </td>
+              <td className="px-4 py-3 text-right tabular-nums">
+                {dimCell(
+                  report.groupedSummaries.reduce((sum, g) => sum + dimAmount(g, "kanFee", currency), 0),
                   currency
                 )}
               </td>

@@ -109,28 +109,44 @@ export function distributeProfit(c: KintoneCase): CaseAllocation {
   const importKan = isKan(c.importTeam);
   if (exportKan || importKan) {
     const kanMitsumoriTeam = c.mitsumoriTeam ? normalizeTeam(c.mitsumoriTeam) : null;
+    const mitsumoriShare = DISTRIBUTION_RULES.mitsumori;
+    const countryShare = DISTRIBUTION_RULES.customerCountry;
+    const exportShare = DISTRIBUTION_RULES.exportOp;
+    const importShare = DISTRIBUTION_RULES.importOp;
+
     if (!kanMitsumoriTeam || kanMitsumoriTeam === "通关") {
       allocations.push({
         team: "通关",
-        jpy: c.grossProfitJpy,
-        cny: c.grossProfitCny,
-        basis: "kan_full",
+        jpy: c.grossProfitJpy * mitsumoriShare,
+        cny: c.grossProfitCny * mitsumoriShare,
+        basis: "mitsumori",
       });
     } else {
-      const mitsumoriShare = DISTRIBUTION_RULES.mitsumori;
       allocations.push({
         team: kanMitsumoriTeam,
         jpy: c.grossProfitJpy * mitsumoriShare,
         cny: c.grossProfitCny * mitsumoriShare,
         basis: "mitsumori",
       });
-      allocations.push({
-        team: "通关",
-        jpy: c.grossProfitJpy * (1 - mitsumoriShare),
-        cny: c.grossProfitCny * (1 - mitsumoriShare),
-        basis: "kan_full",
-      });
     }
+    allocations.push({
+      team: "通关",
+      jpy: c.grossProfitJpy * countryShare,
+      cny: c.grossProfitCny * countryShare,
+      basis: "country",
+    });
+    allocations.push({
+      team: "通关",
+      jpy: c.grossProfitJpy * exportShare,
+      cny: c.grossProfitCny * exportShare,
+      basis: "operation_export",
+    });
+    allocations.push({
+      team: "通关",
+      jpy: c.grossProfitJpy * importShare,
+      cny: c.grossProfitCny * importShare,
+      basis: "operation_import",
+    });
     return { case: c, primaryTeam, allocations };
   }
 
@@ -218,7 +234,7 @@ export function distributeProfit(c: KintoneCase): CaseAllocation {
   return { case: c, primaryTeam, allocations };
 }
 
-type DimColumn = "mitsumori" | "country" | "opExport" | "opImport";
+type DimColumn = "mitsumori" | "country" | "opExport" | "opImport" | "kanFee";
 
 function mapBasisToDimension(c: KintoneCase, basis: AllocationDetail["basis"]): DimColumn {
   switch (basis) {
@@ -238,7 +254,7 @@ function mapBasisToDimension(c: KintoneCase, basis: AllocationDetail["basis"]): 
       return "opImport";
     }
     case "kan_fee":
-      return "opImport";
+      return "kanFee";
     case "ec_full": {
       const exp = stripDirection(c.exportTeam);
       if (exp === "EC") return "opExport";
@@ -259,6 +275,8 @@ interface TeamAggregate {
   opExportCny: number;
   opImportJpy: number;
   opImportCny: number;
+  kanFeeJpy: number;
+  kanFeeCny: number;
 }
 
 function newAggregate(): TeamAggregate {
@@ -274,6 +292,8 @@ function newAggregate(): TeamAggregate {
     opExportCny: 0,
     opImportJpy: 0,
     opImportCny: 0,
+    kanFeeJpy: 0,
+    kanFeeCny: 0,
   };
 }
 
@@ -312,6 +332,9 @@ export function buildMonthlyReport(
       } else if (dim === "opImport") {
         existing.opImportJpy += a.jpy;
         existing.opImportCny += a.cny;
+      } else if (dim === "kanFee") {
+        existing.kanFeeJpy += a.jpy;
+        existing.kanFeeCny += a.cny;
       }
       teamTotals.set(a.team, existing);
     }
@@ -331,6 +354,8 @@ export function buildMonthlyReport(
       opExportCny: v.opExportCny,
       opImportJpy: v.opImportJpy,
       opImportCny: v.opImportCny,
+      kanFeeJpy: v.kanFeeJpy,
+      kanFeeCny: v.kanFeeCny,
     }))
     .filter((s) => s.caseCount > 0 || Math.abs(s.totalJpy) > 0.01 || Math.abs(s.totalCny) > 0.01)
     .sort((a, b) => b.totalJpy - a.totalJpy);
@@ -406,6 +431,8 @@ function buildGroupedSummaries(summaries: TeamSummary[]): GroupedSummary[] {
         opExportCny: acc.opExportCny + c.opExportCny,
         opImportJpy: acc.opImportJpy + c.opImportJpy,
         opImportCny: acc.opImportCny + c.opImportCny,
+        kanFeeJpy: acc.kanFeeJpy + c.kanFeeJpy,
+        kanFeeCny: acc.kanFeeCny + c.kanFeeCny,
       }),
       {
         caseCount: 0,
@@ -419,6 +446,8 @@ function buildGroupedSummaries(summaries: TeamSummary[]): GroupedSummary[] {
         opExportCny: 0,
         opImportJpy: 0,
         opImportCny: 0,
+        kanFeeJpy: 0,
+        kanFeeCny: 0,
       }
     );
 
@@ -448,6 +477,8 @@ function buildGroupedSummaries(summaries: TeamSummary[]): GroupedSummary[] {
       opExportCny: s.opExportCny,
       opImportJpy: s.opImportJpy,
       opImportCny: s.opImportCny,
+      kanFeeJpy: s.kanFeeJpy,
+      kanFeeCny: s.kanFeeCny,
       childTeams: [s.team],
       children: null,
     });

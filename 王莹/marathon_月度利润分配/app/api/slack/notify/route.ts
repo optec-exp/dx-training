@@ -68,10 +68,13 @@ export async function POST(req: Request) {
     const { cases, fetchedAt, fromCache } = await fetchMonthlyCases(year, month);
     const report = buildMonthlyReport(year, month, cases, { fetchedAt, fromCache });
 
+    const kanFeeJpyTotal = report.groupedSummaries.reduce((s, g) => s + g.kanFeeJpy, 0);
+    const kanFeeCnyTotal = report.groupedSummaries.reduce((s, g) => s + g.kanFeeCny, 0);
     const overview =
       `• 案件数：*${report.totalCases}* 件\n` +
       `• 利润合计 JPY：*¥${fmt(report.totalProfitJpy)}*\n` +
-      `• 利润合计 CNY：*¥${fmt(report.totalProfitCny)}*`;
+      `• 利润合计 CNY：*¥${fmt(report.totalProfitCny)}*\n` +
+      `• 自社通关合计（含在通关小组）：JPY *¥${fmt(kanFeeJpyTotal)}* / CNY *¥${fmt(kanFeeCnyTotal)}*`;
 
     const tableLines: string[] = [];
     tableLines.push(

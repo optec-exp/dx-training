@@ -52,6 +52,7 @@ export async function GET(req: Request) {
       { header: "顾客所在国 (JPY)", key: "countryJpy", width: 18, style: { numFmt: "#,##0" } },
       { header: "操作-輸出 (JPY)", key: "opExportJpy", width: 16, style: { numFmt: "#,##0" } },
       { header: "操作-輸入 (JPY)", key: "opImportJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: "自社通关 (JPY)", key: "kanFeeJpy", width: 16, style: { numFmt: "#,##0" } },
       { header: "合计 (JPY)", key: "jpy", width: 18, style: { numFmt: "#,##0" } },
       { header: "合计 (CNY)", key: "cny", width: 18, style: { numFmt: "#,##0" } },
       { header: "JPY 占比", key: "pctJpy", width: 10, style: { numFmt: "0.0%" } },
@@ -73,6 +74,7 @@ export async function GET(req: Request) {
         countryJpy: Math.round(g.countryJpy),
         opExportJpy: Math.round(g.opExportJpy),
         opImportJpy: Math.round(g.opImportJpy),
+        kanFeeJpy: Math.round(g.kanFeeJpy),
         jpy: Math.round(g.totalJpy),
         cny: Math.round(g.totalCny),
         pctJpy: g.totalJpy / totalJpy,
@@ -94,6 +96,7 @@ export async function GET(req: Request) {
             countryJpy: Math.round(c.countryJpy),
             opExportJpy: Math.round(c.opExportJpy),
             opImportJpy: Math.round(c.opImportJpy),
+            kanFeeJpy: Math.round(c.kanFeeJpy),
             jpy: Math.round(c.totalJpy),
             cny: Math.round(c.totalCny),
             pctJpy: c.totalJpy / totalJpy,
@@ -105,6 +108,7 @@ export async function GET(req: Request) {
     const sumC = report.groupedSummaries.reduce((s, g) => s + g.countryJpy, 0);
     const sumOE = report.groupedSummaries.reduce((s, g) => s + g.opExportJpy, 0);
     const sumOI = report.groupedSummaries.reduce((s, g) => s + g.opImportJpy, 0);
+    const sumKF = report.groupedSummaries.reduce((s, g) => s + g.kanFeeJpy, 0);
     const totalRow = sumSheet.addRow({
       team: "合计",
       count: report.totalCases,
@@ -112,6 +116,7 @@ export async function GET(req: Request) {
       countryJpy: Math.round(sumC),
       opExportJpy: Math.round(sumOE),
       opImportJpy: Math.round(sumOI),
+      kanFeeJpy: Math.round(sumKF),
       jpy: Math.round(report.totalProfitJpy),
       cny: Math.round(report.totalProfitCny),
       pctJpy: 1,
