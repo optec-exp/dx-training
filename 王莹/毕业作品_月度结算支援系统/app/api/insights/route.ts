@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
-import { computeProfitReport, buildGroupPL } from "@/lib/profit";
-import { getSgaForMonth, getSgaByDept } from "@/lib/sga";
+import { computeProfitReport, buildGroupPL, buildSgaByCategory } from "@/lib/profit";
+import { getSgaForMonth, getSgaByDept, getSgaByDeptCategory, FEE4 } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getMarkupReport } from "@/lib/markup-review";
 import { getBudgetsByObject } from "@/lib/budget";
@@ -152,6 +152,15 @@ export async function POST(req: NextRequest) {
       factLines.push(`【业务部门 P&L】` + biz.map((g) => `${g.部门} 毛利${yen(g.毛利)}/净利${yen(g.净利)}（${achNet(acc, g.部门, tn)}）`).join("；"));
       const mg = [...cur.管理部门].sort((a, b) => b.贩管费 - a.贩管费);
       if (mg.length) factLines.push(`【管理部门 贩管费】` + mg.map((g) => `${g.部门}[${g.地域}] ${yen(g.贩管费)}（${achSga(acc, g.部门, tn)}）`).join("；"));
+      // 贩管费 × 费用类型（部门级，不含役員）—— 让 AI 能点评成本结构
+      const dcMerged = new Map<string, Record<string, number>>();
+      for (const m of await Promise.all(months.map(getSgaByDeptCategory))) for (const [d, cats] of m) { let e = dcMerged.get(d); if (!e) { e = {}; dcMerged.set(d, e); } for (const [c, a] of Object.entries(cats)) e[c] = (e[c] || 0) + a; }
+      const sc = buildSgaByCategory(dcMerged);
+      const fmtCat = (byCat: Record<string, number>) => FEE4.map((c) => byCat[c] ? `${c}${yen(byCat[c])}` : "").filter(Boolean).join("/");
+      const bizCat = sc.business.filter((b) => b.total).map((b) => `${b.name}: ${fmtCat(b.byCat)}`);
+      if (bizCat.length) factLines.push(`【业务部门贩管费构成·费用类型】` + bizCat.join("；"));
+      const mgCat = sc.mgmt.filter((m) => m.total).slice(0, 8).map((m) => `${m.name}: ${fmtCat(m.byCat)}`);
+      if (mgCat.length) factLines.push(`【管理部门贩管费构成·费用类型】` + mgCat.join("；"));
     }
 
     // 风控/资金（全社口径）

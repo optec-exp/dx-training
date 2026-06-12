@@ -11,6 +11,26 @@ export interface SgaAgg {
 }
 
 const FEE5 = ["人件費", "事業活動費", "事業維持費", "人材·IT投資", "役員関連費用"];
+export const FEE4 = ["人件費", "事業活動費", "事業維持費", "人材·IT投資"] as const; // 部门级不含役員(役員只在全社/中日 5/5)
+
+// 按部门 × 费用类型聚合（非除外，不含役員）。用于业务部门/管理部门的费用结构。
+export async function getSgaByDeptCategory(month: string): Promise<Map<string, Record<string, number>>> {
+  const sb = getSupabaseAdmin();
+  const map = new Map<string, Record<string, number>>();
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await sb.from("sg_a_lines").select("部门,费用类型,金额").eq("期间", month).eq("是否除外", false).neq("费用类型", "役員関連費用").range(from, from + 999);
+    if (error) throw new Error(error.message);
+    const rows = (data ?? []) as unknown as Record<string, unknown>[];
+    for (const r of rows) {
+      const dept = String(r["部门"]);
+      const cat = String(r["费用类型"] ?? "");
+      let e = map.get(dept); if (!e) { e = {}; map.set(dept, e); }
+      e[cat] = (e[cat] || 0) + (Number(r["金额"]) || 0);
+    }
+    if (rows.length < 1000) break;
+  }
+  return map;
+}
 
 // 按部门聚合贩管费（非除外），用于小组损益。
 export async function getSgaByDept(month: string): Promise<Map<string, number>> {

@@ -6,6 +6,17 @@
 
 ## 逐页细节优化
 
+### ⑤业务部门/管理部门 贩管费 × 费用类型（矩阵表 + 喂AI汇报）
+- **王莹**：贩管费只有全社按费用类型区分,业务部门/管理部门也要看,以便更有用的经营汇报。
+- **改了什么**：
+  - **lib/sga.ts**：getSgaByDeptCategory(部门×费用类型,非除外,不含役員)+导出 FEE4(人件費/事業活動費/事業維持費/人材·IT投資)。
+  - **lib/profit.ts**：buildSgaByCategory(按 DEPT_TO_GROUP 汇到业务部门 + 管理部门保留)。
+  - **页面**：SgaCategoryTable 矩阵表(行=部门,列=4类+合计+总计行),放业务部门损益区 + 管理部门区;多月按 mergeDeptCat 合并。
+  - **⑨综合汇报**：facts 加【业务部门/管理部门贩管费构成·费用类型】,AI 能点评成本结构。
+  - 役員関連費用按设计只在全社/中日(5/5),部门级 4 类。
+- **文件**：lib/sga.ts、lib/profit.ts、app/_components/SgaCategoryTable.tsx、app/profit/page.tsx、app/api/insights/route.ts
+- **验证**：/profit 200 矩阵表渲染;insights综合 facts 含各部门费用类型构成;改动文件 tsc 干净。✅
+
 ### ⑤利润报表：通関利润按维度拆分（参考马拉松）
 - **王莹**：通関利润要按维度拆分显示，逻辑参考马拉松。确认马拉松对自社通関費是"单独成列"(方案c)。
 - **改了什么**：

@@ -211,6 +211,28 @@ export function buildGroupPL(groups: GroupRow[], sgaByDept: Map<string, number>)
   return { business, mgmt };
 }
 
+// 贩管费 × 费用类型：按 DEPT_TO_GROUP 汇到业务部门 + 管理部门保留（部门级，不含役員）。
+export interface SgaCatRow { name: string; byCat: Record<string, number>; total: number; 地域?: "中国" | "日本" }
+export function buildSgaByCategory(deptByCat: Map<string, Record<string, number>>): { business: SgaCatRow[]; mgmt: SgaCatRow[] } {
+  const groupCat = new Map<string, Record<string, number>>();
+  const mgmt: SgaCatRow[] = [];
+  for (const [dept, cats] of deptByCat) {
+    const grp = DEPT_TO_GROUP[dept];
+    if (grp) {
+      let g = groupCat.get(grp); if (!g) { g = {}; groupCat.set(grp, g); }
+      for (const [c, a] of Object.entries(cats)) g[c] = (g[c] || 0) + a;
+    } else {
+      mgmt.push({ name: dept.trim() || "(未分配部门)", byCat: cats, total: Object.values(cats).reduce((s, a) => s + a, 0), 地域: mgmtRegion(dept) });
+    }
+  }
+  const business: SgaCatRow[] = BIZ_GROUPS.map((小组) => {
+    const byCat = groupCat.get(小组) || {};
+    return { name: 小组, byCat, total: Object.values(byCat).reduce((s, a) => s + a, 0) };
+  });
+  mgmt.sort((a, b) => b.total - a.total);
+  return { business, mgmt };
+}
+
 // 构建小组展示分组：OS / JP DESK(中/日) / 通関 / 其它
 function buildGroups(map: Map<Team, TeamProfit>, cn: number, jp: number): GroupRow[] {
   const z = (): GroupRow => ({ name: "", total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0, 自社通関費: 0 });

@@ -1,12 +1,13 @@
 import { getCasesForMonth, getAvailableMonths } from "@/lib/data";
-import { computeProfitReport, computeDimensions, buildGroupPL, type ProfitReport, type DimBreakdown, type GroupPL } from "@/lib/profit";
-import { getSgaForMonth, getSgaByDept, type SgaAgg } from "@/lib/sga";
+import { computeProfitReport, computeDimensions, buildGroupPL, buildSgaByCategory, type ProfitReport, type DimBreakdown, type GroupPL, type SgaCatRow } from "@/lib/profit";
+import { getSgaForMonth, getSgaByDept, getSgaByDeptCategory, type SgaAgg } from "@/lib/sga";
 import { getJpdeskHeads } from "@/lib/headcount";
 import { getBudgetsByObject, type BudgetData } from "@/lib/budget";
 import { getMarkupReport, type MarkupReport } from "@/lib/markup-review";
 import PeriodSelect from "@/app/_components/PeriodSelect";
 import GroupTable from "@/app/_components/GroupTable";
 import GroupPLTable from "@/app/_components/GroupPLTable";
+import SgaCategoryTable from "@/app/_components/SgaCategoryTable";
 import Collapsible from "@/app/_components/Collapsible";
 import { PieCard, BarCard, LineCard, HBarCard, GroupedBarCard } from "@/app/_components/Charts";
 
@@ -29,6 +30,14 @@ function sumSga(list: SgaAgg[]): SgaAgg {
 function mergeDept(list: Map<string, number>[]): Map<string, number> {
   const out = new Map<string, number>();
   for (const m of list) for (const [k, v] of m) out.set(k, (out.get(k) || 0) + v);
+  return out;
+}
+function mergeDeptCat(list: Map<string, Record<string, number>>[]): Map<string, Record<string, number>> {
+  const out = new Map<string, Record<string, number>>();
+  for (const m of list) for (const [dept, cats] of m) {
+    let e = out.get(dept); if (!e) { e = {}; out.set(dept, e); }
+    for (const [c, a] of Object.entries(cats)) e[c] = (e[c] || 0) + a;
+  }
   return out;
 }
 
@@ -54,6 +63,7 @@ export default async function ProfitPage({
   let budget: BudgetData | null = null;
   let dims: DimBreakdown[] | null = null;
   let groupPL: GroupPL | null = null;
+  let sgaCat: { business: SgaCatRow[]; mgmt: SgaCatRow[] } | null = null;
   let budgetCN: BudgetData | null = null, budgetJP: BudgetData | null = null;
   const groupBudgets: Record<string, BudgetData> = {};
   const mgmtBudgets: Record<string, number | null> = {};
@@ -75,6 +85,7 @@ export default async function ProfitPage({
     dims = computeDimensions(cases);
     sga = sumSga(await Promise.all(selected.map(getSgaForMonth)));
     groupPL = buildGroupPL(report.groups, mergeDept(await Promise.all(selected.map(getSgaByDept))));
+    sgaCat = buildSgaByCategory(mergeDeptCat(await Promise.all(selected.map(getSgaByDeptCategory))));
     markup = await getMarkupReport(selected);
     // 本期间预算（批量一次查）
     const selBud = await getBudgetsByObject(selected);
@@ -253,6 +264,7 @@ export default async function ProfitPage({
               <h4 style={{ marginTop: 20, marginBottom: 4 }}>业务部门 × 维度利润按分（見積 / 国别 / 输出 / 输入 / 自社通関費）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 折叠中日</span></h4>
               <GroupTable groups={report.groups} />
               <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务部门映射可调（OS課/物流開発室→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関、Project室→Project）；役員関連費用不计入业务部门。预算未录显 —。</p>
+              {sgaCat && <SgaCategoryTable title="业务部门 贩管费 × 费用类型" rows={sgaCat.business} nameLabel="业务部门" />}
             </Collapsible></div>
           )}
 
@@ -266,6 +278,7 @@ export default async function ProfitPage({
           {groupPL && (
             <div style={{ marginTop: 16 }}>
               <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} part="mgmt" />
+              {sgaCat && <SgaCategoryTable title="管理部门 贩管费 × 费用类型" rows={sgaCat.mgmt} nameLabel="管理部门" />}
             </div>
           )}
         </>
