@@ -60,16 +60,15 @@ function distribute(c) {
   }
   const expKan = isKan(c.expTeam), impKan = isKan(c.impTeam);
   if (expKan || impKan) {
-    const kanDim = expKan && !impKan ? "输出" : "输入"; // 马拉松：纯出口通関→输出，否则输入
+    // 参考马拉松：通関整票利润按 4 维度铺开（見積→見積team或通関；国别/输出/输入→通関）
     const mt = c.mitsumoriTeam ? normTeam(c.mitsumoriTeam) : null;
-    if (!mt || mt === "通关") out.push({ team: "通关", jpy: c.gpJpy, dim: kanDim });
-    else {
-      out.push({ team: mt, jpy: c.gpJpy * RULES.mitsumori, dim: "見積" });
-      out.push({ team: "通关", jpy: c.gpJpy * (1 - RULES.mitsumori), dim: kanDim });
-    }
+    out.push({ team: (!mt || mt === "通关") ? "通关" : mt, jpy: c.gpJpy * RULES.mitsumori, dim: "見積" });
+    out.push({ team: "通关", jpy: c.gpJpy * RULES.country, dim: "国别" });
+    out.push({ team: "通关", jpy: c.gpJpy * RULES.exportOp, dim: "输出" });
+    out.push({ team: "通关", jpy: c.gpJpy * RULES.importOp, dim: "输入" });
     return out;
   }
-  if (c.kanJpy !== 0) out.push({ team: "通关", jpy: c.kanJpy, dim: "输入" }); // kan_fee→输入
+  if (c.kanJpy !== 0) out.push({ team: "通关", jpy: c.kanJpy, dim: "自社通関費" }); // kan_fee→自社通関費(单独列)
   const remain = c.gpJpy - c.kanJpy;
   const mt = c.mitsumoriTeam ? normTeam(c.mitsumoriTeam) : null;
   if (mt) out.push({ team: mt, jpy: remain * RULES.mitsumori, dim: "見積" });
@@ -109,7 +108,7 @@ const cases = rows.map((r) => ({
 
 // ===== 汇总 =====
 const team = {}; // team → {total, 見積,国别,输出,输入}
-const ensure = (t) => (team[t] ??= { total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0 });
+const ensure = (t) => (team[t] ??= { total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0, 自社通関費: 0 });
 let totalAlloc = 0, unalloc = 0, unallocCases = 0;
 const offenders = [];
 for (const c of cases) {
@@ -136,12 +135,12 @@ const sumGP = cases.reduce((s, c) => s + c.gpJpy, 0);
 const fmt = (n) => Math.round(n).toLocaleString("ja-JP");
 
 console.log(`\n=== 利润按分 ${ym}（${cases.length} 票，单位:日元）===\n`);
-console.log("小组            合计       見積       国别       输出       输入");
+console.log("小组            合计       見積       国别       输出       输入     自社通関費");
 for (const t of TEAMS) {
   if (!team[t]) continue;
   const v = team[t];
   console.log(
-    `${t.padEnd(12)} ${fmt(v.total).padStart(10)} ${fmt(v.見積).padStart(10)} ${fmt(v.国别).padStart(10)} ${fmt(v.输出).padStart(10)} ${fmt(v.输入).padStart(10)}`
+    `${t.padEnd(12)} ${fmt(v.total).padStart(10)} ${fmt(v.見積).padStart(10)} ${fmt(v.国别).padStart(10)} ${fmt(v.输出).padStart(10)} ${fmt(v.输入).padStart(10)} ${fmt(v.自社通関費).padStart(10)}`
   );
 }
 // JP DESK：EC 全额→中国；TCC+GC+Japan Desk 池 按中日人数拆分（月度手动，将来从 headcounts 表读）。

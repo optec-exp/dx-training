@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { GroupRow } from "@/lib/profit";
 
-const DIMS = ["見積", "国别", "输出", "输入"] as const;
+const DIMS = ["見積", "国别", "输出", "输入", "自社通関費"] as const;
 const yen = (n: number) => "¥" + Math.round(n).toLocaleString("ja-JP");
 
 export default function GroupTable({ groups }: { groups: GroupRow[] }) {

@@ -10,7 +10,7 @@ const KAN_KEYWORDS = ["通関", "通关"];
 const NO_OP = ["操作なし", "操作无", ""];
 const RULES = { mitsumori: 0.2, country: 0.35, exportOp: 0.27, importOp: 0.18 };
 
-export type Dim = "見積" | "国别" | "输出" | "输入";
+export type Dim = "見積" | "国别" | "输出" | "输入" | "自社通関費";
 
 export interface CaseRow {
   opt_no: string;
@@ -104,16 +104,15 @@ function distribute(c: Case): Alloc[] {
   }
   const expKan = isKan(c.expTeam), impKan = isKan(c.impTeam);
   if (expKan || impKan) {
-    const kanDim: Dim = expKan && !impKan ? "输出" : "输入";
+    // 参考马拉松：通関整票利润按 4 维度铺开（見積→見積team或通関；国别/输出/输入→通関）
     const mt = c.mitsumoriTeam ? normTeam(c.mitsumoriTeam) : null;
-    if (!mt || mt === "通关") out.push({ team: "通关", jpy: c.gpJpy, dim: kanDim });
-    else {
-      out.push({ team: mt, jpy: c.gpJpy * RULES.mitsumori, dim: "見積" });
-      out.push({ team: "通关", jpy: c.gpJpy * (1 - RULES.mitsumori), dim: kanDim });
-    }
+    out.push({ team: (!mt || mt === "通关") ? "通关" : mt, jpy: c.gpJpy * RULES.mitsumori, dim: "見積" });
+    out.push({ team: "通关", jpy: c.gpJpy * RULES.country, dim: "国别" });
+    out.push({ team: "通关", jpy: c.gpJpy * RULES.exportOp, dim: "输出" });
+    out.push({ team: "通关", jpy: c.gpJpy * RULES.importOp, dim: "输入" });
     return out;
   }
-  if (c.kanJpy !== 0) out.push({ team: "通关", jpy: c.kanJpy, dim: "输入" });
+  if (c.kanJpy !== 0) out.push({ team: "通关", jpy: c.kanJpy, dim: "自社通関費" });
   const remain = c.gpJpy - c.kanJpy;
   const mt = c.mitsumoriTeam ? normTeam(c.mitsumoriTeam) : null;
   if (mt) out.push({ team: mt, jpy: remain * RULES.mitsumori, dim: "見積" });
@@ -142,6 +141,7 @@ export interface TeamProfit {
   国别: number;
   输出: number;
   输入: number;
+  自社通関費: number;
 }
 // 小组报表展示分组：OS / JP DESK(展开中日) / 通関 / 其它独立。
 export interface GroupRow {
@@ -151,6 +151,7 @@ export interface GroupRow {
   国别: number;
   输出: number;
   输入: number;
+  自社通関費: number;
   indent?: boolean; // JP DESK 中日明细行缩进
 }
 
@@ -212,10 +213,10 @@ export function buildGroupPL(groups: GroupRow[], sgaByDept: Map<string, number>)
 
 // 构建小组展示分组：OS / JP DESK(中/日) / 通関 / 其它
 function buildGroups(map: Map<Team, TeamProfit>, cn: number, jp: number): GroupRow[] {
-  const z = (): GroupRow => ({ name: "", total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0 });
+  const z = (): GroupRow => ({ name: "", total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0, 自社通関費: 0 });
   const addInto = (g: GroupRow, t?: TeamProfit, f = 1) => {
     if (!t) return;
-    g.total += t.total * f; g.見積 += t.見積 * f; g.国别 += t.国别 * f; g.输出 += t.输出 * f; g.输入 += t.输入 * f;
+    g.total += t.total * f; g.見積 += t.見積 * f; g.国别 += t.国别 * f; g.输出 += t.输出 * f; g.输入 += t.输入 * f; g.自社通関費 += t.自社通関費 * f;
   };
   const heads = cn + jp || 1;
   const out: GroupRow[] = [];
@@ -233,7 +234,7 @@ function buildGroups(map: Map<Team, TeamProfit>, cn: number, jp: number): GroupR
   }
   if (cnRow.total || jpRow.total) {
     const parent = z(); parent.name = "JP DESK";
-    for (const k of ["total", "見積", "国别", "输出", "输入"] as const) parent[k] = cnRow[k] + jpRow[k];
+    for (const k of ["total", "見積", "国别", "输出", "输入", "自社通関費"] as const) parent[k] = cnRow[k] + jpRow[k];
     out.push(parent, cnRow, jpRow);
   }
 
@@ -268,7 +269,7 @@ export function computeProfitReport(
   const map = new Map<Team, TeamProfit>();
   const ensure = (t: Team) => {
     let v = map.get(t);
-    if (!v) { v = { team: t, total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0 }; map.set(t, v); }
+    if (!v) { v = { team: t, total: 0, 見積: 0, 国别: 0, 输出: 0, 输入: 0, 自社通関費: 0 }; map.set(t, v); }
     return v;
   };
   const unallocCases: { opt_no: string; short: number; reason: string }[] = [];

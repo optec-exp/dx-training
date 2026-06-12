@@ -250,7 +250,7 @@ export default async function ProfitPage({
           {groupPL && (
             <div style={{ marginTop: 16 }}><Collapsible title="业务部 P&amp;L（毛利/贩管费/净利 · 本期间预实 + 全年累计达成）+ 4 维度利润按分" defaultOpen right={<span style={{ color: "var(--muted)", fontSize: 12 }}>点 JP DESK 展开中日</span>}>
               <GroupPLTable business={groupPL.business} budgets={groupBudgets} mgmt={groupPL.mgmt} mgmtBudgets={mgmtBudgets} bizFY={bizFYFull} mgmtFY={mgmtFYDept} part="biz" />
-              <h4 style={{ marginTop: 20, marginBottom: 4 }}>业务部门 × 4 维度利润按分（見積 / 国别 / 输出 / 输入）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 折叠中日</span></h4>
+              <h4 style={{ marginTop: 20, marginBottom: 4 }}>业务部门 × 维度利润按分（見積 / 国别 / 输出 / 输入 / 自社通関費）<span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 400 }}> · 点 JP DESK 折叠中日</span></h4>
               <GroupTable groups={report.groups} />
               <p style={{ color: "var(--muted)", fontSize: 12 }}>部门→业务部门映射可调（OS課/物流開発室→OS、GC課/Japan Desk課/EC室→JP DESK中国、TCC課/業務課→JP DESK日本、通関課→通関、Project室→Project）；役員関連費用不计入业务部门。预算未录显 —。</p>
             </Collapsible></div>

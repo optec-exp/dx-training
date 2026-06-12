@@ -6,6 +6,16 @@
 
 ## 逐页细节优化
 
+### ⑤利润报表：通関利润按维度拆分（参考马拉松）
+- **王莹**：通関利润要按维度拆分显示，逻辑参考马拉松。确认马拉松对自社通関費是"单独成列"(方案c)。
+- **改了什么**：
+  - **通関 kan-case 利润按 4 维度铺开**：distribute 的 KAN 路径(輸出/輸入=通関)改为 見積(0.2→見積team或通関)+国别(0.35)+输出(0.27)+输入(0.18)→通関，不再整票塞单一维度。
+  - **自社通関費(kanFee)单独成第 5 列**：新增 `自社通関費` 维度(Dim/TeamProfit/GroupRow/ensure/z/addInto/parent 全加)；distribute 的 kanFee 从「输入」改进「自社通関費」列；GroupTable DIMS 加该列；页面标题更新。
+  - scripts/calc-profit.mjs 同步改。
+- **影响**：通関各团队总额/守恒/中日全社均不变，仅维度分布变。2026-05 通関：見積72,956/国别127,673/输出98,491/输入65,661/自社通関費1,716,870/合计2,081,651。
+- **文件**：lib/profit.ts、app/_components/GroupTable.tsx、app/profit/page.tsx、scripts/calc-profit.mjs
+- **验证**：calc-profit 守恒(全社48,833,020);改动文件 tsc 0 错误;/profit 200。✅
+
 ### ⑤利润报表：JP DESK 中日拆分口径修正（EC全额中国，其余按人数拆）
 - **王莹指出**：JP DESK 下只有 EC 完全归中国，TCC+GC+Japan Desk 都要按中日人数拆分（原逻辑 GC全额中国/TCC全额日本/仅JapanDesk拆，错）。
 - **改了什么**：
