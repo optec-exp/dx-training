@@ -33,6 +33,8 @@ const FEE_MAP = {
   役員関連費用: "役員関連費用",
   税金: "税金", 对象外: "对象外",
 };
+// 保留白名单：只抓这 5 类(由费用类型决定,不看集計対象外/収入項目)
+const KEEP_FEES = new Set(["人件費", "事業活動費", "事業維持費", "人材·IT投資", "役員関連費用"]);
 // 部署→地域：仅按王莹清单 + （中国）后缀；清单外=未映射
 const CN_DEPTS = new Set(["OS課", "総務人事室", "財務室", "管理部", "DX室（中国）", "海外開発室", "業務開発室", "物流開発室", "Project室", "Japan Desk課", "業務財務室", "上海支店", "Marketing", "治理室", "GC課"]);
 const JP_DEPTS = new Set(["TCC課", "通関課", "営業課", "業務課", "総務課"]);
@@ -69,7 +71,7 @@ for (const [label, id, token] of APPS) {
   for (const r of records) {
     const rawFee = v(r["費用类型"]) || v(r["費用類型"]);
     const fee = FEE_MAP[rawFee] || rawFee || "(未知)";
-    const isExcluded = fee === "税金" || fee === "对象外" || checked(r["集計対象外"]) || checked(r["収入項目ですか"]);
+    const isExcluded = !KEEP_FEES.has(fee); // 按费用类型决定(役員即便集計対象外也保留)
     const sub = r["部署按分"]?.value || [];
     let allocated = 0;
     for (const row of sub) {

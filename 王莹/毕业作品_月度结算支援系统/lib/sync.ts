@@ -99,6 +99,8 @@ const FEE_MAP: Record<string, string> = {
   事業維持費: "事業維持費", 业务维持费: "事業維持費", "人材·IT投資": "人材·IT投資", 人才与IT投资: "人材·IT投資",
   役員関連費用: "役員関連費用", 税金: "税金", 对象外: "对象外",
 };
+// 贩管费保留白名单：只抓这 5 类（由费用类型决定，不看集計対象外/収入項目勾选）。其余(税金/对象外/空未知)排除。
+const KEEP_FEES = new Set(["人件費", "事業活動費", "事業維持費", "人材·IT投資", "役員関連費用"]);
 const CN_DEPTS = new Set(["OS課", "総務人事室", "財務室", "管理部", "DX室（中国）", "海外開発室", "業務開発室", "物流開発室", "Project室", "Japan Desk課", "業務財務室", "上海支店", "Marketing", "治理室", "GC課"]);
 const JP_DEPTS = new Set(["TCC課", "通関課", "営業課", "業務課", "総務課"]);
 function deptRegion(d: string): string | null {
@@ -107,7 +109,6 @@ function deptRegion(d: string): string | null {
   if (/（中国）|\(中国\)/.test(d)) return "中国";
   return null;
 }
-const checked = (f?: { value: unknown }) => Array.isArray(f?.value) && (f!.value as unknown[]).length > 0;
 
 export async function syncSga(month: string): Promise<{ rows: number; total: number; excluded: number; unmapped: string[] }> {
   // 权责发生制：按【取引日（费用实际发生日）】归月，而非 販管キー(=支払日/现金口径)。
@@ -123,7 +124,7 @@ export async function syncSga(month: string): Promise<{ rows: number; total: num
     for (const r of records) {
       const rawFee = str(r["費用类型"]) || str(r["費用類型"]);
       const fee = FEE_MAP[rawFee] || rawFee || "(未知)";
-      const isExcluded = fee === "税金" || fee === "对象外" || checked(r["集計対象外"]) || checked(r["収入項目ですか"]);
+      const isExcluded = !KEEP_FEES.has(fee); // 按费用类型决定，集計対象外/収入項目 勾选不影响（役員即便集計対象外也保留）
       const sub = (r["部署按分"]?.value as { value: KRecord }[]) || [];
       let allocated = 0;
       for (const row of sub) {
