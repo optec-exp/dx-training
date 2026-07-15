@@ -51,21 +51,10 @@ export async function POST(req: Request) {
         Math.round(g.kanFeeJpy),
       0
     );
-    const cnyGrand = report.groupedSummaries.reduce(
-      (s, g) =>
-        s +
-        Math.round(g.mitsumoriCny) +
-        Math.round(g.countryCny) +
-        Math.round(g.opExportCny) +
-        Math.round(g.opImportCny) +
-        Math.round(g.kanFeeCny),
-      0
-    );
 
     const overview =
       `• 案件数：*${report.totalCases}* 件\n` +
-      `• 利润合计 JPY：*¥${fmt(jpyGrand)}*\n` +
-      `• 利润合计 CNY：*¥${fmt(cnyGrand)}*`;
+      `• 利润合计：*¥${fmt(jpyGrand)}*`;
 
     const rowTotalOf = (g: (typeof report.groupedSummaries)[number]) =>
       Math.round(g.mitsumoriJpy) +
@@ -87,7 +76,7 @@ export async function POST(req: Request) {
         type: "header",
         text: {
           type: "plain_text",
-          text: `📊 ${year}年${month}月 月度利润分配报告`,
+          text: `📊 ${year}年${month}月 月度利润分配报告 （币种：JPY）`,
           emoji: true,
         },
       },
