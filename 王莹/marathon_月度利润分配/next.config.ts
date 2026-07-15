@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  outputFileTracingIncludes: {
+    "/api/export/pdf": ["./public/fonts/**"],
+  },
 };
 
 export default nextConfig;

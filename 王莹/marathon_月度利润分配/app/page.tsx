@@ -77,15 +77,15 @@ export default function HomePage() {
   })();
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-8">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">月度利润自动分配</h1>
-        <p className="mt-1 text-sm text-slate-500">
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8">
+      <header className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">月度利润自动分配</h1>
+        <p className="mt-1 text-xs sm:text-sm text-slate-500">
           Air / SEA / EC 三类案件，按业务规则自动计算各小组分得的利润
         </p>
       </header>
 
-      <div className="mb-6 flex flex-wrap items-center gap-4">
+      <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 sm:gap-4">
         <MonthPicker
           year={year}
           month={month}
@@ -101,10 +101,10 @@ export default function HomePage() {
           title="重新从 Kintone 拉取数据"
         >
           <span className={loading ? "animate-spin inline-block" : ""}>🔄</span>
-          {loading ? "刷新中…" : "刷新数据"}
+          <span className="hidden sm:inline">{loading ? "刷新中…" : "刷新数据"}</span>
         </button>
         {report?.dataFetchedAt && (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-slate-500 basis-full sm:basis-auto order-last sm:order-none">
             数据更新于 {new Date(report.dataFetchedAt).toLocaleString("zh-CN")}
             {report.fromCache && <span className="ml-1 text-slate-400">(缓存)</span>}
           </span>
@@ -128,7 +128,7 @@ export default function HomePage() {
 
       {!loading && report && (
         <>
-          <div className="mb-4 grid grid-cols-3 gap-4">
+          <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <StatCard label="案件数" value={String(report.totalCases)} />
             <StatCard
               label={`本月利润合计（${currency === "jpy" ? "JPY" : "CNY"}）`}
@@ -144,7 +144,11 @@ export default function HomePage() {
                 );
               }, 0).toLocaleString("en-US")}`}
             />
-            <StatCard label="参与分利小组数" value={String(report.groupedSummaries.length)} />
+            <StatCard
+              label="参与分利小组数"
+              value={String(report.groupedSummaries.length)}
+              className="hidden sm:block"
+            />
           </div>
 
           <div className="mb-4">
@@ -173,11 +177,21 @@ export default function HomePage() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  className?: string;
+}) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${className}`}>
       <div className="text-xs text-slate-500">{label}</div>
-      <div className="mt-1 text-2xl font-bold tabular-nums text-slate-900">{value}</div>
+      <div className="mt-1 text-xl sm:text-2xl font-bold tabular-nums text-slate-900 break-all">
+        {value}
+      </div>
     </div>
   );
 }
