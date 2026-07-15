@@ -9,11 +9,6 @@ function fmt(n: number): string {
   return Math.round(n).toLocaleString("en-US");
 }
 
-function pct(n: number, total: number): string {
-  if (total === 0) return "0.0%";
-  return `${((n / total) * 100).toFixed(1)}%`;
-}
-
 export async function POST(req: Request) {
   let body: { year?: number; month?: number };
   try {
@@ -63,10 +58,7 @@ export async function POST(req: Request) {
       Math.round(g.opImportJpy) +
       Math.round(g.kanFeeJpy);
     const groupsLines = report.groupedSummaries
-      .map((g) => {
-        const amount = rowTotalOf(g);
-        return `• *${g.name}*：¥${fmt(amount)}  ·  ${pct(amount, jpyGrand)}`;
-      })
+      .map((g) => `• *${g.name}*：¥${fmt(rowTotalOf(g))}`)
       .join("\n");
 
     const link = appUrl ? `📊 <${appUrl}|查看完整数据>` : "";
@@ -101,16 +93,6 @@ export async function POST(req: Request) {
         text: { type: "mrkdwn", text: link },
       });
     }
-
-    blocks.push({
-      type: "context",
-      elements: [
-        {
-          type: "mrkdwn",
-          text: `_由 月度利润自动分配 系统生成 · ${new Date().toLocaleString("zh-CN")}_`,
-        },
-      ],
-    });
 
     const payload = {
       text: `${year}年${month}月 月度利润分配报告`,
