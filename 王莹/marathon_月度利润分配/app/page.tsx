@@ -21,7 +21,6 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const load = useCallback(
     async (y: number, m: number, forceRefresh = false) => {
@@ -51,26 +50,15 @@ export default function HomePage() {
     setYear(y);
     setMonth(m);
     setExpandedTeam(null);
-    setExpandedGroups(new Set());
   };
 
   const handleRefresh = () => {
     setExpandedTeam(null);
-    setExpandedGroups(new Set());
     load(year, month, true);
   };
 
   const handleToggleDetail = (key: string) => {
     setExpandedTeam((prev) => (prev === key ? null : key));
-  };
-
-  const handleToggleGroup = (group: string) => {
-    setExpandedGroups((prev) => {
-      const next = new Set(prev);
-      if (next.has(group)) next.delete(group);
-      else next.add(group);
-      return next;
-    });
   };
 
   const detailTarget = (() => {
@@ -144,9 +132,17 @@ export default function HomePage() {
             <StatCard label="案件数" value={String(report.totalCases)} />
             <StatCard
               label={`本月利润合计（${currency === "jpy" ? "JPY" : "CNY"}）`}
-              value={`¥${Math.round(
-                currency === "jpy" ? report.totalProfitJpy : report.totalProfitCny
-              ).toLocaleString("en-US")}`}
+              value={`¥${report.groupedSummaries.reduce((sum, g) => {
+                const jpy = currency === "jpy";
+                return (
+                  sum +
+                  Math.round(jpy ? g.mitsumoriJpy : g.mitsumoriCny) +
+                  Math.round(jpy ? g.countryJpy : g.countryCny) +
+                  Math.round(jpy ? g.opExportJpy : g.opExportCny) +
+                  Math.round(jpy ? g.opImportJpy : g.opImportCny) +
+                  Math.round(jpy ? g.kanFeeJpy : g.kanFeeCny)
+                );
+              }, 0).toLocaleString("en-US")}`}
             />
             <StatCard label="参与分利小组数" value={String(report.groupedSummaries.length)} />
           </div>
@@ -159,9 +155,7 @@ export default function HomePage() {
             <SummaryTable
               report={report}
               currency={currency}
-              expandedGroups={expandedGroups}
               expandedTeam={expandedTeam}
-              onToggleGroup={handleToggleGroup}
               onToggleDetail={handleToggleDetail}
             />
             {detailTarget && (

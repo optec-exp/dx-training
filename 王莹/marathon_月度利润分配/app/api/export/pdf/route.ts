@@ -33,45 +33,45 @@ function ensureFont() {
 const styles = StyleSheet.create({
   page: {
     fontFamily: "CJK",
-    fontSize: 9,
-    padding: 32,
+    fontSize: 8,
+    padding: 28,
     backgroundColor: "#fff",
     color: "#1e293b",
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 10,
+    fontSize: 9,
     color: "#64748b",
-    marginBottom: 16,
+    marginBottom: 12,
   },
   statsRow: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 16,
+    gap: 8,
+    marginBottom: 12,
   },
   statCard: {
     flex: 1,
-    padding: 10,
+    padding: 8,
     backgroundColor: "#f1f5f9",
     borderRadius: 4,
   },
   statLabel: {
-    fontSize: 8,
+    fontSize: 7,
     color: "#64748b",
     marginBottom: 4,
   },
   statValue: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
   },
   sectionHeading: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "bold",
-    marginTop: 12,
+    marginTop: 8,
     marginBottom: 6,
   },
   table: {
@@ -85,14 +85,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: "#cbd5e1",
     paddingVertical: 4,
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
   },
   row: {
     flexDirection: "row",
     borderBottomWidth: 1,
     borderColor: "#e2e8f0",
     paddingVertical: 3,
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
   },
   rowTotal: {
     flexDirection: "row",
@@ -100,14 +100,15 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: "#94a3b8",
     paddingVertical: 4,
-    paddingHorizontal: 4,
+    paddingHorizontal: 3,
     backgroundColor: "#f1f5f9",
     fontWeight: "bold",
   },
-  cellTeam: { width: "20%" },
-  cellCount: { width: "14%", textAlign: "right" },
-  cellMoney: { width: "26%", textAlign: "right" },
-  cellPct: { width: "14%", textAlign: "right" },
+  cellTeam: { width: "13%" },
+  cellCount: { width: "8%", textAlign: "right" },
+  cellDim: { width: "12%", textAlign: "right" },
+  cellTotal: { width: "14%", textAlign: "right" },
+  cellPct: { width: "9%", textAlign: "right" },
   footer: {
     position: "absolute",
     bottom: 16,
@@ -128,109 +129,139 @@ function pct(n: number, total: number): string {
   return `${((n / total) * 100).toFixed(1)}%`;
 }
 
+function dimCell(n: number): string {
+  if (Math.abs(n) < 0.01) return "-";
+  return `¥${fmt(n)}`;
+}
+
+function CurrencyPage({
+  report,
+  currency,
+}: {
+  report: MonthlyReport;
+  currency: "jpy" | "cny";
+}) {
+  const e = React.createElement;
+  const totalProfit = currency === "jpy" ? report.totalProfitJpy : report.totalProfitCny;
+  const currencyLabel = currency === "jpy" ? "JPY" : "CNY";
+
+  const getDim = (
+    g: (typeof report.groupedSummaries)[number],
+    key: "mitsumori" | "country" | "opExport" | "opImport" | "kanFee"
+  ): number => {
+    const jpy = currency === "jpy";
+    if (key === "mitsumori") return jpy ? g.mitsumoriJpy : g.mitsumoriCny;
+    if (key === "country") return jpy ? g.countryJpy : g.countryCny;
+    if (key === "opExport") return jpy ? g.opExportJpy : g.opExportCny;
+    if (key === "opImport") return jpy ? g.opImportJpy : g.opImportCny;
+    return jpy ? g.kanFeeJpy : g.kanFeeCny;
+  };
+
+  const dimSum = (key: "mitsumori" | "country" | "opExport" | "opImport" | "kanFee") =>
+    report.groupedSummaries.reduce((s, g) => s + Math.round(getDim(g, key)), 0);
+
+  const rowTotal = (g: (typeof report.groupedSummaries)[number]) =>
+    Math.round(getDim(g, "mitsumori")) +
+    Math.round(getDim(g, "country")) +
+    Math.round(getDim(g, "opExport")) +
+    Math.round(getDim(g, "opImport")) +
+    Math.round(getDim(g, "kanFee"));
+
+  const grandTotal =
+    dimSum("mitsumori") + dimSum("country") + dimSum("opExport") + dimSum("opImport") + dimSum("kanFee");
+
+  return e(
+    Page,
+    { size: "A4", orientation: "landscape", style: styles.page },
+    e(
+      Text,
+      { style: styles.title },
+      `月度利润分配报告 ${report.year}年${report.month}月 (${currencyLabel})`
+    ),
+    e(
+      Text,
+      { style: styles.subtitle },
+      `生成于 ${new Date().toLocaleString("zh-CN")}`
+    ),
+    e(
+      View,
+      { style: styles.statsRow },
+      e(
+        View,
+        { style: styles.statCard },
+        e(Text, { style: styles.statLabel }, "案件数"),
+        e(Text, { style: styles.statValue }, String(report.totalCases))
+      ),
+      e(
+        View,
+        { style: styles.statCard },
+        e(Text, { style: styles.statLabel }, `本月利润合计（${currencyLabel}）`),
+        e(Text, { style: styles.statValue }, `¥${fmt(grandTotal)}`)
+      )
+    ),
+    e(Text, { style: styles.sectionHeading }, "各小组利润分配（按合计高到低排序）"),
+    e(
+      View,
+      { style: styles.table },
+      e(
+        View,
+        { style: styles.rowHeader },
+        e(Text, { style: styles.cellTeam }, "小组"),
+        e(Text, { style: styles.cellCount }, "案件"),
+        e(Text, { style: styles.cellDim }, "見積 20%"),
+        e(Text, { style: styles.cellDim }, "国別 35%"),
+        e(Text, { style: styles.cellDim }, "操作输出 27%"),
+        e(Text, { style: styles.cellDim }, "操作输入 18%"),
+        e(Text, { style: styles.cellDim }, "自社通关"),
+        e(Text, { style: styles.cellTotal }, `合计 (${currencyLabel})`),
+        e(Text, { style: styles.cellPct }, "占比")
+      ),
+      ...report.groupedSummaries.map((g) => {
+        const amount = rowTotal(g);
+        return e(
+          View,
+          { style: styles.row, key: `g-${g.name}` },
+          e(Text, { style: styles.cellTeam }, g.name),
+          e(Text, { style: styles.cellCount }, String(g.caseCount)),
+          e(Text, { style: styles.cellDim }, dimCell(getDim(g, "mitsumori"))),
+          e(Text, { style: styles.cellDim }, dimCell(getDim(g, "country"))),
+          e(Text, { style: styles.cellDim }, dimCell(getDim(g, "opExport"))),
+          e(Text, { style: styles.cellDim }, dimCell(getDim(g, "opImport"))),
+          e(Text, { style: styles.cellDim }, dimCell(getDim(g, "kanFee"))),
+          e(Text, { style: styles.cellTotal }, `¥${fmt(amount)}`),
+          e(Text, { style: styles.cellPct }, pct(amount, totalProfit))
+        );
+      }),
+      e(
+        View,
+        { style: styles.rowTotal },
+        e(Text, { style: styles.cellTeam }, "合计"),
+        e(Text, { style: styles.cellCount }, String(report.totalCases)),
+        e(Text, { style: styles.cellDim }, dimCell(dimSum("mitsumori"))),
+        e(Text, { style: styles.cellDim }, dimCell(dimSum("country"))),
+        e(Text, { style: styles.cellDim }, dimCell(dimSum("opExport"))),
+        e(Text, { style: styles.cellDim }, dimCell(dimSum("opImport"))),
+        e(Text, { style: styles.cellDim }, dimCell(dimSum("kanFee"))),
+        e(Text, { style: styles.cellTotal }, `¥${fmt(grandTotal)}`),
+        e(Text, { style: styles.cellPct }, "100.0%")
+      )
+    ),
+    e(Text, {
+      style: styles.footer,
+      fixed: true,
+      render: ({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) =>
+        `第 ${pageNumber} / ${totalPages} 页`,
+    })
+  );
+}
+
 function ReportDoc({ report }: { report: MonthlyReport }) {
   const e = React.createElement;
   return e(
     Document,
     null,
-    e(
-      Page,
-      { size: "A4", style: styles.page },
-      e(Text, { style: styles.title }, `月度利润分配报告 ${report.year}年${report.month}月`),
-      e(
-        Text,
-        { style: styles.subtitle },
-        `Air / SEA / EC 案件按业务规则自动分配 · 生成于 ${new Date().toLocaleString("zh-CN")}`
-      ),
-
-      e(
-        View,
-        { style: styles.statsRow },
-        e(
-          View,
-          { style: styles.statCard },
-          e(Text, { style: styles.statLabel }, "案件数"),
-          e(Text, { style: styles.statValue }, String(report.totalCases))
-        ),
-        e(
-          View,
-          { style: styles.statCard },
-          e(Text, { style: styles.statLabel }, "本月利润合计（JPY）"),
-          e(Text, { style: styles.statValue }, `¥${fmt(report.totalProfitJpy)}`)
-        ),
-        e(
-          View,
-          { style: styles.statCard },
-          e(Text, { style: styles.statLabel }, "本月利润合计（CNY）"),
-          e(Text, { style: styles.statValue }, `¥${fmt(report.totalProfitCny)}`)
-        )
-      ),
-
-      e(
-        Text,
-        { style: { fontSize: 9, color: "#64748b", marginBottom: 8 } },
-        `自社通关合计（包含在通关小组利润中）：JPY ¥${fmt(
-          report.groupedSummaries.reduce((s, g) => s + g.kanFeeJpy, 0)
-        )}  ·  CNY ¥${fmt(
-          report.groupedSummaries.reduce((s, g) => s + g.kanFeeCny, 0)
-        )}`
-      ),
-
-      e(Text, { style: styles.sectionHeading }, "各小组利润分配（按 JPY 高到低排序）"),
-      e(
-        View,
-        { style: styles.table },
-        e(
-          View,
-          { style: styles.rowHeader },
-          e(Text, { style: styles.cellTeam }, "小组"),
-          e(Text, { style: styles.cellCount }, "案件数"),
-          e(Text, { style: styles.cellMoney }, "利润 (JPY)"),
-          e(Text, { style: styles.cellMoney }, "利润 (CNY)"),
-          e(Text, { style: styles.cellPct }, "占比 JPY")
-        ),
-        ...report.groupedSummaries.flatMap((g) => {
-          const groupRow = e(
-            View,
-            { style: styles.row, key: `g-${g.name}` },
-            e(Text, { style: [styles.cellTeam, { fontWeight: "bold" }] }, g.name),
-            e(Text, { style: styles.cellCount }, String(g.caseCount)),
-            e(Text, { style: styles.cellMoney }, `¥${fmt(g.totalJpy)}`),
-            e(Text, { style: styles.cellMoney }, `¥${fmt(g.totalCny)}`),
-            e(Text, { style: styles.cellPct }, pct(g.totalJpy, report.totalProfitJpy))
-          );
-          const childRows = g.isGroup && g.children
-            ? g.children.map((c) =>
-                e(
-                  View,
-                  { style: styles.row, key: `c-${g.name}-${c.team}` },
-                  e(Text, { style: [styles.cellTeam, { color: "#64748b", paddingLeft: 12 }] }, `└ ${c.team}`),
-                  e(Text, { style: [styles.cellCount, { color: "#64748b" }] }, String(c.caseCount)),
-                  e(Text, { style: [styles.cellMoney, { color: "#64748b" }] }, `¥${fmt(c.totalJpy)}`),
-                  e(Text, { style: [styles.cellMoney, { color: "#64748b" }] }, `¥${fmt(c.totalCny)}`),
-                  e(Text, { style: [styles.cellPct, { color: "#64748b" }] }, pct(c.totalJpy, report.totalProfitJpy))
-                )
-              )
-            : [];
-          return [groupRow, ...childRows];
-        }),
-        e(
-          View,
-          { style: styles.rowTotal },
-          e(Text, { style: styles.cellTeam }, "合计"),
-          e(Text, { style: styles.cellCount }, String(report.totalCases)),
-          e(Text, { style: styles.cellMoney }, `¥${fmt(report.totalProfitJpy)}`),
-          e(Text, { style: styles.cellMoney }, `¥${fmt(report.totalProfitCny)}`),
-          e(Text, { style: styles.cellPct }, "100.0%")
-        )
-      ),
-
-      e(
-        Text,
-        { style: styles.footer, fixed: true, render: ({ pageNumber, totalPages }) =>
-            `第 ${pageNumber} / ${totalPages} 页`
-        })
-    )
+    e(CurrencyPage, { report, currency: "jpy" }),
+    e(CurrencyPage, { report, currency: "cny" })
   );
 }
 
