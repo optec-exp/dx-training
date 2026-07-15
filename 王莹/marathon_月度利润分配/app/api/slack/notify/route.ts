@@ -80,9 +80,7 @@ export async function POST(req: Request) {
       })
       .join("\n");
 
-    const link = appUrl
-      ? `📊 <${appUrl}|查看完整数据（5 维度 / 双币种 / 案件明细 / Excel & PDF 下载）>`
-      : "";
+    const link = appUrl ? `📊 <${appUrl}|查看完整数据>` : "";
 
     const blocks: unknown[] = [
       {
