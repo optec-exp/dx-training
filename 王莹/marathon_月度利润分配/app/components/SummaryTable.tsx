@@ -6,6 +6,7 @@ import type {
   MonthlyReport,
   TeamSummary,
 } from "@/lib/types";
+import { useLang } from "./LanguageProvider";
 
 interface Props {
   report: MonthlyReport;
@@ -58,26 +59,25 @@ function displayTotal(
   return DIM_KEYS.reduce((sum, k) => sum + Math.round(dimAmount(s, k, currency)), 0);
 }
 
-const DIM_LABELS: Record<DimKey, string> = {
-  mitsumori: "見積 20%",
-  country: "顾客所在国 35%",
-  opExport: "操作-輸出 27%",
-  opImport: "操作-輸入 18%",
-  kanFee: "自社通关",
-};
-
 export function SummaryTable({
   report,
   currency,
   expandedTeam,
   onToggleDetail,
 }: Props) {
-  const total = currency === "jpy" ? report.totalProfitJpy : report.totalProfitCny;
+  const { t } = useLang();
   const grandTotal = report.groupedSummaries.reduce(
     (sum, g) => sum + displayTotal(g, currency),
     0
   );
   const currencyLabel = currency === "jpy" ? "JPY" : "CNY";
+  const DIM_LABELS: Record<DimKey, string> = {
+    mitsumori: `${t("colMitsumori")} 20%`,
+    country: `${t("colCountry")} 35%`,
+    opExport: `${t("colOpExport")} 27%`,
+    opImport: `${t("colOpImport")} 18%`,
+    kanFee: t("colKanFee"),
+  };
 
   return (
     <>
@@ -86,15 +86,15 @@ export function SummaryTable({
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>
-              <th className="px-4 py-3 text-left font-medium">小组</th>
-              <th className="px-4 py-3 text-right font-medium">案件数</th>
-              <th className="px-4 py-3 text-right font-medium">見積 20%</th>
-              <th className="px-4 py-3 text-right font-medium">顾客所在国 35%</th>
-              <th className="px-4 py-3 text-right font-medium">操作-輸出 27%</th>
-              <th className="px-4 py-3 text-right font-medium">操作-輸入 18%</th>
-              <th className="px-4 py-3 text-right font-medium">自社通关</th>
-              <th className="px-4 py-3 text-right font-medium">合计（{currencyLabel}）</th>
-              <th className="px-4 py-3 text-right font-medium">占比</th>
+              <th className="px-4 py-3 text-left font-medium">{t("colTeam")}</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colCaseCount")}</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colMitsumori")} 20%</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colCountry")} 35%</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colOpExport")} 27%</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colOpImport")} 18%</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colKanFee")}</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colTotal")}（{currencyLabel}）</th>
+              <th className="px-4 py-3 text-right font-medium">{t("colRatio")}</th>
               <th className="px-4 py-3 text-right font-medium w-20"></th>
             </tr>
           </thead>
@@ -102,7 +102,7 @@ export function SummaryTable({
             {report.groupedSummaries.length === 0 && (
               <tr>
                 <td className="px-4 py-8 text-center text-slate-400" colSpan={10}>
-                  本月暂无利润数据
+                  {t("noData")}
                 </td>
               </tr>
             )}
@@ -142,7 +142,7 @@ export function SummaryTable({
                       onClick={() => onToggleDetail(detailKey)}
                       className="text-xs text-indigo-600 hover:text-indigo-800"
                     >
-                      {isDetailOpen ? "收起" : "明细"}
+                      {isDetailOpen ? t("btnCollapse") : t("btnDetail")}
                     </button>
                   </td>
                 </tr>
@@ -152,7 +152,7 @@ export function SummaryTable({
           {report.groupedSummaries.length > 0 && (
             <tfoot className="bg-slate-50 font-medium">
               <tr>
-                <td className="px-4 py-3 text-slate-700">合计</td>
+                <td className="px-4 py-3 text-slate-700">{t("colTotal")}</td>
                 <td className="px-4 py-3 text-right tabular-nums">{report.totalCases}</td>
                 {DIM_KEYS.map((k) => (
                   <td key={k} className="px-4 py-3 text-right tabular-nums">
@@ -174,7 +174,7 @@ export function SummaryTable({
       <div className="lg:hidden space-y-3">
         {report.groupedSummaries.length === 0 && (
           <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-400">
-            本月暂无利润数据
+            {t("noData")}
           </div>
         )}
         {report.groupedSummaries.map((g) => {
@@ -214,7 +214,7 @@ export function SummaryTable({
                   onClick={() => onToggleDetail(detailKey)}
                   className="text-xs text-indigo-600 hover:text-indigo-800"
                 >
-                  {isDetailOpen ? "收起明细" : "查看案件明细 →"}
+                  {isDetailOpen ? t("btnCollapseDetail") : t("btnViewDetail")}
                 </button>
               </div>
             </div>
@@ -225,7 +225,7 @@ export function SummaryTable({
           <div className="rounded-xl border border-slate-300 bg-slate-100 px-4 py-3">
             <div className="flex items-baseline justify-between">
               <div className="flex items-baseline gap-2">
-                <span className="font-bold text-slate-800">合计</span>
+                <span className="font-bold text-slate-800">{t("colTotal")}</span>
                 <span className="text-xs text-slate-500">{report.totalCases} 件</span>
               </div>
               <div className="text-right">

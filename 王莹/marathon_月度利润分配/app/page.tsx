@@ -8,12 +8,15 @@ import { SummaryTable } from "./components/SummaryTable";
 import { CaseDetail } from "./components/CaseDetail";
 import { ActionBar } from "./components/ActionBar";
 import { CaseSearch } from "./components/CaseSearch";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { useLang } from "./components/LanguageProvider";
 
 const NOW = new Date();
 const DEFAULT_YEAR = NOW.getFullYear();
 const DEFAULT_MONTH = Math.max(NOW.getMonth() + 1, 4);
 
 export default function HomePage() {
+  const { t, lang } = useLang();
   const [year, setYear] = useState(DEFAULT_YEAR);
   const [month, setMonth] = useState(DEFAULT_MONTH);
   const [currency, setCurrency] = useState<Currency>("jpy");
@@ -78,11 +81,12 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8">
-      <header className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">月度利润自动分配</h1>
-        <p className="mt-1 text-xs sm:text-sm text-slate-500">
-          Air / SEA / EC 三类案件，按业务规则自动计算各小组分得的利润
-        </p>
+      <header className="mb-4 sm:mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{t("appTitle")}</h1>
+          <p className="mt-1 text-xs sm:text-sm text-slate-500">{t("appDescription")}</p>
+        </div>
+        <LanguageSwitcher />
       </header>
 
       <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-2 sm:gap-4">
@@ -98,15 +102,15 @@ export default function HomePage() {
           onClick={handleRefresh}
           disabled={loading}
           className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium shadow-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          title="重新从 Kintone 拉取数据"
+          title={t("refreshTooltip")}
         >
           <span className={loading ? "animate-spin inline-block" : ""}>🔄</span>
-          <span className="hidden sm:inline">{loading ? "刷新中…" : "刷新数据"}</span>
+          <span className="hidden sm:inline">{loading ? t("refreshing") : t("refresh")}</span>
         </button>
         {report?.dataFetchedAt && (
           <span className="text-xs text-slate-500 basis-full sm:basis-auto order-last sm:order-none">
-            数据更新于 {new Date(report.dataFetchedAt).toLocaleString("zh-CN")}
-            {report.fromCache && <span className="ml-1 text-slate-400">(缓存)</span>}
+            {t("dataUpdatedAt")} {new Date(report.dataFetchedAt).toLocaleString(lang === "ja" ? "ja-JP" : "zh-CN")}
+            {report.fromCache && <span className="ml-1 text-slate-400">({t("cache")})</span>}
           </span>
         )}
         <div className="ml-auto">
@@ -122,16 +126,16 @@ export default function HomePage() {
 
       {loading && (
         <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-400">
-          数据加载中…
+          {t("loading")}
         </div>
       )}
 
       {!loading && report && (
         <>
           <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-            <StatCard label="案件数" value={String(report.totalCases)} />
+            <StatCard label={t("statTotalCases")} value={String(report.totalCases)} />
             <StatCard
-              label={`本月利润合计（${currency === "jpy" ? "JPY" : "CNY"}）`}
+              label={`${t("statTotalProfit")}（${currency === "jpy" ? "JPY" : "CNY"}）`}
               value={`¥${report.groupedSummaries.reduce((sum, g) => {
                 const jpy = currency === "jpy";
                 return (
@@ -145,7 +149,7 @@ export default function HomePage() {
               }, 0).toLocaleString("en-US")}`}
             />
             <StatCard
-              label="参与分利小组数"
+              label={t("statTeamCount")}
               value={String(report.groupedSummaries.length)}
               className="hidden sm:block"
             />

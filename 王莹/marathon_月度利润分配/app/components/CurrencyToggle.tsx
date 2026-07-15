@@ -1,6 +1,7 @@
 "use client";
 
 import type { Currency } from "@/lib/types";
+import { useLang } from "./LanguageProvider";
 
 interface Props {
   value: Currency;
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function CurrencyToggle({ value, onChange }: Props) {
+  const { t } = useLang();
   return (
     <div className="inline-flex rounded-lg border border-slate-300 bg-white p-1 shadow-sm">
       <button
@@ -19,7 +21,7 @@ export function CurrencyToggle({ value, onChange }: Props) {
             : "text-slate-600 hover:bg-slate-100"
         }`}
       >
-        日元 JPY
+        {t("currencyJpy")}
       </button>
       <button
         type="button"
@@ -30,7 +32,7 @@ export function CurrencyToggle({ value, onChange }: Props) {
             : "text-slate-600 hover:bg-slate-100"
         }`}
       >
-        人民币 CNY
+        {t("currencyCny")}
       </button>
     </div>
   );

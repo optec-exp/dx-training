@@ -13,6 +13,7 @@ import { fetchMonthlyCases } from "@/lib/kintone";
 import { buildMonthlyReport } from "@/lib/profit-calc";
 import { findChineseFontPath } from "@/lib/pdf-font";
 import type { MonthlyReport } from "@/lib/types";
+import { normalizeLang, t as translate, type Lang, type TranslationKey } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -137,11 +138,15 @@ function dimCell(n: number): string {
 function CurrencyPage({
   report,
   currency,
+  lang,
 }: {
   report: MonthlyReport;
   currency: "jpy" | "cny";
+  lang: Lang;
 }) {
   const e = React.createElement;
+  const tr = (key: TranslationKey, params?: Record<string, string | number>) =>
+    translate(lang, key, params);
   const totalProfit = currency === "jpy" ? report.totalProfitJpy : report.totalProfitCny;
   const currencyLabel = currency === "jpy" ? "JPY" : "CNY";
 
@@ -176,12 +181,12 @@ function CurrencyPage({
     e(
       Text,
       { style: styles.title },
-      `月度利润分配报告 ${report.year}年${report.month}月 (${currencyLabel})`
+      `${tr("pdfTitle")} ${report.year}${tr("labelYear")}${report.month}${tr("labelMonth")} (${currencyLabel})`
     ),
     e(
       Text,
       { style: styles.subtitle },
-      `生成于 ${new Date().toLocaleString("zh-CN")}`
+      `${tr("pdfGeneratedAt")} ${new Date().toLocaleString(lang === "ja" ? "ja-JP" : "zh-CN")}`
     ),
     e(
       View,
@@ -189,32 +194,32 @@ function CurrencyPage({
       e(
         View,
         { style: styles.statCard },
-        e(Text, { style: styles.statLabel }, "案件数"),
+        e(Text, { style: styles.statLabel }, tr("statTotalCases")),
         e(Text, { style: styles.statValue }, String(report.totalCases))
       ),
       e(
         View,
         { style: styles.statCard },
-        e(Text, { style: styles.statLabel }, `本月利润合计（${currencyLabel}）`),
+        e(Text, { style: styles.statLabel }, `${tr("statTotalProfit")}（${currencyLabel}）`),
         e(Text, { style: styles.statValue }, `¥${fmt(grandTotal)}`)
       )
     ),
-    e(Text, { style: styles.sectionHeading }, "各小组利润分配（按合计高到低排序）"),
+    e(Text, { style: styles.sectionHeading }, tr("pdfSectionHeading")),
     e(
       View,
       { style: styles.table },
       e(
         View,
         { style: styles.rowHeader },
-        e(Text, { style: styles.cellTeam }, "小组"),
-        e(Text, { style: styles.cellCount }, "案件"),
-        e(Text, { style: styles.cellDim }, "見積 20%"),
-        e(Text, { style: styles.cellDim }, "国別 35%"),
-        e(Text, { style: styles.cellDim }, "操作输出 27%"),
-        e(Text, { style: styles.cellDim }, "操作输入 18%"),
-        e(Text, { style: styles.cellDim }, "自社通关"),
-        e(Text, { style: styles.cellTotal }, `合计 (${currencyLabel})`),
-        e(Text, { style: styles.cellPct }, "占比")
+        e(Text, { style: styles.cellTeam }, tr("colTeam")),
+        e(Text, { style: styles.cellCount }, tr("colCaseCount")),
+        e(Text, { style: styles.cellDim }, `${tr("colMitsumori")} 20%`),
+        e(Text, { style: styles.cellDim }, `${tr("colCountry")} 35%`),
+        e(Text, { style: styles.cellDim }, `${tr("colOpExport")} 27%`),
+        e(Text, { style: styles.cellDim }, `${tr("colOpImport")} 18%`),
+        e(Text, { style: styles.cellDim }, tr("colKanFee")),
+        e(Text, { style: styles.cellTotal }, `${tr("colTotal")} (${currencyLabel})`),
+        e(Text, { style: styles.cellPct }, tr("colRatio"))
       ),
       ...report.groupedSummaries.map((g) => {
         const amount = rowTotal(g);
@@ -235,7 +240,7 @@ function CurrencyPage({
       e(
         View,
         { style: styles.rowTotal },
-        e(Text, { style: styles.cellTeam }, "合计"),
+        e(Text, { style: styles.cellTeam }, tr("colTotal")),
         e(Text, { style: styles.cellCount }, String(report.totalCases)),
         e(Text, { style: styles.cellDim }, dimCell(dimSum("mitsumori"))),
         e(Text, { style: styles.cellDim }, dimCell(dimSum("country"))),
@@ -250,18 +255,18 @@ function CurrencyPage({
       style: styles.footer,
       fixed: true,
       render: ({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) =>
-        `第 ${pageNumber} / ${totalPages} 页`,
+        tr("pdfPage", { n: pageNumber, total: totalPages }),
     })
   );
 }
 
-function ReportDoc({ report }: { report: MonthlyReport }) {
+function ReportDoc({ report, lang }: { report: MonthlyReport; lang: Lang }) {
   const e = React.createElement;
   return e(
     Document,
     null,
-    e(CurrencyPage, { report, currency: "jpy" }),
-    e(CurrencyPage, { report, currency: "cny" })
+    e(CurrencyPage, { report, currency: "jpy", lang }),
+    e(CurrencyPage, { report, currency: "cny", lang })
   );
 }
 
@@ -269,6 +274,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const year = parseInt(searchParams.get("year") ?? "", 10);
   const month = parseInt(searchParams.get("month") ?? "", 10);
+  const lang = normalizeLang(searchParams.get("lang"));
 
   if (!Number.isInteger(year) || !Number.isInteger(month)) {
     return NextResponse.json({ error: "需要 year/month" }, { status: 400 });
@@ -279,7 +285,7 @@ export async function GET(req: Request) {
     const { cases, fetchedAt, fromCache } = await fetchMonthlyCases(year, month);
     const report = buildMonthlyReport(year, month, cases, { fetchedAt, fromCache });
 
-    const doc = React.createElement(ReportDoc, { report });
+    const doc = React.createElement(ReportDoc, { report, lang });
     const stream = await pdf(doc as React.ReactElement).toBuffer();
     const chunks: Buffer[] = [];
     for await (const chunk of stream) {
@@ -287,7 +293,7 @@ export async function GET(req: Request) {
     }
     const buf = Buffer.concat(chunks);
 
-    const filename = `月度利润分配_${year}年${month}月.pdf`;
+    const filename = `${translate(lang, "appTitle")}_${year}${translate(lang, "labelYear")}${month}${translate(lang, "labelMonth")}.pdf`;
     return new NextResponse(buf, {
       status: 200,
       headers: {

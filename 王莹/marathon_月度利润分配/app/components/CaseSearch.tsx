@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { CaseAllocation, Currency, MonthlyReport } from "@/lib/types";
+import { useLang } from "./LanguageProvider";
+import type { TranslationKey } from "@/lib/i18n";
 
 interface Props {
   report: MonthlyReport;
@@ -10,14 +12,14 @@ interface Props {
 
 const MAX_RESULTS = 10;
 
-const BASIS_LABEL: Record<string, string> = {
-  ec_full: "EC 全归",
-  kan_full: "通关全归",
-  kan_fee: "通关请求合计",
-  mitsumori: "見積 20%",
-  country: "顾客所在国 35%",
-  operation_export: "操作-輸出",
-  operation_import: "操作-輸入",
+const BASIS_LABEL_KEY: Record<string, TranslationKey> = {
+  ec_full: "basisEcFull",
+  kan_full: "basisKanFull",
+  kan_fee: "basisKanFee",
+  mitsumori: "basisMitsumori",
+  country: "basisCountry",
+  operation_export: "basisOpExport",
+  operation_import: "basisOpImport",
 };
 
 const APP_LABEL: Record<string, string> = {
@@ -31,12 +33,13 @@ function fmt(n: number): string {
 }
 
 export function CaseSearch({ report, currency }: Props) {
+  const { t } = useLang();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedQuery(query), 250);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setDebouncedQuery(query), 250);
+    return () => clearTimeout(timer);
   }, [query]);
 
   const { matched, truncated } = useMemo<{
@@ -68,13 +71,13 @@ export function CaseSearch({ report, currency }: Props) {
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
         <label className="text-sm font-medium text-slate-700 shrink-0">
-          🔍 搜索案件
+          🔍 {t("searchCase")}
         </label>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="输入案件番号或顾客名（如 OPT2604350 / UT ロジ）"
+          placeholder={t("searchPlaceholder")}
           className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
         />
         {query && (
@@ -83,7 +86,7 @@ export function CaseSearch({ report, currency }: Props) {
             onClick={() => setQuery("")}
             className="text-xs text-slate-500 hover:text-slate-700 shrink-0"
           >
-            清除
+            {t("btnClear")}
           </button>
         )}
       </div>
@@ -92,14 +95,14 @@ export function CaseSearch({ report, currency }: Props) {
         <div className="mt-4">
           {matched.length === 0 ? (
             <div className="rounded-lg bg-slate-50 px-4 py-6 text-center text-sm text-slate-400">
-              本月没有匹配的案件
+              {t("noMatched")}
             </div>
           ) : (
             <div className="text-xs text-slate-500 mb-2">
-              找到 {matched.length} 件匹配的案件
+              {t("foundMatched", { count: matched.length })}
               {truncated > 0 && (
                 <span className="ml-2 text-amber-600">
-                  （还有 {truncated} 件未显示，输入更具体的关键词缩小范围）
+                  {t("truncated", { count: truncated })}
                 </span>
               )}
             </div>
@@ -117,6 +120,7 @@ export function CaseSearch({ report, currency }: Props) {
 }
 
 function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) {
+  const { t } = useLang();
   const c = ca.case;
   const gross = currency === "jpy" ? c.grossProfitJpy : c.grossProfitCny;
   const kanFee = currency === "jpy" ? c.kanFeeJpy : c.kanFeeCny;
@@ -132,26 +136,26 @@ function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) 
         <div>
           <div className="flex items-baseline gap-3">
             <span className="font-mono font-semibold text-slate-900 text-base">
-              {c.caseNumber || "(无案件号)"}
+              {c.caseNumber || "-"}
             </span>
             <span className="inline-block rounded bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700">
               {APP_LABEL[c.appType]}
             </span>
-            <span className="text-xs text-slate-500">国 {c.customerCountry || "-"}</span>
+            <span className="text-xs text-slate-500">{t("colCountryCode")} {c.customerCountry || "-"}</span>
           </div>
           <div className="mt-1 text-xs text-slate-600">{c.customerName || "-"}</div>
         </div>
         <div className="grid grid-cols-3 gap-2 text-xs">
           <div className="text-right">
-            <div className="text-slate-500">輸出</div>
+            <div className="text-slate-500">{t("lblExport")}</div>
             <div className="font-medium text-slate-800">{c.exportTeam || "-"}</div>
           </div>
           <div className="text-right">
-            <div className="text-slate-500">輸入</div>
+            <div className="text-slate-500">{t("lblImport")}</div>
             <div className="font-medium text-slate-800">{c.importTeam || "-"}</div>
           </div>
           <div className="text-right">
-            <div className="text-slate-500">見積</div>
+            <div className="text-slate-500">{t("lblMitsumori")}</div>
             <div className="font-medium text-slate-800">{c.mitsumoriTeam || "-"}</div>
           </div>
         </div>
@@ -159,18 +163,18 @@ function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) 
 
       <div className="grid grid-cols-3 divide-x divide-slate-100 border-b border-slate-100 bg-white text-sm">
         <div className="px-4 py-2 text-center">
-          <div className="text-xs text-slate-500">粗利益</div>
+          <div className="text-xs text-slate-500">{t("lblGrossProfit")}</div>
           <div className="font-bold tabular-nums text-slate-900">¥{fmt(gross)}</div>
         </div>
         <div className="px-4 py-2 text-center">
-          <div className="text-xs text-slate-500">請求合計</div>
+          <div className="text-xs text-slate-500">{t("lblKanFeeTotal")}</div>
           <div className="font-bold tabular-nums text-slate-900">¥{fmt(kanFee)}</div>
         </div>
         <div className="px-4 py-2 text-center">
-          <div className="text-xs text-slate-500">分配总和</div>
+          <div className="text-xs text-slate-500">{t("lblAllocationTotal")}</div>
           <div className="font-bold tabular-nums text-slate-900">¥{fmt(allocSum)}</div>
           {Math.abs(diff) > 0.5 && (
-            <div className="text-[10px] text-rose-600 mt-0.5">差额 ¥{fmt(diff)}</div>
+            <div className="text-[10px] text-rose-600 mt-0.5">Δ ¥{fmt(diff)}</div>
           )}
         </div>
       </div>
@@ -178,10 +182,10 @@ function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) 
       <table className="w-full text-xs">
         <thead className="bg-slate-50 text-slate-600">
           <tr>
-            <th className="px-3 py-2 text-left font-medium w-1/3">分配依据</th>
-            <th className="px-3 py-2 text-left font-medium">小组</th>
-            <th className="px-3 py-2 text-right font-medium">分得金额</th>
-            <th className="px-3 py-2 text-right font-medium">占粗利益</th>
+            <th className="px-3 py-2 text-left font-medium w-1/3">{t("colAllocationBasis")}</th>
+            <th className="px-3 py-2 text-left font-medium">{t("colTeam")}</th>
+            <th className="px-3 py-2 text-right font-medium">{t("colShareAmount")}</th>
+            <th className="px-3 py-2 text-right font-medium">{t("colRatio")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -191,7 +195,7 @@ function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) 
             return (
               <tr key={idx} className="hover:bg-slate-50">
                 <td className="px-3 py-2 text-slate-600">
-                  {BASIS_LABEL[a.basis] ?? a.basis}
+                  {t(BASIS_LABEL_KEY[a.basis] ?? "basisMitsumori")}
                 </td>
                 <td className="px-3 py-2 font-medium text-slate-800">{a.team}</td>
                 <td className="px-3 py-2 text-right tabular-nums font-semibold">

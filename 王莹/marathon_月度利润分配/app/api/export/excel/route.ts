@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import { fetchMonthlyCases } from "@/lib/kintone";
 import { buildMonthlyReport } from "@/lib/profit-calc";
-import type { Currency } from "@/lib/types";
+import { normalizeLang, t as translate, type TranslationKey } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -13,24 +13,23 @@ const APP_LABEL: Record<string, string> = {
   ec: "EC",
 };
 
-const BASIS_LABEL: Record<string, string> = {
-  ec_full: "EC 全归",
-  kan_full: "通关全归",
-  kan_fee: "通关请求合计",
-  mitsumori: "見積 20%",
-  country: "顾客所在国 35%",
-  operation_export: "操作-輸出",
-  operation_import: "操作-輸入",
+const BASIS_KEY: Record<string, TranslationKey> = {
+  ec_full: "basisEcFull",
+  kan_full: "basisKanFull",
+  kan_fee: "basisKanFee",
+  mitsumori: "basisMitsumori",
+  country: "basisCountry",
+  operation_export: "basisOpExport",
+  operation_import: "basisOpImport",
 };
-
-function moneyFor(jpy: number, cny: number, currency: Currency): number {
-  return currency === "jpy" ? jpy : cny;
-}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const year = parseInt(searchParams.get("year") ?? "", 10);
   const month = parseInt(searchParams.get("month") ?? "", 10);
+  const lang = normalizeLang(searchParams.get("lang"));
+  const tr = (key: TranslationKey, params?: Record<string, string | number>) =>
+    translate(lang, key, params);
 
   if (!Number.isInteger(year) || !Number.isInteger(month)) {
     return NextResponse.json({ error: "需要 year/month" }, { status: 400 });
@@ -41,7 +40,7 @@ export async function GET(req: Request) {
     const report = buildMonthlyReport(year, month, cases, { fetchedAt, fromCache });
 
     const wb = new ExcelJS.Workbook();
-    wb.creator = "月度利润自动分配";
+    wb.creator = tr("appTitle");
     wb.created = new Date();
 
     const buildSummarySheet = (
@@ -52,15 +51,15 @@ export async function GET(req: Request) {
       const currencyLabel = currency === "jpy" ? "JPY" : "CNY";
       const sheet = wb.addWorksheet(sheetName);
       sheet.columns = [
-        { header: "小组", key: "team", width: 18 },
-        { header: "案件数", key: "count", width: 10 },
-        { header: "見積 20%", key: "mitsumori", width: 16, style: { numFmt: "#,##0" } },
-        { header: "顾客所在国 35%", key: "country", width: 18, style: { numFmt: "#,##0" } },
-        { header: "操作-輸出 27%", key: "opExport", width: 16, style: { numFmt: "#,##0" } },
-        { header: "操作-輸入 18%", key: "opImport", width: 16, style: { numFmt: "#,##0" } },
-        { header: "自社通关", key: "kanFee", width: 16, style: { numFmt: "#,##0" } },
-        { header: `合计 (${currencyLabel})`, key: "total", width: 18, style: { numFmt: "#,##0" } },
-        { header: "占比", key: "pct", width: 10, style: { numFmt: "0.0%" } },
+        { header: tr("colTeam"), key: "team", width: 18 },
+        { header: tr("colCaseCount"), key: "count", width: 10 },
+        { header: `${tr("colMitsumori")} 20%`, key: "mitsumori", width: 16, style: { numFmt: "#,##0" } },
+        { header: `${tr("colCountry")} 35%`, key: "country", width: 18, style: { numFmt: "#,##0" } },
+        { header: `${tr("colOpExport")} 27%`, key: "opExport", width: 16, style: { numFmt: "#,##0" } },
+        { header: `${tr("colOpImport")} 18%`, key: "opImport", width: 16, style: { numFmt: "#,##0" } },
+        { header: tr("colKanFee"), key: "kanFee", width: 16, style: { numFmt: "#,##0" } },
+        { header: `${tr("colTotal")} (${currencyLabel})`, key: "total", width: 18, style: { numFmt: "#,##0" } },
+        { header: tr("colRatio"), key: "pct", width: 10, style: { numFmt: "0.0%" } },
       ];
       sheet.getRow(1).font = { bold: true };
       sheet.getRow(1).fill = {
@@ -103,7 +102,7 @@ export async function GET(req: Request) {
       const sumOI = report.groupedSummaries.reduce((s, g) => s + Math.round(dim(g, "opImport")), 0);
       const sumKF = report.groupedSummaries.reduce((s, g) => s + Math.round(dim(g, "kanFee")), 0);
       const totalRow = sheet.addRow({
-        team: "合计",
+        team: tr("colTotal"),
         count: report.totalCases,
         mitsumori: sumM,
         country: sumC,
@@ -121,26 +120,26 @@ export async function GET(req: Request) {
       };
     };
 
-    buildSummarySheet("小组汇总 JPY", "jpy", report.totalProfitJpy);
-    buildSummarySheet("小组汇总 CNY", "cny", report.totalProfitCny);
+    buildSummarySheet(tr("sheetSummaryJpy"), "jpy", report.totalProfitJpy);
+    buildSummarySheet(tr("sheetSummaryCny"), "cny", report.totalProfitCny);
 
-    const detailSheet = wb.addWorksheet("案件明细");
+    const detailSheet = wb.addWorksheet(tr("sheetDetail"));
     detailSheet.columns = [
-      { header: "案件类别", key: "appType", width: 10 },
-      { header: "案件番号", key: "caseNo", width: 20 },
-      { header: "顾客名", key: "customer", width: 24 },
-      { header: "国コード", key: "country", width: 10 },
-      { header: "輸出对应", key: "exportTeam", width: 14 },
-      { header: "輸入对应", key: "importTeam", width: 14 },
-      { header: "見積チーム", key: "mitsumori", width: 14 },
-      { header: "粗利益 JPY", key: "grossJpy", width: 16, style: { numFmt: "#,##0" } },
-      { header: "粗利益 CNY", key: "grossCny", width: 16, style: { numFmt: "#,##0" } },
-      { header: "請求合計 JPY", key: "kanJpy", width: 16, style: { numFmt: "#,##0" } },
-      { header: "請求合計 CNY", key: "kanCny", width: 16, style: { numFmt: "#,##0" } },
-      { header: "分配小组", key: "team", width: 14 },
-      { header: "分配依据", key: "basis", width: 18 },
-      { header: "分得 JPY", key: "shareJpy", width: 16, style: { numFmt: "#,##0" } },
-      { header: "分得 CNY", key: "shareCny", width: 16, style: { numFmt: "#,##0" } },
+      { header: tr("colCategory"), key: "appType", width: 10 },
+      { header: tr("colCaseNumber"), key: "caseNo", width: 20 },
+      { header: tr("colCustomer"), key: "customer", width: 24 },
+      { header: tr("colCountryCode"), key: "country", width: 10 },
+      { header: `${tr("lblExport")} ${tr("colTeam")}`, key: "exportTeam", width: 14 },
+      { header: `${tr("lblImport")} ${tr("colTeam")}`, key: "importTeam", width: 14 },
+      { header: `${tr("lblMitsumori")} ${tr("colTeam")}`, key: "mitsumori", width: 14 },
+      { header: `${tr("lblGrossProfit")} JPY`, key: "grossJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: `${tr("lblGrossProfit")} CNY`, key: "grossCny", width: 16, style: { numFmt: "#,##0" } },
+      { header: `${tr("lblKanFeeTotal")} JPY`, key: "kanJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: `${tr("lblKanFeeTotal")} CNY`, key: "kanCny", width: 16, style: { numFmt: "#,##0" } },
+      { header: tr("colOwnerTeam"), key: "team", width: 14 },
+      { header: tr("colAllocationBasis"), key: "basis", width: 18 },
+      { header: `${tr("colShareAmount")} JPY`, key: "shareJpy", width: 16, style: { numFmt: "#,##0" } },
+      { header: `${tr("colShareAmount")} CNY`, key: "shareCny", width: 16, style: { numFmt: "#,##0" } },
     ];
     detailSheet.getRow(1).font = { bold: true };
     detailSheet.getRow(1).fill = {
@@ -179,7 +178,7 @@ export async function GET(req: Request) {
           kanJpy: Math.round(c.kanFeeJpy),
           kanCny: Math.round(c.kanFeeCny),
           team,
-          basis: v.bases.map((b) => BASIS_LABEL[b] ?? b).join(" + "),
+          basis: v.bases.map((b) => tr(BASIS_KEY[b] ?? "basisMitsumori")).join(" + "),
           shareJpy: Math.round(v.jpy),
           shareCny: Math.round(v.cny),
         });
@@ -187,7 +186,7 @@ export async function GET(req: Request) {
     }
 
     const buf = await wb.xlsx.writeBuffer();
-    const filename = `月度利润分配_${year}年${month}月.xlsx`;
+    const filename = `${tr("appTitle")}_${year}${tr("labelYear")}${month}${tr("labelMonth")}.xlsx`;
     return new NextResponse(buf as ArrayBuffer, {
       status: 200,
       headers: {

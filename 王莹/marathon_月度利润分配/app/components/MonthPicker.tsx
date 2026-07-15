@@ -1,5 +1,7 @@
 "use client";
 
+import { useLang } from "./LanguageProvider";
+
 interface Props {
   year: number;
   month: number;
@@ -7,7 +9,7 @@ interface Props {
   disabled?: boolean;
 }
 
-function buildMonths(): { year: number; month: number; label: string }[] {
+function buildMonths(yearLabel: string, monthLabel: string): { year: number; month: number; label: string }[] {
   const result: { year: number; month: number; label: string }[] = [];
   const now = new Date();
   const endYear = now.getFullYear();
@@ -16,7 +18,7 @@ function buildMonths(): { year: number; month: number; label: string }[] {
   let y = 2026;
   let m = 4;
   while (y < endYear || (y === endYear && m <= endMonth)) {
-    result.push({ year: y, month: m, label: `${y}年${m}月` });
+    result.push({ year: y, month: m, label: `${y}${yearLabel}${m}${monthLabel}` });
     m += 1;
     if (m > 12) {
       m = 1;
@@ -27,7 +29,8 @@ function buildMonths(): { year: number; month: number; label: string }[] {
 }
 
 export function MonthPicker({ year, month, onChange, disabled }: Props) {
-  const months = buildMonths();
+  const { t } = useLang();
+  const months = buildMonths(t("labelYear"), t("labelMonth"));
   const current = `${year}-${month}`;
 
   return (
