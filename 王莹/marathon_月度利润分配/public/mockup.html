@@ -1,0 +1,615 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>StatCard 布局方案对比 — 月度利润分配</title>
+
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --bg: #f8fafc;
+    --page-bg: #f8fafc;
+    --card: #ffffff;
+    --card-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    --accent: #6366f1;
+    --accent-bg: #eef2ff;
+    --success: #10b981;
+    --success-text: #047857;
+    --success-bg: #ecfdf5;
+    --shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.03);
+    --shadow-strong: 0 4px 12px rgb(15 23 42 / 0.06);
+
+    --demo-note-bg: #fefce8;
+    --demo-note-border: #fde68a;
+    --demo-note-text: #854d0e;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #020617;
+      --page-bg: #020617;
+      --card: #0f172a;
+      --card-alt: #111827;
+      --border: #1e293b;
+      --border-strong: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --accent: #818cf8;
+      --accent-bg: #1e1b4b;
+      --success: #34d399;
+      --success-text: #6ee7b7;
+      --success-bg: #052e2b;
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+      --shadow-strong: 0 4px 12px rgb(0 0 0 / 0.5);
+
+      --demo-note-bg: #292524;
+      --demo-note-border: #57534e;
+      --demo-note-text: #fbbf24;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f8fafc;
+    --page-bg: #f8fafc;
+    --card: #ffffff;
+    --card-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    --accent: #6366f1;
+    --accent-bg: #eef2ff;
+    --success: #10b981;
+    --success-text: #047857;
+    --success-bg: #ecfdf5;
+    --shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.03);
+    --shadow-strong: 0 4px 12px rgb(15 23 42 / 0.06);
+
+    --demo-note-bg: #fefce8;
+    --demo-note-border: #fde68a;
+    --demo-note-text: #854d0e;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #020617;
+    --page-bg: #020617;
+    --card: #0f172a;
+    --card-alt: #111827;
+    --border: #1e293b;
+    --border-strong: #334155;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    --accent: #818cf8;
+    --accent-bg: #1e1b4b;
+    --success: #34d399;
+    --success-text: #6ee7b7;
+    --success-bg: #052e2b;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-strong: 0 4px 12px rgb(0 0 0 / 0.5);
+
+    --demo-note-bg: #292524;
+    --demo-note-border: #57534e;
+    --demo-note-text: #fbbf24;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family:
+      "Hiragino Sans", "Noto Sans CJK SC", "PingFang SC",
+      "Microsoft YaHei", -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--page-bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    margin: 0;
+    padding: 32px 16px 64px;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 1152px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .page-header p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .demo-note {
+    background: var(--demo-note-bg);
+    color: var(--demo-note-text);
+    border: 1px solid var(--demo-note-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    margin: 16px auto 40px;
+    max-width: 720px;
+    text-align: center;
+  }
+
+  .plan {
+    margin-bottom: 56px;
+  }
+
+  .plan-label {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  .plan-badge {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    padding: 4px 10px;
+    background: var(--accent-bg);
+    border-radius: 999px;
+  }
+
+  .plan-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .plan-note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+    max-width: 340px;
+    text-align: right;
+  }
+
+  /* 模拟 Dashboard 顶部工具栏（禁用状态，只做视觉上下文） */
+  .dash-shell {
+    background: var(--card-alt);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .dash-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    opacity: 0.55;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .tb-select,
+  .tb-pill,
+  .tb-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+
+  .tb-select { padding-right: 24px; position: relative; }
+  .tb-select::after {
+    content: "▾";
+    position: absolute;
+    right: 8px;
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+
+  .tb-pill { padding: 0; height: 36px; overflow: hidden; }
+  .tb-pill span {
+    padding: 0 12px;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+  }
+  .tb-pill .on {
+    background: var(--accent);
+    color: white;
+  }
+  .tb-pill .off { color: var(--text-muted); }
+
+  .tb-btn.right { margin-left: auto; }
+  .tb-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .tb-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 8px;
+    align-self: center;
+  }
+
+  /* StatCard 通用样式（跟 Dashboard 完全一致） */
+  .card-row {
+    display: grid;
+    gap: 16px;
+  }
+  .row-4 { grid-template-columns: repeat(4, 1fr); }
+  .row-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    word-break: break-all;
+  }
+
+  /* 方案 A：达成率卡片（无进度条） */
+  .achv-a .stat-value.green { color: var(--success-text); }
+  .achv-a .achv-detail {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 方案 D：独立横条 */
+  .achv-bar {
+    margin-top: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .achv-bar-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .achv-bar-label .lbl {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .achv-bar-label .num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--success-text);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .achv-bar-track {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+    min-width: 200px;
+  }
+  .achv-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+    border-radius: 999px;
+    width: 100%;
+  }
+
+  .achv-bar-meta {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .achv-bar-meta .actual {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .achv-bar-meta .target {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* 高亮当前实现的差异 */
+  .accent-card {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* 主题切换按钮 */
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    font-family: inherit;
+  }
+  .theme-toggle:hover {
+    border-color: var(--border-strong);
+  }
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* 底部对比表 */
+  .compare {
+    margin-top: 32px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .compare table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .compare th, .compare td {
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare th {
+    background: var(--card-alt);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .compare tr:last-child td {
+    border-bottom: none;
+  }
+  .compare td:first-child {
+    color: var(--text-muted);
+    font-weight: 500;
+    width: 25%;
+  }
+
+  @media (max-width: 900px) {
+    .row-4 { grid-template-columns: repeat(2, 1fr); }
+    .row-3 { grid-template-columns: repeat(2, 1fr); }
+    .achv-bar {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .achv-bar-meta {
+      text-align: left;
+    }
+    .plan-note {
+      margin-left: 0;
+      text-align: left;
+      max-width: none;
+    }
+  }
+</style>
+
+<button class="theme-toggle" id="themeBtn" type="button" aria-label="切换主题">切换主题</button>
+
+<div class="container">
+  <div class="page-header">
+    <h1>StatCard 顶部布局方案对比</h1>
+    <p>用 2026 年 6 月的真实数据做同尺度还原 · 达成率 129%</p>
+  </div>
+
+  <div class="demo-note">
+    ⚠️ 这是**假页面 mockup**，只做视觉预览用。真实功能请打开线上 Dashboard。
+  </div>
+
+  <!-- 方案 A -->
+  <section class="plan">
+    <div class="plan-label">
+      <span class="plan-badge">方案 A</span>
+      <h2 class="plan-title">达成率卡片：只保留 标题 · 大字百分数 · 精确金额（去掉进度条）</h2>
+      <p class="plan-note">卡片高度更接近其他 3 个 · 保留信息量</p>
+    </div>
+
+    <div class="dash-shell">
+      <div class="dash-toolbar">
+        <div class="tb-select">2026年6月</div>
+        <div class="tb-pill">
+          <span class="on">JPY</span>
+          <span class="off">CNY（参考）</span>
+        </div>
+        <div class="tb-btn">🔄 刷新数据</div>
+        <span class="tb-time">数据更新于 2026/7/16 14:12</span>
+        <div class="tb-actions">
+          <div class="tb-btn">📊 Excel</div>
+          <div class="tb-btn">📄 PDF</div>
+          <div class="tb-btn">💬 Slack 通知</div>
+        </div>
+      </div>
+
+      <div class="card-row row-4">
+        <div class="stat-card">
+          <div class="stat-label">案件数</div>
+          <div class="stat-value">241</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">本月利润合计（JPY）</div>
+          <div class="stat-value">¥86,849,326</div>
+        </div>
+        <div class="stat-card achv-a accent-card">
+          <div class="stat-label">🎯 本月目标达成率</div>
+          <div class="stat-value green">129%</div>
+          <div class="achv-detail">¥86,849,326 / ¥67,556,970</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">参与分利小组数</div>
+          <div class="stat-value">4</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 方案 D -->
+  <section class="plan">
+    <div class="plan-label">
+      <span class="plan-badge">方案 D</span>
+      <h2 class="plan-title">顶部 3 卡片 + 达成率独立横条（含进度条）</h2>
+      <p class="plan-note">达成率变成"重点标语" · 3 卡片不被撑高</p>
+    </div>
+
+    <div class="dash-shell">
+      <div class="dash-toolbar">
+        <div class="tb-select">2026年6月</div>
+        <div class="tb-pill">
+          <span class="on">JPY</span>
+          <span class="off">CNY（参考）</span>
+        </div>
+        <div class="tb-btn">🔄 刷新数据</div>
+        <span class="tb-time">数据更新于 2026/7/16 14:12</span>
+        <div class="tb-actions">
+          <div class="tb-btn">📊 Excel</div>
+          <div class="tb-btn">📄 PDF</div>
+          <div class="tb-btn">💬 Slack 通知</div>
+        </div>
+      </div>
+
+      <div class="card-row row-3">
+        <div class="stat-card">
+          <div class="stat-label">案件数</div>
+          <div class="stat-value">241</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">本月利润合计（JPY）</div>
+          <div class="stat-value">¥86,849,326</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">参与分利小组数</div>
+          <div class="stat-value">4</div>
+        </div>
+      </div>
+
+      <div class="achv-bar accent-card">
+        <div class="achv-bar-label">
+          <span class="lbl">🎯 本月目标达成率</span>
+          <span class="num">129%</span>
+        </div>
+        <div class="achv-bar-track">
+          <div class="achv-bar-fill"></div>
+        </div>
+        <div class="achv-bar-meta">
+          <div class="actual">实际 ¥86,849,326</div>
+          <div class="target">目标 ¥67,556,970 · 超额 +¥19,292,356</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 对比表 -->
+  <div class="compare">
+    <table>
+      <thead>
+        <tr>
+          <th>对比项</th>
+          <th>方案 A（去进度条）</th>
+          <th>方案 D（独立横条）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>4 卡片是否等高</td>
+          <td>达成率略高一点（多 1 行金额），其他 3 个不再空</td>
+          <td>3 卡片完全等高</td>
+        </tr>
+        <tr>
+          <td>视觉冲击</td>
+          <td>4 个卡片视觉权重相近，达成率不特别突出</td>
+          <td>达成率是"重点信息"，横条明显放大它的存在感</td>
+        </tr>
+        <tr>
+          <td>信息完整性</td>
+          <td>看到百分数 + 精确金额，无进度条视觉</td>
+          <td>百分数 + 进度条 + 精确金额 + 差额，全都有</td>
+        </tr>
+        <tr>
+          <td>手机端表现</td>
+          <td>4 卡片自动 2×2 排列，达成率跟其他一样大小</td>
+          <td>3 卡片 + 横条自然堆叠，横条依然是重点</td>
+        </tr>
+        <tr>
+          <td>改动幅度</td>
+          <td>最小 — 只删掉进度条 JSX 3 行</td>
+          <td>较大 — Grid 从 4 列改回 3 列 + 新增横条组件</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById("themeBtn");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.getAttribute("data-theme");
+      var next;
+      if (!current) {
+        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        next = prefersDark ? "light" : "dark";
+      } else {
+        next = current === "dark" ? "light" : "dark";
+      }
+      root.setAttribute("data-theme", next);
+    });
+  })();
+</script>
+</html>
