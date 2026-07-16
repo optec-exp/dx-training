@@ -139,7 +139,7 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <StatCard label={t("statTotalCases")} value={String(report.totalCases)} />
             <StatCard
               label={`${t("statTotalProfit")}（${currency === "jpy" ? "JPY" : "CNY"}）`}
@@ -155,13 +155,14 @@ export default function HomePage() {
                 );
               }, 0).toLocaleString("en-US")}`}
             />
-            <AchievementCard report={report} currency={currency} />
             <StatCard
               label={t("statTeamCount")}
               value={String(report.groupedSummaries.length)}
               className="hidden sm:block"
             />
           </div>
+
+          {currency === "jpy" && <AchievementBar report={report} />}
 
           <div className="mb-4">
             <CaseSearch report={report} currency={currency} />
@@ -208,13 +209,7 @@ function StatCard({
   );
 }
 
-function AchievementCard({
-  report,
-  currency,
-}: {
-  report: MonthlyReport;
-  currency: Currency;
-}) {
+function AchievementBar({ report }: { report: MonthlyReport }) {
   const { t } = useLang();
 
   const actualJpy = report.groupedSummaries.reduce(
@@ -230,22 +225,11 @@ function AchievementCard({
   const targetJpy = report.targets?.companyJpy ?? 0;
   const configured = report.targets?.configured ?? false;
 
-  if (currency === "cny") {
-    return (
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
-        <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
-        <div className="mt-1 text-sm text-slate-500">
-          JPY ↔ {t("currencyRefSuffix")}
-        </div>
-      </div>
-    );
-  }
-
   if (!configured || targetJpy <= 0) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
-        <div className="mt-1 text-sm text-slate-400">{t("achievementNotConfigured")}</div>
+      <div className="mb-4 rounded-xl border border-slate-200 bg-white px-4 sm:px-5 py-3 shadow-sm flex items-center gap-3 text-sm text-slate-500">
+        <span>🎯 {t("statAchievement")}</span>
+        <span className="text-slate-400">— {t("achievementNotConfigured")}</span>
       </div>
     );
   }
@@ -264,19 +248,39 @@ function AchievementCard({
     textCls = "text-amber-700";
   }
   const barWidth = Math.min(100, Math.max(0, pct));
+  const diff = actualJpy - targetJpy;
+  const diffPrefix = diff >= 0 ? "+" : "−";
+  const diffAbs = Math.abs(diff);
+  const diffCls = diff >= 0 ? "text-emerald-600" : "text-rose-600";
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
-      <div className={`mt-1 text-xl sm:text-2xl font-bold tabular-nums ${textCls}`}>
-        {pct.toFixed(0)}%
-      </div>
-      <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-        <div className={`h-full ${barCls}`} style={{ width: `${barWidth}%` }} />
-      </div>
-      <div className="mt-1 text-[10px] text-slate-500 tabular-nums">
-        ¥{Math.round(actualJpy).toLocaleString("en-US")} / ¥
-        {Math.round(targetJpy).toLocaleString("en-US")}
+    <div className="mb-4 rounded-xl border border-slate-200 bg-white px-4 sm:px-5 py-4 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] sm:gap-6 items-center gap-3">
+        <div>
+          <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
+          <div className={`mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums leading-none ${textCls}`}>
+            {pct.toFixed(0)}%
+          </div>
+        </div>
+
+        <div className="h-2 sm:h-2.5 rounded-full bg-slate-100 overflow-hidden">
+          <div
+            className={`h-full ${barCls} transition-all duration-500`}
+            style={{ width: `${barWidth}%` }}
+          />
+        </div>
+
+        <div className="text-left sm:text-right tabular-nums">
+          <div className="text-sm font-semibold text-slate-800">
+            ¥{Math.round(actualJpy).toLocaleString("en-US")}
+          </div>
+          <div className="text-xs text-slate-500">
+            {t("lblTarget")} ¥{Math.round(targetJpy).toLocaleString("en-US")}
+            <span className={`ml-1.5 ${diffCls}`}>
+              {diffPrefix}¥{Math.round(diffAbs).toLocaleString("en-US")}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
