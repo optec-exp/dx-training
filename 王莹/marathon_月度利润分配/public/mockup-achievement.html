@@ -468,6 +468,94 @@
   }
 
   /* ============================================= */
+  /*  方案 5：金色背景 + 目标线 + 超越段延伸         */
+  /* ============================================= */
+  .plan5 .achv-bar.over {
+    background: linear-gradient(135deg, var(--gold-bg-soft) 0%, var(--gold-bg) 100%);
+    border: 1px solid var(--gold-border);
+    box-shadow: var(--shadow-gold);
+    position: relative;
+    overflow: hidden;
+    padding-right: 60px;
+  }
+  .plan5 .achv-bar.over::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgb(251 191 36 / 0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .plan5 .achv-bar.over .lbl {
+    color: var(--gold-strong);
+    font-weight: 600;
+  }
+  .plan5 .achv-bar.over .achv-meta .actual {
+    color: var(--gold-text);
+  }
+  .plan5 .decoration {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .plan5 .bar-outer {
+    overflow: visible;
+    height: 12px;
+    z-index: 2;
+  }
+  .plan5 .bar-normal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+    border-radius: 999px 0 0 999px;
+  }
+  .plan5 .bar-normal.full {
+    background: linear-gradient(90deg, var(--gold) 0%, #fcd34d 100%);
+  }
+  .plan5 .bar-overflow {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-strong) 0%, #fbbf24 100%);
+    border-radius: 0 999px 999px 0;
+    box-shadow: 0 0 12px rgb(245 158 11 / 0.6);
+  }
+  .plan5 .target-line {
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 3px;
+    height: calc(100% + 8px);
+    background: var(--text);
+    border-radius: 2px;
+    z-index: 3;
+  }
+  .plan5 .target-line::after {
+    content: "目标 100%";
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--text);
+    background: var(--card);
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+  .plan5 .bar-outer.no-marker .target-line::after { display: none; }
+
+  /* ============================================= */
   /*  方案 4（融合）：目标线 + 徽章 + 金色数字       */
   /* ============================================= */
   .plan4 .bar-outer {
@@ -595,7 +683,7 @@
 <div class="container">
   <div class="page-header">
     <h1>「超越目标」的视觉方案对比</h1>
-    <p>4 个方案 × 2 种状态（超额 129% / 未达标 95%）</p>
+    <p>5 个方案 × 2 种状态（超额 129% / 未达标 95%）</p>
   </div>
 
   <div class="demo-note">
@@ -822,6 +910,61 @@
     </div>
   </section>
 
+  <!-- ============================================= -->
+  <!-- 方案 5：金色背景 + 目标线 + 超越段延伸           -->
+  <!-- ============================================= -->
+  <section class="plan plan5">
+    <div class="plan-label">
+      <span class="plan-badge">方案 5</span>
+      <h2 class="plan-title">金色背景 + 目标线 + 超越段延伸（方案 3 + 目标线）</h2>
+      <p class="plan-note">整个横条金色发光 · 进度条内目标线明显 · 超越感最强</p>
+    </div>
+
+    <div class="state-row">
+      <div>
+        <p class="state-caption">状态 · <strong style="color: var(--gold-text)">超额 129%</strong></p>
+        <div class="achv-bar over">
+          <span class="decoration">✨</span>
+          <div class="achv-inner" style="grid-template-columns: minmax(160px, auto) 1fr minmax(160px, auto);">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-gold">🏆 129%</span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-normal full" style="width: 100%"></div>
+              <div class="bar-overflow" style="width: 29%"></div>
+              <div class="target-line"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥86,849,326</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-plus">+¥19,292,356</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="state-caption">状态 · <strong>未达标 95%</strong></p>
+        <div class="achv-bar under">
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-sky">95%</span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-normal" style="width: 95%; background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);"></div>
+              <div class="target-line" style="background: var(--text-muted); opacity: 0.4;"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥64,229,121</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-minus">−¥3,327,849</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- 对比表 -->
   <div class="compare">
     <table>
@@ -831,7 +974,8 @@
           <th>方案 1<br>金色 + 徽章</th>
           <th>方案 2<br>目标线延伸</th>
           <th>方案 3<br>金色背景</th>
-          <th>方案 4 · 融合<br>推荐</th>
+          <th>方案 4 · 融合</th>
+          <th>方案 5<br>金背景 + 目标线</th>
         </tr>
       </thead>
       <tbody>
@@ -841,6 +985,7 @@
           <td>★★★★</td>
           <td>★★★</td>
           <td>★★★★★</td>
+          <td>★★★★★</td>
         </tr>
         <tr>
           <td>视觉突兀度</td>
@@ -848,6 +993,7 @@
           <td>中（进度条溢出容器）</td>
           <td>高（整个横条金色）</td>
           <td>中偏高</td>
+          <td>最高（背景 + 光环 + 溢出）</td>
         </tr>
         <tr>
           <td>与整体 UI 协调</td>
@@ -855,6 +1001,7 @@
           <td>协调（有新奇但克制）</td>
           <td>抢眼（可能过于突出）</td>
           <td>协调（多点信号叠加）</td>
+          <td>抢眼（但同时含数据信息）</td>
         </tr>
         <tr>
           <td>技术复杂度</td>
@@ -862,6 +1009,7 @@
           <td>中（进度条要能溢出）</td>
           <td>简单（换背景色）</td>
           <td>中（融合方案 1 和 2）</td>
+          <td>中（融合方案 3 和 2）</td>
         </tr>
         <tr>
           <td>一眼看出"超越"？</td>
@@ -869,6 +1017,7 @@
           <td>完全能</td>
           <td>能（但主要靠背景）</td>
           <td>完全能，且信号最丰富</td>
+          <td>完全能，仪式感最强</td>
         </tr>
       </tbody>
     </table>
