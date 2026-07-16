@@ -30,7 +30,10 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const appUrl = rawAppUrl
+    .trim()
+    .replace(/[\s　：:；;,.。、]+$/, "");
 
   try {
     const { cases, fetchedAt, fromCache } = await fetchMonthlyCases(year, month);
