@@ -155,12 +155,12 @@ export default function HomePage() {
                 );
               }, 0).toLocaleString("en-US")}`}
             />
+            <AchievementCard report={report} currency={currency} />
             <StatCard
               label={t("statTeamCount")}
               value={String(report.groupedSummaries.length)}
               className="hidden sm:block"
             />
-            <AchievementCard report={report} currency={currency} />
           </div>
 
           <div className="mb-4">
@@ -263,7 +263,6 @@ function AchievementCard({
     barCls = "bg-amber-500";
     textCls = "text-amber-700";
   }
-  const prevJpy = report.targets?.previousCompanyJpy;
   const barWidth = Math.min(100, Math.max(0, pct));
 
   return (
@@ -278,18 +277,6 @@ function AchievementCard({
       <div className="mt-1 text-[10px] text-slate-500 tabular-nums">
         ¥{Math.round(actualJpy).toLocaleString("en-US")} / ¥
         {Math.round(targetJpy).toLocaleString("en-US")}
-        {prevJpy && prevJpy > 0 && (() => {
-          const prevPct = (actualJpy / prevJpy) * 100;
-          const diff = pct - prevPct;
-          const arrow = diff > 0.05 ? "▲" : diff < -0.05 ? "▼" : "→";
-          const cls = diff > 0.05 ? "text-emerald-600" : diff < -0.05 ? "text-rose-600" : "text-slate-500";
-          return (
-            <span className={`ml-1.5 ${cls}`}>
-              {arrow} {diff >= 0 ? "+" : ""}
-              {diff.toFixed(0)} {t("lblPt")}
-            </span>
-          );
-        })()}
       </div>
     </div>
   );

@@ -170,7 +170,7 @@ export function SummaryTable({
               <th className="px-4 py-3 text-right font-medium">{t("colKanFee")}</th>
               <th className="px-4 py-3 text-right font-medium">{t("colTotal")}（{currencyLabel}）</th>
               {showAchievement && (
-                <th className="px-4 py-3 text-right font-medium">{t("colAchievement")}</th>
+                <th className="px-4 py-3 text-center font-medium">{t("colAchievement")}</th>
               )}
               <th className="px-4 py-3 text-right font-medium">{t("colRatio")}</th>
               <th className="px-4 py-3 text-right font-medium w-20"></th>
@@ -221,7 +221,7 @@ export function SummaryTable({
                           ? `${t("lblTarget")} ¥${Math.round(target).toLocaleString("en-US")} · ${t("lblDiff")} ¥${Math.round(jpyAmount - target).toLocaleString("en-US")}`
                           : t("achievementNoData");
                         return (
-                          <div className="flex justify-end">
+                          <div className="flex justify-center">
                             <AchievementCell info={info} tooltip={tooltip} />
                           </div>
                         );
@@ -266,7 +266,7 @@ export function SummaryTable({
                         ? `${t("lblTarget")} ¥${Math.round(target).toLocaleString("en-US")} · ${t("lblDiff")} ¥${Math.round(grandJpyForAchievement - target).toLocaleString("en-US")}`
                         : t("achievementNoData");
                       return (
-                        <div className="flex justify-end">
+                        <div className="flex justify-center">
                           <AchievementCell info={info} tooltip={tooltip} />
                         </div>
                       );
