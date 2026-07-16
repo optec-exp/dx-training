@@ -112,6 +112,19 @@ export const translations = {
     pdfSectionHeading: "各小组利润分配（按合计高到低排序）",
     pdfPage: "第 {n} / {total} 页",
     pdfRowTotal: "合计",
+
+    // targets
+    statAchievement: "本月目标达成率",
+    colAchievement: "达成率",
+    colTarget: "目标",
+    lblTarget: "目标",
+    lblDiff: "差额",
+    lblVsPrev: "环比上月",
+    lblPt: "pt",
+    achievementNotConfigured: "未配置",
+    achievementNoData: "本月暂无目标",
+    achievementCnyNotice: "人民币金额仅供参考，目标达成率仅在日元视图显示",
+    currencyRefSuffix: "（参考）",
   },
   ja: {
     // header
@@ -220,6 +233,19 @@ export const translations = {
     pdfSectionHeading: "各チーム利益配分（合計高順）",
     pdfPage: "{n} / {total} ページ",
     pdfRowTotal: "合計",
+
+    // targets
+    statAchievement: "今月の目標達成率",
+    colAchievement: "達成率",
+    colTarget: "目標",
+    lblTarget: "目標",
+    lblDiff: "差額",
+    lblVsPrev: "前月比",
+    lblPt: "pt",
+    achievementNotConfigured: "未設定",
+    achievementNoData: "今月の目標未登録",
+    achievementCnyNotice: "人民元金額は参考、目標達成率は日本円のみ表示",
+    currencyRefSuffix: "（参考）",
   },
 } as const;
 

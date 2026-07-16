@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { fetchMonthlyCases } from "@/lib/kintone";
 import { buildMonthlyReport } from "@/lib/profit-calc";
+import { getMonthlyTarget } from "@/lib/targets";
+import type { MonthlyTargets } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -36,7 +38,32 @@ export async function GET(req: Request) {
       fetchedAt,
       fromCache,
     });
-    return NextResponse.json(report);
+
+    let targets: MonthlyTargets = {
+      companyJpy: 0,
+      teamsJpy: {},
+      configured: false,
+    };
+    try {
+      const current = await getMonthlyTarget(year, month, refresh);
+      const prevMonth = month === 1 ? 12 : month - 1;
+      const prevYear = month === 1 ? year - 1 : year;
+      const previous = await getMonthlyTarget(prevYear, prevMonth, false);
+      if (current) {
+        targets = {
+          companyJpy: current.companyJpy,
+          teamsJpy: current.teamsJpy,
+          configured: true,
+          previousCompanyJpy: previous?.companyJpy,
+        };
+      } else if (process.env.GOOGLE_SHEET_ID) {
+        targets.configured = false;
+      }
+    } catch (err) {
+      console.error("[cases] 目标数据拉取失败:", err);
+    }
+
+    return NextResponse.json({ ...report, targets });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return NextResponse.json({ error: msg }, { status: 500 });

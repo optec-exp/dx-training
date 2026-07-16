@@ -132,7 +132,14 @@ export default function HomePage() {
 
       {!loading && report && (
         <>
-          <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+          {currency === "cny" && (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs sm:text-sm text-amber-800 flex items-center gap-2">
+              <span>ℹ️</span>
+              <span>{t("achievementCnyNotice")}</span>
+            </div>
+          )}
+
+          <div className="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <StatCard label={t("statTotalCases")} value={String(report.totalCases)} />
             <StatCard
               label={`${t("statTotalProfit")}（${currency === "jpy" ? "JPY" : "CNY"}）`}
@@ -153,6 +160,7 @@ export default function HomePage() {
               value={String(report.groupedSummaries.length)}
               className="hidden sm:block"
             />
+            <AchievementCard report={report} currency={currency} />
           </div>
 
           <div className="mb-4">
@@ -195,6 +203,93 @@ function StatCard({
       <div className="text-xs text-slate-500">{label}</div>
       <div className="mt-1 text-xl sm:text-2xl font-bold tabular-nums text-slate-900 break-all">
         {value}
+      </div>
+    </div>
+  );
+}
+
+function AchievementCard({
+  report,
+  currency,
+}: {
+  report: MonthlyReport;
+  currency: Currency;
+}) {
+  const { t } = useLang();
+
+  const actualJpy = report.groupedSummaries.reduce(
+    (sum, g) =>
+      sum +
+      Math.round(g.mitsumoriJpy) +
+      Math.round(g.countryJpy) +
+      Math.round(g.opExportJpy) +
+      Math.round(g.opImportJpy) +
+      Math.round(g.kanFeeJpy),
+    0
+  );
+  const targetJpy = report.targets?.companyJpy ?? 0;
+  const configured = report.targets?.configured ?? false;
+
+  if (currency === "cny") {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+        <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
+        <div className="mt-1 text-sm text-slate-500">
+          JPY ↔ {t("currencyRefSuffix")}
+        </div>
+      </div>
+    );
+  }
+
+  if (!configured || targetJpy <= 0) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
+        <div className="mt-1 text-sm text-slate-400">{t("achievementNotConfigured")}</div>
+      </div>
+    );
+  }
+
+  const pct = (actualJpy / targetJpy) * 100;
+  let barCls = "bg-rose-500";
+  let textCls = "text-rose-700";
+  if (pct >= 100) {
+    barCls = "bg-emerald-500";
+    textCls = "text-emerald-700";
+  } else if (pct >= 80) {
+    barCls = "bg-sky-500";
+    textCls = "text-sky-700";
+  } else if (pct >= 60) {
+    barCls = "bg-amber-500";
+    textCls = "text-amber-700";
+  }
+  const prevJpy = report.targets?.previousCompanyJpy;
+  const barWidth = Math.min(100, Math.max(0, pct));
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
+      <div className={`mt-1 text-xl sm:text-2xl font-bold tabular-nums ${textCls}`}>
+        {pct.toFixed(0)}%
+      </div>
+      <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+        <div className={`h-full ${barCls}`} style={{ width: `${barWidth}%` }} />
+      </div>
+      <div className="mt-1 text-[10px] text-slate-500 tabular-nums">
+        ¥{Math.round(actualJpy).toLocaleString("en-US")} / ¥
+        {Math.round(targetJpy).toLocaleString("en-US")}
+        {prevJpy && prevJpy > 0 && (() => {
+          const prevPct = (actualJpy / prevJpy) * 100;
+          const diff = pct - prevPct;
+          const arrow = diff > 0.05 ? "▲" : diff < -0.05 ? "▼" : "→";
+          const cls = diff > 0.05 ? "text-emerald-600" : diff < -0.05 ? "text-rose-600" : "text-slate-500";
+          return (
+            <span className={`ml-1.5 ${cls}`}>
+              {arrow} {diff >= 0 ? "+" : ""}
+              {diff.toFixed(0)} {t("lblPt")}
+            </span>
+          );
+        })()}
       </div>
     </div>
   );

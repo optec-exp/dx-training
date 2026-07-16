@@ -86,6 +86,13 @@ export interface GroupedSummary {
   children: TeamSummary[] | null;
 }
 
+export interface MonthlyTargets {
+  companyJpy: number;
+  teamsJpy: Record<string, number>;
+  configured: boolean;
+  previousCompanyJpy?: number;
+}
+
 export interface MonthlyReport {
   year: number;
   month: number;
@@ -95,6 +102,7 @@ export interface MonthlyReport {
   summaries: TeamSummary[];
   groupedSummaries: GroupedSummary[];
   caseAllocations: CaseAllocation[];
+  targets: MonthlyTargets;
   dataFetchedAt: number;
   fromCache: boolean;
 }

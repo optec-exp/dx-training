@@ -21,7 +21,7 @@ export function CurrencyToggle({ value, onChange }: Props) {
             : "text-slate-600 hover:bg-slate-100"
         }`}
       >
-        {t("currencyJpy")}
+        JPY
       </button>
       <button
         type="button"
@@ -32,7 +32,7 @@ export function CurrencyToggle({ value, onChange }: Props) {
             : "text-slate-600 hover:bg-slate-100"
         }`}
       >
-        {t("currencyCny")}
+        CNY<span className="text-[10px] opacity-80 ml-0.5">{t("currencyRefSuffix")}</span>
       </button>
     </div>
   );
