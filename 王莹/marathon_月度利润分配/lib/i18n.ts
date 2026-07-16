@@ -163,12 +163,12 @@ export const translations = {
     // action bar
     btnExcel: "Excel",
     btnPdf: "PDF",
-    btnSlack: "Slack 通知",
+    btnSlack: "Slack 送信",
     slackSending: "送信中…",
     slackConfirm: "{year}年{month}月の利益配分を Slack に送信しますか？",
     slackSuccess: "Slack に送信しました",
-    slackFailed: "Slack 通知送信失敗",
-    slackException: "Slack 通知リクエスト異常",
+    slackFailed: "Slack 送信失敗",
+    slackException: "Slack 送信リクエスト異常",
     slackSuccessDetail: "{year}年{month}月報告 · 所要 {seconds}s",
     slackErrorConsole: "詳細エラーはブラウザコンソール（F12）に記録されました",
     btnRetry: "再試行",
@@ -244,8 +244,8 @@ export const translations = {
     lblPt: "pt",
     achievementNotConfigured: "未設定",
     achievementNoData: "今月の目標未登録",
-    achievementCnyNotice: "人民元金額は参考、目標達成率は日本円のみ表示",
-    currencyRefSuffix: "（参考）",
+    achievementCnyNotice: "人民元金額は参考のみ、目標達成率は日本円のみ表示",
+    currencyRefSuffix: "（参考のみ）",
   },
 } as const;
 
