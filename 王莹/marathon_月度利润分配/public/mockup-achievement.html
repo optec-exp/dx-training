@@ -296,6 +296,22 @@
   .num-amber { color: #b45309; }
   .num-rose { color: #be123c; }
 
+  /* 精准达标 100% 徽章（绿色系，跟金色超額区分） */
+  .badge-precise {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success);
+    margin-left: 4px;
+  }
+
   @media (prefers-color-scheme: dark) {
     .num-sky { color: #7dd3fc; }
     .num-amber { color: #fbbf24; }
@@ -683,7 +699,7 @@
 <div class="container">
   <div class="page-header">
     <h1>「超越目标」的视觉方案对比</h1>
-    <p>5 个方案 × 2 种状态（超额 129% / 未达标 95%）</p>
+    <p>5 个方案 × 3 种状态（超额 129% / 精准达标 100% / 未达标 95%）</p>
   </div>
 
   <div class="demo-note">
@@ -965,6 +981,131 @@
     </div>
   </section>
 
+  <!-- ============================================= -->
+  <!-- 100% 精准达标 · 5 方案并排                     -->
+  <!-- ============================================= -->
+  <section class="plan">
+    <div class="plan-label">
+      <span class="plan-badge" style="background: var(--success-bg); color: var(--success-text);">100% 精准达标</span>
+      <h2 class="plan-title">刚好达标（=100%）在 5 个方案里的表现</h2>
+      <p class="plan-note">"金色 + 🏆" 只留给"超越"，"精准达标"用绿色 + ✓ + 「達成」徽章区分</p>
+    </div>
+
+    <!-- 方案 1 · 100% -->
+    <p class="state-caption" style="margin-top: 8px;">方案 1（金色 + 徽章）· <strong style="color: var(--success-text)">刚好 100%</strong></p>
+    <div class="achv-bar" style="margin-bottom: 12px;">
+      <div class="achv-inner">
+        <div class="achv-label">
+          <span class="lbl">🎯 本月目标达成率</span>
+          <span class="achv-num num-green">
+            ✓ 100%
+            <span class="badge-precise">達成</span>
+          </span>
+        </div>
+        <div class="bar-outer">
+          <div class="bar-fill green" style="width: 100%"></div>
+        </div>
+        <div class="achv-meta">
+          <div class="actual">¥67,556,970</div>
+          <div class="target">目标 ¥67,556,970 · <span style="color: var(--success-text); font-weight: 600;">±¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案 2 · 100% -->
+    <p class="state-caption">方案 2（目标线延伸）· <strong style="color: var(--success-text)">刚好 100%</strong></p>
+    <div class="achv-bar plan2" style="margin-bottom: 12px;">
+      <div class="achv-inner">
+        <div class="achv-label">
+          <span class="lbl">🎯 本月目标达成率</span>
+          <span class="achv-num num-green">
+            ✓ 100%
+            <span class="badge-precise">達成</span>
+          </span>
+        </div>
+        <div class="bar-outer" style="overflow: visible; height: 12px;">
+          <div class="bar-normal full" style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, var(--success) 0%, #059669 100%); border-radius: 999px; width: 100%;"></div>
+          <div class="target-line"></div>
+        </div>
+        <div class="achv-meta">
+          <div class="actual">¥67,556,970</div>
+          <div class="target">目标 ¥67,556,970 · <span style="color: var(--success-text); font-weight: 600;">±¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案 3 · 100% -->
+    <p class="state-caption">方案 3（金色背景）· <strong style="color: var(--success-text)">刚好 100%</strong> — 用<strong>绿色淡背景</strong>与超额金色区分</p>
+    <div class="achv-bar" style="margin-bottom: 12px; background: linear-gradient(135deg, var(--success-bg) 0%, rgb(167 243 208 / 0.4) 100%); border: 1px solid var(--success); position: relative;">
+      <span style="position: absolute; top: 8px; right: 12px; font-size: 20px; opacity: 0.5;">✓</span>
+      <div class="achv-inner">
+        <div class="achv-label">
+          <span class="lbl" style="color: var(--success-text); font-weight: 600;">🎯 本月目标达成率</span>
+          <span class="achv-num num-green">
+            ✓ 100%
+            <span class="badge-precise">達成</span>
+          </span>
+        </div>
+        <div class="bar-outer">
+          <div class="bar-fill green" style="width: 100%"></div>
+        </div>
+        <div class="achv-meta">
+          <div class="actual" style="color: var(--success-text);">¥67,556,970</div>
+          <div class="target">目标 ¥67,556,970 · <span style="color: var(--success-text); font-weight: 600;">±¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案 4 · 100% -->
+    <p class="state-caption">方案 4（融合：徽章+目标线）· <strong style="color: var(--success-text)">刚好 100%</strong></p>
+    <div class="achv-bar plan4" style="margin-bottom: 12px;">
+      <div class="achv-inner">
+        <div class="achv-label">
+          <span class="lbl">🎯 本月目标达成率</span>
+          <span class="achv-num num-green">
+            ✓ 100%
+            <span class="badge-precise">達成</span>
+          </span>
+        </div>
+        <div class="bar-outer">
+          <div class="bar-normal full" style="width: 100%"></div>
+          <div class="target-line"></div>
+        </div>
+        <div class="achv-meta">
+          <div class="actual">¥67,556,970</div>
+          <div class="target">目标 ¥67,556,970 · <span style="color: var(--success-text); font-weight: 600;">±¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 方案 5 · 100% -->
+    <p class="state-caption">方案 5（金色背景+目标线）· <strong style="color: var(--success-text)">刚好 100%</strong> — 用<strong>绿色淡背景</strong>与超额金色区分</p>
+    <div class="achv-bar plan5" style="background: linear-gradient(135deg, var(--success-bg) 0%, rgb(167 243 208 / 0.4) 100%); border: 1px solid var(--success); position: relative; overflow: hidden;">
+      <span style="position: absolute; top: 8px; right: 12px; font-size: 20px; opacity: 0.5; z-index: 3;">✓</span>
+      <div class="achv-inner">
+        <div class="achv-label">
+          <span class="lbl" style="color: var(--success-text); font-weight: 600;">🎯 本月目标达成率</span>
+          <span class="achv-num num-green">
+            ✓ 100%
+            <span class="badge-precise">達成</span>
+          </span>
+        </div>
+        <div class="bar-outer" style="overflow: visible; height: 12px; z-index: 2;">
+          <div style="position: absolute; left: 0; top: 0; height: 100%; background: linear-gradient(90deg, var(--success) 0%, #059669 100%); border-radius: 999px; width: 100%;"></div>
+          <div class="target-line"></div>
+        </div>
+        <div class="achv-meta">
+          <div class="actual" style="color: var(--success-text);">¥67,556,970</div>
+          <div class="target">目标 ¥67,556,970 · <span style="color: var(--success-text); font-weight: 600;">±¥0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-note" style="margin-top: 20px; text-align: left; max-width: 100%;">
+      💡 <strong>3 状态区分法：</strong> 未达 &lt; 100%（蓝/橙/红）· 精准 = 100%（<strong style="color: var(--success-text)">绿色 + ✓ 達成</strong>）· 超额 &gt; 100%（<strong style="color: var(--gold-text)">金色 + 🏆 超額</strong>）
+    </div>
+  </section>
+
   <!-- 对比表 -->
   <div class="compare">
     <table>
@@ -1018,6 +1159,14 @@
           <td>能（但主要靠背景）</td>
           <td>完全能，且信号最丰富</td>
           <td>完全能，仪式感最强</td>
+        </tr>
+        <tr>
+          <td>能否区分 =100% 和 &gt;100%？</td>
+          <td>能（颜色系统+徽章文字）</td>
+          <td>天然区分（无溢出段）</td>
+          <td>能（绿背景 vs 金背景）</td>
+          <td>完全能（4 重信号）</td>
+          <td>完全能（背景色+溢出双重）</td>
         </tr>
       </tbody>
     </table>
