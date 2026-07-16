@@ -13,7 +13,7 @@ import { fetchMonthlyCases } from "@/lib/kintone";
 import { buildMonthlyReport } from "@/lib/profit-calc";
 import { findChineseFontPath } from "@/lib/pdf-font";
 import type { MonthlyReport } from "@/lib/types";
-import { normalizeLang, t as translate, type Lang, type TranslationKey } from "@/lib/i18n";
+import { normalizeLang, t as translate, teamName, type Lang, type TranslationKey } from "@/lib/i18n";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -226,7 +226,7 @@ function CurrencyPage({
         return e(
           View,
           { style: styles.row, key: `g-${g.name}` },
-          e(Text, { style: styles.cellTeam }, g.name),
+          e(Text, { style: styles.cellTeam }, teamName(lang, g.name)),
           e(Text, { style: styles.cellCount }, String(g.caseCount)),
           e(Text, { style: styles.cellDim }, dimCell(getDim(g, "mitsumori"))),
           e(Text, { style: styles.cellDim }, dimCell(getDim(g, "country"))),

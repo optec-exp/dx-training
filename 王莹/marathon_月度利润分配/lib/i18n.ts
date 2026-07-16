@@ -262,3 +262,15 @@ export function normalizeLang(v: unknown): Lang {
   if (v === "ja") return "ja";
   return "zh";
 }
+
+const TEAM_NAME_JA: Record<string, string> = {
+  "通关": "通関",
+  "物流开发": "物流開発",
+};
+
+export function teamName(lang: Lang, name: string): string {
+  if (lang === "ja") {
+    return TEAM_NAME_JA[name] ?? name;
+  }
+  return name;
+}

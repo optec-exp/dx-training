@@ -2,7 +2,7 @@
 
 import type { CaseAllocation, Currency, MonthlyReport } from "@/lib/types";
 import { useLang } from "./LanguageProvider";
-import type { TranslationKey } from "@/lib/i18n";
+import { teamName, type TranslationKey } from "@/lib/i18n";
 
 interface Props {
   report: MonthlyReport;
@@ -33,7 +33,7 @@ function fmtMoney(n: number): string {
 }
 
 export function CaseDetail({ report, teams, groupName, currency }: Props) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const teamSet = new Set(teams);
 
   const grouped = new Map<
@@ -68,7 +68,7 @@ export function CaseDetail({ report, teams, groupName, currency }: Props) {
   if (rows.length === 0) {
     return (
       <div className="mx-6 my-3 rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-500">
-        {t("noAllocation", { team: groupName })}
+        {t("noAllocation", { team: teamName(lang, groupName) })}
       </div>
     );
   }
@@ -96,7 +96,7 @@ export function CaseDetail({ report, teams, groupName, currency }: Props) {
             <tr key={`${row.ca.case.recordId}-${row.team}-${idx}`} className="hover:bg-white">
               <td className="px-3 py-2 font-mono">{row.ca.case.caseNumber || "-"}</td>
               <td className="px-3 py-2">{APP_LABEL[row.ca.case.appType]}</td>
-              {showTeamColumn && <td className="px-3 py-2 font-medium">{row.team}</td>}
+              {showTeamColumn && <td className="px-3 py-2 font-medium">{teamName(lang, row.team)}</td>}
               <td className="px-3 py-2">{row.ca.case.customerName || "-"}</td>
               <td className="px-3 py-2">{row.ca.case.customerCountry || "-"}</td>
               <td className="px-3 py-2 text-slate-500">

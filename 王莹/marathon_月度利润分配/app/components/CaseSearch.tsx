@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CaseAllocation, Currency, MonthlyReport } from "@/lib/types";
 import { useLang } from "./LanguageProvider";
-import type { TranslationKey } from "@/lib/i18n";
+import { teamName, type TranslationKey } from "@/lib/i18n";
 
 interface Props {
   report: MonthlyReport;
@@ -120,7 +120,7 @@ export function CaseSearch({ report, currency }: Props) {
 }
 
 function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const c = ca.case;
   const gross = currency === "jpy" ? c.grossProfitJpy : c.grossProfitCny;
   const kanFee = currency === "jpy" ? c.kanFeeJpy : c.kanFeeCny;
@@ -197,7 +197,7 @@ function CaseCard({ ca, currency }: { ca: CaseAllocation; currency: Currency }) 
                 <td className="px-3 py-2 text-slate-600">
                   {t(BASIS_LABEL_KEY[a.basis] ?? "basisMitsumori")}
                 </td>
-                <td className="px-3 py-2 font-medium text-slate-800">{a.team}</td>
+                <td className="px-3 py-2 font-medium text-slate-800">{teamName(lang, a.team)}</td>
                 <td className="px-3 py-2 text-right tabular-nums font-semibold">
                   ¥{fmt(amount)}
                 </td>

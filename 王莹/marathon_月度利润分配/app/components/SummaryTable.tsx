@@ -7,6 +7,7 @@ import type {
   TeamSummary,
 } from "@/lib/types";
 import { useLang } from "./LanguageProvider";
+import { teamName } from "@/lib/i18n";
 
 interface Props {
   report: MonthlyReport;
@@ -128,7 +129,7 @@ export function SummaryTable({
   expandedTeam,
   onToggleDetail,
 }: Props) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const grandTotal = report.groupedSummaries.reduce(
     (sum, g) => sum + displayTotal(g, currency),
     0
@@ -191,7 +192,7 @@ export function SummaryTable({
               const isDetailOpen = expandedTeam === detailKey;
               return (
                 <tr key={g.name} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-800">{g.name}</td>
+                  <td className="px-4 py-3 font-medium text-slate-800">{teamName(lang, g.name)}</td>
                   <td className="px-4 py-3 text-right tabular-nums">{g.caseCount}</td>
                   <td className="px-4 py-3 text-right tabular-nums text-slate-600">
                     {dimCell(dimAmount(g, "mitsumori", currency))}
@@ -300,7 +301,7 @@ export function SummaryTable({
             >
               <div className="flex items-baseline justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
                 <div className="flex items-baseline gap-2">
-                  <span className="font-semibold text-slate-800">{g.name}</span>
+                  <span className="font-semibold text-slate-800">{teamName(lang, g.name)}</span>
                   <span className="text-xs text-slate-500">{g.caseCount} 件</span>
                 </div>
                 <div className="text-right">

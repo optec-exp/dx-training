@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import { fetchMonthlyCases } from "@/lib/kintone";
 import { buildMonthlyReport } from "@/lib/profit-calc";
-import { normalizeLang, t as translate, type TranslationKey } from "@/lib/i18n";
+import { normalizeLang, t as translate, teamName, type TranslationKey } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -89,7 +89,7 @@ export async function GET(req: Request) {
         const rowTotal = dims.mitsumori + dims.country + dims.opExport + dims.opImport + dims.kanFee;
         rowTotals.push(rowTotal);
         sheet.addRow({
-          team: g.name,
+          team: teamName(lang, g.name),
           count: g.caseCount,
           ...dims,
           total: rowTotal,
@@ -177,7 +177,7 @@ export async function GET(req: Request) {
           grossCny: Math.round(c.grossProfitCny),
           kanJpy: Math.round(c.kanFeeJpy),
           kanCny: Math.round(c.kanFeeCny),
-          team,
+          team: teamName(lang, team),
           basis: v.bases.map((b) => tr(BASIS_KEY[b] ?? "basisMitsumori")).join(" + "),
           shareJpy: Math.round(v.jpy),
           shareCny: Math.round(v.cny),
