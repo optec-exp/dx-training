@@ -492,7 +492,6 @@
     box-shadow: var(--shadow-gold);
     position: relative;
     overflow: hidden;
-    padding-right: 60px;
   }
   .plan5 .achv-bar.over::before {
     content: "";
@@ -555,21 +554,7 @@
     border-radius: 2px;
     z-index: 3;
   }
-  .plan5 .target-line::after {
-    content: "目标 100%";
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    color: var(--text);
-    background: var(--card);
-    padding: 1px 4px;
-    border-radius: 3px;
-    white-space: nowrap;
-    letter-spacing: 0.05em;
-  }
-  .plan5 .bar-outer.no-marker .target-line::after { display: none; }
+  .plan5 .target-line::after { display: none; }
 
   /* ============================================= */
   /*  方案 4（融合）：目标线 + 徽章 + 金色数字       */
@@ -941,15 +926,15 @@
         <p class="state-caption">状态 · <strong style="color: var(--gold-text)">超额 129%</strong></p>
         <div class="achv-bar over">
           <span class="decoration">✨</span>
-          <div class="achv-inner" style="grid-template-columns: minmax(160px, auto) 1fr minmax(160px, auto);">
+          <div class="achv-inner">
             <div class="achv-label">
               <span class="lbl">🎯 本月目标达成率</span>
               <span class="achv-num num-gold">🏆 129%</span>
             </div>
             <div class="bar-outer">
-              <div class="bar-normal full" style="width: 100%"></div>
-              <div class="bar-overflow" style="width: 29%"></div>
-              <div class="target-line"></div>
+              <div class="bar-normal full" style="width: 77.5%"></div>
+              <div class="bar-overflow" style="left: 77.5%; width: 22.5%"></div>
+              <div class="target-line" style="right: 22.5%"></div>
             </div>
             <div class="achv-meta">
               <div class="actual">¥86,849,326</div>
