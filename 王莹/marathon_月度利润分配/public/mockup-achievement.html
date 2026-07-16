@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>达成率超越目标 · 视觉方案对比</title>
+
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --page-bg: #f8fafc;
+    --card: #ffffff;
+    --card-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+
+    --accent: #6366f1;
+    --accent-bg: #eef2ff;
+
+    --success: #10b981;
+    --success-text: #047857;
+    --success-bg: #ecfdf5;
+
+    --gold: #f59e0b;
+    --gold-strong: #d97706;
+    --gold-text: #b45309;
+    --gold-bg: #fef3c7;
+    --gold-bg-soft: #fffbeb;
+    --gold-border: #fbbf24;
+
+    --track: #f1f5f9;
+    --track-strong: #cbd5e1;
+
+    --shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.03);
+    --shadow-strong: 0 4px 12px rgb(15 23 42 / 0.06);
+    --shadow-gold: 0 0 0 1px rgb(245 158 11 / 0.15), 0 4px 20px rgb(245 158 11 / 0.15);
+
+    --demo-note-bg: #fefce8;
+    --demo-note-border: #fde68a;
+    --demo-note-text: #854d0e;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page-bg: #020617;
+      --card: #0f172a;
+      --card-alt: #111827;
+      --border: #1e293b;
+      --border-strong: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+
+      --accent: #818cf8;
+      --accent-bg: #1e1b4b;
+
+      --success: #34d399;
+      --success-text: #6ee7b7;
+      --success-bg: #052e2b;
+
+      --gold: #fbbf24;
+      --gold-strong: #f59e0b;
+      --gold-text: #fbbf24;
+      --gold-bg: #422006;
+      --gold-bg-soft: #292116;
+      --gold-border: #a16207;
+
+      --track: #1e293b;
+      --track-strong: #334155;
+
+      --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+      --shadow-strong: 0 4px 12px rgb(0 0 0 / 0.5);
+      --shadow-gold: 0 0 0 1px rgb(251 191 36 / 0.25), 0 4px 20px rgb(251 191 36 / 0.15);
+
+      --demo-note-bg: #292524;
+      --demo-note-border: #57534e;
+      --demo-note-text: #fbbf24;
+    }
+  }
+
+  :root[data-theme="light"] {
+    --page-bg: #f8fafc;
+    --card: #ffffff;
+    --card-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #94a3b8;
+    --accent: #6366f1;
+    --accent-bg: #eef2ff;
+    --success: #10b981;
+    --success-text: #047857;
+    --success-bg: #ecfdf5;
+    --gold: #f59e0b;
+    --gold-strong: #d97706;
+    --gold-text: #b45309;
+    --gold-bg: #fef3c7;
+    --gold-bg-soft: #fffbeb;
+    --gold-border: #fbbf24;
+    --track: #f1f5f9;
+    --track-strong: #cbd5e1;
+    --shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.03);
+    --shadow-strong: 0 4px 12px rgb(15 23 42 / 0.06);
+    --shadow-gold: 0 0 0 1px rgb(245 158 11 / 0.15), 0 4px 20px rgb(245 158 11 / 0.15);
+    --demo-note-bg: #fefce8;
+    --demo-note-border: #fde68a;
+    --demo-note-text: #854d0e;
+  }
+
+  :root[data-theme="dark"] {
+    --page-bg: #020617;
+    --card: #0f172a;
+    --card-alt: #111827;
+    --border: #1e293b;
+    --border-strong: #334155;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-subtle: #64748b;
+    --accent: #818cf8;
+    --accent-bg: #1e1b4b;
+    --success: #34d399;
+    --success-text: #6ee7b7;
+    --success-bg: #052e2b;
+    --gold: #fbbf24;
+    --gold-strong: #f59e0b;
+    --gold-text: #fbbf24;
+    --gold-bg: #422006;
+    --gold-bg-soft: #292116;
+    --gold-border: #a16207;
+    --track: #1e293b;
+    --track-strong: #334155;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-strong: 0 4px 12px rgb(0 0 0 / 0.5);
+    --shadow-gold: 0 0 0 1px rgb(251 191 36 / 0.25), 0 4px 20px rgb(251 191 36 / 0.15);
+    --demo-note-bg: #292524;
+    --demo-note-border: #57534e;
+    --demo-note-text: #fbbf24;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family:
+      "Hiragino Sans", "Noto Sans CJK SC", "PingFang SC",
+      "Microsoft YaHei", -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--page-bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    margin: 0;
+    padding: 32px 16px 64px;
+    line-height: 1.5;
+  }
+
+  .container {
+    max-width: 1152px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  .page-header p {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .demo-note {
+    background: var(--demo-note-bg);
+    color: var(--demo-note-text);
+    border: 1px solid var(--demo-note-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    margin: 0 auto 40px;
+    max-width: 720px;
+    text-align: center;
+  }
+
+  .plan {
+    margin-bottom: 56px;
+  }
+
+  .plan-label {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-left: 4px;
+    flex-wrap: wrap;
+  }
+
+  .plan-badge {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    padding: 4px 10px;
+    background: var(--accent-bg);
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .plan-badge.recommended {
+    background: var(--gold-bg);
+    color: var(--gold-text);
+  }
+
+  .plan-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .plan-note {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+    max-width: 380px;
+    text-align: right;
+  }
+
+  /* 每个方案的两个状态并排（超额 / 未达标） */
+  .state-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .state-caption {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 8px 4px;
+    font-weight: 600;
+  }
+  .state-caption strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* 达成率横条基础 */
+  .achv-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+  }
+  .achv-inner {
+    display: grid;
+    grid-template-columns: minmax(140px, auto) 1fr minmax(160px, auto);
+    gap: 24px;
+    align-items: center;
+  }
+
+  .achv-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .achv-label .lbl {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .achv-num {
+    font-size: 28px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 数字颜色（不同状态） */
+  .num-gold { color: var(--gold-text); }
+  .num-green { color: var(--success-text); }
+  .num-sky { color: #0369a1; }
+  .num-amber { color: #b45309; }
+  .num-rose { color: #be123c; }
+
+  @media (prefers-color-scheme: dark) {
+    .num-sky { color: #7dd3fc; }
+    .num-amber { color: #fbbf24; }
+    .num-rose { color: #fda4af; }
+  }
+
+  /* 进度条基础 */
+  .bar-outer {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--track);
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s ease-out;
+  }
+  .bar-fill.green {
+    background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+  }
+  .bar-fill.sky { background: #0ea5e9; }
+  .bar-fill.gold {
+    background: linear-gradient(90deg, var(--gold) 0%, #fcd34d 100%);
+  }
+
+  /* 金额段 */
+  .achv-meta {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .achv-meta .actual {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .achv-meta .target {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .diff-plus { color: var(--gold-strong); font-weight: 600; }
+  .diff-minus { color: #dc2626; font-weight: 600; }
+
+  /* ============================================= */
+  /*  方案 1：金色 + 🏆 徽章                        */
+  /* ============================================= */
+  .plan1 .achv-bar.over {
+    /* 状态本身用普通白底，靠字号/颜色/徽章突出 */
+  }
+  .plan1 .achv-bar.over .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--gold-bg);
+    color: var(--gold-text);
+    border: 1px solid var(--gold-border);
+    margin-left: 4px;
+  }
+
+  /* ============================================= */
+  /*  方案 2：目标线 + 超越段延伸                  */
+  /* ============================================= */
+  .plan2 .bar-outer {
+    overflow: visible;
+    height: 12px;
+  }
+  .plan2 .bar-normal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+    border-radius: 999px 0 0 999px;
+  }
+  .plan2 .bar-normal.full {
+    background: linear-gradient(90deg, var(--success) 0%, #059669 100%);
+    border-radius: 999px 0 0 999px;
+  }
+  .plan2 .bar-overflow {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-strong) 100%);
+    border-radius: 0 999px 999px 0;
+    box-shadow: 0 0 8px rgb(245 158 11 / 0.4);
+  }
+  .plan2 .target-line {
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 3px;
+    height: calc(100% + 8px);
+    background: var(--text);
+    border-radius: 2px;
+    z-index: 2;
+  }
+  .plan2 .target-line::after {
+    content: "目标 100%";
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--text);
+    background: var(--card);
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+  .plan2 .bar-outer.no-marker .target-line::after { display: none; }
+
+  /* 数字后加"超額 +XX%"标签 */
+  .plan2 .over-mini {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--gold-bg);
+    color: var(--gold-text);
+    border: 1px solid var(--gold-border);
+    font-weight: 700;
+    margin-left: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* ============================================= */
+  /*  方案 3：整个横条金色背景 + 光环                */
+  /* ============================================= */
+  .plan3 .achv-bar.over {
+    background: linear-gradient(135deg, var(--gold-bg-soft) 0%, var(--gold-bg) 100%);
+    border: 1px solid var(--gold-border);
+    box-shadow: var(--shadow-gold);
+    position: relative;
+    overflow: hidden;
+  }
+  .plan3 .achv-bar.over::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgb(251 191 36 / 0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .plan3 .achv-bar.over .lbl {
+    color: var(--gold-strong);
+    font-weight: 600;
+  }
+  .plan3 .achv-bar.over .achv-meta .actual {
+    color: var(--gold-text);
+  }
+  .plan3 .decoration {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* ============================================= */
+  /*  方案 4（融合）：目标线 + 徽章 + 金色数字       */
+  /* ============================================= */
+  .plan4 .bar-outer {
+    overflow: visible;
+    height: 12px;
+  }
+  .plan4 .bar-normal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold) 0%, #fcd34d 100%);
+    border-radius: 999px 0 0 999px;
+  }
+  .plan4 .bar-normal.green {
+    background: linear-gradient(90deg, var(--success) 0%, #34d399 100%);
+  }
+  .plan4 .bar-normal.full {
+    background: linear-gradient(90deg, var(--success) 0%, #059669 100%);
+  }
+  .plan4 .bar-overflow {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-strong) 0%, var(--gold) 100%);
+    border-radius: 0 999px 999px 0;
+    box-shadow: 0 0 10px rgb(245 158 11 / 0.5);
+  }
+  .plan4 .target-line {
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 2px;
+    height: calc(100% + 6px);
+    background: var(--text);
+    border-radius: 2px;
+    z-index: 2;
+  }
+  .plan4 .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--gold-bg);
+    color: var(--gold-text);
+    border: 1px solid var(--gold-border);
+    margin-left: 4px;
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    font-family: inherit;
+    z-index: 10;
+  }
+  .theme-toggle:hover { border-color: var(--border-strong); }
+
+  .compare {
+    margin-top: 32px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .compare table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .compare th, .compare td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare th {
+    background: var(--card-alt);
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .compare tr:last-child td { border-bottom: none; }
+  .compare td:first-child {
+    color: var(--text-muted);
+    font-weight: 500;
+    width: 18%;
+  }
+
+  @media (max-width: 900px) {
+    .state-row { grid-template-columns: 1fr; }
+    .achv-inner {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .achv-meta { text-align: left; }
+    .plan-note {
+      margin-left: 0;
+      text-align: left;
+      max-width: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeBtn" type="button">切换主题</button>
+
+<div class="container">
+  <div class="page-header">
+    <h1>「超越目标」的视觉方案对比</h1>
+    <p>4 个方案 × 2 种状态（超额 129% / 未达标 95%）</p>
+  </div>
+
+  <div class="demo-note">
+    ⚠️ mockup 页面 · 只做视觉预览。真实功能请打开线上 Dashboard
+  </div>
+
+  <!-- ============================================= -->
+  <!-- 方案 1：金色 + 🏆 徽章                          -->
+  <!-- ============================================= -->
+  <section class="plan plan1">
+    <div class="plan-label">
+      <span class="plan-badge">方案 1</span>
+      <h2 class="plan-title">金色 + 🏆 图标 + 「超額」徽章</h2>
+      <p class="plan-note">≥100% 时颜色变金 · 加图标和徽章 · 进度条金色</p>
+    </div>
+
+    <div class="state-row">
+      <div>
+        <p class="state-caption">状态 · <strong style="color: var(--gold-text)">超额 129%</strong></p>
+        <div class="achv-bar over">
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-gold">
+                🏆 129%
+                <span class="badge">超額</span>
+              </span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-fill gold" style="width: 100%"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual" style="color: var(--gold-text)">¥86,849,326</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-plus">+¥19,292,356</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="state-caption">状态 · <strong>未达标 95%</strong></p>
+        <div class="achv-bar under">
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-sky">95%</span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-fill sky" style="width: 95%"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥64,229,121</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-minus">−¥3,327,849</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- 方案 2：目标线 + 超越段延伸                    -->
+  <!-- ============================================= -->
+  <section class="plan plan2">
+    <div class="plan-label">
+      <span class="plan-badge">方案 2</span>
+      <h2 class="plan-title">进度条内目标线 + 超越段金色延伸</h2>
+      <p class="plan-note">100% 位置画竖线 · 超越部分溢出容器变金色</p>
+    </div>
+
+    <div class="state-row">
+      <div>
+        <p class="state-caption">状态 · <strong style="color: var(--gold-text)">超额 129%</strong></p>
+        <div class="achv-bar over" style="padding-right: 60px;">
+          <div class="achv-inner" style="grid-template-columns: minmax(160px, auto) 1fr minmax(160px, auto);">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-green">
+                129%
+                <span class="over-mini">🏆 +29%</span>
+              </span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-normal full" style="width: 100%"></div>
+              <div class="bar-overflow" style="width: 29%"></div>
+              <div class="target-line"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥86,849,326</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-plus">+¥19,292,356</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="state-caption">状态 · <strong>未达标 95%</strong></p>
+        <div class="achv-bar under">
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-sky">95%</span>
+            </div>
+            <div class="bar-outer no-marker">
+              <div class="bar-normal" style="width: 95%; background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);"></div>
+              <div class="target-line" style="background: var(--text-muted); opacity: 0.4;"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥64,229,121</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-minus">−¥3,327,849</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- 方案 3：整个横条金色背景 + 光环                 -->
+  <!-- ============================================= -->
+  <section class="plan plan3">
+    <div class="plan-label">
+      <span class="plan-badge">方案 3</span>
+      <h2 class="plan-title">整个横条金色淡背景 + 光环装饰</h2>
+      <p class="plan-note">最强视觉冲击 · 卡片本身变成"胜利勋章"</p>
+    </div>
+
+    <div class="state-row">
+      <div>
+        <p class="state-caption">状态 · <strong style="color: var(--gold-text)">超额 129%</strong></p>
+        <div class="achv-bar over">
+          <span class="decoration">✨</span>
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-gold">🏆 129%</span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-fill gold" style="width: 100%"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥86,849,326</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-plus">+¥19,292,356</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="state-caption">状态 · <strong>未达标 95%</strong></p>
+        <div class="achv-bar under">
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-sky">95%</span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-fill sky" style="width: 95%"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥64,229,121</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-minus">−¥3,327,849</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================= -->
+  <!-- 方案 4：融合                                    -->
+  <!-- ============================================= -->
+  <section class="plan plan4">
+    <div class="plan-label">
+      <span class="plan-badge recommended">方案 4 · 融合</span>
+      <h2 class="plan-title">🏆 图标 + 徽章 + 目标线 + 金色延伸 + 金色数字</h2>
+      <p class="plan-note">同时叠加 4 重"超越"信号，任何人一眼可辨</p>
+    </div>
+
+    <div class="state-row">
+      <div>
+        <p class="state-caption">状态 · <strong style="color: var(--gold-text)">超额 129%</strong></p>
+        <div class="achv-bar over" style="padding-right: 60px;">
+          <div class="achv-inner" style="grid-template-columns: minmax(180px, auto) 1fr minmax(160px, auto);">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-gold">
+                🏆 129%
+                <span class="badge">超額</span>
+              </span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-normal full" style="width: 100%"></div>
+              <div class="bar-overflow" style="width: 29%"></div>
+              <div class="target-line"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual" style="color: var(--gold-text)">¥86,849,326</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-plus">+¥19,292,356</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="state-caption">状态 · <strong>未达标 95%</strong></p>
+        <div class="achv-bar under">
+          <div class="achv-inner">
+            <div class="achv-label">
+              <span class="lbl">🎯 本月目标达成率</span>
+              <span class="achv-num num-sky">95%</span>
+            </div>
+            <div class="bar-outer">
+              <div class="bar-normal" style="width: 95%; background: linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%);"></div>
+              <div class="target-line" style="background: var(--text-muted); opacity: 0.4;"></div>
+            </div>
+            <div class="achv-meta">
+              <div class="actual">¥64,229,121</div>
+              <div class="target">目标 ¥67,556,970 · <span class="diff-minus">−¥3,327,849</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 对比表 -->
+  <div class="compare">
+    <table>
+      <thead>
+        <tr>
+          <th>对比项</th>
+          <th>方案 1<br>金色 + 徽章</th>
+          <th>方案 2<br>目标线延伸</th>
+          <th>方案 3<br>金色背景</th>
+          <th>方案 4 · 融合<br>推荐</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>超越感强度</td>
+          <td>★★★</td>
+          <td>★★★★</td>
+          <td>★★★</td>
+          <td>★★★★★</td>
+        </tr>
+        <tr>
+          <td>视觉突兀度</td>
+          <td>低（仅数字和进度条变色）</td>
+          <td>中（进度条溢出容器）</td>
+          <td>高（整个横条金色）</td>
+          <td>中偏高</td>
+        </tr>
+        <tr>
+          <td>与整体 UI 协调</td>
+          <td>协调</td>
+          <td>协调（有新奇但克制）</td>
+          <td>抢眼（可能过于突出）</td>
+          <td>协调（多点信号叠加）</td>
+        </tr>
+        <tr>
+          <td>技术复杂度</td>
+          <td>简单（只改颜色和文字）</td>
+          <td>中（进度条要能溢出）</td>
+          <td>简单（换背景色）</td>
+          <td>中（融合方案 1 和 2）</td>
+        </tr>
+        <tr>
+          <td>一眼看出"超越"？</td>
+          <td>能</td>
+          <td>完全能</td>
+          <td>能（但主要靠背景）</td>
+          <td>完全能，且信号最丰富</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById("themeBtn");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.getAttribute("data-theme");
+      var next;
+      if (!current) {
+        var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        next = prefersDark ? "light" : "dark";
+      } else {
+        next = current === "dark" ? "light" : "dark";
+      }
+      root.setAttribute("data-theme", next);
+    });
+  })();
+</script>
+
+</body>
+</html>
