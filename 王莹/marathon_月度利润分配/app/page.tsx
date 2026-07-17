@@ -319,8 +319,8 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
     barBg = "linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%)";
     textCls = "text-sky-700";
   } else if (pct >= 60) {
-    barBg = "linear-gradient(90deg, #c2410c 0%, #ea580c 100%)";
-    textCls = "text-orange-800";
+    barBg = "linear-gradient(90deg, #f97316 0%, #fb923c 100%)";
+    textCls = "text-orange-700";
   } else {
     barBg = "linear-gradient(90deg, #f43f5e 0%, #fb7185 100%)";
     textCls = "text-rose-700";
