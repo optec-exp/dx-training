@@ -235,38 +235,127 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
   }
 
   const pct = (actualJpy / targetJpy) * 100;
-  let barCls = "bg-rose-500";
-  let textCls = "text-rose-700";
-  if (pct >= 100) {
-    barCls = "bg-emerald-500";
+  const diff = actualJpy - targetJpy;
+  const isOver = pct > 100.5;
+  const isPrecise = !isOver && pct >= 99.5;
+
+  // 超额：金色背景 + 目标线 + 溢出段（方案 5 的标志性视觉）
+  if (isOver) {
+    // 达成部分占容器：100/pct；溢出部分：1 - 100/pct
+    const donePct = (100 / pct) * 100;
+    const overPct = 100 - donePct;
+    return (
+      <div
+        className="mb-4 relative overflow-hidden rounded-xl border border-amber-300 px-4 sm:px-5 py-4 shadow-sm"
+        style={{
+          background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+        }}
+      >
+        <span className="absolute top-2 right-3 text-xl opacity-40 pointer-events-none">✨</span>
+        <div
+          className="absolute -top-16 -right-16 w-52 h-52 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(251,191,36,0.35) 0%, transparent 70%)",
+          }}
+        />
+        <div className="relative grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] sm:gap-6 items-center gap-3">
+          <div>
+            <div className="text-xs font-semibold text-amber-800">
+              🎯 {t("statAchievement")}
+            </div>
+            <div className="mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums leading-none text-amber-700">
+              🏆 {pct.toFixed(0)}%
+            </div>
+          </div>
+
+          <div className="relative h-3 rounded-full bg-white/60">
+            <div
+              className="absolute left-0 top-0 h-full rounded-l-full"
+              style={{
+                width: `${donePct}%`,
+                background: "linear-gradient(90deg, #f59e0b 0%, #fcd34d 100%)",
+              }}
+            />
+            <div
+              className="absolute top-0 h-full rounded-r-full"
+              style={{
+                left: `${donePct}%`,
+                width: `${overPct}%`,
+                background: "linear-gradient(90deg, #d97706 0%, #fbbf24 100%)",
+                boxShadow: "0 0 10px rgba(245,158,11,0.6)",
+              }}
+            />
+            <div
+              className="absolute -top-1 h-[calc(100%+8px)] w-0.5 rounded-sm bg-slate-900 z-10"
+              style={{ left: `${donePct}%` }}
+              title={`${t("lblTarget")} 100%`}
+            />
+          </div>
+
+          <div className="text-left sm:text-right tabular-nums">
+            <div className="text-sm font-semibold text-amber-800">
+              ¥{Math.round(actualJpy).toLocaleString("en-US")}
+            </div>
+            <div className="text-xs text-slate-600">
+              {t("lblTarget")} ¥{Math.round(targetJpy).toLocaleString("en-US")}
+              <span className="ml-1.5 text-amber-700 font-semibold">
+                +¥{Math.round(diff).toLocaleString("en-US")}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 非超额：白背景，按 5 档分色
+  let barBg: string;
+  let textCls: string;
+  if (isPrecise) {
+    barBg = "linear-gradient(90deg, #10b981 0%, #059669 100%)";
     textCls = "text-emerald-700";
   } else if (pct >= 80) {
-    barCls = "bg-sky-500";
+    barBg = "linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%)";
     textCls = "text-sky-700";
   } else if (pct >= 60) {
-    barCls = "bg-amber-500";
-    textCls = "text-amber-700";
+    barBg = "linear-gradient(90deg, #f97316 0%, #fb923c 100%)";
+    textCls = "text-orange-700";
+  } else {
+    barBg = "linear-gradient(90deg, #f43f5e 0%, #fb7185 100%)";
+    textCls = "text-rose-700";
   }
   const barWidth = Math.min(100, Math.max(0, pct));
-  const diff = actualJpy - targetJpy;
   const diffPrefix = diff >= 0 ? "+" : "−";
   const diffAbs = Math.abs(diff);
-  const diffCls = diff >= 0 ? "text-emerald-600" : "text-rose-600";
+  const diffCls =
+    diff > 0
+      ? "text-emerald-600"
+      : diff < 0
+      ? "text-rose-600"
+      : "text-emerald-700 font-semibold";
 
   return (
     <div className="mb-4 rounded-xl border border-slate-200 bg-white px-4 sm:px-5 py-4 shadow-sm">
       <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] sm:gap-6 items-center gap-3">
         <div>
           <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
-          <div className={`mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums leading-none ${textCls}`}>
-            {pct.toFixed(0)}%
+          <div
+            className={`mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums leading-none inline-flex items-center gap-2 ${textCls}`}
+          >
+            <span>{pct.toFixed(0)}%</span>
+            {isPrecise && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-500">
+                {t("achvBadgePrecise")}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="h-2 sm:h-2.5 rounded-full bg-slate-100 overflow-hidden">
           <div
-            className={`h-full ${barCls} transition-all duration-500`}
-            style={{ width: `${barWidth}%` }}
+            className="h-full transition-all duration-500 rounded-full"
+            style={{ width: `${barWidth}%`, background: barBg }}
           />
         </div>
 
@@ -276,9 +365,13 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
           </div>
           <div className="text-xs text-slate-500">
             {t("lblTarget")} ¥{Math.round(targetJpy).toLocaleString("en-US")}
-            <span className={`ml-1.5 ${diffCls}`}>
-              {diffPrefix}¥{Math.round(diffAbs).toLocaleString("en-US")}
-            </span>
+            {diff === 0 ? (
+              <span className="ml-1.5 text-emerald-700 font-semibold">±¥0</span>
+            ) : (
+              <span className={`ml-1.5 ${diffCls}`}>
+                {diffPrefix}¥{Math.round(diffAbs).toLocaleString("en-US")}
+              </span>
+            )}
           </div>
         </div>
       </div>

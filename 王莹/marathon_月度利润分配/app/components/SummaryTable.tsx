@@ -20,7 +20,7 @@ interface AchievementInfo {
   pct: number;
   targetJpy: number;
   actualJpy: number;
-  color: "green" | "blue" | "orange" | "red";
+  color: "gold" | "green" | "sky" | "orange" | "red";
 }
 
 function achievementInfoFor(
@@ -29,23 +29,47 @@ function achievementInfoFor(
 ): AchievementInfo | null {
   if (!targetJpy || targetJpy <= 0) return null;
   const pct = (actualJpy / targetJpy) * 100;
-  let color: AchievementInfo["color"] = "red";
-  if (pct >= 100) color = "green";
-  else if (pct >= 80) color = "blue";
+  let color: AchievementInfo["color"];
+  if (pct > 100.5) color = "gold";
+  else if (pct >= 99.5) color = "green";
+  else if (pct >= 80) color = "sky";
   else if (pct >= 60) color = "orange";
+  else color = "red";
   return { pct, targetJpy, actualJpy, color };
 }
 
 function achievementColorClasses(color: AchievementInfo["color"]) {
   switch (color) {
+    case "gold":
+      return {
+        bar: "bg-gradient-to-r from-amber-600 to-yellow-300",
+        text: "text-amber-700",
+        bg: "bg-amber-50",
+      };
     case "green":
-      return { bar: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50" };
-    case "blue":
-      return { bar: "bg-sky-500", text: "text-sky-700", bg: "bg-sky-50" };
+      return {
+        bar: "bg-gradient-to-r from-emerald-500 to-emerald-700",
+        text: "text-emerald-700",
+        bg: "bg-emerald-50",
+      };
+    case "sky":
+      return {
+        bar: "bg-gradient-to-r from-sky-500 to-sky-400",
+        text: "text-sky-700",
+        bg: "bg-sky-50",
+      };
     case "orange":
-      return { bar: "bg-amber-500", text: "text-amber-700", bg: "bg-amber-50" };
+      return {
+        bar: "bg-gradient-to-r from-orange-500 to-orange-400",
+        text: "text-orange-700",
+        bg: "bg-orange-50",
+      };
     case "red":
-      return { bar: "bg-rose-500", text: "text-rose-700", bg: "bg-rose-50" };
+      return {
+        bar: "bg-gradient-to-r from-rose-500 to-rose-400",
+        text: "text-rose-700",
+        bg: "bg-rose-50",
+      };
   }
 }
 
@@ -53,16 +77,20 @@ function AchievementCell({
   info,
   compact = false,
   tooltip,
+  preciseLabel,
 }: {
   info: AchievementInfo | null;
   compact?: boolean;
   tooltip?: string;
+  preciseLabel: string;
 }) {
   if (!info) {
     return <span className="text-slate-400">-</span>;
   }
   const cls = achievementColorClasses(info.color);
   const barWidth = Math.min(100, Math.max(0, info.pct));
+  const isGold = info.color === "gold";
+  const isPrecise = info.color === "green";
   return (
     <div className="flex items-center gap-2" title={tooltip}>
       <div
@@ -72,8 +100,14 @@ function AchievementCell({
       >
         <div className={`h-full ${cls.bar}`} style={{ width: `${barWidth}%` }} />
       </div>
-      <span className={`tabular-nums text-xs font-semibold ${cls.text} shrink-0`}>
-        {info.pct.toFixed(0)}%
+      <span className={`tabular-nums text-xs font-semibold ${cls.text} shrink-0 inline-flex items-center gap-1`}>
+        {isGold && <span>🏆</span>}
+        <span>{info.pct.toFixed(0)}%</span>
+        {isPrecise && (
+          <span className="text-[10px] font-bold px-1 py-px rounded bg-emerald-50 text-emerald-700 border border-emerald-500 leading-none">
+            {preciseLabel}
+          </span>
+        )}
       </span>
     </div>
   );
@@ -268,7 +302,7 @@ export function SummaryTable({
                         : t("achievementNoData");
                       return (
                         <div className="flex justify-center">
-                          <AchievementCell info={info} tooltip={tooltip} />
+                          <AchievementCell info={info} tooltip={tooltip} preciseLabel={t("achvBadgePrecise")} />
                         </div>
                       );
                     })()}
@@ -321,7 +355,15 @@ export function SummaryTable({
                       <span className="text-slate-600">
                         🎯 {t("lblTarget")} ¥{Math.round(target ?? 0).toLocaleString("en-US")}
                       </span>
-                      <span className={`font-bold ${cls.text}`}>{info.pct.toFixed(0)}%</span>
+                      <span className={`font-bold ${cls.text} inline-flex items-center gap-1`}>
+                        {info.color === "gold" && <span>🏆</span>}
+                        <span>{info.pct.toFixed(0)}%</span>
+                        {info.color === "green" && (
+                          <span className="text-[10px] font-bold px-1 py-px rounded bg-emerald-50 text-emerald-700 border border-emerald-500 leading-none">
+                            {t("achvBadgePrecise")}
+                          </span>
+                        )}
+                      </span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/70 overflow-hidden">
                       <div

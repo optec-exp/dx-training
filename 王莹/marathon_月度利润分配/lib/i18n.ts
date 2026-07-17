@@ -125,6 +125,7 @@ export const translations = {
     achievementNoData: "本月暂无目标",
     achievementCnyNotice: "人民币金额仅供参考，目标达成率仅在日元视图显示",
     currencyRefSuffix: "（参考）",
+    achvBadgePrecise: "達成",
   },
   ja: {
     // header
@@ -246,6 +247,7 @@ export const translations = {
     achievementNoData: "今月の目標未登録",
     achievementCnyNotice: "人民元金額は参考のみ、目標達成率は日本円のみ表示",
     currencyRefSuffix: "（参考のみ）",
+    achvBadgePrecise: "達成",
   },
 } as const;
 
