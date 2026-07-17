@@ -591,14 +591,14 @@
           <tr>
             <th>チーム</th>
             <th style="text-align: right;">合計 (JPY)</th>
-            <th style="text-align: left;">達成率</th>
+            <th style="text-align: center;">達成率</th>
             <th style="text-align: right;">割合</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Japan Desk</td><td style="text-align: right;">¥47,769,908</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer with-line">
                   <div class="mini-done-gold" style="width: 71.9%;"></div>
@@ -612,7 +612,7 @@
           </tr>
           <tr>
             <td>OS</td><td style="text-align: right;">¥36,431,610</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer with-line">
                   <div class="mini-done-gold" style="width: 75.8%;"></div>
@@ -626,7 +626,7 @@
           </tr>
           <tr>
             <td>営業3課</td><td style="text-align: right;">¥25,000,000</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-green" style="width: 100%"></div></div>
                 <span class="mini-text mini-text-green">100%</span>
@@ -636,7 +636,7 @@
           </tr>
           <tr>
             <td>営業4課</td><td style="text-align: right;">¥18,500,000</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-green" style="width: 95%"></div></div>
                 <span class="mini-text mini-text-green">95%</span>
@@ -646,7 +646,7 @@
           </tr>
           <tr>
             <td>営業5課</td><td style="text-align: right;">¥10,200,000</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-sky" style="width: 88%"></div></div>
                 <span class="mini-text mini-text-sky">88%</span>
@@ -656,7 +656,7 @@
           </tr>
           <tr>
             <td>通関</td><td style="text-align: right;">¥2,344,170</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-sky" style="width: 78%"></div></div>
                 <span class="mini-text mini-text-sky">78%</span>
@@ -666,7 +666,7 @@
           </tr>
           <tr>
             <td>Project</td><td style="text-align: right;">¥1,200,000</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-sky" style="width: 65%"></div></div>
                 <span class="mini-text mini-text-sky">65%</span>
@@ -676,7 +676,7 @@
           </tr>
           <tr>
             <td>物流開発</td><td style="text-align: right;">¥380,000</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-rose" style="width: 55%"></div></div>
                 <span class="mini-text mini-text-rose">55%</span>
@@ -686,7 +686,7 @@
           </tr>
           <tr>
             <td>営業6課</td><td style="text-align: right;">¥120,000</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-rose" style="width: 12%"></div></div>
                 <span class="mini-text mini-text-rose">12%</span>
@@ -696,7 +696,7 @@
           </tr>
           <tr style="background: var(--card-alt); font-weight: 600;">
             <td>合計</td><td style="text-align: right;">¥86,849,326</td>
-            <td style="text-align: left;">
+            <td style="text-align: center;">
               <div class="mini-achv">
                 <div class="mini-bar-outer with-line">
                   <div class="mini-done-gold" style="width: 77.5%;"></div>
@@ -1861,7 +1861,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    min-width: 110px;
+    width: 130px;
+    justify-content: flex-start;
   }
   .mini-bar-outer {
     width: 60px;
