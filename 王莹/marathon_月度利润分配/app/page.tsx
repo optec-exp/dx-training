@@ -237,11 +237,9 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
   const pct = (actualJpy / targetJpy) * 100;
   const diff = actualJpy - targetJpy;
   const isOver = pct > 100.5;
-  const isPrecise = !isOver && pct >= 99.5;
 
-  // 超额：金色背景 + 目标线 + 溢出段（方案 5 的标志性视觉）
+  // 超额：金色背景 + 目标线 + 溢出段
   if (isOver) {
-    // 达成部分占容器：100/pct；溢出部分：1 - 100/pct
     const donePct = (100 / pct) * 100;
     const overPct = 100 - donePct;
     return (
@@ -269,7 +267,10 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
             </div>
           </div>
 
-          <div className="relative h-3 rounded-full bg-white shadow-inner">
+          <div
+            className="relative h-3 rounded-full"
+            style={{ background: "#f1f5f9" }}
+          >
             <div
               className="absolute left-0 top-0 h-full rounded-l-full"
               style={{
@@ -309,18 +310,15 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
     );
   }
 
-  // 非超额：白背景，按 5 档分色
+  // 非超额：白背景，按 3 档分色（4 档去掉了 gold，剩绿/蓝/红）
   let barBg: string;
   let textCls: string;
-  if (isPrecise) {
+  if (pct >= 90) {
     barBg = "linear-gradient(90deg, #10b981 0%, #059669 100%)";
     textCls = "text-emerald-700";
-  } else if (pct >= 80) {
+  } else if (pct >= 60) {
     barBg = "linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%)";
     textCls = "text-sky-700";
-  } else if (pct >= 60) {
-    barBg = "linear-gradient(90deg, #f97316 0%, #fb923c 100%)";
-    textCls = "text-orange-700";
   } else {
     barBg = "linear-gradient(90deg, #f43f5e 0%, #fb7185 100%)";
     textCls = "text-rose-700";
@@ -341,14 +339,9 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
         <div>
           <div className="text-xs text-slate-500">🎯 {t("statAchievement")}</div>
           <div
-            className={`mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums leading-none inline-flex items-center gap-2 ${textCls}`}
+            className={`mt-0.5 text-2xl sm:text-3xl font-bold tabular-nums leading-none ${textCls}`}
           >
-            <span>{pct.toFixed(0)}%</span>
-            {isPrecise && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-500">
-                {t("achvBadgePrecise")}
-              </span>
-            )}
+            {pct.toFixed(0)}%
           </div>
         </div>
 

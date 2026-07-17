@@ -20,7 +20,7 @@ interface AchievementInfo {
   pct: number;
   targetJpy: number;
   actualJpy: number;
-  color: "gold" | "green" | "sky" | "orange" | "red";
+  color: "gold" | "green" | "sky" | "rose";
 }
 
 function achievementInfoFor(
@@ -31,10 +31,9 @@ function achievementInfoFor(
   const pct = (actualJpy / targetJpy) * 100;
   let color: AchievementInfo["color"];
   if (pct > 100.5) color = "gold";
-  else if (pct >= 99.5) color = "green";
-  else if (pct >= 80) color = "sky";
-  else if (pct >= 60) color = "orange";
-  else color = "red";
+  else if (pct >= 90) color = "green";
+  else if (pct >= 60) color = "sky";
+  else color = "rose";
   return { pct, targetJpy, actualJpy, color };
 }
 
@@ -58,13 +57,7 @@ function achievementColorClasses(color: AchievementInfo["color"]) {
         text: "text-sky-700",
         bg: "bg-sky-50",
       };
-    case "orange":
-      return {
-        bar: "bg-gradient-to-r from-orange-500 to-orange-400",
-        text: "text-orange-700",
-        bg: "bg-orange-50",
-      };
-    case "red":
+    case "rose":
       return {
         bar: "bg-gradient-to-r from-rose-500 to-rose-400",
         text: "text-rose-700",
@@ -75,39 +68,64 @@ function achievementColorClasses(color: AchievementInfo["color"]) {
 
 function AchievementCell({
   info,
-  compact = false,
   tooltip,
-  preciseLabel,
 }: {
   info: AchievementInfo | null;
-  compact?: boolean;
   tooltip?: string;
-  preciseLabel: string;
 }) {
   if (!info) {
     return <span className="text-slate-400">-</span>;
   }
   const cls = achievementColorClasses(info.color);
-  const barWidth = Math.min(100, Math.max(0, info.pct));
   const isGold = info.color === "gold";
-  const isPrecise = info.color === "green";
+  const barWidth = Math.min(100, Math.max(0, info.pct));
+
   return (
-    <div className="flex items-center gap-2" title={tooltip}>
-      <div
-        className={`h-1.5 rounded-full bg-slate-100 overflow-hidden shrink-0 ${
-          compact ? "w-14" : "w-20"
-        }`}
+    <div className="inline-flex items-center gap-2 w-[130px]" title={tooltip}>
+      {isGold ? (
+        (() => {
+          const donePct = (100 / info.pct) * 100;
+          const overPct = 100 - donePct;
+          return (
+            <div
+              className="relative h-1.5 w-[60px] rounded-full shrink-0"
+              style={{ background: "#f1f5f9", overflow: "visible" }}
+            >
+              <div
+                className="absolute left-0 top-0 h-full"
+                style={{
+                  width: `${donePct}%`,
+                  background: "linear-gradient(90deg, #d97706 0%, #f59e0b 100%)",
+                  borderRadius: "999px 0 0 999px",
+                }}
+              />
+              <div
+                className="absolute top-0 h-full"
+                style={{
+                  left: `${donePct}%`,
+                  width: `${overPct}%`,
+                  background: "linear-gradient(90deg, #d97706 0%, #fbbf24 100%)",
+                  boxShadow: "0 0 4px rgba(245,158,11,0.7)",
+                  borderRadius: "0 999px 999px 0",
+                }}
+              />
+              <div
+                className="absolute -top-0.5 h-[calc(100%+4px)] w-0.5 rounded-sm bg-slate-900 z-10"
+                style={{ left: `${donePct}%` }}
+              />
+            </div>
+          );
+        })()
+      ) : (
+        <div className="h-1.5 w-[60px] rounded-full bg-slate-100 overflow-hidden shrink-0">
+          <div className={`h-full ${cls.bar}`} style={{ width: `${barWidth}%` }} />
+        </div>
+      )}
+      <span
+        className={`tabular-nums text-xs font-semibold ${cls.text} shrink-0 inline-flex items-center gap-1`}
       >
-        <div className={`h-full ${cls.bar}`} style={{ width: `${barWidth}%` }} />
-      </div>
-      <span className={`tabular-nums text-xs font-semibold ${cls.text} shrink-0 inline-flex items-center gap-1`}>
         {isGold && <span>🏆</span>}
         <span>{info.pct.toFixed(0)}%</span>
-        {isPrecise && (
-          <span className="text-[10px] font-bold px-1 py-px rounded bg-emerald-50 text-emerald-700 border border-emerald-500 leading-none">
-            {preciseLabel}
-          </span>
-        )}
       </span>
     </div>
   );
@@ -302,7 +320,7 @@ export function SummaryTable({
                         : t("achievementNoData");
                       return (
                         <div className="flex justify-center">
-                          <AchievementCell info={info} tooltip={tooltip} preciseLabel={t("achvBadgePrecise")} />
+                          <AchievementCell info={info} tooltip={tooltip} />
                         </div>
                       );
                     })()}
@@ -358,11 +376,6 @@ export function SummaryTable({
                       <span className={`font-bold ${cls.text} inline-flex items-center gap-1`}>
                         {info.color === "gold" && <span>🏆</span>}
                         <span>{info.pct.toFixed(0)}%</span>
-                        {info.color === "green" && (
-                          <span className="text-[10px] font-bold px-1 py-px rounded bg-emerald-50 text-emerald-700 border border-emerald-500 leading-none">
-                            {t("achvBadgePrecise")}
-                          </span>
-                        )}
                       </span>
                     </div>
                     <div className="h-1.5 rounded-full bg-white/70 overflow-hidden">
