@@ -1151,7 +1151,146 @@
       </tbody>
     </table>
   </div>
+
+  <!-- ============ 表格达成率 · 胶囊标签方案 ============ -->
+  <div class="section" style="margin-top: 48px; border: 2px solid var(--accent); padding: 24px; border-radius: 12px; background: var(--accent-bg);">
+    <h2 style="margin-top: 0">📌 新方案 · 表格达成率「胶囊标签」</h2>
+    <p style="color: var(--text-muted); margin-bottom: 20px;">
+      去掉长短不一的进度条，改为<strong>固定宽度的实心色胶囊</strong>。所有行等宽 + 高饱和背景色 + 白字，一眼可辨达成 vs 未达成。
+    </p>
+
+    <div style="background: var(--card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden;">
+      <table class="pill-demo-table">
+        <thead>
+          <tr>
+            <th>チーム</th>
+            <th style="text-align: right;">合計 (JPY)</th>
+            <th style="text-align: center;">達成率</th>
+            <th style="text-align: right;">割合</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Japan Desk</td>
+            <td style="text-align: right;">¥47,769,908</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-gold">🏆 139%</span>
+            </td>
+            <td style="text-align: right;">55.0%</td>
+          </tr>
+          <tr>
+            <td>OS</td>
+            <td style="text-align: right;">¥36,431,610</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-gold">🏆 132%</span>
+            </td>
+            <td style="text-align: right;">41.9%</td>
+          </tr>
+          <tr>
+            <td>営業3課</td>
+            <td style="text-align: right;">¥25,000,000</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-green">100% <em>達</em></span>
+            </td>
+            <td style="text-align: right;">28.8%</td>
+          </tr>
+          <tr>
+            <td>営業4課</td>
+            <td style="text-align: right;">¥18,500,000</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-sky">88%</span>
+            </td>
+            <td style="text-align: right;">21.3%</td>
+          </tr>
+          <tr>
+            <td>通関</td>
+            <td style="text-align: right;">¥2,344,170</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-orange">78%</span>
+            </td>
+            <td style="text-align: right;">2.7%</td>
+          </tr>
+          <tr>
+            <td>Project</td>
+            <td style="text-align: right;">¥303,638</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-rose">12%</span>
+            </td>
+            <td style="text-align: right;">0.3%</td>
+          </tr>
+          <tr style="background: var(--card-alt); font-weight: 600;">
+            <td>合計</td>
+            <td style="text-align: right;">¥86,849,326</td>
+            <td style="text-align: center;">
+              <span class="achv-pill pill-gold">🏆 129%</span>
+            </td>
+            <td style="text-align: right;">100.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="color: var(--text-muted); font-size: 13px; margin-top: 16px;">
+      ⭐ 顶部横条不变（仍是方案 5：金色背景 + 目标线 + 溢出段）；表格空间小，改为胶囊更清晰。
+    </p>
+  </div>
 </div>
+
+<style>
+  .pill-demo-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .pill-demo-table thead {
+    background: var(--card-alt);
+    color: var(--text-muted);
+  }
+  .pill-demo-table th {
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+  .pill-demo-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .pill-demo-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .achv-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    width: 88px;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+  .pill-gold {
+    background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+    box-shadow: 0 1px 3px rgba(245, 158, 11, 0.4);
+  }
+  .pill-green { background: #059669; }
+  .pill-sky { background: #0ea5e9; }
+  .pill-orange { background: #f97316; }
+  .pill-rose { background: #f43f5e; }
+  .achv-pill em {
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.28);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+</style>
 
 <script>
   (function () {
