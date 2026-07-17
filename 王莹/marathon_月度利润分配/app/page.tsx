@@ -244,17 +244,20 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
     const overPct = 100 - donePct;
     return (
       <div
-        className="mb-4 relative overflow-hidden rounded-xl border border-amber-300 px-4 sm:px-5 py-4 shadow-sm"
+        className="mb-4 relative overflow-hidden rounded-xl border px-4 sm:px-5 py-4"
         style={{
-          background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+          background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+          borderColor: "#fbbf24",
+          boxShadow:
+            "0 0 0 1px rgba(245, 158, 11, 0.15), 0 4px 20px rgba(245, 158, 11, 0.15)",
         }}
       >
-        <span className="absolute top-2 right-3 text-xl opacity-40 pointer-events-none">✨</span>
+        <span className="absolute top-2 right-3 text-xl opacity-50 pointer-events-none">✨</span>
         <div
           className="absolute -top-16 -right-16 w-52 h-52 rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle, rgba(251,191,36,0.35) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(251,191,36,0.25) 0%, transparent 70%)",
           }}
         />
         <div className="relative grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] sm:gap-6 items-center gap-3">
