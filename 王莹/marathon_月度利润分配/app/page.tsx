@@ -269,7 +269,7 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
             </div>
           </div>
 
-          <div className="relative h-3 rounded-full bg-slate-100">
+          <div className="relative h-3 rounded-full bg-white shadow-inner">
             <div
               className="absolute left-0 top-0 h-full rounded-l-full"
               style={{
