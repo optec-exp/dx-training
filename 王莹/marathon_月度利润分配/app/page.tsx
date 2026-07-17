@@ -293,8 +293,17 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
             <div
               className="absolute -top-1 h-[calc(100%+8px)] w-0.5 rounded-sm bg-slate-900 z-10"
               style={{ left: `${donePct}%` }}
-              title={`${t("lblTarget")} 100%`}
             />
+            <div
+              className="absolute whitespace-nowrap text-[10px] font-semibold text-slate-700 leading-none pointer-events-none"
+              style={{
+                left: `${donePct}%`,
+                top: "-14px",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {t("lblTarget")} 100%
+            </div>
           </div>
 
           <div className="text-left sm:text-right tabular-nums">
