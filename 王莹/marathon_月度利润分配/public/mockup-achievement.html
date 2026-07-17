@@ -591,16 +591,20 @@
           <tr>
             <th>チーム</th>
             <th style="text-align: right;">合計 (JPY)</th>
-            <th style="text-align: center;">達成率</th>
+            <th style="text-align: left;">達成率</th>
             <th style="text-align: right;">割合</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>Japan Desk</td><td style="text-align: right;">¥47,769,908</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
-                <div class="mini-bar-outer"><div class="mini-bar-fill mini-gold" style="width: 100%"></div></div>
+                <div class="mini-bar-outer with-line">
+                  <div class="mini-done-gold" style="width: 71.9%;"></div>
+                  <div class="mini-over-gold" style="left: 71.9%; width: 28.1%;"></div>
+                  <div class="mini-target-line" style="left: 71.9%;"></div>
+                </div>
                 <span class="mini-text mini-text-gold">🏆 139%</span>
               </div>
             </td>
@@ -608,9 +612,13 @@
           </tr>
           <tr>
             <td>OS</td><td style="text-align: right;">¥36,431,610</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
-                <div class="mini-bar-outer"><div class="mini-bar-fill mini-gold" style="width: 100%"></div></div>
+                <div class="mini-bar-outer with-line">
+                  <div class="mini-done-gold" style="width: 75.8%;"></div>
+                  <div class="mini-over-gold" style="left: 75.8%; width: 24.2%;"></div>
+                  <div class="mini-target-line" style="left: 75.8%;"></div>
+                </div>
                 <span class="mini-text mini-text-gold">🏆 132%</span>
               </div>
             </td>
@@ -618,7 +626,7 @@
           </tr>
           <tr>
             <td>営業3課</td><td style="text-align: right;">¥25,000,000</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-green" style="width: 100%"></div></div>
                 <span class="mini-text mini-text-green">100%</span>
@@ -628,7 +636,7 @@
           </tr>
           <tr>
             <td>営業4課</td><td style="text-align: right;">¥18,500,000</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-green" style="width: 95%"></div></div>
                 <span class="mini-text mini-text-green">95%</span>
@@ -638,7 +646,7 @@
           </tr>
           <tr>
             <td>営業5課</td><td style="text-align: right;">¥10,200,000</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-sky" style="width: 88%"></div></div>
                 <span class="mini-text mini-text-sky">88%</span>
@@ -648,7 +656,7 @@
           </tr>
           <tr>
             <td>通関</td><td style="text-align: right;">¥2,344,170</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-sky" style="width: 78%"></div></div>
                 <span class="mini-text mini-text-sky">78%</span>
@@ -658,7 +666,7 @@
           </tr>
           <tr>
             <td>Project</td><td style="text-align: right;">¥1,200,000</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-sky" style="width: 65%"></div></div>
                 <span class="mini-text mini-text-sky">65%</span>
@@ -668,7 +676,7 @@
           </tr>
           <tr>
             <td>物流開発</td><td style="text-align: right;">¥380,000</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-rose" style="width: 55%"></div></div>
                 <span class="mini-text mini-text-rose">55%</span>
@@ -678,7 +686,7 @@
           </tr>
           <tr>
             <td>営業6課</td><td style="text-align: right;">¥120,000</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
                 <div class="mini-bar-outer"><div class="mini-bar-fill mini-rose" style="width: 12%"></div></div>
                 <span class="mini-text mini-text-rose">12%</span>
@@ -688,9 +696,13 @@
           </tr>
           <tr style="background: var(--card-alt); font-weight: 600;">
             <td>合計</td><td style="text-align: right;">¥86,849,326</td>
-            <td style="text-align: center;">
+            <td style="text-align: left;">
               <div class="mini-achv">
-                <div class="mini-bar-outer"><div class="mini-bar-fill mini-gold" style="width: 100%"></div></div>
+                <div class="mini-bar-outer with-line">
+                  <div class="mini-done-gold" style="width: 77.5%;"></div>
+                  <div class="mini-over-gold" style="left: 77.5%; width: 22.5%;"></div>
+                  <div class="mini-target-line" style="left: 77.5%;"></div>
+                </div>
                 <span class="mini-text mini-text-gold">🏆 129%</span>
               </div>
             </td>
@@ -1899,6 +1911,42 @@
     border: 1px solid #10b981;
     padding: 1px 4px;
     border-radius: 3px;
+  }
+
+  /* 表格超额目标线（方案 W） */
+  .mini-bar-outer.with-line {
+    overflow: visible;
+    position: relative;
+  }
+  .mini-bar-outer.with-line > div {
+    position: absolute;
+    top: 0;
+    height: 100%;
+  }
+  .mini-done-gold {
+    left: 0;
+    background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+    border-radius: 999px 0 0 999px;
+  }
+  .mini-over-gold {
+    background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%);
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.7);
+    border-radius: 0 999px 999px 0;
+  }
+  .mini-target-line {
+    top: -2px !important;
+    height: calc(100% + 4px) !important;
+    width: 2px;
+    background: #0f172a;
+    border-radius: 1px;
+    z-index: 10;
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+  }
+  @media (prefers-color-scheme: dark) {
+    .mini-target-line {
+      background: #f1f5f9;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+    }
   }
 </style>
 
