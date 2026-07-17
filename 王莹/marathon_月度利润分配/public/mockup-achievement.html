@@ -1010,16 +1010,18 @@
         </div>
       </div>
 
-      <!-- 精准 100%（普通白背景 + 绿色进度条填满 + 「達成」徽章，无目标线） -->
+      <!-- 精准 100%（普通白背景 + 深绿进度条填满 + 「達成」徽章，无目标线） -->
       <div>
-        <p class="state-caption">状态 · <strong style="color: var(--success-text)">精准达标 100%</strong> · 白背景 · 进度条填满 · 无目标线</p>
+        <p class="state-caption">状态 · <strong style="color: var(--success-text)">精准达标 100%</strong> · 白背景 · 深绿进度条填满 · 无目标线</p>
         <div class="achv-bar">
           <div class="achv-inner">
             <div class="achv-label">
               <span class="lbl">🎯 本月目标达成率</span>
               <span class="achv-num num-green">100% <span class="badge-precise">達成</span></span>
             </div>
-            <div class="bar-outer"><div class="bar-fill green" style="width: 100%"></div></div>
+            <div class="bar-outer">
+              <div class="bar-fill" style="width: 100%; background: linear-gradient(90deg, var(--success) 0%, #059669 100%);"></div>
+            </div>
             <div class="achv-meta">
               <div class="actual">¥67,556,970</div>
               <div class="target">目标 ¥67,556,970 · <span class="diff-zero">±¥0</span></div>
