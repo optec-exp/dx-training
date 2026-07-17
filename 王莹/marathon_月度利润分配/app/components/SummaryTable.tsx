@@ -60,8 +60,8 @@ function achievementColorClasses(color: AchievementInfo["color"]) {
       };
     case "orange":
       return {
-        bar: "bg-gradient-to-r from-orange-500 to-orange-400",
-        text: "text-orange-700",
+        bar: "bg-gradient-to-r from-orange-700 to-orange-600",
+        text: "text-orange-800",
         bg: "bg-orange-50",
       };
     case "red":
