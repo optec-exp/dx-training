@@ -278,7 +278,7 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
               className="absolute left-0 top-0 h-full rounded-l-full"
               style={{
                 width: `${donePct}%`,
-                background: "linear-gradient(90deg, #f59e0b 0%, #fcd34d 100%)",
+                background: "#f59e0b",
               }}
             />
             <div
@@ -286,7 +286,7 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
               style={{
                 left: `${donePct}%`,
                 width: `${overPct}%`,
-                background: "linear-gradient(90deg, #d97706 0%, #fbbf24 100%)",
+                background: "#d97706",
                 boxShadow: "0 0 10px rgba(245,158,11,0.6)",
               }}
             />
@@ -317,13 +317,13 @@ function AchievementBar({ report }: { report: MonthlyReport }) {
   let barBg: string;
   let textCls: string;
   if (pct >= 90) {
-    barBg = "linear-gradient(90deg, #10b981 0%, #059669 100%)";
+    barBg = "#10b981";
     textCls = "text-emerald-700";
   } else if (pct >= 60) {
-    barBg = "linear-gradient(90deg, #0ea5e9 0%, #38bdf8 100%)";
+    barBg = "#0ea5e9";
     textCls = "text-sky-700";
   } else {
-    barBg = "linear-gradient(90deg, #f43f5e 0%, #fb7185 100%)";
+    barBg = "#f43f5e";
     textCls = "text-rose-700";
   }
   const barWidth = Math.min(100, Math.max(0, pct));

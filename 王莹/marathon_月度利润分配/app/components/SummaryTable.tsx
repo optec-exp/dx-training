@@ -40,29 +40,13 @@ function achievementInfoFor(
 function achievementColorClasses(color: AchievementInfo["color"]) {
   switch (color) {
     case "gold":
-      return {
-        bar: "bg-gradient-to-r from-amber-600 to-yellow-300",
-        text: "text-amber-700",
-        bg: "bg-amber-50",
-      };
+      return { bar: "bg-amber-500", text: "text-amber-700", bg: "bg-amber-50" };
     case "green":
-      return {
-        bar: "bg-gradient-to-r from-emerald-500 to-emerald-700",
-        text: "text-emerald-700",
-        bg: "bg-emerald-50",
-      };
+      return { bar: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50" };
     case "sky":
-      return {
-        bar: "bg-gradient-to-r from-sky-500 to-sky-400",
-        text: "text-sky-700",
-        bg: "bg-sky-50",
-      };
+      return { bar: "bg-sky-500", text: "text-sky-700", bg: "bg-sky-50" };
     case "rose":
-      return {
-        bar: "bg-gradient-to-r from-rose-500 to-rose-400",
-        text: "text-rose-700",
-        bg: "bg-rose-50",
-      };
+      return { bar: "bg-rose-500", text: "text-rose-700", bg: "bg-rose-50" };
   }
 }
 
@@ -95,7 +79,7 @@ function AchievementCell({
                 className="absolute left-0 top-0 h-full"
                 style={{
                   width: `${donePct}%`,
-                  background: "linear-gradient(90deg, #d97706 0%, #f59e0b 100%)",
+                  background: "#f59e0b",
                   borderRadius: "999px 0 0 999px",
                 }}
               />
@@ -104,7 +88,7 @@ function AchievementCell({
                 style={{
                   left: `${donePct}%`,
                   width: `${overPct}%`,
-                  background: "linear-gradient(90deg, #d97706 0%, #fbbf24 100%)",
+                  background: "#d97706",
                   boxShadow: "0 0 4px rgba(245,158,11,0.7)",
                   borderRadius: "0 999px 999px 0",
                 }}
@@ -390,7 +374,7 @@ export function SummaryTable({
                             className="absolute left-0 top-0 h-full"
                             style={{
                               width: `${donePct}%`,
-                              background: "linear-gradient(90deg, #d97706 0%, #f59e0b 100%)",
+                              background: "#f59e0b",
                               borderRadius: "999px 0 0 999px",
                             }}
                           />
@@ -399,7 +383,7 @@ export function SummaryTable({
                             style={{
                               left: `${donePct}%`,
                               width: `${overPct}%`,
-                              background: "linear-gradient(90deg, #d97706 0%, #fbbf24 100%)",
+                              background: "#d97706",
                               boxShadow: "0 0 5px rgba(245,158,11,0.6)",
                               borderRadius: "0 999px 999px 0",
                             }}
