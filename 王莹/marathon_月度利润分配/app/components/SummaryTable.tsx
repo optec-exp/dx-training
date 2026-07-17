@@ -378,12 +378,46 @@ export function SummaryTable({
                         <span>{info.pct.toFixed(0)}%</span>
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-white/70 overflow-hidden">
-                      <div
-                        className={`h-full ${cls.bar}`}
-                        style={{ width: `${Math.min(100, Math.max(0, info.pct))}%` }}
-                      />
-                    </div>
+                    {info.color === "gold" ? (() => {
+                      const donePct = (100 / info.pct) * 100;
+                      const overPct = 100 - donePct;
+                      return (
+                        <div
+                          className="relative h-1.5 rounded-full"
+                          style={{ background: "#f1f5f9", overflow: "visible" }}
+                        >
+                          <div
+                            className="absolute left-0 top-0 h-full"
+                            style={{
+                              width: `${donePct}%`,
+                              background: "linear-gradient(90deg, #d97706 0%, #f59e0b 100%)",
+                              borderRadius: "999px 0 0 999px",
+                            }}
+                          />
+                          <div
+                            className="absolute top-0 h-full"
+                            style={{
+                              left: `${donePct}%`,
+                              width: `${overPct}%`,
+                              background: "linear-gradient(90deg, #d97706 0%, #fbbf24 100%)",
+                              boxShadow: "0 0 5px rgba(245,158,11,0.6)",
+                              borderRadius: "0 999px 999px 0",
+                            }}
+                          />
+                          <div
+                            className="absolute -top-0.5 h-[calc(100%+4px)] w-0.5 rounded-sm bg-slate-900 z-10"
+                            style={{ left: `${donePct}%` }}
+                          />
+                        </div>
+                      );
+                    })() : (
+                      <div className="h-1.5 rounded-full bg-white/70 overflow-hidden">
+                        <div
+                          className={`h-full ${cls.bar}`}
+                          style={{ width: `${Math.min(100, Math.max(0, info.pct))}%` }}
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })()}
